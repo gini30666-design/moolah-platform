@@ -8,14 +8,14 @@ function generateId() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { providerId, serviceId, customerName, customerLineUserId, date, time, note } = body
+  const { providerId, serviceId, customerName, customerLineUserId, date, time, note, gender, hairLength } = body
 
   if (!providerId || !serviceId || !customerName || !customerLineUserId || !date || !time) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
   const [providerRows, serviceRows] = await Promise.all([
-    getSheetData('providers!A2:F'),
+    getSheetData('providers!A2:L'),
     getSheetData('services!A2:F'),
   ])
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const bookingId = generateId()
   const createdAt = new Date().toISOString()
 
-  await appendRow('bookings!A:I', [
+  await appendRow('bookings!A:K', [
     bookingId,
     providerId,
     serviceId,
@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     time,
     note ?? '',
     createdAt,
+    gender ?? '',
+    hairLength ?? '',
   ])
 
   const providerName = providerRow[1]

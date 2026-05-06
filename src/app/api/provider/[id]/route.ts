@@ -8,42 +8,42 @@ export async function GET(
   const { id } = await params
 
   const [providerRows, serviceRows, portfolioRows] = await Promise.all([
-    getSheetData('providers!A2:F'),
+    getSheetData('providers!A2:L'),
     getSheetData('services!A2:F'),
     getSheetData('portfolio!A2:D'),
   ])
 
-  const providerRow = providerRows.find(r => r[0] === id)
-  if (!providerRow) {
-    return NextResponse.json({ error: 'Provider not found' }, { status: 404 })
-  }
+  const r = providerRows.find(row => row[0] === id)
+  if (!r) return NextResponse.json({ error: 'Provider not found' }, { status: 404 })
 
   const provider = {
-    id: providerRow[0],
-    name: providerRow[1],
-    category: providerRow[2],
-    description: providerRow[3],
-    lineUserId: providerRow[4],
-    avatarUrl: providerRow[5] ?? '',
+    id: r[0],
+    name: r[1],
+    category: r[2],
+    description: r[3],
+    lineUserId: r[4],
+    avatarUrl: r[5] ?? '',
+    storeName: r[6] ?? '',
+    address: r[7] ?? '',
+    district: r[8] ?? '',
+    businessHours: r[9] ?? '',
+    phone: r[10] ?? '',
+    instagram: r[11] ?? '',
   }
 
   const services = serviceRows
-    .filter(r => r[0] === id)
-    .map(r => ({
-      id: r[1],
-      name: r[2],
-      price: Number(r[3]),
-      duration: Number(r[4]),
-      description: r[5] ?? '',
+    .filter(row => row[0] === id)
+    .map(row => ({
+      id: row[1],
+      name: row[2],
+      price: Number(row[3]),
+      duration: Number(row[4]),
+      description: row[5] ?? '',
     }))
 
   const portfolio = portfolioRows
-    .filter(r => r[0] === id)
-    .map(r => ({
-      id: r[1],
-      imageUrl: r[2],
-      caption: r[3] ?? '',
-    }))
+    .filter(row => row[0] === id)
+    .map(row => ({ id: row[1], imageUrl: row[2], caption: row[3] ?? '' }))
 
   return NextResponse.json({ provider, services, portfolio })
 }
