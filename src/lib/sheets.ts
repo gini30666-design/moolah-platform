@@ -27,3 +27,17 @@ export async function appendRow(range: string, values: string[]) {
     requestBody: { values: [values] },
   })
 }
+
+export async function updateBookingStatus(bookingId: string, status: string) {
+  const idRows = await getSheetData('bookings!A:A')
+  const rowIndex = idRows.findIndex(r => r[0] === bookingId)
+  if (rowIndex === -1) return false
+  const sheetRow = rowIndex + 1 // 1-based, row 1 is header so data starts at row 2
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `bookings!L${sheetRow}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[status]] },
+  })
+  return true
+}
