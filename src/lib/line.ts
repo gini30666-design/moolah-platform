@@ -57,7 +57,7 @@ export async function replyMessage(replyToken: string, messages: object[]) {
 }
 
 export function verifySignature(body: string, signature: string): boolean {
-  const secret = process.env.LINE_CHANNEL_SECRET!
+  const secret = process.env.LINE_MESSAGING_CHANNEL_SECRET!
   const hash = crypto
     .createHmac('SHA256', secret)
     .update(body)
