@@ -114,7 +114,7 @@ export default function JoinPage() {
             </div>
             <div className="grid sm:grid-cols-2 gap-px bg-[var(--border)]">
               {BENEFITS.map((b) => (
-                <div key={b.num} className="bg-[var(--cream)] p-10 hover:bg-[var(--sand-light)] transition-colors duration-300">
+                <div key={b.num} className="bg-[var(--cream)] p-10 hover:bg-[#f5efe6] transition-colors duration-300">
                   <span className="font-display text-6xl text-[var(--oak)]/15 leading-none block mb-6">{b.num}</span>
                   <h3 className="font-display text-2xl text-[var(--charcoal)] mb-4">{b.title}</h3>
                   <p className="text-sm text-[var(--charcoal)]/55 leading-relaxed">{b.desc}</p>
@@ -149,7 +149,7 @@ export default function JoinPage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-24 px-6 bg-[var(--sand-light)]">
+        <section className="py-24 px-6 bg-[#f5efe6]">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-4xl text-[var(--charcoal)] mb-4">
               準備好開始了嗎？

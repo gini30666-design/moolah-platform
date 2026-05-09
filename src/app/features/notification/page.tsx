@@ -48,7 +48,7 @@ export default function NotificationPage() {
           <div className="max-w-5xl mx-auto">
             <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-5 anim-fade-up">通知機制</p>
             <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-tight text-[var(--charcoal)] mb-8 anim-fade-up-2">
-              雙向即時通知，<br />
+              雙向即時通知<br />
               <span className="italic text-[var(--oak)]">不漏接</span>
             </h1>
             <p className="text-lg text-[var(--charcoal)]/55 max-w-xl leading-relaxed anim-fade-up-3">
@@ -61,7 +61,7 @@ export default function NotificationPage() {
         <section className="py-20 px-6">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             {/* mockup */}
-            <div className="bg-[var(--sand-light)] p-8 border border-[var(--border)]">
+            <div className="bg-[#f5efe6] p-8 border border-[var(--border)]">
               <p className="text-xs tracking-widest uppercase text-[var(--oak)] mb-6">LINE 通知預覽</p>
               <div className="space-y-3">
                 {[
@@ -78,7 +78,7 @@ export default function NotificationPage() {
             </div>
             {/* text */}
             <div>
-              <h2 className="font-display text-3xl text-[var(--charcoal)] mb-6">LINE 推播，零 App 安裝</h2>
+              <h2 className="font-display text-3xl text-[var(--charcoal)] mb-6">LINE 推播　零 App 安裝</h2>
               <p className="text-sm text-[var(--charcoal)]/60 leading-relaxed mb-8">
                 MooLah 深度整合 LINE 生態系，所有通知透過客人已有的 LINE 帳號直接推送。不需要安裝任何 App，不需要記住帳號密碼，通知自然融入日常使用習慣。
               </p>
@@ -100,9 +100,9 @@ export default function NotificationPage() {
         </section>
 
         {/* Steps */}
-        <section className="py-20 px-6 bg-[var(--sand-light)]">
+        <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-14">三種通知，自動觸發</h2>
+            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-14">三種通知　自動觸發</h2>
             <div className="divide-y divide-[var(--border)]">
               {STEPS.map((step) => (
                 <div key={step.no} className="py-10 grid md:grid-cols-[120px_1fr_auto] gap-6 items-start">

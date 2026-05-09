@@ -50,7 +50,7 @@ export default function SchedulingPage() {
           <div className="max-w-5xl mx-auto">
             <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-5 anim-fade-up">排程功能</p>
             <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-tight text-[var(--charcoal)] mb-8 anim-fade-up-2">
-              智能排程，<br />
+              智能排程<br />
               <span className="italic text-[var(--oak)]">零空窗</span>
             </h1>
             <p className="text-lg text-[var(--charcoal)]/55 max-w-xl leading-relaxed anim-fade-up-3">
@@ -95,7 +95,7 @@ export default function SchedulingPage() {
         </section>
 
         {/* Visual: time slots mockup */}
-        <section className="py-20 px-6 bg-[var(--sand-light)]">
+        <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="font-display text-3xl text-[var(--charcoal)] mb-6">時段狀態一目了然</h2>
@@ -130,7 +130,7 @@ export default function SchedulingPage() {
                   <div
                     key={slot.time}
                     className={`flex items-center gap-3 p-3 text-sm ${
-                      slot.status === 'confirmed' ? 'bg-[var(--sand-light)]' :
+                      slot.status === 'confirmed' ? 'bg-[#f5efe6]' :
                       slot.status === 'hot' ? 'bg-orange-50 border border-orange-200' :
                       slot.status === 'empty' ? 'opacity-30' : 'bg-white border border-dashed border-[var(--border)]'
                     }`}

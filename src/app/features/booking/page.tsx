@@ -60,7 +60,7 @@ export default function BookingGuidePage() {
           <div className="max-w-5xl mx-auto">
             <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-5 anim-fade-up">預約流程</p>
             <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-tight text-[var(--charcoal)] mb-8 anim-fade-up-2">
-              LINE 一鍵預約，<br />
+              LINE 一鍵預約<br />
               <span className="italic text-[var(--oak)]">60 秒完成</span>
             </h1>
             <p className="text-lg text-[var(--charcoal)]/55 max-w-xl leading-relaxed anim-fade-up-3">
@@ -111,7 +111,7 @@ export default function BookingGuidePage() {
         </section>
 
         {/* Who is it for */}
-        <section className="py-20 px-6 bg-[var(--sand-light)]">
+        <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto">
             <h2 className="font-display text-4xl text-[var(--charcoal)] mb-12">適合哪些設計師？</h2>
             <div className="grid md:grid-cols-2 gap-px bg-[var(--border)]">

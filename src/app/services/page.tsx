@@ -186,7 +186,7 @@ export default function ServicesPage() {
         </section>
 
         {/* FAQ */}
-        <section className="py-24 px-6 bg-[var(--sand-light)]">
+        <section className="py-24 px-6 bg-[#f5efe6]">
           <div className="max-w-6xl mx-auto">
             <div className="mb-14">
               <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-3">FAQ</p>
