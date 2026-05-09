@@ -11,7 +11,7 @@ function Nav() {
           <a href="#how" className="hover:text-[var(--oak)] transition-colors">如何運作</a>
           <Link href="/join" className="hover:text-[var(--oak)] transition-colors">加入合作</Link>
           <Link
-            href="/designer-001"
+            href="/line"
             className="px-4 py-2 bg-[var(--charcoal)] text-[var(--cream)] text-xs tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors"
           >
             立即預約
@@ -19,7 +19,7 @@ function Nav() {
         </div>
         {/* Mobile CTA */}
         <Link
-          href="/designer-001"
+          href="/line"
           className="sm:hidden px-4 py-1.5 bg-[var(--charcoal)] text-[var(--cream)] text-xs tracking-widest uppercase rounded-full"
         >
           預約
@@ -56,7 +56,7 @@ function Hero() {
           </p>
           <div className="anim-fade-up-4 flex flex-wrap gap-3">
             <Link
-              href="/designer-001"
+              href="/line"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--charcoal)] text-[var(--cream)] text-sm tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors duration-300"
             >
               立即預約
@@ -260,16 +260,22 @@ const FEATURES = [
     title: 'LINE 快速預約',
     desc: '客戶透過設計師的 LINE OA 直接進入預約流程，零學習成本，轉換率更高。',
     num: '01',
+    href: '/features/booking',
+    cta: '了解預約流程',
   },
   {
     title: '智慧時段管理',
     desc: '動態庫存系統自動計算服務時長，避免重複預約，熱門時段即時標示。',
     num: '02',
+    href: '/features/scheduling',
+    cta: '查看排程功能',
   },
   {
     title: '雙向即時通知',
     desc: '預約成立、取消或異動，客戶與設計師同步收到 LINE 通知，不漏接任何訊息。',
     num: '03',
+    href: '/features/notification',
+    cta: '了解通知機制',
   },
 ]
 
@@ -293,7 +299,13 @@ function Features() {
                   <h3 className="font-display text-xl text-[var(--charcoal)] mb-3 group-hover:text-[var(--oak)] transition-colors">
                     {f.title}
                   </h3>
-                  <p className="text-sm text-[var(--charcoal)]/55 leading-relaxed">{f.desc}</p>
+                  <p className="text-sm text-[var(--charcoal)]/55 leading-relaxed mb-4">{f.desc}</p>
+                  <Link
+                    href={f.href}
+                    className="text-xs text-[var(--oak)] tracking-widest uppercase border-b border-[var(--oak)]/40 pb-0.5 hover:border-[var(--oak)] transition-colors"
+                  >
+                    {f.cta} →
+                  </Link>
                 </div>
               </div>
             ))}
