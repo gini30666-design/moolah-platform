@@ -46,7 +46,7 @@ function Hero() {
             BEAUTY BOOKING PLATFORM
           </span>
           <h1 className="anim-fade-up-2 font-display text-[clamp(2.8rem,6vw,5rem)] leading-tight text-[var(--cream)]" style={{ fontWeight: 300, letterSpacing: '-.01em' }}>
-            質感生活，<br />從容預約
+            質感生活<br />從容預約
           </h1>
           <p className="anim-fade-up-3 text-lg leading-relaxed max-w-md" style={{ color: 'var(--oak-dim)' }}>
             LINE 一鍵預約，讓每次服務都成為享受。<br />深度整合台灣美業，從此不再手忙腳亂。
@@ -100,7 +100,7 @@ function Marquee() {
 // ── Services ──────────────────────────────────────────────────────────────────
 const SERVICE_CARDS = [
   { no: '01', label: '髮型設計師', desc: '剪髮、染髮、燙髮，一站搞定預約', img: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=600&q=80&fit=crop', href: '/discover?category=髮型設計師' },
-  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&fit=crop', href: '/discover?category=寵物美容師' },
+  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop', href: '/discover?category=寵物美容師' },
   { no: '03', label: '汽車美容師', desc: '鍍膜、打蠟、清潔，輕鬆預約到府', img: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=600&q=80&fit=crop', href: '/discover?category=汽車美容師' },
   { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/discover?category=美甲師' },
 ]
@@ -122,7 +122,7 @@ function Services() {
               key={card.no}
               href={card.href}
               className="group relative overflow-hidden block"
-              style={{ height: '480px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,.25)' }}
+              style={{ height: '480px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,.25)', borderRadius: '20px' }}
             >
               <div className="absolute inset-0 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -146,21 +146,23 @@ function Services() {
 }
 
 // ── Feature sections ──────────────────────────────────────────────────────────
-function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, reverse, bg, extra }: {
+function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, reverse, bg, extra, light }: {
   imgSrc: string; imgAlt: string; label: string; title: string; body: string;
-  points: string[]; cta: string; ctaHref: string; reverse?: boolean; bg?: string; extra?: React.ReactNode;
+  points: string[]; cta: string; ctaHref: string; reverse?: boolean; bg?: string; extra?: React.ReactNode; light?: boolean;
 }) {
+  const textColor = light ? 'var(--charcoal)' : 'var(--cream)'
+  const bodyColor = light ? 'rgba(44,40,37,0.60)' : 'var(--oak-dim)'
   const textCol = (
     <div className="col-span-12 md:col-span-5 flex flex-col gap-6" style={reverse ? {} : { gridColumn: '8 / span 5' }}>
       <span className="text-xs tracking-[.22em] uppercase" style={{ color: 'var(--oak)' }}>{label}</span>
-      <h2 className="font-display text-4xl leading-snug" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}
+      <h2 className="font-display text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
         dangerouslySetInnerHTML={{ __html: title }} />
-      <p className="text-base leading-relaxed" style={{ color: 'var(--oak-dim)' }}>{body}</p>
+      <p className="text-base leading-relaxed" style={{ color: bodyColor }}>{body}</p>
       <ul className="space-y-4 mt-2">
         {points.map((p) => (
           <li key={p} className="flex items-start gap-3">
             <span style={{ color: 'var(--oak)', marginTop: '2px' }}>—</span>
-            <span className="text-sm" style={{ color: 'var(--oak-dim)' }}>{p}</span>
+            <span className="text-sm" style={{ color: bodyColor }}>{p}</span>
           </li>
         ))}
       </ul>
@@ -173,12 +175,12 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
     <div className={`col-span-12 md:col-span-6 relative`} style={{ height: '580px' }}>
       {!reverse && <div className="absolute top-6 left-6 w-full h-full border" style={{ borderColor: 'rgba(166,137,102,.25)' }} />}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={imgSrc} alt={imgAlt} className="relative z-10 w-full h-full object-cover" style={{ filter: 'brightness(.85) saturate(1.1)' }} />
+      <img src={imgSrc} alt={imgAlt} className="relative z-10 w-full h-full object-cover" style={{ borderRadius: '16px', filter: light ? 'brightness(.88) saturate(0.9)' : 'brightness(.85) saturate(1.1)' }} />
       {extra}
     </div>
   )
   return (
-    <section className="py-28" style={{ background: bg || 'var(--charcoal-deep)' }}>
+    <section className="py-28" style={{ background: bg || 'var(--charcoal-deep)', borderTop: light ? '1px solid rgba(166,137,102,0.12)' : 'none' }}>
       <div className="max-w-[1440px] mx-auto px-16 grid grid-cols-12 gap-8 items-center">
         {reverse ? <>{textCol}{imgCol}</> : <>{imgCol}{textCol}</>}
       </div>
@@ -213,16 +215,16 @@ const PILLARS = [
 
 function Pillars() {
   return (
-    <section className="py-28 px-16" style={{ background: 'var(--charcoal)' }}>
+    <section className="py-28 px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
       <div className="max-w-[1440px] mx-auto">
         <div className="text-center mb-16">
           <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
           <h2 className="font-display text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PILLARS.map((p) => (
-            <div key={p.title} className="px-12 py-10 flex flex-col gap-5">
-              <div className="w-12 h-12 border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'rgba(166,137,102,.35)', color: 'var(--oak)' }}>
+            <div key={p.title} className="flex flex-col gap-5 p-10" style={{ background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
+              <div className="w-12 h-12 border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'rgba(166,137,102,.35)', color: 'var(--oak)', borderRadius: '8px' }}>
                 {p.icon}
               </div>
               <h3 className="font-display text-xl" style={{ color: 'var(--cream)' }}>{p.title}</h3>
@@ -351,27 +353,30 @@ export default function HomePage() {
           imgSrc="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=85&fit=crop"
           imgAlt="設計師諮詢客戶"
           label="01 / LINE 快速預約"
-          title="專屬設計師，<br/>一鍵連結"
+          title="專屬設計師<br/>一鍵連結"
           body="透過 LINE OA 官方帳號直接預約，不需要下載 App。客戶點擊連結，選服務、選時段、確認預約，整個流程不超過 60 秒。"
           points={['無 App、無帳號，LINE 直接操作', '預約即時確認，自動發送 LINE 通知', '支援多位設計師、多門市同時管理']}
           cta="了解預約流程"
           ctaHref="/features/booking"
+          light
+          bg="#f5efe6"
         />
         <FeatureRow
           imgSrc="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=900&q=85&fit=crop"
           imgAlt="智慧時段管理"
           label="02 / 智慧時段管理"
-          title="智能排程，<br/>零空窗"
+          title="智能排程<br/>零空窗"
           body="系統根據服務時長自動計算可用時段，緊湊排程策略讓每個空檔都有價值。熱門時段即時標記，幫助客戶做出最佳選擇。"
           points={['Duration-aware 時段佔用自動計算', '熱門時段橘色標記，引導最佳預約', '每日 08:00 自動推播排程給設計師']}
           cta="查看排程功能"
           ctaHref="/features/scheduling"
           reverse
-          bg="var(--charcoal)"
+          light
+          bg="#ede8dc"
           extra={
-            <div className="absolute bottom-8 left-8 z-20 px-8 py-6 border" style={{ background: 'rgba(26,23,20,.9)', borderColor: 'rgba(166,137,102,.4)' }}>
+            <div className="absolute bottom-8 left-8 z-20 px-8 py-6" style={{ background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(16px)', border: '1px solid rgba(166,137,102,.35)', borderRadius: '12px' }}>
               <p className="font-display text-3xl" style={{ color: 'var(--oak)' }}>98%</p>
-              <p className="text-xs tracking-widest uppercase mt-1" style={{ color: 'var(--oak-dim)' }}>預約到場率</p>
+              <p className="text-xs tracking-widest uppercase mt-1" style={{ color: 'rgba(44,40,37,0.50)' }}>預約到場率</p>
             </div>
           }
         />
@@ -379,11 +384,13 @@ export default function HomePage() {
           imgSrc="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=900&q=85&fit=crop"
           imgAlt="LINE 通知"
           label="03 / 雙向即時通知"
-          title="即時通知，<br/>不漏接"
+          title="即時通知<br/>不漏接"
           body="預約成立、取消、提醒三個時間點，系統自動透過 LINE 推播給客戶與設計師。雙向確認，零溝通成本。"
           points={['預約成立 → 雙向 LINE 即時推播', '前一天自動提醒，降低爽約率', '取消預約 → 客戶即時收到通知']}
           cta="了解通知機制"
           ctaHref="/features/notification"
+          light
+          bg="#f5efe6"
         />
         <Pillars />
         <PartnerCTA />
