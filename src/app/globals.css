@@ -3,13 +3,16 @@
 :root {
   --cream: #fbf9f4;
   --charcoal: #2C2825;
+  --charcoal-deep: #1a1714;
   --oak: #A68966;
   --oak-light: #c4a882;
   --oak-pale: #ede3d8;
+  --oak-dim: #D9C5B2;
   --sand: #e8d5b7;
   --sand-light: #f4ede3;
   --muted: #9b8ea0;
   --border: #e8e0d8;
+  --line-green: #06C755;
 }
 
 * { box-sizing: border-box; }
