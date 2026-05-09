@@ -36,7 +36,7 @@ export default function LinePage() {
       {/* NAV */}
       <nav style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.20)' }}
         className="fixed top-0 w-full z-50">
-        <div className="max-w-[1440px] mx-auto flex justify-between items-center px-16 h-20">
+        <div className="max-w-[1440px] mx-auto flex justify-between items-center px-5 md:px-16 h-16 md:h-20">
           <Link href="/" className="font-display text-xl tracking-[.2em] uppercase text-[var(--cream)]">MooLah</Link>
           <Link href="/discover"
             className="text-xs tracking-widest uppercase px-5 py-2.5 border hover:border-[var(--oak)] transition-colors"
@@ -52,7 +52,7 @@ export default function LinePage() {
         <section className="relative overflow-hidden" style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.18)' }}>
           {/* Oak accent bar */}
           <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
-          <div className="max-w-[1440px] mx-auto px-16 py-24 grid grid-cols-12 gap-12 items-center">
+          <div className="max-w-[1440px] mx-auto px-5 md:px-16 py-16 md:py-24 grid grid-cols-12 gap-8 md:gap-12 items-center">
             <div data-animate data-dir="left" className="col-span-12 lg:col-span-6 flex flex-col gap-8">
               <span className="text-xs tracking-[.22em] uppercase flex items-center gap-3" style={{ color: 'var(--oak)' }}>
                 <span className="inline-block w-8 h-px" style={{ background: 'var(--oak)' }} />
@@ -116,7 +116,7 @@ export default function LinePage() {
         </section>
 
         {/* SERVICES GRID */}
-        <section style={{ background: 'var(--charcoal)', borderBottom: '1px solid rgba(166,137,102,0.14)' }} className="py-24 px-16">
+        <section style={{ background: 'var(--charcoal)', borderBottom: '1px solid rgba(166,137,102,0.14)' }} className="py-16 md:py-24 px-5 md:px-16">
           <div className="max-w-[1440px] mx-auto">
             <div data-animate className="flex items-end justify-between mb-12 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.20)' }}>
               <div>
@@ -151,7 +151,7 @@ export default function LinePage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section style={{ background: '#f5efe6' }} className="py-24 px-16">
+        <section style={{ background: '#f5efe6' }} className="py-16 md:py-24 px-5 md:px-16">
           <div className="max-w-[1440px] mx-auto">
             <div data-animate className="text-center mb-14">
               <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>HOW IT WORKS</span>
@@ -177,7 +177,7 @@ export default function LinePage() {
         </section>
 
         {/* CTA FOOTER */}
-        <section style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.20)' }} className="py-20 px-16 text-center">
+        <section style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.20)' }} className="py-14 md:py-20 px-5 md:px-16 text-center">
           <div data-animate className="max-w-2xl mx-auto">
             <p className="text-xs tracking-[.22em] uppercase mb-4" style={{ color: 'var(--oak)' }}>加入合作</p>
             <h2 className="font-display mb-6" style={{ fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 300, color: 'var(--cream)' }}>
@@ -202,7 +202,7 @@ export default function LinePage() {
         </section>
       </main>
 
-      <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }} className="py-8 px-16 text-center">
+      <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }} className="py-6 px-5 md:px-16 text-center">
         <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 MOOLAH · 高雄，台灣</p>
       </footer>
     </>

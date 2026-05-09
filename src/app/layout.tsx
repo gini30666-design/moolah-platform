@@ -1,7 +1,12 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',

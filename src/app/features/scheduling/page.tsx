@@ -46,18 +46,21 @@ export default function SchedulingPage() {
       <main className="pt-16">
 
         {/* Hero */}
-        <section className="py-28 px-6 border-b border-[var(--border)]">
-          <div className="max-w-5xl mx-auto">
-            <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-5 anim-fade-up">排程功能</p>
-            <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-tight text-[var(--charcoal)] mb-8 anim-fade-up-2">
+        <section className="relative overflow-hidden py-20 md:py-28 px-5 md:px-6" style={{ background: 'var(--charcoal)' }}>
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 44px)' }} />
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
+          <div className="relative max-w-5xl mx-auto">
+            <p className="text-xs tracking-[0.25em] uppercase mb-5 anim-fade-up" style={{ color: 'var(--oak)' }}>排程功能</p>
+            <h1 className="font-display leading-tight mb-8 anim-fade-up-2" style={{ fontSize: 'clamp(2.8rem,8vw,6.5rem)', color: 'var(--cream)', fontWeight: 300 }}>
               智能排程<br />
-              <span className="italic text-[var(--oak)]">零空窗</span>
+              <span className="italic" style={{ color: 'var(--oak)' }}>零空窗</span>
             </h1>
-            <p className="text-lg text-[var(--charcoal)]/55 max-w-xl leading-relaxed anim-fade-up-3">
+            <p className="text-base md:text-lg max-w-xl leading-relaxed anim-fade-up-3" style={{ color: 'rgba(251,249,244,0.55)' }}>
               MooLah 的智慧時段引擎自動計算可用時段、標記熱門時間、緊湊填補空缺，讓設計師的每一分鐘都發揮最大價值。
             </p>
           </div>
         </section>
+        <div className="h-[2px]" style={{ background: 'linear-gradient(to right, var(--oak), rgba(166,137,102,0.1))' }} />
 
         {/* Stats bar */}
         <section className="py-10 px-6 border-b border-[var(--border)] bg-[var(--charcoal)]">
@@ -147,15 +150,17 @@ export default function SchedulingPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-24 px-6 text-center">
-          <div className="max-w-lg mx-auto">
-            <h2 className="font-display text-5xl text-[var(--charcoal)] mb-4">讓排程自動運作</h2>
-            <p className="text-sm text-[var(--charcoal)]/55 mb-10">加入 MooLah，從今天起告別手動記帳。</p>
+        <section className="relative overflow-hidden py-16 md:py-24 px-5 md:px-6 text-center" style={{ background: 'var(--charcoal)' }}>
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 44px)' }} />
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
+          <div className="relative max-w-lg mx-auto">
+            <h2 className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>讓排程自動運作</h2>
+            <p className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>加入 MooLah，從今天起告別手動記帳。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/line" className="px-8 py-4 bg-[var(--charcoal)] text-[var(--cream)] text-sm tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors">
+              <Link href="/line" className="px-8 py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
                 立即預約
               </Link>
-              <Link href="/join" className="px-8 py-4 border border-[var(--charcoal)]/20 text-[var(--charcoal)] text-sm tracking-widest uppercase rounded-full hover:border-[var(--oak)] hover:text-[var(--oak)] transition-colors">
+              <Link href="/join" className="px-8 py-4 border text-sm tracking-widest uppercase hover:border-[var(--oak)] transition-colors" style={{ color: 'rgba(251,249,244,0.65)', borderColor: 'rgba(251,249,244,0.20)' }}>
                 加入合作
               </Link>
             </div>

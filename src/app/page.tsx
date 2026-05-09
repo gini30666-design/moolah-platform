@@ -4,8 +4,8 @@ import Link from 'next/link'
 function Nav() {
   return (
     <nav style={{ background: 'var(--charcoal-deep)' }} className="fixed top-0 w-full z-50 border-b border-[var(--oak)]/20">
-      <div className="max-w-[1440px] mx-auto flex justify-between items-center px-16 h-20">
-        <Link href="/" className="font-display text-xl tracking-[.2em] uppercase text-[var(--cream)]">MooLah</Link>
+      <div className="max-w-[1440px] mx-auto flex justify-between items-center px-5 md:px-16 h-16 md:h-20">
+        <Link href="/" className="font-display text-lg md:text-xl tracking-[.2em] uppercase text-[var(--cream)]">MooLah</Link>
         <div className="hidden md:flex items-center gap-10">
           <Link href="/services" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">服務類別</Link>
           <Link href="/services" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">合作方案</Link>
@@ -14,11 +14,12 @@ function Nav() {
         </div>
         <Link
           href="/line"
-          className="flex items-center gap-2 px-6 py-3 text-xs text-white tracking-widest uppercase transition-opacity hover:opacity-90"
+          className="flex items-center gap-1.5 px-4 md:px-6 py-2.5 md:py-3 text-xs text-white tracking-widest uppercase transition-opacity hover:opacity-90"
           style={{ background: 'var(--line-green)' }}
         >
-          <LineIcon />
-          立即預約
+          <LineIcon size={14} />
+          <span className="hidden sm:inline">立即預約</span>
+          <span className="sm:hidden">預約</span>
         </Link>
       </div>
     </nav>
@@ -39,41 +40,41 @@ function Hero() {
           style={{ filter: 'brightness(.85) saturate(1.1)' }}
         />
       </div>
-      <div className="relative z-20 max-w-[1440px] mx-auto px-16 grid grid-cols-12 gap-6 w-full py-32">
-        <div className="col-span-12 md:col-span-7 lg:col-span-6 flex flex-col gap-7">
+      <div className="relative z-20 max-w-[1440px] mx-auto px-5 md:px-16 grid grid-cols-12 gap-6 w-full py-24 md:py-32">
+        <div className="col-span-12 md:col-span-7 lg:col-span-6 flex flex-col gap-6 md:gap-7">
           <span className="anim-fade-up text-xs tracking-[.22em] uppercase text-[var(--oak)] flex items-center gap-3">
             <span className="inline-block w-8 h-px bg-[var(--oak)]" />
             BEAUTY BOOKING PLATFORM
           </span>
-          <h1 className="anim-fade-up-2 font-display text-[clamp(2.8rem,6vw,5rem)] leading-tight text-[var(--cream)]" style={{ fontWeight: 300, letterSpacing: '-.01em' }}>
+          <h1 className="anim-fade-up-2 font-display leading-tight text-[var(--cream)]" style={{ fontSize: 'clamp(2.4rem,7vw,5rem)', fontWeight: 300, letterSpacing: '-.01em' }}>
             質感生活<br />從容預約
           </h1>
-          <p className="anim-fade-up-3 text-lg leading-relaxed max-w-md" style={{ color: 'var(--oak-dim)' }}>
-            LINE 一鍵預約，讓每次服務都成為享受。<br />深度整合台灣美業，從此不再手忙腳亂。
+          <p className="anim-fade-up-3 text-base md:text-lg leading-relaxed max-w-md" style={{ color: 'var(--oak-dim)' }}>
+            LINE 一鍵預約，讓每次服務都成為享受。<br className="hidden sm:block" />深度整合台灣美業，從此不再手忙腳亂。
           </p>
-          <div className="anim-fade-up-4 flex items-center gap-4">
-            <Link href="/line" className="flex items-center gap-2 px-8 py-4 text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
+          <div className="anim-fade-up-4 flex flex-wrap items-center gap-3">
+            <Link href="/line" className="flex items-center gap-2 px-6 md:px-8 py-3.5 md:py-4 text-xs md:text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
               <LineIcon />立即預約
             </Link>
-            <Link href="/services" className="text-sm text-[var(--cream)] px-8 py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
+            <Link href="/services" className="text-xs md:text-sm text-[var(--cream)] px-6 md:px-8 py-3.5 md:py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
               了解更多
             </Link>
           </div>
-          <div className="anim-fade-up-4 flex gap-10 pt-8 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.35)' }}>
+          <div className="anim-fade-up-4 flex flex-wrap gap-6 md:gap-10 pt-6 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.35)' }}>
             {[
               { num: '200+', label: '合作設計師' },
               { num: '98%', label: '預約到場率' },
               { num: '4.9★', label: '使用者評分' },
             ].map((s) => (
               <div key={s.label}>
-                <p className="font-display text-3xl" style={{ color: 'var(--oak)' }}>{s.num}</p>
+                <p className="font-display text-2xl md:text-3xl" style={{ color: 'var(--oak)' }}>{s.num}</p>
                 <p className="text-xs tracking-widest uppercase mt-1" style={{ color: 'var(--oak-dim)' }}>{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-40">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-40">
         <span className="text-xs tracking-widest uppercase" style={{ color: 'var(--oak-dim)' }}>Scroll</span>
         <div className="w-px h-10" style={{ background: 'var(--oak-dim)' }} />
       </div>
@@ -107,16 +108,16 @@ const CARD_DELAYS = ['0', '100', '200', '300']
 
 function Services() {
   return (
-    <section id="services" className="py-28 px-16" style={{ background: 'var(--charcoal)' }}>
+    <section id="services" className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="flex items-end justify-between mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
+        <div data-animate className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 lg:mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
           <div>
             <span className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>OUR SERVICES</span>
-            <h2 className="font-display text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</h2>
+            <h2 className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</h2>
           </div>
-          <Link href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
+          <Link href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity self-start sm:self-auto" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{ gap: '2px' }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: '2px' }}>
           {SERVICE_CARDS.map((card, i) => (
             <Link
               key={card.no}
@@ -125,20 +126,19 @@ function Services() {
               data-dir="scale"
               data-delay={CARD_DELAYS[i]}
               className="group relative overflow-hidden block card-hover"
-              style={{ height: '480px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,.25)', borderRadius: '20px' }}
+              style={{ height: 'clamp(220px, 42vw, 480px)', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,.25)', borderRadius: '12px' }}
             >
-              <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute inset-0 overflow-hidden" style={{ borderRadius: '12px' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={card.img} alt={card.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ opacity: .7, filter: 'brightness(.85) saturate(1.1)' }} />
               </div>
-              <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--charcoal-deep) 30%, transparent 70%)' }} />
-              {/* Hover glow border */}
-              <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: 'inset 0 0 0 1px rgba(166,137,102,0.6)', borderRadius: '20px' }} />
-              <div className="absolute bottom-0 left-0 right-0 z-20 p-8">
-                <span className="text-xs tracking-[.2em] uppercase block mb-2" style={{ color: 'var(--oak)' }}>{card.no}</span>
-                <h3 className="font-display text-2xl mb-2" style={{ color: 'var(--cream)', fontWeight: 300 }}>{card.label}</h3>
-                <p className="text-sm leading-relaxed mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ color: 'var(--oak-dim)' }}>{card.desc}</p>
-                <span className="text-xs tracking-widest uppercase flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-1" style={{ color: 'var(--oak)' }}>
+              <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--charcoal-deep) 30%, transparent 70%)', borderRadius: '12px' }} />
+              <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: 'inset 0 0 0 1px rgba(166,137,102,0.6)', borderRadius: '12px' }} />
+              <div className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8">
+                <span className="text-[10px] md:text-xs tracking-[.2em] uppercase block mb-1 md:mb-2" style={{ color: 'var(--oak)' }}>{card.no}</span>
+                <h3 className="font-display text-base md:text-2xl mb-1 md:mb-2" style={{ color: 'var(--cream)', fontWeight: 300 }}>{card.label}</h3>
+                <p className="text-xs md:text-sm leading-relaxed mb-2 md:mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block" style={{ color: 'var(--oak-dim)' }}>{card.desc}</p>
+                <span className="text-[10px] md:text-xs tracking-widest uppercase flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-1" style={{ color: 'var(--oak)' }}>
                   {card.no === '01' ? '立即預約' : '了解更多'} →
                 </span>
               </div>
@@ -157,18 +157,18 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
 }) {
   const textColor = light ? 'var(--charcoal)' : 'var(--cream)'
   const bodyColor = light ? 'rgba(44,40,37,0.60)' : 'var(--oak-dim)'
+
   const textCol = (
     <div
       data-animate
       data-dir={reverse ? 'left' : 'right'}
-      className="col-span-12 md:col-span-5 flex flex-col gap-6"
-      style={reverse ? {} : { gridColumn: '8 / span 5' }}
+      className={`col-span-12 flex flex-col gap-5 md:gap-6 ${reverse ? 'md:col-span-5' : 'md:col-start-8 md:col-span-5'}`}
     >
       <span className="text-xs tracking-[.22em] uppercase" style={{ color: 'var(--oak)' }}>{label}</span>
-      <h2 className="font-display text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
+      <h2 className="font-display text-3xl md:text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
         dangerouslySetInnerHTML={{ __html: title }} />
-      <p className="text-base leading-relaxed" style={{ color: bodyColor }}>{body}</p>
-      <ul className="space-y-4 mt-2">
+      <p className="text-sm md:text-base leading-relaxed" style={{ color: bodyColor }}>{body}</p>
+      <ul className="space-y-3 mt-2">
         {points.map((p) => (
           <li key={p} className="flex items-start gap-3">
             <span style={{ color: 'var(--oak)', marginTop: '2px' }}>—</span>
@@ -181,22 +181,24 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
       </Link>
     </div>
   )
+
   const imgCol = (
     <div
       data-animate
       data-dir={reverse ? 'right' : 'left'}
       className="col-span-12 md:col-span-6 relative"
-      style={{ height: '580px' }}
+      style={{ height: 'clamp(260px, 50vw, 580px)' }}
     >
-      {!reverse && <div className="absolute top-6 left-6 w-full h-full border" style={{ borderColor: 'rgba(166,137,102,.25)' }} />}
+      {!reverse && <div className="absolute top-4 left-4 md:top-6 md:left-6 w-full h-full border hidden md:block" style={{ borderColor: 'rgba(166,137,102,.25)' }} />}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={imgSrc} alt={imgAlt} className="relative z-10 w-full h-full object-cover" style={{ borderRadius: '16px', filter: light ? 'brightness(.88) saturate(0.9)' : 'brightness(.85) saturate(1.1)' }} />
+      <img src={imgSrc} alt={imgAlt} className="relative z-10 w-full h-full object-cover" style={{ borderRadius: '12px', filter: light ? 'brightness(.88) saturate(0.9)' : 'brightness(.85) saturate(1.1)' }} />
       {extra}
     </div>
   )
+
   return (
-    <section className="py-28" style={{ background: bg || 'var(--charcoal-deep)', borderTop: light ? '1px solid rgba(166,137,102,0.12)' : 'none' }}>
-      <div className="max-w-[1440px] mx-auto px-16 grid grid-cols-12 gap-8 items-center">
+    <section className="py-16 lg:py-28" style={{ background: bg || 'var(--charcoal-deep)', borderTop: light ? '1px solid rgba(166,137,102,0.12)' : 'none' }}>
+      <div className="max-w-[1440px] mx-auto px-5 lg:px-16 grid grid-cols-12 gap-6 md:gap-8 items-center">
         {reverse ? <>{textCol}{imgCol}</> : <>{imgCol}{textCol}</>}
       </div>
     </section>
@@ -230,22 +232,22 @@ const PILLARS = [
 
 function Pillars() {
   return (
-    <section className="py-28 px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
+    <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="text-center mb-16">
+        <div data-animate className="text-center mb-12 lg:mb-16">
           <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
-          <h2 className="font-display text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</h2>
+          <h2 className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {PILLARS.map((p, i) => (
             <div
               key={p.title}
               data-animate
               data-delay={String(i * 150)}
-              className="flex flex-col gap-5 p-10 card-hover"
+              className="flex flex-col gap-4 md:gap-5 p-7 md:p-10 card-hover"
               style={{ background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}
             >
-              <div className="w-12 h-12 border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'rgba(166,137,102,.35)', color: 'var(--oak)', borderRadius: '8px' }}>
+              <div className="w-11 h-11 border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'rgba(166,137,102,.35)', color: 'var(--oak)', borderRadius: '8px' }}>
                 {p.icon}
               </div>
               <h3 className="font-display text-xl" style={{ color: 'var(--cream)' }}>{p.title}</h3>
@@ -264,21 +266,21 @@ function Pillars() {
 // ── Partner CTA ───────────────────────────────────────────────────────────────
 function PartnerCTA() {
   return (
-    <section className="py-28 px-16" style={{ background: 'var(--charcoal-deep)' }}>
+    <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
+        <div data-animate className="pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
           <span className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
-          <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2.5rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
+          <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
             成為 MooLah<br />合作設計師
           </h2>
-          <p className="text-lg leading-relaxed mb-10 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
+          <p className="text-base leading-relaxed mb-8 md:mb-10 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
             免費加入，立即擁有專屬預約頁面。讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。
           </p>
-          <div className="flex items-center gap-4">
-            <Link href="/join" className="px-10 py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/join" className="px-8 md:px-10 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
               立即申請
             </Link>
-            <Link href="/services" className="px-10 py-4 text-sm text-[var(--cream)] tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
+            <Link href="/services" className="px-8 md:px-10 py-3.5 md:py-4 text-sm text-[var(--cream)] tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
               查看方案
             </Link>
           </div>
@@ -292,8 +294,8 @@ function PartnerCTA() {
 function Footer() {
   return (
     <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }}>
-      <div className="max-w-[1440px] mx-auto px-16 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div data-animate>
+      <div className="max-w-[1440px] mx-auto px-5 md:px-16 py-10 md:py-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        <div data-animate className="col-span-2 md:col-span-1">
           <h3 className="font-display text-2xl tracking-widest uppercase mb-4" style={{ color: 'var(--cream)' }}>MooLah</h3>
           <p className="text-xs leading-relaxed mb-6" style={{ color: 'var(--oak-dim)' }}>重新定義台灣美業預約體驗。<br />REDEFINING BEAUTY APPOINTMENTS.</p>
           <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
@@ -303,33 +305,33 @@ function Footer() {
           </a>
         </div>
         <div data-animate data-delay="100">
-          <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>服務</h4>
-          <ul className="space-y-3">
+          <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>服務</h4>
+          <ul className="space-y-2.5 md:space-y-3">
             {[['髮型設計師', '/go/chloe'], ['寵物美容師', '/services'], ['汽車美容師', '/services'], ['美甲師', '/services']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>
         </div>
         <div data-animate data-delay="200">
-          <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
-          <ul className="space-y-3">
+          <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
+          <ul className="space-y-2.5 md:space-y-3">
             {[['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['聯絡我們', 'mailto:gini30666@gmail.com']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>
         </div>
         <div data-animate data-delay="300">
-          <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
-          <ul className="space-y-3">
+          <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
+          <ul className="space-y-2.5 md:space-y-3">
             {[['gini30666@gmail.com', 'mailto:gini30666@gmail.com'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>
         </div>
       </div>
-      <div className="border-t px-16 py-6 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center" style={{ borderColor: 'rgba(166,137,102,.2)' }}>
+      <div className="border-t px-5 md:px-16 py-5 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-2" style={{ borderColor: 'rgba(166,137,102,.2)' }}>
         <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 MOOLAH. ALL RIGHTS RESERVED.</p>
-        <p className="text-xs tracking-widest mt-2 md:mt-0" style={{ color: 'var(--oak-dim)' }}>DESIGNED IN TAIWAN · 高雄出發</p>
+        <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>DESIGNED IN TAIWAN · 高雄出發</p>
       </div>
     </footer>
   )
@@ -366,7 +368,7 @@ export default function HomePage() {
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>
       <Nav />
-      <main className="pt-20">
+      <main className="pt-16 md:pt-20">
         <Hero />
         <Marquee />
         <Services />
@@ -395,8 +397,8 @@ export default function HomePage() {
           light
           bg="#ede8dc"
           extra={
-            <div className="absolute bottom-8 left-8 z-20 px-8 py-6" style={{ background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(16px)', border: '1px solid rgba(166,137,102,.35)', borderRadius: '12px' }}>
-              <p className="font-display text-3xl" style={{ color: 'var(--oak)' }}>98%</p>
+            <div className="absolute bottom-5 left-5 md:bottom-8 md:left-8 z-20 px-5 md:px-8 py-4 md:py-6" style={{ background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(16px)', border: '1px solid rgba(166,137,102,.35)', borderRadius: '12px' }}>
+              <p className="font-display text-2xl md:text-3xl" style={{ color: 'var(--oak)' }}>98%</p>
               <p className="text-xs tracking-widest uppercase mt-1" style={{ color: 'rgba(44,40,37,0.50)' }}>預約到場率</p>
             </div>
           }

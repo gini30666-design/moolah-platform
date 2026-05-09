@@ -56,18 +56,21 @@ export default function BookingGuidePage() {
       <main className="pt-16">
 
         {/* Hero */}
-        <section className="py-28 px-6 border-b border-[var(--border)]">
-          <div className="max-w-5xl mx-auto">
-            <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-5 anim-fade-up">預約流程</p>
-            <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-tight text-[var(--charcoal)] mb-8 anim-fade-up-2">
+        <section className="relative overflow-hidden py-20 md:py-28 px-5 md:px-6" style={{ background: 'var(--charcoal)' }}>
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 44px)' }} />
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
+          <div className="relative max-w-5xl mx-auto">
+            <p className="text-xs tracking-[0.25em] uppercase mb-5 anim-fade-up" style={{ color: 'var(--oak)' }}>預約流程</p>
+            <h1 className="font-display leading-tight mb-8 anim-fade-up-2" style={{ fontSize: 'clamp(2.8rem,8vw,6.5rem)', color: 'var(--cream)', fontWeight: 300 }}>
               LINE 一鍵預約<br />
-              <span className="italic text-[var(--oak)]">60 秒完成</span>
+              <span className="italic" style={{ color: 'var(--oak)' }}>60 秒完成</span>
             </h1>
-            <p className="text-lg text-[var(--charcoal)]/55 max-w-xl leading-relaxed anim-fade-up-3">
+            <p className="text-base md:text-lg max-w-xl leading-relaxed anim-fade-up-3" style={{ color: 'rgba(251,249,244,0.55)' }}>
               從點擊連結到預約確認，MooLah 將整個預約流程壓縮在 60 秒以內。客人不需要安裝任何 App，設計師不需要手動回覆任何訊息。
             </p>
           </div>
         </section>
+        <div className="h-[2px]" style={{ background: 'linear-gradient(to right, var(--oak), rgba(166,137,102,0.1))' }} />
 
         {/* Quick stats */}
         <section className="grid grid-cols-3 divide-x divide-[var(--border)] border-b border-[var(--border)]">
@@ -131,10 +134,10 @@ export default function BookingGuidePage() {
         </section>
 
         {/* CTA */}
-        <section className="py-24 px-6 text-center bg-[var(--charcoal)]">
+        <section className="py-16 md:py-24 px-5 md:px-6 text-center" style={{ background: 'var(--charcoal)' }}>
           <div className="max-w-lg mx-auto">
-            <h2 className="font-display text-5xl text-[var(--cream)] mb-4">立即體驗</h2>
-            <p className="text-sm text-white/50 mb-10">掃描下方 QR Code，現在就試試 MooLah 預約流程。</p>
+            <h2 className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>立即體驗</h2>
+            <p className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.50)' }}>掃描下方 QR Code，現在就試試 MooLah 預約流程。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/line"
