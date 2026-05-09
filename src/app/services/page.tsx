@@ -2,10 +2,10 @@ import Link from 'next/link'
 
 const PLANS = [
   {
-    name: '基礎方案',
+    name: '基礎入門方案',
     en: 'Starter',
-    price: '免費',
-    priceNote: '永久免費',
+    price: 'NT$ 600',
+    priceNote: '/月',
     features: [
       '1 位設計師帳號',
       '個人預約頁面',
@@ -13,14 +13,14 @@ const PLANS = [
       '每日預約上限 20 筆',
       '基礎後台管理',
     ],
-    cta: '免費加入',
+    cta: '立即加入',
     href: '/join',
     highlight: false,
   },
   {
-    name: '專業方案',
+    name: '專業職人方案',
     en: 'Professional',
-    price: 'NT$ 299',
+    price: 'NT$ 1,200',
     priceNote: '/月',
     features: [
       '無限預約筆數',
