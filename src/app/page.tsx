@@ -99,10 +99,10 @@ function Marquee() {
 
 // ── Services ──────────────────────────────────────────────────────────────────
 const SERVICE_CARDS = [
-  { no: '01', label: '髮型設計師', desc: '剪髮、染髮、燙髮，一站搞定預約', img: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=600&q=80&fit=crop', href: '/go/chloe' },
-  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&fit=crop', href: '/services' },
-  { no: '03', label: '汽車美容師', desc: '鍍膜、打蠟、清潔，輕鬆預約到府', img: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=600&q=80&fit=crop', href: '/services' },
-  { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/services' },
+  { no: '01', label: '髮型設計師', desc: '剪髮、染髮、燙髮，一站搞定預約', img: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=600&q=80&fit=crop', href: '/discover?category=髮型設計師' },
+  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&fit=crop', href: '/discover?category=寵物美容師' },
+  { no: '03', label: '汽車美容師', desc: '鍍膜、打蠟、清潔，輕鬆預約到府', img: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=600&q=80&fit=crop', href: '/discover?category=汽車美容師' },
+  { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/discover?category=美甲師' },
 ]
 
 function Services() {
