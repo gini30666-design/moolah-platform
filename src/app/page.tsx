@@ -59,7 +59,6 @@ function Hero() {
               了解更多
             </Link>
           </div>
-          {/* stats */}
           <div className="anim-fade-up-4 flex gap-10 pt-8 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.35)' }}>
             {[
               { num: '200+', label: '合作設計師' },
@@ -74,7 +73,6 @@ function Hero() {
           </div>
         </div>
       </div>
-      {/* scroll hint */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-40">
         <span className="text-xs tracking-widest uppercase" style={{ color: 'var(--oak-dim)' }}>Scroll</span>
         <div className="w-px h-10" style={{ background: 'var(--oak-dim)' }} />
@@ -105,11 +103,13 @@ const SERVICE_CARDS = [
   { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/discover?category=美甲師' },
 ]
 
+const CARD_DELAYS = ['0', '100', '200', '300']
+
 function Services() {
   return (
     <section id="services" className="py-28 px-16" style={{ background: 'var(--charcoal)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div className="flex items-end justify-between mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
+        <div data-animate className="flex items-end justify-between mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
           <div>
             <span className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>OUR SERVICES</span>
             <h2 className="font-display text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</h2>
@@ -117,23 +117,28 @@ function Services() {
           <Link href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{ gap: '2px' }}>
-          {SERVICE_CARDS.map((card) => (
+          {SERVICE_CARDS.map((card, i) => (
             <Link
               key={card.no}
               href={card.href}
-              className="group relative overflow-hidden block"
+              data-animate
+              data-dir="scale"
+              data-delay={CARD_DELAYS[i]}
+              className="group relative overflow-hidden block card-hover"
               style={{ height: '480px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,.25)', borderRadius: '20px' }}
             >
               <div className="absolute inset-0 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={card.img} alt={card.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ opacity: .7, filter: 'brightness(.85) saturate(1.1)' }} />
+                <img src={card.img} alt={card.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ opacity: .7, filter: 'brightness(.85) saturate(1.1)' }} />
               </div>
               <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--charcoal-deep) 30%, transparent 70%)' }} />
+              {/* Hover glow border */}
+              <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: 'inset 0 0 0 1px rgba(166,137,102,0.6)', borderRadius: '20px' }} />
               <div className="absolute bottom-0 left-0 right-0 z-20 p-8">
                 <span className="text-xs tracking-[.2em] uppercase block mb-2" style={{ color: 'var(--oak)' }}>{card.no}</span>
                 <h3 className="font-display text-2xl mb-2" style={{ color: 'var(--cream)', fontWeight: 300 }}>{card.label}</h3>
                 <p className="text-sm leading-relaxed mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ color: 'var(--oak-dim)' }}>{card.desc}</p>
-                <span className="text-xs tracking-widest uppercase flex items-center gap-2" style={{ color: 'var(--oak)' }}>
+                <span className="text-xs tracking-widest uppercase flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-1" style={{ color: 'var(--oak)' }}>
                   {card.no === '01' ? '立即預約' : '了解更多'} →
                 </span>
               </div>
@@ -153,7 +158,12 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
   const textColor = light ? 'var(--charcoal)' : 'var(--cream)'
   const bodyColor = light ? 'rgba(44,40,37,0.60)' : 'var(--oak-dim)'
   const textCol = (
-    <div className="col-span-12 md:col-span-5 flex flex-col gap-6" style={reverse ? {} : { gridColumn: '8 / span 5' }}>
+    <div
+      data-animate
+      data-dir={reverse ? 'left' : 'right'}
+      className="col-span-12 md:col-span-5 flex flex-col gap-6"
+      style={reverse ? {} : { gridColumn: '8 / span 5' }}
+    >
       <span className="text-xs tracking-[.22em] uppercase" style={{ color: 'var(--oak)' }}>{label}</span>
       <h2 className="font-display text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
         dangerouslySetInnerHTML={{ __html: title }} />
@@ -172,7 +182,12 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
     </div>
   )
   const imgCol = (
-    <div className={`col-span-12 md:col-span-6 relative`} style={{ height: '580px' }}>
+    <div
+      data-animate
+      data-dir={reverse ? 'right' : 'left'}
+      className="col-span-12 md:col-span-6 relative"
+      style={{ height: '580px' }}
+    >
       {!reverse && <div className="absolute top-6 left-6 w-full h-full border" style={{ borderColor: 'rgba(166,137,102,.25)' }} />}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={imgSrc} alt={imgAlt} className="relative z-10 w-full h-full object-cover" style={{ borderRadius: '16px', filter: light ? 'brightness(.88) saturate(0.9)' : 'brightness(.85) saturate(1.1)' }} />
@@ -217,13 +232,19 @@ function Pillars() {
   return (
     <section className="py-28 px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div className="text-center mb-16">
+        <div data-animate className="text-center mb-16">
           <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
           <h2 className="font-display text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {PILLARS.map((p) => (
-            <div key={p.title} className="flex flex-col gap-5 p-10" style={{ background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
+          {PILLARS.map((p, i) => (
+            <div
+              key={p.title}
+              data-animate
+              data-delay={String(i * 150)}
+              className="flex flex-col gap-5 p-10 card-hover"
+              style={{ background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}
+            >
               <div className="w-12 h-12 border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'rgba(166,137,102,.35)', color: 'var(--oak)', borderRadius: '8px' }}>
                 {p.icon}
               </div>
@@ -245,7 +266,7 @@ function PartnerCTA() {
   return (
     <section className="py-28 px-16" style={{ background: 'var(--charcoal-deep)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div className="pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
+        <div data-animate className="pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
           <span className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
           <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2.5rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
             成為 MooLah<br />合作設計師
@@ -272,7 +293,7 @@ function Footer() {
   return (
     <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }}>
       <div className="max-w-[1440px] mx-auto px-16 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div>
+        <div data-animate>
           <h3 className="font-display text-2xl tracking-widest uppercase mb-4" style={{ color: 'var(--cream)' }}>MooLah</h3>
           <p className="text-xs leading-relaxed mb-6" style={{ color: 'var(--oak-dim)' }}>重新定義台灣美業預約體驗。<br />REDEFINING BEAUTY APPOINTMENTS.</p>
           <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
@@ -281,7 +302,7 @@ function Footer() {
             <LineIcon size={14} />加入 LINE OA
           </a>
         </div>
-        <div>
+        <div data-animate data-delay="100">
           <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>服務</h4>
           <ul className="space-y-3">
             {[['髮型設計師', '/go/chloe'], ['寵物美容師', '/services'], ['汽車美容師', '/services'], ['美甲師', '/services']].map(([l, h]) => (
@@ -289,7 +310,7 @@ function Footer() {
             ))}
           </ul>
         </div>
-        <div>
+        <div data-animate data-delay="200">
           <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
           <ul className="space-y-3">
             {[['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['聯絡我們', 'mailto:gini30666@gmail.com']].map(([l, h]) => (
@@ -297,7 +318,7 @@ function Footer() {
             ))}
           </ul>
         </div>
-        <div>
+        <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-3">
             {[['gini30666@gmail.com', 'mailto:gini30666@gmail.com'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (

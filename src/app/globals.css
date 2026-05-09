@@ -71,3 +71,47 @@ body::after {
 .anim-fade-up-3 { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
 .anim-fade-up-4 { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
 .anim-fade-in   { animation: fadeIn 1.2s ease 0.2s both; }
+
+/* ── Scroll Reveal System ─────────────────────────────────────────────────── */
+.will-animate {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.85s var(--ease-expo), transform 0.85s var(--ease-expo);
+}
+
+.will-animate[data-dir="left"]  { transform: translateX(-52px); }
+.will-animate[data-dir="right"] { transform: translateX(52px); }
+.will-animate[data-dir="scale"] { transform: scale(0.94) translateY(20px); }
+.will-animate[data-dir="up"]    { transform: translateY(48px); }
+
+/* Stagger delays */
+[data-delay="50"]  { transition-delay: 50ms; }
+[data-delay="100"] { transition-delay: 100ms; }
+[data-delay="150"] { transition-delay: 150ms; }
+[data-delay="200"] { transition-delay: 200ms; }
+[data-delay="300"] { transition-delay: 300ms; }
+[data-delay="400"] { transition-delay: 400ms; }
+[data-delay="500"] { transition-delay: 500ms; }
+
+/* Revealed state */
+.in-view {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Hover lift for interactive cards */
+.card-hover {
+  transition: transform 0.3s var(--ease-silk), box-shadow 0.3s var(--ease-silk);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .will-animate {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

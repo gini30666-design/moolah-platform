@@ -53,7 +53,7 @@ export default function LinePage() {
           {/* Oak accent bar */}
           <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
           <div className="max-w-[1440px] mx-auto px-16 py-24 grid grid-cols-12 gap-12 items-center">
-            <div className="col-span-12 lg:col-span-6 flex flex-col gap-8">
+            <div data-animate data-dir="left" className="col-span-12 lg:col-span-6 flex flex-col gap-8">
               <span className="text-xs tracking-[.22em] uppercase flex items-center gap-3" style={{ color: 'var(--oak)' }}>
                 <span className="inline-block w-8 h-px" style={{ background: 'var(--oak)' }} />
                 LINE OFFICIAL ACCOUNT
@@ -78,7 +78,7 @@ export default function LinePage() {
             </div>
 
             {/* QR Code Card */}
-            <div className="col-span-12 lg:col-span-5 lg:col-start-8 flex justify-center">
+            <div data-animate data-dir="right" className="col-span-12 lg:col-span-5 lg:col-start-8 flex justify-center">
               <div className="relative" style={{ padding: '2px', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(166,137,102,0.6), rgba(166,137,102,0.15), rgba(166,137,102,0.5))' }}>
                 <div className="flex flex-col items-center gap-6 px-10 py-10" style={{ background: 'rgba(20,18,15,0.95)', borderRadius: '22px', backdropFilter: 'blur(20px)' }}>
                   {/* Corner accents */}
@@ -118,7 +118,7 @@ export default function LinePage() {
         {/* SERVICES GRID */}
         <section style={{ background: 'var(--charcoal)', borderBottom: '1px solid rgba(166,137,102,0.14)' }} className="py-24 px-16">
           <div className="max-w-[1440px] mx-auto">
-            <div className="flex items-end justify-between mb-12 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.20)' }}>
+            <div data-animate className="flex items-end justify-between mb-12 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.20)' }}>
               <div>
                 <span className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>可預約服務</span>
                 <h2 className="font-display text-3xl" style={{ color: 'var(--cream)', fontWeight: 300 }}>四大服務類別</h2>
@@ -128,9 +128,12 @@ export default function LinePage() {
               </Link>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {SERVICES.map(s => (
+              {SERVICES.map((s, i) => (
                 <Link key={s.no} href={s.href}
-                  className="group relative overflow-hidden block"
+                  data-animate
+                  data-dir="scale"
+                  data-delay={String(i * 100)}
+                  className="group relative overflow-hidden block card-hover"
                   style={{ height: '280px', borderRadius: '16px', border: '1px solid rgba(166,137,102,.20)' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={s.img} alt={s.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -150,7 +153,7 @@ export default function LinePage() {
         {/* HOW IT WORKS */}
         <section style={{ background: '#f5efe6' }} className="py-24 px-16">
           <div className="max-w-[1440px] mx-auto">
-            <div className="text-center mb-14">
+            <div data-animate className="text-center mb-14">
               <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>HOW IT WORKS</span>
               <h2 className="font-display text-3xl" style={{ color: 'var(--charcoal)', fontWeight: 300 }}>三步驟完成預約</h2>
             </div>
@@ -159,8 +162,11 @@ export default function LinePage() {
                 { step: '01', title: '加入 LINE OA', desc: '掃描 QR Code 或搜尋 @881zhkla，加入 MooLah 官方帳號，開啟預約入口。' },
                 { step: '02', title: '選擇職人', desc: '依服務類別與所在縣市搜尋，瀏覽作品集、服務項目與定價，找到最適合的職人。' },
                 { step: '03', title: '確認預約', desc: '選擇服務項目與時段，送出後雙方立即收到 LINE 確認通知，零溝通成本。' },
-              ].map((item) => (
-                <div key={item.step} className="flex flex-col gap-4 p-8" style={{ background: 'rgba(255,255,255,0.70)', backdropFilter: 'blur(10px)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
+              ].map((item, i) => (
+                <div key={item.step}
+                  data-animate
+                  data-delay={String(i * 150)}
+                  className="flex flex-col gap-4 p-8 card-hover" style={{ background: 'rgba(255,255,255,0.70)', backdropFilter: 'blur(10px)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
                   <div className="font-display text-5xl" style={{ color: 'rgba(166,137,102,0.25)', lineHeight: 1 }}>{item.step}</div>
                   <h3 className="font-display text-xl" style={{ color: 'var(--charcoal)', fontWeight: 400 }}>{item.title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgba(44,40,37,0.60)' }}>{item.desc}</p>
@@ -172,7 +178,7 @@ export default function LinePage() {
 
         {/* CTA FOOTER */}
         <section style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.20)' }} className="py-20 px-16 text-center">
-          <div className="max-w-2xl mx-auto">
+          <div data-animate className="max-w-2xl mx-auto">
             <p className="text-xs tracking-[.22em] uppercase mb-4" style={{ color: 'var(--oak)' }}>加入合作</p>
             <h2 className="font-display mb-6" style={{ fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 300, color: 'var(--cream)' }}>
               您是美業職人？

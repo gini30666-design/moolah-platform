@@ -116,14 +116,14 @@ export default function ServicesPage() {
         {/* Header */}
         <section className="py-24 px-6 border-b border-[var(--border)]">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-end">
-            <div>
+            <div data-animate data-dir="left">
               <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-4">Pricing Plans</p>
               <h1 className="font-display text-[clamp(2.8rem,7vw,6rem)] leading-tight text-[var(--charcoal)]">
                 合作<br />
                 <span className="italic text-[var(--oak)]">方案</span>
               </h1>
             </div>
-            <p className="text-base text-[var(--charcoal)]/55 leading-relaxed lg:mb-3">
+            <p data-animate data-dir="right" className="text-base text-[var(--charcoal)]/55 leading-relaxed lg:mb-3">
               從個人設計師到工作室，MooLah 提供適合各種規模的預約管理方案。
               從免費開始，隨業務成長升級。
             </p>
@@ -134,10 +134,12 @@ export default function ServicesPage() {
         <section className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-3 gap-px bg-[var(--border)]">
-              {PLANS.map((plan) => (
+              {PLANS.map((plan, i) => (
                 <div
                   key={plan.name}
-                  className={`p-10 flex flex-col ${plan.highlight ? 'bg-[var(--charcoal)]' : 'bg-[var(--cream)]'}`}
+                  data-animate
+                  data-delay={String(i * 120)}
+                  className={`p-10 flex flex-col card-hover ${plan.highlight ? 'bg-[var(--charcoal)]' : 'bg-[var(--cream)]'}`}
                 >
                   <div className="mb-8">
                     <p className={`text-xs tracking-[0.2em] uppercase mb-2 ${plan.highlight ? 'text-[var(--oak)]' : 'text-[var(--muted)]'}`}>
@@ -188,13 +190,16 @@ export default function ServicesPage() {
         {/* FAQ */}
         <section className="py-24 px-6 bg-[#f5efe6]">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-14">
+            <div data-animate className="mb-14">
               <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-3">FAQ</p>
               <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] text-[var(--charcoal)]">常見問題</h2>
             </div>
             <div className="divide-y divide-[var(--border)]">
-              {FAQS.map((faq) => (
-                <div key={faq.q} className="py-8 grid md:grid-cols-[2fr_3fr] gap-6">
+              {FAQS.map((faq, i) => (
+                <div key={faq.q}
+                  data-animate
+                  data-delay={String(i * 80)}
+                  className="py-8 grid md:grid-cols-[2fr_3fr] gap-6">
                   <h3 className="font-display text-xl text-[var(--charcoal)]">{faq.q}</h3>
                   <p className="text-sm text-[var(--charcoal)]/60 leading-relaxed">{faq.a}</p>
                 </div>

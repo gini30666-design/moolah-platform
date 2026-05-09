@@ -108,13 +108,16 @@ export default function JoinPage() {
         {/* Benefits */}
         <section className="py-24 px-6">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-14">
+            <div data-animate className="mb-14">
               <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-3">Why MooLah</p>
               <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] text-[var(--charcoal)]">為什麼選擇我們</h2>
             </div>
             <div className="grid sm:grid-cols-2 gap-px bg-[var(--border)]">
-              {BENEFITS.map((b) => (
-                <div key={b.num} className="bg-[var(--cream)] p-10 hover:bg-[#f5efe6] transition-colors duration-300">
+              {BENEFITS.map((b, i) => (
+                <div key={b.num}
+                  data-animate
+                  data-delay={String(i * 100)}
+                  className="bg-[var(--cream)] p-10 hover:bg-[#f5efe6] transition-colors duration-300 card-hover">
                   <span className="font-display text-6xl text-[var(--oak)]/15 leading-none block mb-6">{b.num}</span>
                   <h3 className="font-display text-2xl text-[var(--charcoal)] mb-4">{b.title}</h3>
                   <p className="text-sm text-[var(--charcoal)]/55 leading-relaxed">{b.desc}</p>
@@ -127,13 +130,16 @@ export default function JoinPage() {
         {/* Process */}
         <section className="py-24 px-6 bg-[var(--charcoal)]">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-14">
+            <div data-animate className="mb-14">
               <p className="text-xs tracking-[0.25em] uppercase text-[var(--oak)] mb-3">Onboarding</p>
               <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] text-[var(--cream)]">申請流程</h2>
             </div>
             <div className="space-y-0 divide-y divide-white/10">
               {PROCESS.map((p, i) => (
-                <div key={i} className="py-7 grid grid-cols-[auto_1fr_auto] gap-6 items-center">
+                <div key={i}
+                  data-animate
+                  data-delay={String(i * 100)}
+                  className="py-7 grid grid-cols-[auto_1fr_auto] gap-6 items-center">
                   <span className="font-display text-2xl text-[var(--oak)]/30 w-8 text-center">
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -150,7 +156,7 @@ export default function JoinPage() {
 
         {/* Contact CTA */}
         <section className="py-24 px-6 bg-[#f5efe6]">
-          <div className="max-w-2xl mx-auto text-center">
+          <div data-animate className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-4xl text-[var(--charcoal)] mb-4">
               準備好開始了嗎？
             </h2>
