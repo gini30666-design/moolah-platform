@@ -21,14 +21,29 @@ const dmSans = DM_Sans({
   weight: ['300', '400', '500', '600'],
 })
 
+const BASE_URL = 'https://moolah-platform.vercel.app'
+
 export const metadata: Metadata = {
-  title: 'MooLah — 質感生活，從容預約',
-  description: '台灣首個美業智慧預約平台。髮型設計師、寵物美容、汽車美容、美甲師，透過 LINE 輕鬆預約，雙向即時通知。',
+  metadataBase: new URL(BASE_URL),
+  title: { default: 'MooLah — 質感生活，從容預約', template: '%s | MooLah' },
+  description: '台灣美業智慧預約平台。髮型設計師、寵物美容、汽車美容、美甲師，透過 LINE 輕鬆預約，雙向即時通知。',
+  keywords: ['預約', '髮型設計師', '寵物美容', '汽車美容', '美甲', 'LINE 預約', '台灣', 'MooLah'],
+  authors: [{ name: 'MooLah', url: BASE_URL }],
   openGraph: {
     title: 'MooLah — 質感生活，從容預約',
-    description: '台灣首個美業智慧預約平台',
+    description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。',
     siteName: 'MooLah',
+    url: BASE_URL,
+    type: 'website',
+    locale: 'zh_TW',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MooLah — 質感生活，從容預約',
+    description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約。',
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: BASE_URL },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
