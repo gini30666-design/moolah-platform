@@ -279,24 +279,34 @@ export default function AdminPage() {
   }, [providerId])
 
   useEffect(() => {
-    liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! }).then(async () => {
-      if (!liff.isLoggedIn()) { liff.login(); return }
-      const profile = await liff.getProfile()
-      const lineUserId = profile.userId
+    liff
+      .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
+      .then(async () => {
+        if (!liff.isLoggedIn()) {
+          // 帶 redirectUri 確保登入後回到 admin 頁面，而不是 LIFF 預設 endpoint
+          liff.login({ redirectUri: window.location.href })
+          return
+        }
+        const profile = await liff.getProfile()
+        const lineUserId = profile.userId
 
-      const res = await fetch(`/api/provider/${providerId}`)
-      const data = await res.json()
-      setProviderName(data.provider?.name ?? '')
-      setServices(data.services ?? [])
+        const res = await fetch(`/api/provider/${providerId}`)
+        const data = await res.json()
+        setProviderName(data.provider?.name ?? '')
+        setServices(data.services ?? [])
 
-      if (data.provider?.lineUserId === lineUserId) {
-        setAuthorized(true)
-        await fetchBookings()
-      } else {
+        if (data.provider?.lineUserId === lineUserId) {
+          setAuthorized(true)
+          await fetchBookings()
+        } else {
+          setAuthorized(false)
+        }
+        setLoading(false)
+      })
+      .catch(() => {
         setAuthorized(false)
-      }
-      setLoading(false)
-    })
+        setLoading(false)
+      })
   }, [providerId, fetchBookings])
 
   function handleCancel(id: string) {
