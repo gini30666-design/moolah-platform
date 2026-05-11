@@ -59,7 +59,7 @@ function Footer() {
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/services" className="hover:text-[var(--oak)] transition-colors">合作方案</Link>
-          <a href="mailto:gini30666@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
+          <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>
     </footer>
@@ -97,7 +97,7 @@ export default function JoinPage() {
             </p>
             <div data-animate data-delay="300" className="flex flex-wrap gap-3">
               <a
-                href="mailto:gini30666@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別：%0ALINE ID：%0A備註："
+                href="mailto:moolah118@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別：%0ALINE ID：%0A備註："
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
                 style={{ background: 'var(--oak)', color: 'var(--cream)' }}
               >
@@ -186,11 +186,11 @@ export default function JoinPage() {
 
             <div className="inline-flex flex-col items-center gap-4">
               <a
-                href="mailto:gini30666@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別（髮型/寵物美容/汽車美容/美甲）：%0ALINE ID：%0A服務項目：%0A備註："
+                href="mailto:moolah118@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別（髮型/寵物美容/汽車美容/美甲）：%0ALINE ID：%0A服務項目：%0A備註："
                 className="inline-flex items-center gap-2 px-7 md:px-8 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
                 style={{ background: 'var(--charcoal)', color: 'var(--cream)' }}
               >
-                gini30666@gmail.com
+                moolah118@gmail.com
               </a>
               <span className="text-xs" style={{ color: 'rgba(44,40,37,0.40)' }}>點擊即可發送申請 Email</span>
             </div>

@@ -46,7 +46,7 @@ const PLANS = [
       '專屬客服經理',
     ],
     cta: '聯繫我們',
-    href: 'mailto:gini30666@gmail.com',
+    href: 'mailto:moolah118@gmail.com',
     highlight: false,
   },
 ]
@@ -100,7 +100,7 @@ function Footer() {
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/join" className="hover:text-[var(--oak)] transition-colors">加入合作</Link>
-          <a href="mailto:gini30666@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
+          <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>
     </footer>

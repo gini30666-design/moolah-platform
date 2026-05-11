@@ -70,7 +70,7 @@ export default function DashboardPage() {
         </p>
       </div>
       <a
-        href="mailto:gini30666@gmail.com?subject=申請加入 MooLah 合作夥伴"
+        href="mailto:moolah118@gmail.com?subject=申請加入 MooLah 合作夥伴"
         className="mt-2 px-6 py-3 bg-[#2C2825] text-[#fbf9f4] text-sm rounded-full"
       >
         聯絡 MooLah 申請加入

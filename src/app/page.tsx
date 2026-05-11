@@ -315,7 +315,7 @@ function Footer() {
         <div data-animate data-delay="200">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['聯絡我們', 'mailto:gini30666@gmail.com']].map(([l, h]) => (
+            {[['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>
@@ -323,7 +323,7 @@ function Footer() {
         <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['gini30666@gmail.com', 'mailto:gini30666@gmail.com'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
+            {[['moolah118@gmail.com', 'mailto:moolah118@gmail.com'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>
