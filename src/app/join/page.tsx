@@ -97,7 +97,9 @@ export default function JoinPage() {
             </p>
             <div data-animate data-delay="300" className="flex flex-wrap gap-3">
               <a
-                href="mailto:moolah118@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別：%0ALINE ID：%0A備註："
+                href="https://line.me/R/ti/p/@881zhkla"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
                 style={{ background: 'var(--oak)', color: 'var(--cream)' }}
               >

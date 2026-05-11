@@ -277,9 +277,9 @@ function PartnerCTA() {
             免費加入，立即擁有專屬預約頁面。讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <Link href="/join" className="px-8 md:px-10 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+            <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" className="px-8 md:px-10 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
               立即申請
-            </Link>
+            </a>
             <Link href="/services" className="px-8 md:px-10 py-3.5 md:py-4 text-sm text-[var(--cream)] tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
               查看方案
             </Link>
