@@ -28,6 +28,30 @@ export async function appendRow(range: string, values: string[]) {
   })
 }
 
+export async function findServiceRow(serviceId: string): Promise<number> {
+  const rows = await getSheetData('services!B2:B')
+  const idx = rows.findIndex(r => r[0] === serviceId)
+  return idx === -1 ? -1 : idx + 2
+}
+
+export async function updateServiceAtRow(sheetRow: number, values: string[]) {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `services!A${sheetRow}:F${sheetRow}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: { values: [values] },
+  })
+}
+
+export async function clearServiceAtRow(sheetRow: number) {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `services!A${sheetRow}:F${sheetRow}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [['', '', '', '', '', '']] },
+  })
+}
+
 export async function updateBookingStatus(bookingId: string, status: string) {
   const idRows = await getSheetData('bookings!A:A')
   const rowIndex = idRows.findIndex(r => r[0] === bookingId)
