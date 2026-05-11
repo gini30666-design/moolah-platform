@@ -206,7 +206,7 @@ export default function BookPage() {
       <div className="max-w-lg mx-auto px-5 py-6 pb-36">
 
         {/* ── 服務摘要卡 ─────────────────────────────── */}
-        <div className="mb-8 p-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '16px', borderLeft: '3px solid var(--oak)' }}>
+        <div data-animate className="mb-8 p-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '16px', borderLeft: '3px solid var(--oak)' }}>
           <div className="flex justify-between items-start">
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'var(--oak)' }}>預約服務</p>
@@ -223,21 +223,21 @@ export default function BookPage() {
           <div className="space-y-8">
 
             {/* 性別 */}
-            <div>
+            <div data-animate data-delay="100">
               <SectionLabel step="01" label="性別" />
               <PillGroup options={GENDER_OPTIONS} value={gender} onChange={setGender} />
             </div>
 
             {/* 髮長 */}
             {isHairCategory && (
-              <div>
+              <div data-animate data-delay="150">
                 <SectionLabel step="02" label="目前髮長" />
                 <PillGroup options={HAIR_LENGTH_OPTIONS} value={hairLength} onChange={setHairLength} />
               </div>
             )}
 
             {/* 日期 */}
-            <div>
+            <div data-animate data-delay="200">
               <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
               <input
                 type="date" min={today} value={date}
@@ -254,7 +254,7 @@ export default function BookPage() {
 
             {/* 時段 */}
             {date && (
-              <div>
+              <div data-animate>
                 <SectionLabel step={isHairCategory ? '04' : '03'} label="選擇時段" />
 
                 {loadingSlots ? (
@@ -325,7 +325,7 @@ export default function BookPage() {
             )}
 
             {/* 備註 */}
-            <div>
+            <div data-animate>
               <SectionLabel step={isHairCategory ? '05' : '04'} label="補充說明（選填）" />
               <textarea
                 value={note}

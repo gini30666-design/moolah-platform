@@ -120,11 +120,11 @@ export default function PrivacyPage() {
           }} />
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
           <div className="relative max-w-3xl mx-auto">
-            <p className="text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--oak)' }}>Privacy Policy</p>
-            <h1 className="font-display mb-4" style={{ fontSize: 'clamp(2.2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300 }}>
+            <p data-animate className="text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--oak)' }}>Privacy Policy</p>
+            <h1 data-animate data-delay="100" className="font-display mb-4" style={{ fontSize: 'clamp(2.2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300 }}>
               隱私政策
             </h1>
-            <p className="text-sm" style={{ color: 'rgba(251,249,244,0.45)' }}>
+            <p data-animate data-delay="200" className="text-sm" style={{ color: 'rgba(251,249,244,0.45)' }}>
               本政策說明 MooLah 如何蒐集、使用及保護您的個人資料，符合台灣《個人資料保護法》規定。
             </p>
           </div>
@@ -136,8 +136,8 @@ export default function PrivacyPage() {
         <section className="py-12 md:py-20 px-5 md:px-6" style={{ background: 'white' }}>
           <div className="max-w-3xl mx-auto">
             <div className="divide-y divide-[var(--border)]">
-              {SECTIONS.map((s) => (
-                <div key={s.title} className="py-8 md:py-10">
+              {SECTIONS.map((s, i) => (
+                <div key={s.title} data-animate data-delay={String(Math.min(i * 80, 400))} className="py-8 md:py-10">
                   <h2 className="font-display text-xl md:text-2xl mb-4" style={{ color: 'var(--charcoal)', fontWeight: 400 }}>
                     {s.title}
                   </h2>

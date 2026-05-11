@@ -539,7 +539,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── Stats 2×2 ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
+      <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
         {[
           { label: '今日預約', value: `${todayBookings.length}`, unit: '筆' },
           { label: '今日營收', value: todayRevenue === 0 ? '—' : `NT$ ${todayRevenue.toLocaleString()}`, unit: '' },
@@ -556,7 +556,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── Main Nav (scrollable) ── */}
-      <div style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '14px', padding: '4px', minWidth: 'max-content' }}>
         {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集']] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => setMainView(v)} style={{

@@ -76,7 +76,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── Avatar + Name ───────────────────────────── */}
-      <div className="px-5 pb-6" style={{ marginTop: '-56px', position: 'relative', zIndex: 10 }}>
+      <div data-animate className="px-5 pb-6" style={{ marginTop: '-56px', position: 'relative', zIndex: 10 }}>
         {/* Avatar ring */}
         <div className="mb-4" style={{ width: '88px', height: '88px', padding: '3px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--oak), rgba(166,137,102,0.3))' }}>
           <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--charcoal-deep)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -105,7 +105,7 @@ export default function ProviderPage() {
 
       {/* ── 店家資訊 ────────────────────────────────── */}
       {(provider.address || provider.businessHours || provider.phone) && (
-        <section className="mx-5 mb-5 px-4 py-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
+        <section data-animate data-delay="100" className="mx-5 mb-5 px-4 py-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '16px' }}>
           <p className="text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--oak)' }}>STUDIO INFO</p>
           <div className="space-y-3">
             {provider.address && (
@@ -143,7 +143,7 @@ export default function ProviderPage() {
       )}
 
       {/* ── 服務項目 ────────────────────────────────── */}
-      <section className="mx-5 mb-5">
+      <section data-animate data-delay="150" className="mx-5 mb-5">
         <p className="text-[10px] tracking-[0.22em] uppercase mb-3 px-1" style={{ color: 'var(--oak)' }}>SERVICES</p>
         <div className="space-y-2">
           {services.map(s => (
@@ -172,7 +172,7 @@ export default function ProviderPage() {
 
       {/* ── 作品集 ──────────────────────────────────── */}
       {portfolio.length > 0 && (
-        <section className="mx-5 mb-28">
+        <section data-animate data-delay="200" className="mx-5 mb-28">
           <p className="text-[10px] tracking-[0.22em] uppercase mb-3 px-1" style={{ color: 'var(--oak)' }}>PORTFOLIO</p>
           <div className="grid grid-cols-3 gap-1.5">
             {portfolio.map(p => (
