@@ -78,8 +78,8 @@ export default function BookingGuidePage() {
             { num: '60 秒', label: '完成整個預約流程' },
             { num: '0 個', label: 'App 需要下載' },
             { num: '3 秒', label: '確認通知到達' },
-          ].map((s) => (
-            <div key={s.label} className="py-10 px-8 text-center">
+          ].map((s, i) => (
+            <div key={s.label} data-animate data-delay={String(i * 100)} className="py-10 px-8 text-center">
               <p className="font-display text-4xl text-[var(--oak)] mb-2">{s.num}</p>
               <p className="text-xs text-[var(--charcoal)]/50 tracking-wide">{s.label}</p>
             </div>
@@ -89,13 +89,13 @@ export default function BookingGuidePage() {
         {/* Steps */}
         <section className="py-20 px-6">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-14">五步驟預約流程</h2>
+            <h2 data-animate className="font-display text-4xl text-[var(--charcoal)] mb-14">五步驟預約流程</h2>
             <div className="relative">
               {/* vertical line */}
               <div className="absolute left-[47px] top-0 bottom-0 w-px bg-[var(--border)] hidden md:block" />
               <div className="space-y-0 divide-y divide-[var(--border)]">
-                {STEPS.map((step) => (
-                  <div key={step.no} className="py-10 grid md:grid-cols-[96px_1fr] gap-6 items-start">
+                {STEPS.map((step, i) => (
+                  <div key={step.no} data-animate data-delay={String(i * 80)} className="py-10 grid md:grid-cols-[96px_1fr] gap-6 items-start">
                     <div className="relative z-10 bg-[var(--cream)]">
                       <span className="font-display text-5xl text-[var(--oak)]/30">{step.no}</span>
                     </div>
@@ -116,15 +116,15 @@ export default function BookingGuidePage() {
         {/* Who is it for */}
         <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-12">適合哪些設計師？</h2>
+            <h2 data-animate className="font-display text-4xl text-[var(--charcoal)] mb-12">適合哪些設計師？</h2>
             <div className="grid md:grid-cols-2 gap-px bg-[var(--border)]">
               {[
                 { title: '髮型設計師', desc: '剪髮、染髮、燙髮、護髮，各項服務設定不同時長，系統自動計算時段。' },
                 { title: '寵物美容師', desc: '根據毛孩品種與體型設定服務時長，客人提前填寫備註，溝通更順暢。' },
                 { title: '汽車美容師', desc: '鍍膜、打蠟、清潔分開設定，支援到府服務備註，彈性排程。' },
                 { title: '美甲師', desc: '手繪、凝膠、光療各自設定時長，熱門設計提前顯示供客人參考。' },
-              ].map((item) => (
-                <div key={item.title} className="bg-[var(--cream)] p-10">
+              ].map((item, i) => (
+                <div key={item.title} data-animate data-delay={String(i * 80)} className="bg-[var(--cream)] p-10">
                   <h3 className="font-display text-2xl text-[var(--charcoal)] mb-3">{item.title}</h3>
                   <p className="text-sm text-[var(--charcoal)]/60 leading-relaxed">{item.desc}</p>
                 </div>
@@ -136,8 +136,8 @@ export default function BookingGuidePage() {
         {/* CTA */}
         <section className="py-16 md:py-24 px-5 md:px-6 text-center" style={{ background: 'var(--charcoal)' }}>
           <div className="max-w-lg mx-auto">
-            <h2 className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>立即體驗</h2>
-            <p className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.50)' }}>掃描下方 QR Code，現在就試試 MooLah 預約流程。</p>
+            <h2 data-animate className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>立即體驗</h2>
+            <p data-animate data-delay="100" className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.50)' }}>掃描下方 QR Code，現在就試試 MooLah 預約流程。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/line"

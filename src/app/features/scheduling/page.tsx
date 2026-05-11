@@ -70,8 +70,8 @@ export default function SchedulingPage() {
               { num: '熱門標記', label: '快額滿時段提示' },
               { num: '08:00', label: '每日排程推播' },
               { num: '緊湊填補', label: '零碎空等最小化' },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
+            ].map((s, i) => (
+              <div key={s.label} data-animate data-delay={String(i * 80)} className="text-center">
                 <p className="font-display text-2xl text-[var(--oak)] mb-1">{s.num}</p>
                 <p className="text-xs text-white/40 tracking-wide">{s.label}</p>
               </div>
@@ -82,10 +82,10 @@ export default function SchedulingPage() {
         {/* Feature list */}
         <section className="py-20 px-6">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-14">四大排程核心功能</h2>
+            <h2 data-animate className="font-display text-4xl text-[var(--charcoal)] mb-14">四大排程核心功能</h2>
             <div className="divide-y divide-[var(--border)]">
-              {FEATURES.map((f) => (
-                <div key={f.no} className="py-10 grid md:grid-cols-[100px_1fr] gap-8 items-start">
+              {FEATURES.map((f, i) => (
+                <div key={f.no} data-animate data-delay={String(i * 80)} className="py-10 grid md:grid-cols-[100px_1fr] gap-8 items-start">
                   <span className="font-display text-5xl text-[var(--oak)]/25">{f.no}</span>
                   <div>
                     <h3 className="font-display text-2xl text-[var(--charcoal)] mb-4">{f.title}</h3>
@@ -100,7 +100,7 @@ export default function SchedulingPage() {
         {/* Visual: time slots mockup */}
         <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-            <div>
+            <div data-animate>
               <h2 className="font-display text-3xl text-[var(--charcoal)] mb-6">時段狀態一目了然</h2>
               <p className="text-sm text-[var(--charcoal)]/60 leading-relaxed mb-8">
                 客人在預約頁面看到的時段清楚區分三種狀態，引導他們快速做出選擇，設計師不需要手動管理任何空檔。
@@ -119,7 +119,7 @@ export default function SchedulingPage() {
               </div>
             </div>
             {/* calendar mockup */}
-            <div className="bg-white border border-[var(--border)] p-6">
+            <div data-animate data-delay="100" className="bg-white border border-[var(--border)] p-6">
               <p className="text-xs tracking-widest uppercase text-[var(--oak)] mb-4">今日排程 · Chloe</p>
               <div className="space-y-2">
                 {[
@@ -154,8 +154,8 @@ export default function SchedulingPage() {
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 44px)' }} />
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
           <div className="relative max-w-lg mx-auto">
-            <h2 className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>讓排程自動運作</h2>
-            <p className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>加入 MooLah，從今天起告別手動記帳。</p>
+            <h2 data-animate className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>讓排程自動運作</h2>
+            <p data-animate data-delay="100" className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>加入 MooLah，從今天起告別手動記帳。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/line" className="px-8 py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
                 立即預約

@@ -64,7 +64,7 @@ export default function NotificationPage() {
         <section className="py-20 px-6">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             {/* mockup */}
-            <div className="bg-[#f5efe6] p-8 border border-[var(--border)]">
+            <div data-animate className="bg-[#f5efe6] p-8 border border-[var(--border)]">
               <p className="text-xs tracking-widest uppercase text-[var(--oak)] mb-6">LINE 通知預覽</p>
               <div className="space-y-3">
                 {[
@@ -80,7 +80,7 @@ export default function NotificationPage() {
               </div>
             </div>
             {/* text */}
-            <div>
+            <div data-animate data-delay="100">
               <h2 className="font-display text-3xl text-[var(--charcoal)] mb-6">LINE 推播　零 App 安裝</h2>
               <p className="text-sm text-[var(--charcoal)]/60 leading-relaxed mb-8">
                 MooLah 深度整合 LINE 生態系，所有通知透過客人已有的 LINE 帳號直接推送。不需要安裝任何 App，不需要記住帳號密碼，通知自然融入日常使用習慣。
@@ -105,10 +105,10 @@ export default function NotificationPage() {
         {/* Steps */}
         <section className="py-20 px-6 bg-[#f5efe6]">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-4xl text-[var(--charcoal)] mb-14">三種通知　自動觸發</h2>
+            <h2 data-animate className="font-display text-4xl text-[var(--charcoal)] mb-14">三種通知　自動觸發</h2>
             <div className="divide-y divide-[var(--border)]">
-              {STEPS.map((step) => (
-                <div key={step.no} className="py-10 grid md:grid-cols-[120px_1fr_auto] gap-6 items-start">
+              {STEPS.map((step, i) => (
+                <div key={step.no} data-animate data-delay={String(i * 100)} className="py-10 grid md:grid-cols-[120px_1fr_auto] gap-6 items-start">
                   <span className="font-display text-5xl text-[var(--oak)]/30">{step.no}</span>
                   <div>
                     <h3 className="font-display text-2xl text-[var(--charcoal)] mb-3">{step.title}</h3>
@@ -128,8 +128,8 @@ export default function NotificationPage() {
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 44px)' }} />
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
           <div className="relative max-w-lg mx-auto">
-            <h2 className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>準備好了嗎？</h2>
-            <p className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>立即加入，讓 MooLah 幫你處理所有通知。</p>
+            <h2 data-animate className="font-display text-4xl md:text-5xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>準備好了嗎？</h2>
+            <p data-animate data-delay="100" className="text-sm mb-8 md:mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>立即加入，讓 MooLah 幫你處理所有通知。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/line" className="px-8 py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
                 立即預約

@@ -203,7 +203,7 @@ export default function BookPage() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 py-6 pb-36">
+      <div className="max-w-lg mx-auto px-5 py-6 pb-52">
 
         {/* ── 服務摘要卡 ─────────────────────────────── */}
         <div data-animate className="mb-8 p-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '16px', borderLeft: '3px solid var(--oak)' }}>
