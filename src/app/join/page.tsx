@@ -59,6 +59,7 @@ function Footer() {
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/services" className="hover:text-[var(--oak)] transition-colors">合作方案</Link>
+          <Link href="/privacy" className="hover:text-[var(--oak)] transition-colors">隱私政策</Link>
           <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>

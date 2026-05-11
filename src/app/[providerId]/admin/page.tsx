@@ -2,6 +2,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import liff from '@line/liff'
+import ScheduleView from './ScheduleView'
+import PortfolioView from './PortfolioView'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Booking = {
@@ -19,7 +21,7 @@ type Booking = {
   status: string
 }
 type Service = { id: string; name: string; price: number; duration: number; description: string }
-type MainView = 'bookings' | 'services'
+type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio'
 type BookingTab = 'today' | 'upcoming' | 'past'
 
 const todayStr = () => new Date().toISOString().split('T')[0]
@@ -553,17 +555,19 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* ── Main Nav ── */}
-      <div style={{ display: 'flex', margin: '16px 16px 0', background: 'rgba(166,137,102,0.08)', borderRadius: '14px', padding: '4px' }}>
-        {([['bookings', '預約管理'], ['services', '服務管理']] as [MainView, string][]).map(([v, label]) => (
+      {/* ── Main Nav (scrollable) ── */}
+      <div style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '14px', padding: '4px', minWidth: 'max-content' }}>
+        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集']] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => setMainView(v)} style={{
-            flex: 1, padding: '10px 0', borderRadius: '10px', fontSize: '12px',
+            padding: '10px 14px', borderRadius: '10px', fontSize: '12px',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
             background: mainView === v ? charcoal : 'transparent',
             color: mainView === v ? cream : '#8a7e76',
-            transition: 'all 0.2s',
+            transition: 'all 0.2s', whiteSpace: 'nowrap',
           }}>{label}</button>
         ))}
+        </div>
       </div>
 
       {/* ════════════════ BOOKINGS VIEW ════════════════ */}
@@ -669,6 +673,12 @@ export default function AdminPage() {
           )}
         </div>
       )}
+
+      {/* ════════════════ SCHEDULE VIEW ════════════════ */}
+      {mainView === 'schedule' && <ScheduleView providerId={providerId} />}
+
+      {/* ════════════════ PORTFOLIO VIEW ════════════════ */}
+      {mainView === 'portfolio' && <PortfolioView providerId={providerId} />}
 
       {/* Oak bottom accent */}
       <div style={{ height: '3px', background: `linear-gradient(90deg, transparent, ${oak}, transparent)`, opacity: 0.3, margin: '0 16px 24px' }} />
