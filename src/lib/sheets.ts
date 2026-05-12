@@ -52,6 +52,17 @@ export async function clearServiceAtRow(sheetRow: number) {
   })
 }
 
+export async function updateRow(sheetName: string, sheetRow: number, values: string[]) {
+  const cols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const lastCol = cols[values.length - 1]
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `${sheetName}!A${sheetRow}:${lastCol}${sheetRow}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: { values: [values] },
+  })
+}
+
 export async function updateBookingStatus(bookingId: string, status: string) {
   const idRows = await getSheetData('bookings!A:A')
   const rowIndex = idRows.findIndex(r => r[0] === bookingId)

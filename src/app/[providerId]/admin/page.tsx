@@ -44,8 +44,8 @@ const labelStyle: React.CSSProperties = {
 }
 
 // ─── Customer History Sheet ───────────────────────────────────────────────────
-function CustomerSheet({ booking, allBookings, onClose }: {
-  booking: Booking; allBookings: Booking[]; onClose: () => void
+function CustomerSheet({ booking, allBookings, onClose, providerId }: {
+  booking: Booking; allBookings: Booking[]; onClose: () => void; providerId: string
 }) {
   const isManual = booking.customerLineUserId === 'MANUAL'
   const history = (isManual
@@ -53,6 +53,30 @@ function CustomerSheet({ booking, allBookings, onClose }: {
     : allBookings.filter(b => b.customerLineUserId === booking.customerLineUserId)
   ).sort((a, b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`))
   const totalSpend = history.reduce((s, b) => s + b.servicePrice, 0)
+
+  const [noteText, setNoteText] = useState('')
+  const [noteSaving, setNoteSaving] = useState(false)
+  const [noteSaved, setNoteSaved] = useState(false)
+
+  useEffect(() => {
+    if (isManual) return
+    fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`)
+      .then(r => r.json())
+      .then(d => setNoteText(d.note ?? ''))
+      .catch(() => {})
+  }, [booking.customerLineUserId, providerId, isManual])
+
+  async function saveNote() {
+    setNoteSaving(true)
+    await fetch('/api/admin/customer-note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText }),
+    })
+    setNoteSaving(false)
+    setNoteSaved(true)
+    setTimeout(() => setNoteSaved(false), 2000)
+  }
 
   return (
     <div
@@ -92,8 +116,40 @@ function CustomerSheet({ booking, allBookings, onClose }: {
           </div>
         )}
 
+        {!isManual && (
+          <div style={{ marginBottom: '18px' }}>
+            <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>設計師筆記</p>
+            <textarea
+              value={noteText}
+              onChange={e => setNoteText(e.target.value)}
+              placeholder="記錄顧客偏好、過敏史、特殊需求…"
+              rows={3}
+              style={{
+                width: '100%', background: 'rgba(166,137,102,0.06)',
+                border: '1px solid rgba(166,137,102,0.18)', borderRadius: '12px',
+                padding: '10px 12px', fontSize: '13px', color: charcoal,
+                resize: 'none', outline: 'none', boxSizing: 'border-box',
+                lineHeight: 1.5,
+              }}
+            />
+            <button
+              onClick={saveNote}
+              disabled={noteSaving}
+              style={{
+                marginTop: '8px', padding: '8px 20px', fontSize: '12px',
+                background: noteSaved ? 'rgba(34,180,100,0.15)' : 'rgba(166,137,102,0.12)',
+                color: noteSaved ? '#22b464' : oak,
+                border: `1px solid ${noteSaved ? 'rgba(34,180,100,0.25)' : 'rgba(166,137,102,0.2)'}`,
+                borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
+              }}
+            >
+              {noteSaved ? '已儲存 ✓' : noteSaving ? '儲存中…' : '儲存筆記'}
+            </button>
+          </div>
+        )}
+
         <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>消費紀錄</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '42vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '35vh', overflowY: 'auto' }}>
           {history.map(b => (
             <div key={b.id} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -842,7 +898,7 @@ export default function AdminPage() {
 
       {/* ── Customer History Sheet ── */}
       {customerSheet && (
-        <CustomerSheet booking={customerSheet} allBookings={bookings} onClose={() => setCustomerSheet(null)} />
+        <CustomerSheet booking={customerSheet} allBookings={bookings} onClose={() => setCustomerSheet(null)} providerId={providerId} />
       )}
     </main>
   )
