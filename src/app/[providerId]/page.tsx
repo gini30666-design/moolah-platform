@@ -172,7 +172,7 @@ export default function ProviderPage() {
 
       {/* ── 作品集 ──────────────────────────────────── */}
       {portfolio.length > 0 && (
-        <section data-animate data-delay="200" className="mx-5 mb-28">
+        <section data-animate data-delay="200" className="mx-5 mb-4">
           <p className="text-[10px] tracking-[0.22em] uppercase mb-3 px-1" style={{ color: 'var(--oak)' }}>PORTFOLIO</p>
           <div className="grid grid-cols-3 gap-1.5">
             {portfolio.map(p => (
@@ -183,6 +183,9 @@ export default function ProviderPage() {
           </div>
         </section>
       )}
+
+      {/* Spacer for fixed CTA */}
+      <div className="h-36" />
 
       {/* ── 固定底部 CTA ────────────────────────────── */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-6"

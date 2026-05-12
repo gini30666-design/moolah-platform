@@ -15,26 +15,40 @@ const HAIR_CATEGORIES = ['髮型設計師']
 function PillGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {options.map(opt => (
-        <button
-          key={opt}
-          type="button"
-          onClick={() => onChange(opt)}
-          style={{
-            padding: '8px 18px',
-            borderRadius: '99px',
-            fontSize: '13px',
-            fontFamily: 'var(--font-dm-sans)',
-            border: value === opt ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.30)',
-            background: value === opt ? 'var(--charcoal)' : 'white',
-            color: value === opt ? 'var(--cream)' : 'rgba(44,40,37,0.65)',
-            transition: 'all 0.18s ease',
-            cursor: 'pointer',
-          }}
-        >
-          {opt}
-        </button>
-      ))}
+      {options.map(opt => {
+        const selected = value === opt
+        return (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => onChange(opt)}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '99px',
+              fontSize: '13px',
+              fontFamily: 'var(--font-dm-sans)',
+              border: selected
+                ? '1.5px solid var(--charcoal)'
+                : '1.5px solid rgba(166,137,102,0.28)',
+              background: selected
+                ? 'var(--charcoal)'
+                : 'rgba(255,255,255,0.75)',
+              color: selected
+                ? 'var(--cream)'
+                : 'rgba(44,40,37,0.55)',
+              boxShadow: selected
+                ? '0 3px 10px rgba(44,40,37,0.18), inset 0 1px 0 rgba(255,255,255,0.08)'
+                : '0 1px 3px rgba(166,137,102,0.10)',
+              transform: selected ? 'translateY(-1px)' : 'translateY(0)',
+              transition: 'all 0.18s ease',
+              cursor: 'pointer',
+              fontWeight: selected ? 500 : 400,
+            }}
+          >
+            {opt}
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -297,8 +311,8 @@ export default function BookPage() {
                                 : isBooked
                                   ? 'rgba(44,40,37,0.04)'
                                   : isHot
-                                    ? 'rgba(196,132,90,0.07)'
-                                    : 'white',
+                                    ? 'rgba(196,132,90,0.10)'
+                                    : 'rgba(255,255,255,0.80)',
                               color: isSelected
                                 ? 'var(--cream)'
                                 : isBooked
@@ -306,6 +320,13 @@ export default function BookPage() {
                                   : isHot
                                     ? '#c4845a'
                                     : 'var(--charcoal)',
+                              boxShadow: isSelected
+                                ? '0 3px 10px rgba(44,40,37,0.18)'
+                                : isBooked
+                                  ? 'none'
+                                  : '0 1px 3px rgba(166,137,102,0.08)',
+                              transform: isSelected ? 'translateY(-1px)' : 'translateY(0)',
+                              fontWeight: isSelected ? 500 : 400,
                               fontFamily: 'var(--font-dm-sans)',
                               transition: 'all 0.15s ease',
                             }}

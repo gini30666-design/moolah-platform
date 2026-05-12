@@ -34,8 +34,11 @@ export function ScrollReveal() {
     requestAnimationFrame(() => requestAnimationFrame(init))
 
     // Pick up data-animate elements added dynamically (async data loads, client components)
+    // RAF ensures getBoundingClientRect() is called after browser layout
     const mutationObs = new MutationObserver(() => {
-      document.querySelectorAll('[data-animate]:not(.will-animate):not(.in-view)').forEach(observe)
+      requestAnimationFrame(() => {
+        document.querySelectorAll('[data-animate]:not(.will-animate):not(.in-view)').forEach(observe)
+      })
     })
     mutationObs.observe(document.body, { childList: true, subtree: true })
 
