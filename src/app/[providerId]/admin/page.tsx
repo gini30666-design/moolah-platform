@@ -22,7 +22,7 @@ type Booking = {
 }
 type Service = { id: string; name: string; price: number; duration: number; description: string }
 type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio'
-type BookingTab = 'today' | 'upcoming' | 'past'
+type BookingTab = 'timeline' | 'today' | 'upcoming' | 'past'
 
 const todayStr = () => new Date().toISOString().split('T')[0]
 
@@ -189,6 +189,153 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+// ─── Timeline View ────────────────────────────────────────────────────────────
+function TimelineView({ bookings, services, onViewCustomer }: {
+  bookings: Booking[]
+  services: Service[]
+  onViewCustomer: (b: Booking) => void
+}) {
+  const todayDate = todayStr()
+  const [viewDate, setViewDate] = useState(todayDate)
+
+  const START_HOUR = 9
+  const END_HOUR = 20
+  const SLOT_H = 56 // px per 30 min
+  const PX_PER_MIN = SLOT_H / 30
+
+  const timeToMin = (t: string) => {
+    const [h, m] = t.split(':').map(Number)
+    return h * 60 + m
+  }
+  const getDuration = (b: Booking) => services.find(s => s.id === b.serviceId)?.duration ?? 60
+
+  const slots = Array.from({ length: (END_HOUR - START_HOUR) * 2 }, (_, i) => {
+    const totalMin = START_HOUR * 60 + i * 30
+    return `${String(Math.floor(totalMin / 60)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`
+  })
+
+  const dayBookings = bookings
+    .filter(b => b.date === viewDate)
+    .sort((a, b) => a.time.localeCompare(b.time))
+
+  const dateLabel = () => {
+    if (viewDate === todayDate) return '今天'
+    const d = new Date(viewDate + 'T12:00:00')
+    return `${d.getMonth() + 1}/${d.getDate()}（${'日一二三四五六'[d.getDay()]}）`
+  }
+
+  const shiftDay = (delta: number) => {
+    const d = new Date(viewDate + 'T12:00:00')
+    d.setDate(d.getDate() + delta)
+    setViewDate(d.toISOString().split('T')[0])
+  }
+
+  const now = new Date()
+  const currentMin = now.getHours() * 60 + now.getMinutes()
+  const showLine = viewDate === todayDate && currentMin >= START_HOUR * 60 && currentMin <= END_HOUR * 60
+  const lineTop = (currentMin - START_HOUR * 60) * PX_PER_MIN
+
+  return (
+    <div>
+      {/* Date navigator */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '12px 16px 0', padding: '12px 8px', background: 'rgba(166,137,102,0.08)', borderRadius: '16px' }}>
+        <button onClick={() => shiftDay(-1)} style={{ background: 'none', border: 'none', fontSize: '22px', color: oak, cursor: 'pointer', padding: '0 12px', lineHeight: 1 }}>‹</button>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '17px', fontWeight: 600, color: charcoal }}>{dateLabel()}</p>
+          <p style={{ fontSize: '10px', color: '#b0a89e', marginTop: '2px' }}>{dayBookings.length > 0 ? `${dayBookings.length} 筆預約` : '尚無預約'}</p>
+        </div>
+        <button onClick={() => shiftDay(1)} style={{ background: 'none', border: 'none', fontSize: '22px', color: oak, cursor: 'pointer', padding: '0 12px', lineHeight: 1 }}>›</button>
+      </div>
+
+      {/* Timeline */}
+      <div style={{ margin: '12px 16px 40px', display: 'flex', gap: '8px' }}>
+        {/* Time labels */}
+        <div style={{ width: '44px', flexShrink: 0 }}>
+          {slots.map((t, i) => (
+            <div key={t} style={{ height: `${SLOT_H}px`, display: 'flex', alignItems: 'flex-start', paddingTop: '3px' }}>
+              {i % 2 === 0
+                ? <span style={{ fontSize: '10px', color: '#b0a89e', fontVariantNumeric: 'tabular-nums' }}>{t}</span>
+                : <span style={{ fontSize: '9px', color: 'rgba(176,168,158,0.4)', paddingLeft: '6px' }}>·</span>
+              }
+            </div>
+          ))}
+        </div>
+
+        {/* Grid + blocks */}
+        <div style={{ flex: 1, position: 'relative' }}>
+          {/* Grid lines */}
+          {slots.map((t, i) => (
+            <div key={t} style={{
+              height: `${SLOT_H}px`,
+              borderTop: i % 2 === 0
+                ? '1px solid rgba(166,137,102,0.18)'
+                : '1px dashed rgba(166,137,102,0.07)',
+            }} />
+          ))}
+
+          {/* Current time line */}
+          {showLine && (
+            <div style={{ position: 'absolute', top: `${lineTop}px`, left: 0, right: 0, zIndex: 10, pointerEvents: 'none' }}>
+              <div style={{ height: '2px', background: `linear-gradient(to right, ${oak}, rgba(166,137,102,0.15))`, position: 'relative' }}>
+                <div style={{ width: '8px', height: '8px', background: oak, borderRadius: '50%', position: 'absolute', top: '-3px', left: '-4px' }} />
+              </div>
+            </div>
+          )}
+
+          {/* Booking blocks */}
+          {dayBookings.map(b => {
+            const startMin = timeToMin(b.time)
+            const dur = getDuration(b)
+            const top = (startMin - START_HOUR * 60) * PX_PER_MIN
+            const height = Math.max(dur * PX_PER_MIN - 4, SLOT_H - 4)
+            if (startMin < START_HOUR * 60 || startMin >= END_HOUR * 60) return null
+            return (
+              <button
+                key={b.id}
+                onClick={() => onViewCustomer(b)}
+                style={{
+                  position: 'absolute',
+                  top: `${top}px`,
+                  left: '4px', right: '4px',
+                  height: `${height}px`,
+                  background: `linear-gradient(140deg, ${oak} 0%, rgba(140,110,80,0.85) 100%)`,
+                  borderRadius: '10px',
+                  padding: '8px 10px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  overflow: 'hidden',
+                  zIndex: 5,
+                  boxShadow: '0 2px 8px rgba(166,137,102,0.25)',
+                }}
+              >
+                <p style={{ fontSize: '13px', fontWeight: 600, color: cream, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {b.customerName || '顧客'}
+                </p>
+                <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.78)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {b.serviceName}
+                </p>
+                {height >= 68 && (
+                  <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.55)', marginTop: '3px' }}>
+                    {b.time} · {dur} 分鐘
+                  </p>
+                )}
+              </button>
+            )
+          })}
+
+          {/* Empty state overlay */}
+          {dayBookings.length === 0 && (
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, transform: 'translateY(-50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '15px', color: '#d4ccc6' }}>今日無預約</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -437,7 +584,7 @@ export default function AdminPage() {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState<boolean | null>(null)
-  const [tab, setTab] = useState<BookingTab>('today')
+  const [tab, setTab] = useState<BookingTab>('timeline')
   const [mainView, setMainView] = useState<MainView>('bookings')
   const [providerName, setProviderName] = useState('')
   const [customerSheet, setCustomerSheet] = useState<Booking | null>(null)
@@ -493,6 +640,7 @@ export default function AdminPage() {
   const monthRevenue = monthBookings.reduce((s, b) => s + b.servicePrice, 0)
 
   const bookingTabs: { key: BookingTab; label: string }[] = [
+    { key: 'timeline', label: '時段視圖' },
     { key: 'today', label: '今日' },
     { key: 'upcoming', label: '即將到來' },
     { key: 'past', label: '過去' },
@@ -573,57 +721,66 @@ export default function AdminPage() {
       {/* ════════════════ BOOKINGS VIEW ════════════════ */}
       {mainView === 'bookings' && (
         <>
-          {/* Sub-tabs */}
-          <div style={{ display: 'flex', margin: '12px 16px 0', gap: '6px' }}>
-            {bookingTabs.map(t => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{
-                padding: '8px 16px', borderRadius: '20px', fontSize: '12px',
-                fontWeight: tab === t.key ? 600 : 400, border: 'none', cursor: 'pointer',
-                background: tab === t.key ? oak : 'rgba(166,137,102,0.08)',
-                color: tab === t.key ? cream : '#8a7e76',
-                transition: 'all 0.18s',
-              }}>{t.label}</button>
-            ))}
+          {/* Sub-tabs (scrollable) */}
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', margin: '12px 16px 0' }}>
+            <div style={{ display: 'flex', gap: '6px', minWidth: 'max-content' }}>
+              {bookingTabs.map(t => (
+                <button key={t.key} onClick={() => setTab(t.key)} style={{
+                  padding: '8px 16px', borderRadius: '20px', fontSize: '12px',
+                  fontWeight: tab === t.key ? 600 : 400, border: 'none', cursor: 'pointer',
+                  background: tab === t.key ? oak : 'rgba(166,137,102,0.08)',
+                  color: tab === t.key ? cream : '#8a7e76',
+                  transition: 'all 0.18s', whiteSpace: 'nowrap',
+                }}>{t.label}</button>
+              ))}
+            </div>
           </div>
 
-          {/* Booking list */}
-          <div style={{ padding: '14px 16px 8px' }}>
-            {filteredBookings.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '16px', color: '#c8c0b8' }}>
-                  {tab === 'today' ? '今日尚無預約' : tab === 'upcoming' ? '目前無待服務預約' : '無過去記錄'}
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {tab !== 'past'
-                  ? Object.entries(
-                      filteredBookings.reduce<Record<string, Booking[]>>((acc, b) => {
-                        acc[b.date] = [...(acc[b.date] ?? []), b]
-                        return acc
-                      }, {})
-                    ).map(([date, dayBookings]) => (
-                      <div key={date}>
-                        <p style={{ fontSize: '11px', color: oak, letterSpacing: '0.08em', marginBottom: '8px', paddingLeft: '4px' }}>
-                          {date === today ? '· 今天' : `· ${date}`}
-                        </p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {dayBookings.map(b => (
-                            <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
-                          ))}
+          {/* Timeline view */}
+          {tab === 'timeline' && (
+            <TimelineView bookings={bookings} services={services} onViewCustomer={setCustomerSheet} />
+          )}
+
+          {/* Booking list (today / upcoming / past) */}
+          {tab !== 'timeline' && (
+            <div style={{ padding: '14px 16px 8px' }}>
+              {filteredBookings.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '48px 0' }}>
+                  <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '16px', color: '#c8c0b8' }}>
+                    {tab === 'today' ? '今日尚無預約' : tab === 'upcoming' ? '目前無待服務預約' : '無過去記錄'}
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {tab !== 'past'
+                    ? Object.entries(
+                        filteredBookings.reduce<Record<string, Booking[]>>((acc, b) => {
+                          acc[b.date] = [...(acc[b.date] ?? []), b]
+                          return acc
+                        }, {})
+                      ).map(([date, dayBookings]) => (
+                        <div key={date}>
+                          <p style={{ fontSize: '11px', color: oak, letterSpacing: '0.08em', marginBottom: '8px', paddingLeft: '4px' }}>
+                            {date === today ? '· 今天' : `· ${date}`}
+                          </p>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {dayBookings.map(b => (
+                              <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  : filteredBookings.map(b => (
-                      <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
-                    ))
-                }
-              </div>
-            )}
-          </div>
+                      ))
+                    : filteredBookings.map(b => (
+                        <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
+                      ))
+                  }
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Manual booking */}
-          {services.length > 0 && (
+          {tab !== 'timeline' && services.length > 0 && (
             <div style={{ padding: '8px 16px 32px' }}>
               <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px', paddingLeft: '4px' }}>私下預約管理</p>
               <ManualBookingForm providerId={providerId} services={services} onSuccess={fetchBookings} />
