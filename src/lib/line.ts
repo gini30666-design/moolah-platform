@@ -47,7 +47,7 @@ export async function pushFlexMessage(to: string, altText: string, contents: obj
 }
 
 export async function replyMessage(replyToken: string, messages: object[]) {
-  await fetch(`${LINE_API}/reply`, {
+  const res = await fetch(`${LINE_API}/reply`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,6 +55,10 @@ export async function replyMessage(replyToken: string, messages: object[]) {
     },
     body: JSON.stringify({ replyToken, messages }),
   })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error('[LINE replyMessage error]', res.status, err)
+  }
 }
 
 export function verifySignature(body: string, signature: string): boolean {

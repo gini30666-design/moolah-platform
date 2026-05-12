@@ -49,31 +49,33 @@ export async function POST(req: NextRequest) {
   const events = body.events ?? []
 
   for (const event of events) {
-    if (event.type === 'follow') {
-      await pushFlexMessage(
-        event.source.userId,
-        '歡迎使用 MooLah 預約系統！',
-        buildWelcomeFlex()
-      )
-      continue
-    }
+    try {
+      if (event.type === 'follow') {
+        await pushFlexMessage(
+          event.source.userId,
+          '歡迎使用 MooLah 預約系統！',
+          buildWelcomeFlex()
+        )
+        continue
+      }
 
-    if (event.type === 'message' && event.message.type === 'text') {
+      if (event.type !== 'message' || event.message.type !== 'text') continue
+
       const userText: string = event.message.text.trim()
       const lower = userText.toLowerCase()
+      const userId: string = event.source.userId
+      const replyToken: string = event.replyToken
 
-      // 我的預約
+      // 我的預約 — 用 push 避免 replyToken 超時（需查 Sheets）
       if (lower.includes('我的預約') || lower.includes('my booking')) {
-        const bookings = await getUpcomingBookings(event.source.userId)
-        await replyMessage(event.replyToken, [
-          { type: 'flex', altText: '我的預約紀錄', contents: buildMyBookingsFlex(bookings) },
-        ])
+        const bookings = await getUpcomingBookings(userId)
+        await pushFlexMessage(userId, '我的預約紀錄', buildMyBookingsFlex(bookings))
         continue
       }
 
       // 取消預約
       if (lower.includes('取消') || lower.includes('cancel')) {
-        await replyMessage(event.replyToken, [
+        await replyMessage(replyToken, [
           { type: 'flex', altText: '取消預約說明', contents: buildCancelFlex() },
         ])
         continue
@@ -86,42 +88,39 @@ export async function POST(req: NextRequest) {
         lower.includes('設計師') ||
         lower.includes('admin')
       ) {
-        await replyMessage(event.replyToken, [
+        await replyMessage(replyToken, [
           { type: 'flex', altText: '設計師後台管理', contents: buildAdminFlex() },
         ])
         continue
       }
 
-      // 開始預約 / 預約
+      // 預約
       if (
         lower.includes('預約') ||
         lower.includes('book') ||
         lower.includes('開始') ||
         lower.includes('立即')
       ) {
-        await replyMessage(event.replyToken, [
+        await replyMessage(replyToken, [
           { type: 'flex', altText: '立即預約職人', contents: buildStartBookingFlex() },
         ])
         continue
       }
 
       // 打招呼
-      if (
-        lower.includes('你好') ||
-        lower === 'hi' ||
-        lower === 'hello' ||
-        lower.includes('哈囉')
-      ) {
-        await replyMessage(event.replyToken, [
+      if (lower.includes('你好') || lower === 'hi' || lower === 'hello' || lower.includes('哈囉')) {
+        await replyMessage(replyToken, [
           { type: 'flex', altText: '歡迎使用 MooLah', contents: buildWelcomeFlex() },
         ])
         continue
       }
 
       // 預設
-      await replyMessage(event.replyToken, [
+      await replyMessage(replyToken, [
         { type: 'flex', altText: '有什麼可以幫您？', contents: buildDefaultFlex() },
       ])
+    } catch (err) {
+      console.error('[webhook event error]', err)
     }
   }
 
