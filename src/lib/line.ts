@@ -70,91 +70,55 @@ export function verifySignature(body: string, signature: string): boolean {
 export function buildWelcomeFlex(): object {
   return {
     type: 'bubble',
-    size: 'mega',
-    hero: {
-      type: 'box',
-      layout: 'vertical',
-      contents: [],
-      backgroundColor: '#9b8ea0',
-      height: '80px',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
     body: {
       type: 'box',
       layout: 'vertical',
-      spacing: 'md',
       paddingAll: '20px',
+      spacing: 'none',
       contents: [
+        { type: 'text', text: '歡迎使用 MooLah 🌿', weight: 'bold', size: 'xl', color: '#2C2825' },
         {
           type: 'text',
-          text: '歡迎使用 MooLah 🌿',
-          weight: 'bold',
-          size: 'xl',
-          color: '#2C2825',
-        },
-        {
-          type: 'text',
-          text: '您的專屬美業預約助理，隨時為您服務。',
+          text: '您的專屬美業預約助理，髮型・美甲・寵物・汽車美容，一站搞定。',
           size: 'sm',
-          color: '#7a7a7a',
+          color: '#888',
           wrap: true,
+          margin: 'sm',
         },
-        { type: 'separator', margin: 'md' },
-        {
-          type: 'text',
-          text: '您可以：',
-          size: 'sm',
-          weight: 'bold',
-          color: '#2C2825',
-          margin: 'md',
-        },
+        { type: 'separator', margin: 'xl' },
         {
           type: 'box',
           layout: 'vertical',
           spacing: 'sm',
-          margin: 'sm',
+          margin: 'lg',
           contents: [
-            bulletText('點擊下方「立即預約」開始預約'),
             bulletText('輸入「我的預約」查看預約紀錄'),
-            bulletText('輸入「取消預約」協助取消'),
+            bulletText('輸入「取消預約」申請取消'),
+            bulletText('輸入「設計師後台」進入後台管理'),
           ],
+        },
+        {
+          type: 'text',
+          text: '點下方按鈕開始探索職人並立即預約',
+          size: 'xs',
+          color: '#bbb',
+          margin: 'xl',
         },
       ],
     },
     footer: {
       type: 'box',
       layout: 'vertical',
-      spacing: 'sm',
+      paddingAll: '16px',
       contents: [
         {
           type: 'button',
-          action: {
-            type: 'uri',
-            label: '🔍 瀏覽所有職人',
-            uri: process.env.NEXT_PUBLIC_BASE_URL
-              ? `${process.env.NEXT_PUBLIC_BASE_URL}/discover`
-              : 'https://moolah-platform.vercel.app/discover',
-          },
+          action: { type: 'uri', label: '立即預約', uri: `${BASE_URL}/discover` },
           style: 'primary',
-          color: '#A68966',
+          color: '#06C755',
           height: 'sm',
-        },
-        {
-          type: 'button',
-          action: {
-            type: 'uri',
-            label: '立即預約 →',
-            uri: process.env.NEXT_PUBLIC_BASE_URL
-              ? `${process.env.NEXT_PUBLIC_BASE_URL}/go/chloe`
-              : 'https://moolah-platform.vercel.app/go/chloe',
-          },
-          style: 'secondary',
-          height: 'sm',
-          color: '#2C2825',
         },
       ],
-      paddingAll: '16px',
     },
   }
 }
