@@ -124,19 +124,33 @@ export function buildWelcomeFlex(): object {
     footer: {
       type: 'box',
       layout: 'vertical',
+      spacing: 'sm',
       contents: [
+        {
+          type: 'button',
+          action: {
+            type: 'uri',
+            label: '🔍 瀏覽所有職人',
+            uri: process.env.NEXT_PUBLIC_BASE_URL
+              ? `${process.env.NEXT_PUBLIC_BASE_URL}/discover`
+              : 'https://moolah-platform.vercel.app/discover',
+          },
+          style: 'primary',
+          color: '#A68966',
+          height: 'sm',
+        },
         {
           type: 'button',
           action: {
             type: 'uri',
             label: '立即預約 →',
             uri: process.env.NEXT_PUBLIC_BASE_URL
-              ? `${process.env.NEXT_PUBLIC_BASE_URL}/designer-001`
-              : 'https://moolah-platform.vercel.app/designer-001',
+              ? `${process.env.NEXT_PUBLIC_BASE_URL}/go/chloe`
+              : 'https://moolah-platform.vercel.app/go/chloe',
           },
-          style: 'primary',
-          color: '#9b8ea0',
+          style: 'secondary',
           height: 'sm',
+          color: '#2C2825',
         },
       ],
       paddingAll: '16px',

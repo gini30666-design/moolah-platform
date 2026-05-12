@@ -56,8 +56,9 @@ function Hero() {
             <Link href="/line" className="flex items-center gap-2 px-6 md:px-8 py-3.5 md:py-4 text-xs md:text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
               <LineIcon />立即預約
             </Link>
-            <Link href="/services" className="text-xs md:text-sm text-[var(--cream)] px-6 md:px-8 py-3.5 md:py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
-              了解更多
+            <Link href="/discover" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-6 md:px-8 py-3.5 md:py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
+              <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', opacity: 0.7 }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
+              瀏覽職人
             </Link>
           </div>
           <div className="anim-fade-up-4 flex flex-wrap gap-6 md:gap-10 pt-6 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.35)' }}>
