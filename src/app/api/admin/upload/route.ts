@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: blob.url })
   } catch (err: unknown) {
     const e = err as Error
-    console.error('Upload error full:', e.message, e.stack)
-    return NextResponse.json({ error: e.message }, { status: 500 })
+    console.error('Upload error:', e.message)
+    return NextResponse.json({ error: '上傳失敗，請稍後再試' }, { status: 500 })
   }
 }
