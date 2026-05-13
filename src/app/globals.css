@@ -115,3 +115,26 @@ body::after {
     transition: none !important;
   }
 }
+
+/* ── View Transitions — App-like page switching ───────────────────────────── */
+/* The browser fades old page out, new page in. Total duration: ~300ms. */
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes vt-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+
+::view-transition-old(root) {
+  animation: vt-fade-out 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-fade-in 0.28s cubic-bezier(0, 0, 0.2, 1) 0.05s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}

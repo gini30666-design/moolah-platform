@@ -1,0 +1,47 @@
+{
+  "name": "MooLah — 質感生活，從容預約",
+  "short_name": "MooLah",
+  "description": "台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1714",
+  "theme_color": "#A68966",
+  "orientation": "portrait",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/opengraph-image",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["lifestyle", "business"],
+  "shortcuts": [
+    {
+      "name": "探索職人",
+      "short_name": "探索",
+      "url": "/discover",
+      "description": "瀏覽所有合作職人"
+    },
+    {
+      "name": "我的預約",
+      "short_name": "預約",
+      "url": "/my-bookings",
+      "description": "查看我的預約紀錄"
+    }
+  ]
+}
