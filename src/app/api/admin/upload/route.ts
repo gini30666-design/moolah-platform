@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadImageToDrive } from '@/lib/drive'
+import { put } from '@vercel/blob'
 
 export const maxDuration = 30
 
@@ -16,9 +16,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '僅支援圖片格式' }, { status: 400 })
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const url = await uploadImageToDrive(buffer, file.name, file.type)
-    return NextResponse.json({ url })
+    const blob = await put(`portfolio/${Date.now()}-${file.name}`, file, {
+      access: 'public',
+    })
+
+    return NextResponse.json({ url: blob.url })
   } catch (err: unknown) {
     const e = err as Error
     console.error('Upload error:', e.message)
