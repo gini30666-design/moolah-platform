@@ -19,8 +19,9 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
     const url = await uploadImageToDrive(buffer, file.name, file.type)
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error('Upload error:', err)
-    return NextResponse.json({ error: '上傳失敗，請稍後再試' }, { status: 500 })
+  } catch (err: unknown) {
+    const e = err as Error & { code?: number; status?: number; errors?: unknown[] }
+    console.error('Upload error:', e.message, 'code:', e.code, 'status:', e.status, 'errors:', JSON.stringify(e.errors))
+    return NextResponse.json({ error: e.message ?? '上傳失敗，請稍後再試' }, { status: 500 })
   }
 }
