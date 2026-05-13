@@ -18,8 +18,10 @@ export async function uploadImageToDrive(
 ): Promise<string> {
   const stream = Readable.from(buffer)
 
+  const PORTFOLIO_FOLDER = '1az6PGzoeTVM0wJJ5Q0lQv9achsjZ18g7'
+
   const res = await drive.files.create({
-    requestBody: { name: filename, mimeType },
+    requestBody: { name: filename, mimeType, parents: [PORTFOLIO_FOLDER] },
     media: { mimeType, body: stream },
     fields: 'id',
   })
