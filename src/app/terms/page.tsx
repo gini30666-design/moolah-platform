@@ -2,8 +2,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '隱私政策 | MooLah',
-  description: 'MooLah 美業預約平台隱私政策 — 說明我們如何蒐集、使用及保護您的個人資料',
+  title: '使用條款 | MooLah',
+  description: 'MooLah 美業預約平台使用條款 — 使用本服務前請詳閱本條款',
 }
 
 function Nav() {
@@ -46,69 +46,104 @@ function Footer() {
 
 const SECTIONS = [
   {
-    title: '一、資料蒐集範圍',
-    content: `當您使用 MooLah 預約服務時，我們會蒐集以下資料：
-• LINE 用戶基本資料（顯示名稱、LINE 使用者 ID）
-• 您自願填寫的資料（性別、目前髮長等預約相關資訊）
-• 預約資料（服務項目、預約日期與時段、備註）
+    title: '一、服務說明',
+    content: `MooLah 是一個美業預約媒合平台，提供消費者與合作職人（髮型設計師、寵物美容師、汽車美容師、美甲師）之間的線上預約服務。
 
-我們不會蒐集您的電話號碼、地址或付款資訊。`,
+本平台透過 LINE LIFF 技術運作，消費者以 LINE 帳號登入後即可使用預約功能。MooLah 本身為媒合平台，不直接提供美業服務，實際服務由各合作職人獨立提供。`,
   },
   {
-    title: '二、資料使用目的',
-    content: `蒐集之個人資料僅用於以下目的：
-• 管理您的預約紀錄，並傳送預約確認與提醒
-• 透過 LINE 推播通知您的預約狀態（確認、取消等）
-• 協助合作設計師管理客戶預約與服務紀錄
-• 統計整體服務使用量（不涉及個人識別）`,
-  },
-  {
-    title: '三、資料保存方式',
-    content: `您的預約資料儲存於 Google Sheets（Google 雲端試算表），並受 Google 企業級安全機制保護。存取權限僅限於您預約的合作設計師及 MooLah 管理人員。
+    title: '二、使用資格',
+    content: `使用 MooLah 服務，您須符合以下條件：
 
-資料保存期限：預約完成後至多保存 24 個月，期滿後定期清除。`,
-  },
-  {
-    title: '四、資料分享',
-    content: `MooLah 不會將您的個人資料出售、出租或提供給任何第三方商業用途。
+• 擁有有效的 LINE 帳號
+• 年滿 18 歲，或在法定監護人同意下使用
+• 提供真實、準確的個人資訊
+• 遵守本使用條款及相關法規
 
-以下情況除外：
-• 法律要求或主管機關命令
-• 保護 MooLah 或用戶之合法權益`,
+如您不符合上述條件，請勿使用本服務。`,
   },
   {
-    title: '五、LINE 平台授權',
-    content: `本服務透過 LINE LIFF（LINE 前端框架）運作。您在登入時授權 MooLah 讀取您的 LINE 基本個人資料（顯示名稱與 LINE 使用者 ID）。您可隨時在 LINE 應用程式設定中撤銷此授權。`,
-  },
-  {
-    title: '六、您的權利',
-    content: `依據台灣《個人資料保護法》，您有權：
-• 查詢或請求閱覽 MooLah 所持有的您的個人資料
-• 請求製給複製本
-• 請求補充或更正
-• 請求停止蒐集、處理或利用
-• 請求刪除
+    title: '三、預約規則',
+    content: `（一）預約確認
+完成預約送出後，系統將透過 LINE 傳送確認通知給您及合作職人。預約以系統確認通知為準。
 
-如需行使上述權利，請透過以下方式聯絡我們。`,
+（二）取消與修改
+• 如需取消預約，請透過「我的預約」頁面操作，或聯絡合作職人
+• 各職人可能有不同的取消政策，請於預約前確認
+• 爽約（未事先取消）可能影響後續預約權益
+
+（三）準時到場
+請於預約時間準時到場。若有延誤，請提前聯絡職人，以免影響後續客人的預約安排。`,
   },
   {
-    title: '七、聯絡方式',
-    content: `如您對本隱私政策有任何疑問，或需要行使個人資料相關權利，請聯絡：
+    title: '四、消費者責任',
+    content: `使用 MooLah 服務時，您同意：
+
+• 不得提供虛假資訊進行預約
+• 不得惡意佔用時段（重複預約後爽約）
+• 不得以任何方式干擾平台正常運作
+• 不得利用本平台從事任何違法行為
+
+違反上述規定，MooLah 有權暫停或終止您的使用權限。`,
+  },
+  {
+    title: '五、合作職人責任',
+    content: `MooLah 合作職人須遵守以下規範：
+
+• 依約定時間提供服務，不得無故爽約
+• 所提供之服務須符合台灣相關法規（含食品安全、衛生標準）
+• 維護消費者個人資料之保密義務
+• 自行負責服務品質及相關法律責任
+
+MooLah 為媒合平台，不對職人提供之服務品質負責，但將協助處理消費糾紛。`,
+  },
+  {
+    title: '六、責任限制',
+    content: `MooLah 不對以下情況承擔責任：
+
+• 消費者與職人之間的服務糾紛（MooLah 協助溝通但不承擔連帶責任）
+• 因網路中斷、系統維護等不可抗力因素導致的服務中斷
+• LINE 平台本身的服務異常
+• 消費者提供錯誤資訊所導致的問題
+
+如遇消費糾紛，建議雙方先行協商，必要時可聯絡 MooLah 協助調處。`,
+  },
+  {
+    title: '七、智慧財產權',
+    content: `MooLah 平台所有內容，包含但不限於文字、圖片、設計、程式碼，均受著作權法保護，屬 MooLah 所有。
+
+未經書面授權，不得複製、修改、散佈或商業使用本平台任何內容。合作職人授權 MooLah 使用其提供之作品集圖片用於平台展示，不另行支付費用。`,
+  },
+  {
+    title: '八、服務變更與終止',
+    content: `MooLah 保留以下權利：
+
+• 隨時修改、暫停或終止部分或全部服務功能
+• 更新本使用條款，並於本頁面公告
+• 因違反條款而暫停或終止特定用戶的使用權限
+
+重大條款變更將提前於 LINE 官方帳號公告。繼續使用本服務視為同意變更後之條款。`,
+  },
+  {
+    title: '九、準據法與管轄',
+    content: `本使用條款依中華民國法律解釋及執行。
+
+如因本條款或使用本服務發生爭議，雙方同意以台灣高雄地方法院為第一審管轄法院。`,
+  },
+  {
+    title: '十、聯絡方式',
+    content: `如對本使用條款有任何疑問，請透過以下方式聯絡：
 
 Email：moolah118@gmail.com
 LINE 官方帳號：@881zhkla
 
-我們將於 5 個工作日內回覆。`,
-  },
-  {
-    title: '八、政策更新',
-    content: `本隱私政策如有變更，將於本頁面公告。重大變更時，我們會透過 LINE 通知曾使用本服務的用戶。
+我們將於 5 個工作日內回覆。
 
-最後更新日期：2026 年 5 月 11 日`,
+最後更新日期：2026 年 5 月 15 日`,
   },
 ]
 
-export default function PrivacyPage() {
+export default function TermsPage() {
   return (
     <>
       <Nav />
@@ -121,12 +156,12 @@ export default function PrivacyPage() {
           }} />
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
           <div className="relative max-w-3xl mx-auto">
-            <p data-animate className="text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--oak)' }}>Privacy Policy</p>
+            <p data-animate className="text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--oak)' }}>Terms of Service</p>
             <h1 data-animate data-delay="100" className="font-display mb-4" style={{ fontSize: 'clamp(2.2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300 }}>
-              隱私政策
+              使用條款
             </h1>
             <p data-animate data-delay="200" className="text-sm" style={{ color: 'rgba(251,249,244,0.45)' }}>
-              本政策說明 MooLah 如何蒐集、使用及保護您的個人資料，符合台灣《個人資料保護法》規定。
+              使用 MooLah 服務前，請詳閱以下條款。繼續使用本服務即表示您同意本條款之內容。
             </p>
           </div>
         </section>
