@@ -78,7 +78,7 @@ const SECTIONS = [
   },
   {
     title: '五、LINE 平台授權',
-    content: `本服務透過 LINE LIFF（LINE 前端框架）運作。您在登入時授權 MooLah 讀取您的 LINE 基本個人資料（顯示名稱與 LINE 使用者 ID）。您可隨時在 LINE 應用程式設定中撤銷此授權。`,
+    content: `本服務透過 LINE 平台授權運作。您在登入時授權 MooLah 讀取您的 LINE 基本個人資料（顯示名稱與 LINE 使用者 ID）。您可隨時在 LINE 應用程式設定中撤銷此授權。`,
   },
   {
     title: '六、您的權利',
