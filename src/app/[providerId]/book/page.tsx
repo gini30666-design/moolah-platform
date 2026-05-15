@@ -35,7 +35,7 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
                 : 'rgba(255,255,255,0.75)',
               color: selected
                 ? 'var(--cream)'
-                : 'rgba(44,40,37,0.55)',
+                : 'var(--charcoal)',
               boxShadow: selected
                 ? '0 3px 10px rgba(44,40,37,0.18), inset 0 1px 0 rgba(255,255,255,0.08)'
                 : '0 1px 3px rgba(166,137,102,0.10)',
@@ -56,8 +56,8 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
 function SectionLabel({ step, label }: { step: string; label: string }) {
   return (
     <div className="flex items-center gap-3 mb-3">
-      <span className="font-display text-lg leading-none" style={{ color: 'rgba(166,137,102,0.35)' }}>{step}</span>
-      <span className="text-[10px] tracking-[0.22em] uppercase" style={{ color: 'var(--oak)' }}>{label}</span>
+      <span className="font-display text-lg leading-none" style={{ color: 'rgba(166,137,102,0.65)' }}>{step}</span>
+      <span className="text-[10px] tracking-[0.22em] uppercase" style={{ color: 'var(--charcoal)' }}>{label}</span>
     </div>
   )
 }
@@ -96,7 +96,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack }: {
           <p className="font-display text-xl" style={{ color: 'var(--oak)' }}>{date}　{time}</p>
         </div>
 
-        <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.45)' }}>確認通知已透過 LINE 傳送給您與設計師</p>
+        <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>確認通知已透過 LINE 傳送給您與設計師</p>
 
         <button
           onClick={onBack}
@@ -225,7 +225,7 @@ export default function BookPage() {
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'var(--oak)' }}>預約服務</p>
               <p className="text-base font-medium" style={{ color: 'var(--charcoal)' }}>{service.name}</p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.45)' }}>{service.duration} 分鐘</p>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.65)' }}>{service.duration} 分鐘</p>
             </div>
             <div className="text-right">
               <p className="font-display text-2xl" style={{ color: 'var(--charcoal)' }}>NT$ {service.price.toLocaleString()}</p>
@@ -274,7 +274,7 @@ export default function BookPage() {
                 {loadingSlots ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 0' }}>
                     <div className="w-5 h-5 rounded-full border-2 border-[rgba(166,137,102,0.20)] border-t-[#A68966] animate-spin" />
-                    <span style={{ fontSize: '13px', color: 'rgba(44,40,37,0.45)' }}>查詢可用時段中</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(44,40,37,0.65)' }}>查詢可用時段中</span>
                   </div>
                 ) : (
                   <>
@@ -388,7 +388,7 @@ export default function BookPage() {
 
         {/* Progress hint */}
         {!canSubmit && (
-          <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.40)', marginTop: '8px' }}>
+          <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.65)', marginTop: '8px' }}>
             {!gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : !time ? '請選擇時段' : ''}
           </p>
         )}

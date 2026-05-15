@@ -110,7 +110,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             ].map(item => (
               <div key={item.label} style={{ flex: 1, background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', fontWeight: 600, color: oak, lineHeight: 1 }}>{item.value}</p>
-                <p style={{ fontSize: '10px', color: '#b0a89e', marginTop: '5px', letterSpacing: '0.05em' }}>{item.label}</p>
+                <p style={{ fontSize: '10px', color: '#7a6e68', marginTop: '5px', letterSpacing: '0.05em' }}>{item.label}</p>
               </div>
             ))}
           </div>
@@ -159,7 +159,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             }}>
               <div>
                 <p style={{ fontSize: '13px', color: charcoal, fontWeight: b.id === booking.id ? 500 : 400 }}>{b.serviceName}</p>
-                <p style={{ fontSize: '11px', color: '#a09890', marginTop: '2px' }}>
+                <p style={{ fontSize: '11px', color: '#6b5f56', marginTop: '2px' }}>
                   {b.date} {b.time}
                   {b.id === booking.id && <span style={{ color: oak, marginLeft: '6px' }}>← 本次</span>}
                 </p>
@@ -219,17 +219,17 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
         onClick={() => onViewCustomer(booking)}
         style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', background: 'none', border: 'none', padding: '0', cursor: 'pointer', width: '100%', textAlign: 'left' }}
       >
-        <span style={{ fontSize: '12px', color: '#8a7e76' }}>{booking.customerName || '匿名客戶'}</span>
+        <span style={{ fontSize: '12px', color: '#4a3f3a' }}>{booking.customerName || '匿名客戶'}</span>
         {booking.gender && <span style={{ fontSize: '11px', color: oak, background: 'rgba(166,137,102,0.08)', padding: '2px 8px', borderRadius: '20px' }}>{booking.gender}</span>}
         {booking.hairLength && <span style={{ fontSize: '11px', color: oak, background: 'rgba(166,137,102,0.08)', padding: '2px 8px', borderRadius: '20px' }}>{booking.hairLength}</span>}
-        <span style={{ fontSize: '10px', color: 'rgba(166,137,102,0.45)', marginLeft: 'auto' }}>顧客紀錄 →</span>
+        <span style={{ fontSize: '10px', color: 'var(--oak)', marginLeft: 'auto' }}>顧客紀錄 →</span>
       </button>
 
-      {booking.note && <p style={{ fontSize: '11px', color: '#a09890', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
+      {booking.note && <p style={{ fontSize: '11px', color: '#6b5f56', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
       <p style={{ fontSize: '10px', color: '#c8c0b8', marginTop: '8px' }}>#{booking.id}</p>
 
       {!showConfirm ? (
-        <button onClick={() => setShowConfirm(true)} style={{ marginTop: '14px', width: '100%', fontSize: '11px', color: '#c0b4ac', border: `1px solid ${border}`, borderRadius: '12px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>
+        <button onClick={() => setShowConfirm(true)} style={{ marginTop: '14px', width: '100%', fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '12px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>
           取消此預約
         </button>
       ) : (
