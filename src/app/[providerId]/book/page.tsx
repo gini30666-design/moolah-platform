@@ -146,6 +146,7 @@ export default function BookPage() {
   const [customerNameInput, setCustomerNameInput] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [liffReady, setLiffReady] = useState(false)
+  const [showLineCard, setShowLineCard] = useState(true)
 
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
@@ -256,6 +257,62 @@ export default function BookPage() {
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6 pb-52">
+
+        {/* ── LINE OA 加入提示（外部瀏覽器才顯示）──────── */}
+        {liffReady && !lineUserId && showLineCard && (
+          <div className="mb-6" style={{
+            background: 'linear-gradient(135deg, rgba(6,199,85,0.08) 0%, rgba(6,199,85,0.04) 100%)',
+            border: '1.5px solid rgba(6,199,85,0.25)',
+            borderRadius: '16px',
+            padding: '16px',
+            position: 'relative',
+          }}>
+            <button
+              type="button"
+              onClick={() => setShowLineCard(false)}
+              style={{
+                position: 'absolute', top: '10px', right: '12px',
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'rgba(44,40,37,0.35)', fontSize: '16px', lineHeight: 1, padding: '2px',
+              }}
+            >✕</button>
+
+            <div className="flex items-start gap-3">
+              {/* LINE icon */}
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#06C755', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 2C5.582 2 2 5.088 2 8.9c0 2.477 1.338 4.685 3.43 6.125-.15.555-.544 2.013-.623 2.325-.1.388.143.385.3.28.123-.083 1.97-1.3 2.766-1.829.53.075 1.073.115 1.627.115C14.418 15.916 18 12.828 18 9.04 18 5.25 14.418 2 10 2Z" fill="white"/>
+                </svg>
+              </div>
+
+              <div style={{ flex: 1, paddingRight: '20px' }}>
+                <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>加入 MooLah LINE，接收預約通知</p>
+                <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.60)' }}>加入後可即時收到預約確認，以及前一天的提醒通知</p>
+                <a
+                  href="https://line.me/R/ti/p/@881zhkla"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 16px', borderRadius: '99px',
+                    background: '#06C755', color: 'white',
+                    fontSize: '12px', fontWeight: 600, textDecoration: 'none',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  立即加入 →
+                </a>
+                <span
+                  onClick={() => setShowLineCard(false)}
+                  className="text-xs ml-4"
+                  style={{ color: 'rgba(44,40,37,0.40)', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  略過，直接預約
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── 服務摘要卡 ─────────────────────────────── */}
         <div data-animate className="mb-8 p-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '16px', borderLeft: '3px solid var(--oak)' }}>
