@@ -11,17 +11,26 @@ export default function DashboardPage() {
   const [name, setName] = useState('')
 
   useEffect(() => {
-    // Read liff.state BEFORE init — SDK may strip it afterwards
-    // e.g. LIFF URL: liff.line.me/ID?to=designer-002
-    // becomes: /dashboard?liff.state=%3Fto%3Ddesigner-002
-    const liffState = new URLSearchParams(window.location.search).get('liff.state') ?? ''
-    const destination = new URLSearchParams(liffState).get('to') ?? ''
+    // Read destination from two sources:
+    // 1. liff.state (first visit via LIFF URL: liff.line.me/ID?to=designer-002)
+    // 2. direct ?to= param (after liff.login redirectUri brings user back)
+    const params = new URLSearchParams(window.location.search)
+    const liffState = params.get('liff.state') ?? ''
+    const destination =
+      new URLSearchParams(liffState).get('to') ||
+      params.get('to') ||
+      ''
 
     liff
       .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
       .then(async () => {
         if (!liff.isLoggedIn()) {
-          liff.login({ redirectUri: window.location.href })
+          // Preserve destination in redirectUri — liff.init() strips liff.state from URL
+          const base = `${window.location.origin}/dashboard`
+          const redirectUri = destination
+            ? `${base}?to=${encodeURIComponent(destination)}`
+            : base
+          liff.login({ redirectUri })
           return
         }
 
