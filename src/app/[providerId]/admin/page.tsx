@@ -672,9 +672,23 @@ export default function AdminPage() {
         const data = await res.json()
         setProviderName(data.provider?.name ?? '')
         setServices(data.services ?? [])
-        if (data.provider?.lineUserId === lineUserId) {
+        const storedUserId = data.provider?.lineUserId ?? ''
+        if (storedUserId === lineUserId) {
           setAuthorized(true)
           await fetchBookings()
+        } else if (!storedUserId) {
+          // Unclaimed account — auto-register this LINE user as the owner
+          const claimRes = await fetch('/api/admin/claim', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ providerId, lineUserId }),
+          })
+          if (claimRes.ok) {
+            setAuthorized(true)
+            await fetchBookings()
+          } else {
+            setAuthorized(false)
+          }
         } else {
           setAuthorized(false)
         }
