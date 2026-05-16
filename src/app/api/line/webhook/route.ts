@@ -115,6 +115,14 @@ export async function POST(req: NextRequest) {
         continue
       }
 
+      // 查詢自己的 LINE ID（設計師綁定用）
+      if (lower.includes('我的id') || lower.includes('my id') || lower.includes('lineid')) {
+        await replyMessage(replyToken, [
+          { type: 'text', text: `您的 LINE User ID：\n${userId}\n\n請截圖傳給 MooLah 管理員` },
+        ])
+        continue
+      }
+
       // 預設
       await replyMessage(replyToken, [
         { type: 'flex', altText: '有什麼可以幫您？', contents: buildDefaultFlex() },
