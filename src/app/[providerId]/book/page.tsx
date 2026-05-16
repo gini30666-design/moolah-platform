@@ -96,9 +96,30 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
           <p className="font-display text-xl" style={{ color: 'var(--oak)' }}>{date}　{time}</p>
         </div>
 
-        <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>
-          {isLineUser ? '確認通知已透過 LINE 傳送給您與設計師' : '預約資訊已傳送給設計師，請靜候聯絡'}
-        </p>
+        {isLineUser ? (
+          <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>確認通知已透過 LINE 傳送給您與設計師</p>
+        ) : (
+          <div className="mb-8">
+            <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.65)' }}>設計師已收到通知，將盡速與您聯繫</p>
+            <a
+              href="https://line.me/R/ti/p/@881zhkla"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                padding: '10px 20px', borderRadius: '99px',
+                background: '#06C755', color: 'white',
+                fontSize: '13px', fontWeight: 500, textDecoration: 'none',
+                boxShadow: '0 2px 8px rgba(6,199,85,0.30)',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/>
+              </svg>
+              加入 MooLah LINE，接收預約通知
+            </a>
+          </div>
+        )}
 
         <button
           onClick={onBack}

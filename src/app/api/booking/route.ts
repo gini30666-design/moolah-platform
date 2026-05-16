@@ -49,21 +49,25 @@ export async function POST(req: NextRequest) {
   const serviceName = serviceRow[2]
   const servicePrice = serviceRow[3]
 
-  const notifications: Promise<unknown>[] = [
-    pushMessage(
-      providerLineUserId,
-      `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
-    ),
-  ]
-  if (customerLineUserId) {
-    notifications.push(
+  try {
+    const notifications: Promise<unknown>[] = [
       pushMessage(
-        customerLineUserId,
-        `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}`
+        providerLineUserId,
+        `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
+      ),
+    ]
+    if (customerLineUserId) {
+      notifications.push(
+        pushMessage(
+          customerLineUserId,
+          `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}`
+        )
       )
-    )
+    }
+    await Promise.all(notifications)
+  } catch (e) {
+    console.error('[booking] notification error (booking still saved):', e)
   }
-  await Promise.all(notifications)
 
   return NextResponse.json({ success: true, bookingId })
 }

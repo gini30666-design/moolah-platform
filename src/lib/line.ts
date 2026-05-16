@@ -5,7 +5,7 @@ const TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN!
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export async function pushMessage(to: string, text: string) {
-  await fetch(`${LINE_API}/push`, {
+  const res = await fetch(`${LINE_API}/push`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -16,6 +16,10 @@ export async function pushMessage(to: string, text: string) {
       messages: [{ type: 'text', text }],
     }),
   })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error('[LINE pushMessage error]', res.status, err, { to })
+  }
 }
 
 export async function multicastMessage(userIds: string[], text: string) {
@@ -33,7 +37,7 @@ export async function multicastMessage(userIds: string[], text: string) {
 }
 
 export async function pushFlexMessage(to: string, altText: string, contents: object) {
-  await fetch(`${LINE_API}/push`, {
+  const res = await fetch(`${LINE_API}/push`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,6 +48,10 @@ export async function pushFlexMessage(to: string, altText: string, contents: obj
       messages: [{ type: 'flex', altText, contents }],
     }),
   })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error('[LINE pushFlexMessage error]', res.status, err, { to })
+  }
 }
 
 export async function replyMessage(replyToken: string, messages: object[]) {
