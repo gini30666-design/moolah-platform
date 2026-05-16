@@ -166,9 +166,15 @@ export default function BookPage() {
           const profile = await liff.getProfile()
           setLineUserId(profile.userId)
           setDisplayName(profile.displayName)
+          setLiffReady(true)
+        } else if (liff.isInClient()) {
+          // In LINE's browser but not yet authenticated → trigger LINE login seamlessly
+          liff.login({ redirectUri: window.location.href })
+          // Don't set liffReady; page will redirect then return with token
+        } else {
+          // External browser (IG, Safari, Chrome) → show name + phone form
+          setLiffReady(true)
         }
-        // Not logged in → user fills name + phone manually, no forced redirect
-        setLiffReady(true)
       })
       .catch(() => setLiffReady(true))
   }, [])
