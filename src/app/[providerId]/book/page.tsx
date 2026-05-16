@@ -62,8 +62,8 @@ function SectionLabel({ step, label }: { step: string; label: string }) {
   )
 }
 
-function CompletionScreen({ providerName, serviceName, date, time, onBack }: {
-  providerName: string; serviceName: string; date: string; time: string; onBack: () => void
+function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser }: {
+  providerName: string; serviceName: string; date: string; time: string; onBack: () => void; isLineUser: boolean
 }) {
   return (
     <div style={{ minHeight: '100vh', background: '#f5efe6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'var(--font-dm-sans)' }}>
@@ -96,7 +96,9 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack }: {
           <p className="font-display text-xl" style={{ color: 'var(--oak)' }}>{date}　{time}</p>
         </div>
 
-        <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>確認通知已透過 LINE 傳送給您與設計師</p>
+        <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>
+          {isLineUser ? '確認通知已透過 LINE 傳送給您與設計師' : '預約資訊已傳送給設計師，請靜候聯絡'}
+        </p>
 
         <button
           onClick={onBack}
@@ -120,6 +122,9 @@ export default function BookPage() {
   const [service, setService] = useState<Service | null>(null)
   const [lineUserId, setLineUserId] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [customerNameInput, setCustomerNameInput] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
+  const [liffReady, setLiffReady] = useState(false)
 
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
@@ -133,12 +138,17 @@ export default function BookPage() {
   const [isHairCategory, setIsHairCategory] = useState(false)
 
   useEffect(() => {
-    liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! }).then(async () => {
-      if (!liff.isLoggedIn()) { liff.login(); return }
-      const profile = await liff.getProfile()
-      setLineUserId(profile.userId)
-      setDisplayName(profile.displayName)
-    })
+    liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
+      .then(async () => {
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile()
+          setLineUserId(profile.userId)
+          setDisplayName(profile.displayName)
+        }
+        // Not logged in → user fills name + phone manually, no forced redirect
+        setLiffReady(true)
+      })
+      .catch(() => setLiffReady(true))
   }, [])
 
   useEffect(() => {
@@ -170,14 +180,18 @@ export default function BookPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!date || !time || !gender || !lineUserId) return
+    const name = lineUserId ? displayName : customerNameInput.trim()
+    const phone = lineUserId ? '' : customerPhone.trim()
+    if (!date || !time || !gender || !name) return
     setSubmitting(true)
     const res = await fetch('/api/booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         providerId, serviceId: service?.id,
-        customerName: displayName, customerLineUserId: lineUserId,
+        customerName: name,
+        customerLineUserId: lineUserId || '',
+        customerPhone: phone,
         date, time, note, gender,
         hairLength: isHairCategory ? hairLength : '',
       }),
@@ -188,7 +202,7 @@ export default function BookPage() {
   }
 
   if (done && provider && service) {
-    return <CompletionScreen providerName={provider.name} serviceName={service.name} date={date} time={time} onBack={() => router.push(`/${providerId}`)} />
+    return <CompletionScreen providerName={provider.name} serviceName={service.name} date={date} time={time} onBack={() => router.push(`/${providerId}`)} isLineUser={!!lineUserId} />
   }
 
   if (!provider || !service) {
@@ -201,7 +215,10 @@ export default function BookPage() {
 
   const today = new Date().toISOString().split('T')[0]
   const hotCount = slots.filter(s => s.status === 'hot').length
-  const canSubmit = date && time && gender && (isHairCategory ? !!hairLength : true) && !submitting
+  const hasCustomerInfo = lineUserId
+    ? true
+    : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
+  const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
 
   return (
     <div style={{ background: '#f5efe6', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
@@ -235,6 +252,41 @@ export default function BookPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-8">
+
+            {/* 聯絡資訊（非 LINE 用戶） */}
+            {liffReady && !lineUserId && (
+              <div data-animate data-delay="50">
+                <SectionLabel step="00" label="聯絡資訊" />
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="您的姓名"
+                    value={customerNameInput}
+                    onChange={e => setCustomerNameInput(e.target.value)}
+                    required
+                    style={{
+                      width: '100%', padding: '14px 16px', borderRadius: '12px',
+                      border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
+                      fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
+                      fontFamily: 'var(--font-dm-sans)',
+                    }}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="聯絡電話"
+                    value={customerPhone}
+                    onChange={e => setCustomerPhone(e.target.value)}
+                    required
+                    style={{
+                      width: '100%', padding: '14px 16px', borderRadius: '12px',
+                      border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
+                      fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
+                      fontFamily: 'var(--font-dm-sans)',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* 性別 */}
             <div data-animate data-delay="100">
@@ -387,9 +439,9 @@ export default function BookPage() {
         </button>
 
         {/* Progress hint */}
-        {!canSubmit && (
+        {!canSubmit && liffReady && (
           <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.65)', marginTop: '8px' }}>
-            {!gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : !time ? '請選擇時段' : ''}
+            {!hasCustomerInfo ? '請填入姓名與聯絡電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : !time ? '請選擇時段' : ''}
           </p>
         )}
       </div>

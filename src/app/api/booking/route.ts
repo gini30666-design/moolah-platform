@@ -8,9 +8,9 @@ function generateId() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { providerId, serviceId, customerName, customerLineUserId, date, time, note, gender, hairLength } = body
+  const { providerId, serviceId, customerName, customerLineUserId, customerPhone, date, time, note, gender, hairLength } = body
 
-  if (!providerId || !serviceId || !customerName || !customerLineUserId || !date || !time) {
+  if (!providerId || !serviceId || !customerName || !date || !time) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
@@ -29,18 +29,19 @@ export async function POST(req: NextRequest) {
   const bookingId = generateId()
   const createdAt = new Date().toISOString()
 
-  await appendRow('bookings!A:K', [
+  await appendRow('bookings!A:L', [
     bookingId,
     providerId,
     serviceId,
     customerName,
-    customerLineUserId,
+    customerLineUserId ?? '',
     date,
     time,
     note ?? '',
     createdAt,
     gender ?? '',
     hairLength ?? '',
+    customerPhone ?? '',
   ])
 
   const providerName = providerRow[1]
@@ -48,16 +49,21 @@ export async function POST(req: NextRequest) {
   const serviceName = serviceRow[2]
   const servicePrice = serviceRow[3]
 
-  await Promise.all([
-    pushMessage(
-      customerLineUserId,
-      `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}`
-    ),
+  const notifications: Promise<unknown>[] = [
     pushMessage(
       providerLineUserId,
-      `📋 新預約通知\n\n客戶：${customerName}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
+      `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
     ),
-  ])
+  ]
+  if (customerLineUserId) {
+    notifications.push(
+      pushMessage(
+        customerLineUserId,
+        `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}`
+      )
+    )
+  }
+  await Promise.all(notifications)
 
   return NextResponse.json({ success: true, bookingId })
 }
