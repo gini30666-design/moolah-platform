@@ -5,7 +5,7 @@ import liff from '@line/liff'
 
 type Provider = {
   id: string; name: string; category: string; description: string
-  avatarUrl: string; storeName: string; address: string
+  avatarUrl: string; coverUrl: string; storeName: string; address: string
   businessHours: string; phone: string; instagram: string
 }
 type Service  = { id: string; name: string; price: number; duration: number }
@@ -70,28 +70,27 @@ export default function ProviderPage() {
       {/* ── Hero ─────────────────────────────────────── */}
       <div style={{ position: 'relative', height: '300px', background: 'var(--charcoal-deep)', overflow: 'hidden' }}>
 
-        {/* Subtle diagonal lines pattern */}
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.06,
-          backgroundImage: 'repeating-linear-gradient(135deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 36px)',
-        }} />
+        {/* Cover photo or fallback pattern */}
+        {provider.coverUrl
+          ? <img src={provider.coverUrl} alt="封面" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+          : <div style={{
+              position: 'absolute', inset: 0, opacity: 0.06,
+              backgroundImage: 'repeating-linear-gradient(135deg, var(--oak) 0px, var(--oak) 1px, transparent 1px, transparent 36px)',
+            }} />
+        }
 
-        {/* Radial glow */}
+        {/* Overlay: darken cover photo for readability */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 70% 60% at 30% 60%, rgba(166,137,102,0.18) 0%, transparent 70%)',
+          background: provider.coverUrl
+            ? 'linear-gradient(to bottom, rgba(26,23,20,0.45) 0%, rgba(26,23,20,0.15) 50%, rgba(245,239,230,1) 100%)'
+            : 'radial-gradient(ellipse 70% 60% at 30% 60%, rgba(166,137,102,0.18) 0%, transparent 70%)',
         }} />
 
         {/* Top gradient fade for nav */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '80px',
           background: 'linear-gradient(to bottom, rgba(26,23,20,0.7) 0%, transparent 100%)',
-        }} />
-
-        {/* Bottom fade to sand */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px',
-          background: 'linear-gradient(to bottom, transparent 0%, var(--sand) 100%)',
         }} />
 
         {/* Nav */}
