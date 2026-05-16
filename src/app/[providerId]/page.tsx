@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import liff from '@line/liff'
 
 type Provider = {
   id: string; name: string; category: string; description: string
@@ -30,8 +29,6 @@ export default function ProviderPage() {
   const [provider, setProvider] = useState<Provider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [portfolio, setPortfolio] = useState<Portfolio[]>([])
-
-  useEffect(() => { liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! }) }, [])
 
   useEffect(() => {
     fetch(`/api/provider/${providerId}`)
