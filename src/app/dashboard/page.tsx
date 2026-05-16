@@ -11,6 +11,12 @@ export default function DashboardPage() {
   const [name, setName] = useState('')
 
   useEffect(() => {
+    // Read liff.state BEFORE init — SDK may strip it afterwards
+    // e.g. LIFF URL: liff.line.me/ID?to=designer-002
+    // becomes: /dashboard?liff.state=%3Fto%3Ddesigner-002
+    const liffState = new URLSearchParams(window.location.search).get('liff.state') ?? ''
+    const destination = new URLSearchParams(liffState).get('to') ?? ''
+
     liff
       .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
       .then(async () => {
@@ -26,8 +32,11 @@ export default function DashboardPage() {
         const data = await res.json()
 
         if (data.found) {
-          // 找到對應 provider，直接跳轉後台
+          // 設計師 → 跳轉自己的後台
           router.replace(`/${data.providerId}/admin`)
+        } else if (destination) {
+          // 消費者帶有 to 目標 → 跳轉指定設計師頁
+          router.replace(destination.startsWith('/') ? destination : `/${destination}`)
         } else {
           setState('not_found')
         }
