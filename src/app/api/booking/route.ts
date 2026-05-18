@@ -49,25 +49,24 @@ export async function POST(req: NextRequest) {
   const serviceName = serviceRow[2]
   const servicePrice = serviceRow[3]
 
+  let consumerNotified = false
   try {
-    const notifications: Promise<unknown>[] = [
-      pushMessage(
-        providerLineUserId,
-        `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
-      ),
-    ]
-    if (customerLineUserId) {
-      notifications.push(
-        pushMessage(
+    const providerMsg = pushMessage(
+      providerLineUserId,
+      `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
+    )
+    const consumerMsg = customerLineUserId
+      ? pushMessage(
           customerLineUserId,
-          `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}`
+          `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}\n\n若需取消或查詢，請至 MooLah 我的預約。`
         )
-      )
-    }
-    await Promise.all(notifications)
+      : Promise.resolve(false)
+
+    const [, notified] = await Promise.all([providerMsg, consumerMsg])
+    consumerNotified = notified
   } catch (e) {
     console.error('[booking] notification error (booking still saved):', e)
   }
 
-  return NextResponse.json({ success: true, bookingId })
+  return NextResponse.json({ success: true, bookingId, consumerNotified })
 }

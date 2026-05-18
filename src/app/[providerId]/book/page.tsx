@@ -62,69 +62,187 @@ function SectionLabel({ step, label }: { step: string; label: string }) {
   )
 }
 
-function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser }: {
-  providerName: string; serviceName: string; date: string; time: string; onBack: () => void; isLineUser: boolean
+function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified }: {
+  providerName: string; serviceName: string; date: string; time: string
+  onBack: () => void; isLineUser: boolean; consumerNotified: boolean
 }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#f5efe6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'var(--font-dm-sans)' }}>
+    <div style={{ minHeight: '100vh', fontFamily: 'var(--font-dm-sans)', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes drawCircle { to { stroke-dashoffset: 0; } }
         @keyframes drawCheck  { to { stroke-dashoffset: 0; } }
-        @keyframes floatUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+        @keyframes pulseRing {
+          0% { transform: scale(0.95); opacity: 0.6; }
+          50% { transform: scale(1.08); opacity: 0.15; }
+          100% { transform: scale(0.95); opacity: 0.6; }
+        }
       `}</style>
 
-      {/* Oak checkmark */}
-      <div style={{ marginBottom: '32px' }}>
-        <svg width="88" height="88" viewBox="0 0 96 96">
-          <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(166,137,102,0.15)" strokeWidth="2.5" />
-          <circle cx="48" cy="48" r="44" fill="none" stroke="var(--oak)" strokeWidth="2.5"
-            strokeDasharray="276" strokeDashoffset="276" strokeLinecap="round"
-            style={{ animation: 'drawCircle 0.8s cubic-bezier(0.16,1,0.3,1) forwards' }} />
-          <polyline points="28,50 42,64 68,36" fill="none" stroke="var(--charcoal)" strokeWidth="3"
-            strokeLinecap="round" strokeLinejoin="round"
-            strokeDasharray="60" strokeDashoffset="60"
-            style={{ animation: 'drawCheck 0.45s ease 0.7s forwards' }} />
-        </svg>
-      </div>
+      {/* ── Top dark section ─────────────────────── */}
+      <div style={{
+        background: 'var(--charcoal-deep)',
+        flex: '0 0 52vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        padding: '40px 24px 48px',
+      }}>
+        {/* Background grain */}
+        <div style={{
+          position: 'absolute', inset: 0, opacity: 0.04,
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.75\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'300\' height=\'300\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
+          backgroundSize: '300px 300px',
+        }} />
+        {/* Top oak accent */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
 
-      <div style={{ textAlign: 'center', animation: 'floatUp 0.5s ease 0.9s both' }}>
-        <p className="text-[10px] tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--oak)' }}>BOOKING CONFIRMED</p>
-        <h1 className="font-display text-3xl mb-3" style={{ color: 'var(--charcoal)', fontWeight: 300 }}>預約完成</h1>
-
-        <div style={{ margin: '0 auto 24px', padding: '16px 24px', background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '12px', maxWidth: '280px' }}>
-          <p className="text-sm font-medium mb-1" style={{ color: 'var(--charcoal)' }}>{providerName}　·　{serviceName}</p>
-          <p className="font-display text-xl" style={{ color: 'var(--oak)' }}>{date}　{time}</p>
+        {/* Checkmark animation */}
+        <div style={{ position: 'relative', marginBottom: '28px' }}>
+          {/* Pulse ring */}
+          <div style={{
+            position: 'absolute', inset: '-16px', borderRadius: '50%',
+            border: '1px solid rgba(166,137,102,0.25)',
+            animation: 'pulseRing 2.8s ease-in-out 1s infinite',
+          }} />
+          <svg width="100" height="100" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="44" fill="rgba(166,137,102,0.07)" stroke="rgba(166,137,102,0.18)" strokeWidth="1" />
+            <circle cx="48" cy="48" r="44" fill="none" stroke="var(--oak)" strokeWidth="2"
+              strokeDasharray="276" strokeDashoffset="276" strokeLinecap="round"
+              style={{ animation: 'drawCircle 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards' }} />
+            <polyline points="28,50 42,64 68,36" fill="none" stroke="#fbf9f4" strokeWidth="2.5"
+              strokeLinecap="round" strokeLinejoin="round"
+              strokeDasharray="60" strokeDashoffset="60"
+              style={{ animation: 'drawCheck 0.5s ease 1s forwards' }} />
+          </svg>
         </div>
 
-        {isLineUser ? (
-          <p className="text-xs mb-8" style={{ color: 'rgba(44,40,37,0.65)' }}>確認通知已透過 LINE 傳送給您與設計師</p>
-        ) : (
-          <div className="mb-8">
-            <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.65)' }}>設計師已收到通知，將盡速與您聯繫</p>
-            <a
-              href="https://line.me/R/ti/p/@881zhkla"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                padding: '10px 20px', borderRadius: '99px',
-                background: '#06C755', color: 'white',
-                fontSize: '13px', fontWeight: 500, textDecoration: 'none',
-                boxShadow: '0 2px 8px rgba(6,199,85,0.30)',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/>
-              </svg>
-              加入 MooLah LINE，接收預約通知
-            </a>
-          </div>
-        )}
+        {/* Eyebrow + Title */}
+        <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '10px', animation: 'fadeSlideUp 0.5s ease 1.2s both' }}>
+          Booking Confirmed
+        </p>
+        <h1 className="font-display" style={{
+          fontSize: 'clamp(2.4rem,8vw,3.5rem)', fontWeight: 300, letterSpacing: '-0.01em',
+          color: '#fbf9f4', lineHeight: 1.1, textAlign: 'center',
+          animation: 'fadeSlideUp 0.5s ease 1.35s both',
+        }}>
+          預約完成
+        </h1>
 
+        {/* Thin oak divider */}
+        <div style={{ width: '36px', height: '1px', background: 'var(--oak)', margin: '16px 0', opacity: 0.5, animation: 'fadeSlideUp 0.5s ease 1.4s both' }} />
+
+        {/* Provider · Service */}
+        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.5s both' }}>
+          {providerName} &nbsp;·&nbsp; {serviceName}
+        </p>
+      </div>
+
+      {/* ── Bottom light section ──────────────────── */}
+      <div style={{
+        background: '#f5efe6',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '0 24px 40px',
+        position: 'relative',
+      }}>
+        {/* Booking detail card — overlapping the two sections */}
+        <div style={{
+          marginTop: '-28px',
+          width: '100%', maxWidth: '320px',
+          background: 'white',
+          border: '1px solid rgba(166,137,102,0.18)',
+          borderRadius: '18px',
+          padding: '20px 24px',
+          boxShadow: '0 8px 32px rgba(26,23,20,0.12)',
+          animation: 'fadeSlideUp 0.5s ease 1.55s both',
+          marginBottom: '24px',
+        }}>
+          {/* Date time row */}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
+            <span className="font-display" style={{ fontSize: '28px', fontWeight: 300, color: 'var(--oak)', letterSpacing: '-0.01em' }}>{date}</span>
+            <span style={{ width: '1px', height: '20px', background: 'rgba(166,137,102,0.3)', display: 'inline-block', alignSelf: 'center' }} />
+            <span className="font-display" style={{ fontSize: '24px', fontWeight: 300, color: 'var(--charcoal)' }}>{time}</span>
+          </div>
+          {/* Thin separator */}
+          <div style={{ height: '1px', background: 'rgba(166,137,102,0.12)', margin: '0 -8px 12px' }} />
+          {/* Detail row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--oak)', opacity: 0.6 }} />
+            <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', letterSpacing: '0.04em' }}>
+              {providerName} · {serviceName}
+            </span>
+          </div>
+        </div>
+
+        {/* Notification status */}
+        <div style={{ width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.7s both' }}>
+          {consumerNotified ? (
+            /* ── Notification sent ── */
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '12px 16px', borderRadius: '12px',
+              background: 'rgba(6,199,85,0.08)', border: '1px solid rgba(6,199,85,0.2)',
+              marginBottom: '20px',
+            }}>
+              <svg viewBox="0 0 20 20" fill="none" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                <path d="M10 1.5C5.31 1.5 1.5 5.31 1.5 10c0 4.69 3.81 8.5 8.5 8.5s8.5-3.81 8.5-8.5c0-4.69-3.81-8.5-8.5-8.5zm-1 12.06l-3-3 1.06-1.06 1.94 1.94 4.44-4.44 1.06 1.06-5.5 5.5z" fill="#06C755"/>
+              </svg>
+              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>
+                LINE 確認通知已傳送給您與設計師
+              </p>
+            </div>
+          ) : (
+            /* ── Add OA to receive notification ── */
+            <div style={{
+              padding: '16px',
+              borderRadius: '14px',
+              background: 'rgba(26,23,20,0.04)',
+              border: '1px solid rgba(44,40,37,0.1)',
+              marginBottom: '20px',
+            }}>
+              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', marginBottom: '12px', lineHeight: 1.6, textAlign: 'center' }}>
+                {isLineUser
+                  ? '加入 MooLah LINE 好友，即可接收預約確認與提醒'
+                  : '設計師已收到通知。加入 LINE 好友可接收後續提醒'}
+              </p>
+              <a
+                href="https://line.me/R/ti/p/@881zhkla"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  padding: '11px 20px', borderRadius: '10px',
+                  background: '#06C755', color: 'white',
+                  fontSize: '13px', fontWeight: 500, textDecoration: 'none',
+                  boxShadow: '0 2px 12px rgba(6,199,85,0.28)',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/>
+                </svg>
+                加入 MooLah LINE 好友
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Back button */}
         <button
           onClick={onBack}
-          className="text-xs tracking-widest uppercase pb-0.5 border-b"
-          style={{ color: 'var(--oak)', borderColor: 'var(--oak)', background: 'none', cursor: 'pointer' }}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'rgba(44,40,37,0.4)',
+            animation: 'fadeSlideUp 0.5s ease 1.85s both',
+            paddingBottom: '2px',
+            borderBottom: '1px solid rgba(44,40,37,0.2)',
+          }}
         >
           返回設計師頁面
         </button>
@@ -158,6 +276,7 @@ export default function BookPage() {
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [consumerNotified, setConsumerNotified] = useState(false)
   const [isHairCategory, setIsHairCategory] = useState(false)
 
   useEffect(() => {
@@ -225,13 +344,16 @@ export default function BookPage() {
         hairLength: isHairCategory ? hairLength : '',
       }),
     })
-    if (res.ok) setDone(true)
-    else alert('預約失敗，請稍後再試')
+    if (res.ok) {
+      const data = await res.json()
+      setConsumerNotified(data.consumerNotified ?? false)
+      setDone(true)
+    } else alert('預約失敗，請稍後再試')
     setSubmitting(false)
   }
 
   if (done && provider && service) {
-    return <CompletionScreen providerName={provider.name} serviceName={service.name} date={date} time={time} onBack={() => router.push(`/${providerId}`)} isLineUser={!!lineUserId} />
+    return <CompletionScreen providerName={provider.name} serviceName={service.name} date={date} time={time} onBack={() => router.push(`/${providerId}`)} isLineUser={!!lineUserId} consumerNotified={consumerNotified} />
   }
 
   if (!provider || !service) {

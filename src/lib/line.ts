@@ -4,7 +4,8 @@ const LINE_API = 'https://api.line.me/v2/bot/message'
 const TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN!
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
-export async function pushMessage(to: string, text: string) {
+export async function pushMessage(to: string, text: string): Promise<boolean> {
+  if (!to) return false
   const res = await fetch(`${LINE_API}/push`, {
     method: 'POST',
     headers: {
@@ -18,8 +19,10 @@ export async function pushMessage(to: string, text: string) {
   })
   if (!res.ok) {
     const err = await res.text()
-    console.error('[LINE pushMessage error]', res.status, err, { to })
+    console.error('[LINE pushMessage error]', res.status, err, { to: to.slice(0, 8) + '...' })
+    return false
   }
+  return true
 }
 
 export async function multicastMessage(userIds: string[], text: string) {
