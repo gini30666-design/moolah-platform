@@ -116,6 +116,50 @@ body::after {
   }
 }
 
+/* ── Text / Word Reveal System ───────────────────────────────────────────── */
+/* Each token (CJK char or Latin word) slides up from behind its own clip   */
+.word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  /* Tiny padding so descenders & diacritics aren't clipped */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  vertical-align: bottom;
+  line-height: inherit;
+}
+
+.word-inner {
+  display: inline-block;
+  transform: translateY(108%);
+  transition: transform 0.82s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  line-height: inherit;
+}
+
+/* Triggered when parent gets .in-view via ScrollReveal */
+.in-view .word-inner {
+  transform: translateY(0) !important;
+}
+
+/* Clip-path block reveal (for whole elements with data-dir="reveal") */
+.will-animate[data-dir="reveal"] {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 110% 0);
+  transition: clip-path 0.88s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0s;
+}
+.in-view[data-dir="reveal"] {
+  clip-path: inset(0 0 0% 0) !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-inner { transform: none !important; transition: none !important; }
+  .will-animate[data-dir="reveal"] { clip-path: none !important; }
+}
+
 /* ── View Transitions — App-like page switching ───────────────────────────── */
 /* The browser fades old page out, new page in. Total duration: ~300ms. */
 @keyframes vt-fade-in {

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { TextReveal } from '@/components/TextReveal'
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Nav() {
@@ -30,54 +31,90 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: 'var(--charcoal-deep)' }}>
+
+      {/* Background image + multi-stop gradient */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to right, var(--charcoal-deep) 40%, rgba(26,23,20,.55) 75%, transparent 100%)' }} />
+        <div className="absolute inset-0 z-10" style={{
+          background: 'linear-gradient(to right, var(--charcoal-deep) 0%, var(--charcoal-deep) 35%, rgba(26,23,20,.82) 55%, rgba(26,23,20,.35) 75%, transparent 100%)',
+        }} />
+        {/* Bottom fade for readability */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 z-10" style={{ background: 'linear-gradient(to top, rgba(26,23,20,0.6), transparent)' }} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1800&q=85&fit=crop"
           alt="Premium salon interior"
           className="w-full h-full object-cover"
-          style={{ filter: 'brightness(.85) saturate(1.1)' }}
+          style={{ filter: 'brightness(.8) saturate(1.15)', transform: 'scale(1.03)' }}
         />
       </div>
+
+      {/* Decorative large background letter */}
+      <div className="absolute right-0 bottom-0 z-10 select-none pointer-events-none hidden lg:block" style={{
+        fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(260px,28vw,420px)',
+        fontWeight: 300, color: 'rgba(166,137,102,0.045)',
+        lineHeight: 0.85, letterSpacing: '-0.05em',
+        transform: 'translateX(8%) translateY(10%)',
+      }}>M</div>
+
+      {/* Top right corner accent line */}
+      <div className="absolute top-0 right-0 w-px h-28 z-20 hidden md:block" style={{ background: 'linear-gradient(to bottom, var(--oak), transparent)', opacity: 0.5 }} />
+
+      {/* Main content */}
       <div className="relative z-20 max-w-[1440px] mx-auto px-5 md:px-16 grid grid-cols-12 gap-6 w-full py-24 md:py-32">
-        <div className="col-span-12 md:col-span-7 lg:col-span-6 flex flex-col gap-6 md:gap-7">
-          <span className="anim-fade-up text-xs tracking-[.22em] uppercase text-[var(--oak)] flex items-center gap-3">
-            <span className="inline-block w-8 h-px bg-[var(--oak)]" />
-            BEAUTY BOOKING PLATFORM
-          </span>
-          <h1 className="anim-fade-up-2 font-display leading-tight text-[var(--cream)]" style={{ fontSize: 'clamp(2.4rem,7vw,5rem)', fontWeight: 300, letterSpacing: '-.01em' }}>
-            質感生活<br />從容預約
+        <div className="col-span-12 md:col-span-7 lg:col-span-5 flex flex-col gap-6 md:gap-7 pl-0 md:pl-4 border-l-0 md:border-l" style={{ borderColor: 'rgba(166,137,102,0.3)' }}>
+
+          {/* Eyebrow label */}
+          <div className="anim-fade-up flex items-center gap-4">
+            <span className="inline-block w-10 h-px" style={{ background: 'var(--oak)' }} />
+            <span className="text-xs tracking-[.28em] uppercase" style={{ color: 'var(--oak)' }}>
+              Beauty Booking Platform
+            </span>
+          </div>
+
+          {/* H1 with word reveal */}
+          <h1 className="font-display text-[var(--cream)]" style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            <TextReveal as="span" delay={150} stagger={55} className="block">質感生活，</TextReveal>
+            <TextReveal as="span" delay={430} stagger={55} className="block">從容預約</TextReveal>
           </h1>
-          <p className="anim-fade-up-3 text-base md:text-lg leading-relaxed max-w-md" style={{ color: 'var(--oak-dim)' }}>
+
+          {/* Thin oak line below h1 */}
+          <div className="anim-fade-up" style={{ width: '48px', height: '1.5px', background: 'linear-gradient(to right, var(--oak), transparent)', marginTop: '-8px' }} />
+
+          <p className="anim-fade-up-3 text-sm md:text-base leading-loose max-w-sm" style={{ color: 'rgba(251,249,244,0.55)' }}>
             LINE 一鍵預約，讓每次服務都成為享受。<br className="hidden sm:block" />深度整合台灣美業，從此不再手忙腳亂。
           </p>
+
+          {/* CTAs */}
           <div className="anim-fade-up-4 flex flex-wrap items-center gap-3">
-            <Link href="/line" className="flex items-center gap-2 px-6 md:px-8 py-3.5 md:py-4 text-xs md:text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
+            <Link href="/line" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
               <LineIcon />立即預約
             </Link>
-            <Link href="/discover" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-6 md:px-8 py-3.5 md:py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
+            <Link href="/discover" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-7 md:px-9 py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.22)' }}>
               <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', opacity: 0.7 }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
               瀏覽職人
             </Link>
           </div>
-          <div className="anim-fade-up-4 flex flex-wrap gap-6 md:gap-10 pt-6 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.35)' }}>
+
+          {/* Stats row */}
+          <div className="anim-fade-up-4 grid grid-cols-3 gap-4 pt-6 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
             {[
-              { num: '200+', label: '合作設計師' },
-              { num: '98%', label: '預約到場率' },
-              { num: '4.9★', label: '使用者評分' },
+              { num: '200+', label: '合作職人' },
+              { num: '98%', label: '到場率' },
+              { num: '4.9', label: '用戶評分' },
             ].map((s) => (
-              <div key={s.label}>
-                <p className="font-display text-2xl md:text-3xl" style={{ color: 'var(--oak)' }}>{s.num}</p>
-                <p className="text-xs tracking-widest uppercase mt-1" style={{ color: 'var(--oak-dim)' }}>{s.label}</p>
+              <div key={s.label} style={{ paddingLeft: '0' }}>
+                <p className="font-display" style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', color: 'var(--oak)', fontWeight: 300, lineHeight: 1 }}>{s.num}</p>
+                <p className="text-xs tracking-widest uppercase mt-2" style={{ color: 'rgba(251,249,244,0.35)', letterSpacing: '0.2em' }}>{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-40">
-        <span className="text-xs tracking-widest uppercase" style={{ color: 'var(--oak-dim)' }}>Scroll</span>
-        <div className="w-px h-10" style={{ background: 'var(--oak-dim)' }} />
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-10 left-8 md:left-16 z-20 flex items-center gap-3" style={{ opacity: 0.45 }}>
+        <div className="w-px h-12" style={{ background: 'linear-gradient(to bottom, transparent, var(--oak))' }} />
+        <span className="text-xs tracking-[0.3em] uppercase" style={{ color: 'var(--oak)', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>Scroll</span>
       </div>
     </section>
   )
@@ -111,12 +148,12 @@ function Services() {
   return (
     <section id="services" className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 lg:mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 lg:mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
           <div>
-            <span className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>OUR SERVICES</span>
-            <h2 className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</h2>
+            <span data-animate className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>OUR SERVICES</span>
+            <TextReveal as="h2" delay={80} className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</TextReveal>
           </div>
-          <Link href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity self-start sm:self-auto" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
+          <Link data-animate data-delay="200" href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity self-start sm:self-auto" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: '2px' }}>
           {SERVICE_CARDS.map((card, i) => (
@@ -166,7 +203,7 @@ function FeatureRow({ imgSrc, imgAlt, label, title, body, points, cta, ctaHref, 
       className={`col-span-12 flex flex-col gap-5 md:gap-6 ${reverse ? 'md:col-span-5' : 'md:col-start-8 md:col-span-5'}`}
     >
       <span className="text-xs tracking-[.22em] uppercase" style={{ color: 'var(--oak)' }}>{label}</span>
-      <h2 className="font-display text-3xl md:text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
+      <h2 data-animate data-dir="reveal" data-delay="100" className="font-display text-3xl md:text-4xl leading-snug" style={{ color: textColor, fontWeight: 300, letterSpacing: '.03em' }}
         dangerouslySetInnerHTML={{ __html: title }} />
       <p className="text-sm md:text-base leading-relaxed" style={{ color: bodyColor }}>{body}</p>
       <ul className="space-y-3 mt-2">
@@ -235,9 +272,9 @@ function Pillars() {
   return (
     <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="text-center mb-12 lg:mb-16">
-          <span className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
-          <h2 className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</h2>
+        <div className="text-center mb-12 lg:mb-16">
+          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
+          <TextReveal as="h2" delay={80} className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</TextReveal>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {PILLARS.map((p, i) => (
@@ -269,10 +306,11 @@ function PartnerCTA() {
   return (
     <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)' }}>
       <div className="max-w-[1440px] mx-auto">
-        <div data-animate className="pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
-          <span className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
+        <div className="pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
+          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
           <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
-            成為 MooLah<br />合作設計師
+            <TextReveal as="span" delay={80} stagger={52} className="block">成為 MooLah</TextReveal>
+            <TextReveal as="span" delay={320} stagger={52} className="block">合作設計師</TextReveal>
           </h2>
           <p className="text-base leading-relaxed mb-8 md:mb-10 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
             免費加入，立即擁有專屬預約頁面。讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。

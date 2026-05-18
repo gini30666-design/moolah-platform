@@ -28,8 +28,20 @@ export function ScrollReveal() {
       }
     }
 
+    // Word-reveal elements: just add in-view (no will-animate opacity hiding)
+    function observeWordReveal(el: Element) {
+      if (el.classList.contains('in-view')) return
+      const rect = el.getBoundingClientRect()
+      if (rect.top < vh - 40) {
+        el.classList.add('in-view')
+      } else {
+        intersectionObs.observe(el)
+      }
+    }
+
     const init = () => {
       document.querySelectorAll('[data-animate]').forEach(observe)
+      document.querySelectorAll('[data-word-reveal]').forEach(observeWordReveal)
     }
     requestAnimationFrame(() => requestAnimationFrame(init))
 
@@ -38,6 +50,7 @@ export function ScrollReveal() {
     const mutationObs = new MutationObserver(() => {
       requestAnimationFrame(() => {
         document.querySelectorAll('[data-animate]:not(.will-animate):not(.in-view)').forEach(observe)
+        document.querySelectorAll('[data-word-reveal]:not(.in-view)').forEach(observeWordReveal)
       })
     })
     mutationObs.observe(document.body, { childList: true, subtree: true })

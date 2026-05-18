@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { TextReveal } from '@/components/TextReveal'
 
 const BENEFITS = [
   {
@@ -89,9 +90,9 @@ export default function JoinPage() {
 
           <div className="relative max-w-6xl mx-auto">
             <p data-animate className="text-xs tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--oak)' }}>Join MooLah</p>
-            <h1 data-animate data-delay="100" className="font-display leading-tight mb-8 max-w-3xl" style={{ fontSize: 'clamp(2.8rem,7vw,6.5rem)', color: 'var(--cream)', fontWeight: 300 }}>
-              讓預約管理<br />
-              <span className="italic" style={{ color: 'var(--oak)' }}>更聰明</span>
+            <h1 className="font-display leading-tight mb-8 max-w-3xl" style={{ fontSize: 'clamp(2.8rem,7vw,6.5rem)', color: 'var(--cream)', fontWeight: 300, lineHeight: 1.1 }}>
+              <TextReveal as="span" delay={120} stagger={52} className="block">讓預約管理</TextReveal>
+              <TextReveal as="span" delay={380} stagger={52} className="block italic" style={{ color: 'var(--oak)' }}>更聰明</TextReveal>
             </h1>
             <p data-animate data-delay="200" className="text-sm md:text-base leading-relaxed max-w-xl mb-10" style={{ color: 'rgba(251,249,244,0.55)' }}>
               加入 MooLah 合作計畫，建立你的專屬預約頁面。客人透過 LINE 預約，

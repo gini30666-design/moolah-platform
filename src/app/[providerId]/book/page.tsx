@@ -138,6 +138,7 @@ export default function BookPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const serviceId = searchParams.get('service') ?? ''
+  const initialDate = searchParams.get('date') ?? ''
 
   const [provider, setProvider] = useState<Provider | null>(null)
   const [service, setService] = useState<Service | null>(null)
@@ -148,7 +149,7 @@ export default function BookPage() {
   const [liffReady, setLiffReady] = useState(false)
   const [showLineCard, setShowLineCard] = useState(true)
 
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState(initialDate)
   const [time, setTime] = useState('')
   const [gender, setGender] = useState('')
   const [hairLength, setHairLength] = useState('')
@@ -251,8 +252,8 @@ export default function BookPage() {
   return (
     <div style={{ background: '#f5efe6', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
 
-      {/* ── Sticky mini-header ──────────────────────── */}
-      <div className="sticky top-0 z-40" style={{ background: 'rgba(245,239,230,0.92)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(166,137,102,0.18)' }}>
+      {/* ── Sticky mini-header + Progress ──────────── */}
+      <div className="sticky top-0 z-40" style={{ background: 'rgba(245,239,230,0.96)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(166,137,102,0.18)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
           <button onClick={() => router.back()} className="flex items-center gap-2 text-xs tracking-widest uppercase" style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer' }}>
             ← 返回
@@ -260,6 +261,73 @@ export default function BookPage() {
           <span className="font-display text-base tracking-wide" style={{ color: 'var(--charcoal)' }}>{provider.name}</span>
           <div style={{ width: '48px' }} />
         </div>
+
+        {/* Progress bar */}
+        {(() => {
+          const step2Done = !!gender && (isHairCategory ? !!hairLength : true) &&
+            (lineUserId ? true : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0))
+          const step3Done = !!date && !!time
+          const currentStep = !step2Done ? 2 : !step3Done ? 3 : 4
+
+          const steps = [
+            { label: '服務', done: true },
+            { label: '資料', done: step2Done },
+            { label: '日期', done: step3Done },
+            { label: '送出', done: false },
+          ]
+
+          return (
+            <div className="max-w-lg mx-auto px-8 pb-3 flex items-center">
+              {steps.map((s, i) => {
+                const isActive = i + 1 === currentStep
+                const isDone = s.done && i + 1 < currentStep
+                return (
+                  <div key={s.label} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                      <div style={{
+                        width: '20px', height: '20px', borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: isDone ? 'var(--oak)' : isActive ? 'transparent' : 'transparent',
+                        border: isDone ? 'none' : isActive ? '2px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.3)',
+                        transition: 'all 0.3s',
+                        flexShrink: 0,
+                      }}>
+                        {isDone ? (
+                          <svg viewBox="0 0 12 12" fill="none" style={{ width: '10px', height: '10px' }}>
+                            <path d="M2 6l2.8 3L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        ) : (
+                          <div style={{
+                            width: '6px', height: '6px', borderRadius: '50%',
+                            background: isActive ? 'var(--oak)' : 'rgba(166,137,102,0.25)',
+                            transition: 'background 0.3s',
+                          }} />
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: '9px',
+                        letterSpacing: '0.08em',
+                        color: isDone || isActive ? 'var(--oak)' : 'rgba(44,40,37,0.3)',
+                        fontWeight: isActive ? 600 : 400,
+                        whiteSpace: 'nowrap',
+                        transition: 'color 0.3s',
+                      }}>{s.label}</span>
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div style={{
+                        flex: 1, height: '1.5px',
+                        background: isDone ? 'var(--oak)' : 'rgba(166,137,102,0.2)',
+                        margin: '0 6px',
+                        marginBottom: '14px',
+                        transition: 'background 0.3s',
+                      }} />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6 pb-52">

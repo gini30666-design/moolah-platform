@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { AvailabilityCalendar } from '@/components/AvailabilityCalendar'
 
 type Provider = {
   id: string; name: string; category: string; description: string
@@ -395,6 +396,9 @@ export default function ProviderPage() {
           )}
         </section>
       )}
+
+      {/* ── Availability Calendar ────────────────────── */}
+      <AvailabilityCalendar providerId={providerId} selectedServiceId={selectedServiceId} />
 
       {/* Spacer for fixed CTA */}
       <div style={{ height: '120px' }} />

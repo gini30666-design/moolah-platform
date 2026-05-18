@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { TextReveal } from '@/components/TextReveal'
 
 const PLANS = [
   {
@@ -127,11 +128,11 @@ export default function ServicesPage() {
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 60% at 80% 50%, rgba(166,137,102,0.12) 0%, transparent 70%)' }} />
 
           <div className="relative max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-12 items-end">
-            <div data-animate data-dir="left">
-              <p className="text-xs tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--oak)' }}>Pricing Plans</p>
-              <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(2.8rem,7vw,6rem)', color: 'var(--cream)', fontWeight: 300 }}>
-                合作<br />
-                <span className="italic" style={{ color: 'var(--oak)' }}>方案</span>
+            <div>
+              <p data-animate className="text-xs tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--oak)' }}>Pricing Plans</p>
+              <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(2.8rem,7vw,6rem)', color: 'var(--cream)', fontWeight: 300, lineHeight: 1.1 }}>
+                <TextReveal as="span" delay={120} stagger={60} className="block">合作</TextReveal>
+                <TextReveal as="span" delay={340} stagger={60} className="block italic" style={{ color: 'var(--oak)' }}>方案</TextReveal>
               </h1>
             </div>
             <p data-animate data-dir="right" className="text-sm md:text-base leading-relaxed lg:mb-3" style={{ color: 'rgba(251,249,244,0.55)' }}>
