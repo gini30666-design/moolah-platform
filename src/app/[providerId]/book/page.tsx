@@ -375,7 +375,7 @@ export default function BookPage() {
     <div style={{ background: '#f5efe6', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
 
       {/* ── Sticky mini-header + Progress ──────────── */}
-      <div className="sticky top-0 z-40" style={{ background: 'rgba(245,239,230,0.96)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(166,137,102,0.18)' }}>
+      <div className="sticky top-0 z-40" style={{ background: 'rgba(240,234,224,0.97)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(26,23,20,0.12)', boxShadow: '0 1px 0 rgba(26,23,20,0.06)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
           <button onClick={() => router.back()} className="flex items-center gap-2 text-xs tracking-widest uppercase" style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer' }}>
             ← 返回
@@ -511,25 +511,40 @@ export default function BookPage() {
         )}
 
         {/* ── 服務摘要卡 ─────────────────────────────── */}
-        <div data-animate className="mb-8 p-4" style={{ background: 'white', border: '1px solid rgba(166,137,102,0.20)', borderRadius: '16px', borderLeft: '3px solid var(--oak)' }}>
+        <div data-animate className="mb-8 p-4" style={{
+          background: 'white',
+          border: '1px solid rgba(26,23,20,0.10)',
+          borderRadius: '16px',
+          borderLeft: '3px solid var(--charcoal)',
+          boxShadow: '0 2px 12px rgba(26,23,20,0.07)',
+        }}>
           <div className="flex justify-between items-start">
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'var(--oak)' }}>預約服務</p>
               <p className="text-base font-medium" style={{ color: 'var(--charcoal)' }}>{service.name}</p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.65)' }}>{service.duration} 分鐘</p>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.55)' }}>{service.duration} 分鐘</p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end gap-2">
               <p className="font-display text-2xl" style={{ color: 'var(--charcoal)' }}>NT$ {service.price.toLocaleString()}</p>
+              <span style={{
+                fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase',
+                padding: '3px 8px', borderRadius: '4px',
+                background: 'var(--charcoal)', color: 'rgba(251,249,244,0.85)',
+              }}>已選擇</span>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-8">
+          <div className="space-y-0">
+            <style>{`
+              .book-section { padding: 28px 0; border-bottom: 1px solid rgba(26,23,20,0.07); }
+              .book-section:last-child { border-bottom: none; }
+            `}</style>
 
             {/* 聯絡資訊（非 LINE 用戶） */}
             {liffReady && !lineUserId && (
-              <div data-animate data-delay="50">
+              <div data-animate data-delay="50" className="book-section">
                 <SectionLabel step="00" label="聯絡資訊" />
                 <div className="space-y-3">
                   <input
@@ -563,21 +578,21 @@ export default function BookPage() {
             )}
 
             {/* 性別 */}
-            <div data-animate data-delay="100">
+            <div data-animate data-delay="100" className="book-section">
               <SectionLabel step="01" label="性別" />
               <PillGroup options={GENDER_OPTIONS} value={gender} onChange={setGender} />
             </div>
 
             {/* 髮長 */}
             {isHairCategory && (
-              <div data-animate data-delay="150">
+              <div data-animate data-delay="150" className="book-section">
                 <SectionLabel step="02" label="目前髮長" />
                 <PillGroup options={HAIR_LENGTH_OPTIONS} value={hairLength} onChange={setHairLength} />
               </div>
             )}
 
             {/* 日期 */}
-            <div data-animate data-delay="200">
+            <div data-animate data-delay="200" className="book-section">
               <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
               <input
                 type="date" min={today} value={date}
@@ -594,7 +609,7 @@ export default function BookPage() {
 
             {/* 時段 */}
             {date && (
-              <div data-animate>
+              <div data-animate className="book-section">
                 <SectionLabel step={isHairCategory ? '04' : '03'} label="選擇時段" />
 
                 {loadingSlots ? (
@@ -672,7 +687,7 @@ export default function BookPage() {
             )}
 
             {/* 備註 */}
-            <div data-animate>
+            <div data-animate className="book-section">
               <SectionLabel step={isHairCategory ? '05' : '04'} label="補充說明（選填）" />
               <textarea
                 value={note}
@@ -694,7 +709,7 @@ export default function BookPage() {
 
       {/* ── Fixed bottom CTA ────────────────────────── */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-5"
-        style={{ background: 'linear-gradient(to top, #f5efe6 70%, transparent)' }}>
+        style={{ background: 'linear-gradient(to top, #ede8dc 0%, #f0ebe1 50%, transparent 100%)', borderTop: '1px solid rgba(26,23,20,0.08)' }}>
         <button
           onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>}
           disabled={!canSubmit}
