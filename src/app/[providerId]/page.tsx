@@ -29,6 +29,7 @@ export default function ProviderPage() {
   const [provider, setProvider] = useState<Provider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [portfolio, setPortfolio] = useState<Portfolio[]>([])
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/provider/${providerId}`)
@@ -275,63 +276,78 @@ export default function ProviderPage() {
       <section data-animate data-delay="150" style={{ margin: '0 20px 24px' }}>
         <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px', paddingLeft: '2px' }}>Services</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {services.map((s, i) => (
-            <a
-              key={s.id}
-              href={`/${providerId}/book?service=${s.id}`}
-              style={{
-                display: 'flex', alignItems: 'center',
-                background: 'white',
-                border: '1px solid rgba(166,137,102,0.14)',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                transition: 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
-                animationDelay: `${i * 40}ms`,
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 6px 24px rgba(26,23,20,0.08)'
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.transform = ''
-                ;(e.currentTarget as HTMLElement).style.boxShadow = ''
-              }}
-            >
-              {/* Accent bar */}
-              <div style={{ width: '3px', alignSelf: 'stretch', background: 'linear-gradient(to bottom, var(--oak), rgba(166,137,102,0.3))', flexShrink: 0 }} />
+          {services.map((s, i) => {
+            const isSelected = selectedServiceId === s.id
+            return (
+              <div
+                key={s.id}
+                onClick={() => setSelectedServiceId(isSelected ? null : s.id)}
+                style={{
+                  display: 'flex', alignItems: 'center',
+                  background: isSelected ? 'rgba(166,137,102,0.07)' : 'white',
+                  border: isSelected ? '1.5px solid rgba(166,137,102,0.55)' : '1px solid rgba(166,137,102,0.14)',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.2s cubic-bezier(0.25,0.46,0.45,0.94), border-color 0.18s, background 0.18s',
+                  animationDelay: `${i * 40}ms`,
+                  boxShadow: isSelected ? '0 4px 16px rgba(166,137,102,0.14)' : '',
+                }}
+                onMouseEnter={e => {
+                  if (!isSelected) {
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'
+                    ;(e.currentTarget as HTMLElement).style.boxShadow = '0 6px 24px rgba(26,23,20,0.08)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isSelected) {
+                    (e.currentTarget as HTMLElement).style.transform = ''
+                    ;(e.currentTarget as HTMLElement).style.boxShadow = ''
+                  }
+                }}
+              >
+                {/* Accent bar */}
+                <div style={{ width: '3px', alignSelf: 'stretch', background: isSelected ? 'var(--oak)' : 'linear-gradient(to bottom, var(--oak), rgba(166,137,102,0.3))', flexShrink: 0 }} />
 
-              <div style={{ flex: 1, padding: '14px 14px 14px 16px', display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</p>
-                  {/* Duration badge */}
-                  <span style={{
-                    display: 'inline-block', fontSize: '10px', letterSpacing: '0.1em',
-                    padding: '2px 8px', borderRadius: '999px',
-                    background: 'rgba(166,137,102,0.1)', color: 'var(--oak)',
-                    border: '1px solid rgba(166,137,102,0.2)',
-                  }}>
-                    {s.duration} 分鐘
-                  </span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                  <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--charcoal)' }}>
-                    NT$ {s.price.toLocaleString()}
-                  </p>
-                  <div style={{
-                    width: '28px', height: '28px', borderRadius: '50%',
-                    background: 'rgba(166,137,102,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'var(--oak)',
-                  }}>
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '12px', height: '12px' }}>
-                      <path d="M4 8h8M9 5l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                <div style={{ flex: 1, padding: '14px 14px 14px 16px', display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</p>
+                    <span style={{
+                      display: 'inline-block', fontSize: '10px', letterSpacing: '0.1em',
+                      padding: '2px 8px', borderRadius: '999px',
+                      background: 'rgba(166,137,102,0.1)', color: 'var(--oak)',
+                      border: '1px solid rgba(166,137,102,0.2)',
+                    }}>
+                      {s.duration} 分鐘
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                    <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--charcoal)' }}>
+                      NT$ {s.price.toLocaleString()}
+                    </p>
+                    {/* Check / arrow icon */}
+                    <div style={{
+                      width: '28px', height: '28px', borderRadius: '50%',
+                      background: isSelected ? 'var(--oak)' : 'rgba(166,137,102,0.1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'background 0.18s',
+                      flexShrink: 0,
+                    }}>
+                      {isSelected ? (
+                        <svg viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" style={{ width: '12px', height: '12px' }}>
+                          <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '12px', height: '12px', color: 'var(--oak)' }}>
+                          <path d="M4 8h8M9 5l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </a>
-          ))}
+            )
+          })}
         </div>
       </section>
 
@@ -391,29 +407,38 @@ export default function ProviderPage() {
         background: 'linear-gradient(to top, var(--sand) 65%, transparent)',
         zIndex: 50,
       }}>
-        {/* Social proof line */}
-        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.38)', letterSpacing: '0.08em', marginBottom: '10px' }}>
-          透過 LINE 即時確認 · 免費預約不收手續費
-        </p>
+        {/* Selected service hint or prompt */}
+        {selectedServiceId ? (
+          <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--oak)', letterSpacing: '0.06em', marginBottom: '10px', fontWeight: 500 }}>
+            ✓ {services.find(s => s.id === selectedServiceId)?.name}
+          </p>
+        ) : (
+          <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.38)', letterSpacing: '0.08em', marginBottom: '10px' }}>
+            請先選擇上方服務項目
+          </p>
+        )}
         <a
-          href={`/${providerId}/book`}
+          href={selectedServiceId ? `/${providerId}/book?service=${selectedServiceId}` : undefined}
+          onClick={e => { if (!selectedServiceId) e.preventDefault() }}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             width: '100%', padding: '16px',
-            background: 'var(--charcoal)', color: 'var(--cream)',
+            background: selectedServiceId ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)',
+            color: selectedServiceId ? 'var(--cream)' : 'rgba(44,40,37,0.35)',
             borderRadius: '14px',
             fontSize: '13px', fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase',
             textDecoration: 'none',
-            boxShadow: '0 8px 24px rgba(26,23,20,0.28)',
-            transition: 'opacity 0.15s, transform 0.15s',
+            boxShadow: selectedServiceId ? '0 8px 24px rgba(26,23,20,0.28)' : 'none',
+            transition: 'opacity 0.15s, transform 0.15s, background 0.2s, color 0.2s, box-shadow 0.2s',
+            cursor: selectedServiceId ? 'pointer' : 'default',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+          onMouseEnter={e => { if (selectedServiceId) (e.currentTarget as HTMLElement).style.opacity = '0.88' }}
+          onMouseLeave={e => { if (selectedServiceId) (e.currentTarget as HTMLElement).style.opacity = '1' }}
         >
           <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '16px', height: '16px' }}>
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
           </svg>
-          立即預約
+          開始預約
         </a>
       </div>
     </div>
