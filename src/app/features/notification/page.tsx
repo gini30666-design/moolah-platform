@@ -4,7 +4,13 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: '雙向即時通知 — 預約確認、提醒、取消自動推播',
   description: '了解 MooLah 雙向通知機制：預約成立、前一日提醒、取消通知，全自動透過 LINE 同時推播設計師與客人，零溝通成本，大幅降低爽約率。',
-  alternates: { canonical: 'https://moolah-platform.vercel.app/features/notification' },
+  alternates: {
+    canonical: 'https://moolah-platform.vercel.app/features/notification',
+    languages: {
+      'zh-Hant-TW': 'https://moolah-platform.vercel.app/features/notification',
+      'x-default': 'https://moolah-platform.vercel.app/features/notification',
+    },
+  },
 }
 
 const STEPS = [

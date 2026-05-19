@@ -8,7 +8,10 @@ export const metadata: Metadata = {
   title: 'MooLah — 台灣美業智慧預約平台 | 髮型設計師、寵物美容、美甲線上預約',
   description: '台灣美業智慧預約平台，高雄、台南、台中、台北均有合作職人。髮型設計師、寵物美容師、汽車美容師、美甲師，透過 LINE 一鍵預約，雙向即時通知，零 App 安裝。',
   keywords: ['台灣美業預約', '髮型設計師預約', '寵物美容預約', '汽車美容預約', '美甲預約', 'LINE 預約', '高雄美容預約', '美業平台'],
-  alternates: { canonical: BASE_URL },
+  alternates: {
+    canonical: BASE_URL,
+    languages: { 'zh-Hant-TW': BASE_URL, 'x-default': BASE_URL },
+  },
   openGraph: {
     title: 'MooLah — 質感生活，從容預約',
     description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。高雄、台南、台中、台北均有合作職人。',
@@ -87,7 +90,7 @@ function Hero() {
 
           {/* H1 with word reveal */}
           <h1 className="font-display text-[var(--cream)]" style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-            <TextReveal as="span" delay={150} stagger={55} className="block">質感生活，</TextReveal>
+            <TextReveal as="span" delay={150} stagger={55} className="block">質感生活</TextReveal>
             <TextReveal as="span" delay={430} stagger={55} className="block">從容預約</TextReveal>
           </h1>
 

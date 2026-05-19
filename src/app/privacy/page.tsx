@@ -2,8 +2,15 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '隱私政策 | MooLah',
+  title: '隱私政策',
   description: 'MooLah 美業預約平台隱私政策 — 說明我們如何蒐集、使用及保護您的個人資料',
+  alternates: {
+    canonical: 'https://moolah-platform.vercel.app/privacy',
+    languages: {
+      'zh-Hant-TW': 'https://moolah-platform.vercel.app/privacy',
+      'x-default': 'https://moolah-platform.vercel.app/privacy',
+    },
+  },
 }
 
 function Nav() {

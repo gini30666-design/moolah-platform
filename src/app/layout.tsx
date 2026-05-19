@@ -70,7 +70,7 @@ const ORG_SCHEMA = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: { default: 'MooLah — 質感生活，從容預約', template: '%s | MooLah' },
+  title: { default: 'MooLah — 質感生活 從容預約', template: '%s | MooLah' },
   description: '台灣美業智慧預約平台。髮型設計師、寵物美容、汽車美容、美甲師，透過 LINE 輕鬆預約，雙向即時通知。',
   keywords: ['預約', '髮型設計師', '寵物美容', '汽車美容', '美甲', 'LINE 預約', '台灣', '高雄', 'MooLah'],
   authors: [{ name: 'MooLah', url: BASE_URL }],
@@ -81,17 +81,17 @@ export const metadata: Metadata = {
     title: 'MooLah',
   },
   openGraph: {
-    title: 'MooLah — 質感生活，從容預約',
+    title: 'MooLah — 質感生活 從容預約',
     description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。',
     siteName: 'MooLah',
     url: BASE_URL,
     type: 'website',
     locale: 'zh_TW',
-    images: [{ url: `${BASE_URL}/opengraph-image`, width: 1200, height: 630, alt: 'MooLah — 質感生活，從容預約' }],
+    images: [{ url: `${BASE_URL}/opengraph-image`, width: 1200, height: 630, alt: 'MooLah — 質感生活 從容預約' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MooLah — 質感生活，從容預約',
+    title: 'MooLah — 質感生活 從容預約',
     description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約。',
   },
   robots: { index: true, follow: true },

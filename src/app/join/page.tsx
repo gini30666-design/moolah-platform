@@ -7,7 +7,10 @@ const BASE_URL = 'https://moolah-platform.vercel.app'
 export const metadata: Metadata = {
   title: '加入合作 — 美業職人申請加入',
   description: '美業職人加入 MooLah 合作計畫：5 分鐘完成設定，零技術門檻，立即擁有 LINE 預約頁面。高雄、台南髮型設計師、寵物美容師、汽車美容師、美甲師歡迎申請。',
-  alternates: { canonical: `${BASE_URL}/join` },
+  alternates: {
+    canonical: `${BASE_URL}/join`,
+    languages: { 'zh-Hant-TW': `${BASE_URL}/join`, 'x-default': `${BASE_URL}/join` },
+  },
   openGraph: {
     title: '加入 MooLah 合作計畫 — 美業職人申請',
     description: '5 分鐘設定、零技術門檻、LINE 直接預約。立即申請，當天上線。',

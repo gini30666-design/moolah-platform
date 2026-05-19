@@ -8,7 +8,10 @@ const BASE_URL = 'https://moolah-platform.vercel.app'
 export const metadata: Metadata = {
   title: '探索美業職人 — 髮型、寵物美容、美甲線上預約',
   description: '探索台灣優質美業職人。高雄、台南、台中、台北髮型設計師、寵物美容師、汽車美容師、美甲師，選擇縣市即可找到附近職人，透過 LINE 一鍵預約。',
-  alternates: { canonical: `${BASE_URL}/discover` },
+  alternates: {
+    canonical: `${BASE_URL}/discover`,
+    languages: { 'zh-Hant-TW': `${BASE_URL}/discover`, 'x-default': `${BASE_URL}/discover` },
+  },
   openGraph: {
     title: '探索美業職人 | MooLah',
     description: '台灣各地美業職人探索平台。選擇服務類別與縣市，找到優質職人，透過 LINE 一鍵預約。',

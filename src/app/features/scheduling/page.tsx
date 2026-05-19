@@ -4,7 +4,13 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: '智慧時段排程 — Duration-aware 自動排班',
   description: 'MooLah 智慧排程功能：依服務時長自動計算可用時段，緊湊填補空缺，熱門時段即時標記，每日 08:00 自動推播排程通知設計師。',
-  alternates: { canonical: 'https://moolah-platform.vercel.app/features/scheduling' },
+  alternates: {
+    canonical: 'https://moolah-platform.vercel.app/features/scheduling',
+    languages: {
+      'zh-Hant-TW': 'https://moolah-platform.vercel.app/features/scheduling',
+      'x-default': 'https://moolah-platform.vercel.app/features/scheduling',
+    },
+  },
 }
 
 const FEATURES = [
