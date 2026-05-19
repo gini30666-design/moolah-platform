@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'LINE 預約流程介紹 — 零 App 安裝線上預約 | MooLah',
+  title: 'LINE 預約流程介紹 — 零 App 安裝線上預約',
   description: '了解 MooLah 的 LINE 預約流程：客人透過 LINE 一鍵選服務、選時段、送出預約，全程不超過 60 秒。無需下載 App，有 LINE 就能預約。',
   alternates: { canonical: 'https://moolah-platform.vercel.app/features/booking' },
 }

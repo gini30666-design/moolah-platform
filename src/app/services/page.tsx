@@ -5,7 +5,7 @@ import { TextReveal } from '@/components/TextReveal'
 const BASE_URL = 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
-  title: '合作方案與定價 — 美業預約管理平台 | MooLah',
+  title: '合作方案與定價 — 美業預約管理平台',
   description: 'MooLah 三大合作方案：基礎入門 NT$600/月、專業職人 NT$1,200/月、工作室客製報價。零技術門檻，5 分鐘設定。高雄、台南髮型設計師、寵物美容、汽車美容、美甲師立即加入。',
   alternates: { canonical: `${BASE_URL}/services` },
   openGraph: {
