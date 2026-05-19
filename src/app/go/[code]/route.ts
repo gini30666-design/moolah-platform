@@ -12,9 +12,9 @@ export async function GET(
   const match = rows.find(r => r[12]?.toLowerCase() === code.toLowerCase())
 
   if (!match) {
-    return NextResponse.redirect(new URL('/', _req.url))
+    return NextResponse.redirect(new URL('/', _req.url), { status: 302 })
   }
 
   const providerId = match[0]
-  return NextResponse.redirect(new URL(`/${providerId}`, _req.url))
+  return NextResponse.redirect(new URL(`/${providerId}`, _req.url), { status: 308 })
 }

@@ -1,5 +1,65 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
+
+const BASE_URL = 'https://moolah-platform.vercel.app'
+
+export const metadata: Metadata = {
+  title: '加入合作 — 美業職人申請加入 | MooLah',
+  description: '美業職人加入 MooLah 合作計畫：5 分鐘完成設定，零技術門檻，立即擁有 LINE 預約頁面。高雄、台南髮型設計師、寵物美容師、汽車美容師、美甲師歡迎申請。',
+  alternates: { canonical: `${BASE_URL}/join` },
+  openGraph: {
+    title: '加入 MooLah 合作計畫 — 美業職人申請',
+    description: '5 分鐘設定、零技術門檻、LINE 直接預約。立即申請，當天上線。',
+    url: `${BASE_URL}/join`,
+  },
+}
+
+const SCHEMA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首頁', item: BASE_URL },
+        { '@type': 'ListItem', position: 2, name: '加入合作', item: `${BASE_URL}/join` },
+      ],
+    },
+    {
+      '@type': 'HowTo',
+      name: '如何加入 MooLah 合作計畫',
+      description: '申請成為 MooLah 合作美業職人，建立個人 LINE 預約頁面的完整流程。',
+      totalTime: 'PT5M',
+      supply: [{ '@type': 'HowToSupply', name: '姓名、服務項目、聯絡方式' }],
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: '填寫申請表單',
+          text: '提供姓名、服務項目、聯絡方式，發送 Email 至 moolah118@gmail.com 或加入 LINE OA @881zhkla。',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: '24 小時內回覆',
+          text: 'MooLah 團隊審核申請並聯絡你，確認合作細節。',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: '建立預約頁面',
+          text: '協助設定服務項目、時段與個人資料，5 分鐘完成。',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 4,
+          name: '正式上線',
+          text: '分享個人專屬連結，立即開始接受 LINE 預約。',
+        },
+      ],
+    },
+  ],
+}
 
 const BENEFITS = [
   {
@@ -39,10 +99,10 @@ function Nav() {
         <div className="flex items-center gap-4 md:gap-6 text-sm text-[var(--charcoal)]/60">
           <Link href="/services" className="hidden sm:inline hover:text-[var(--oak)] transition-colors">合作方案</Link>
           <Link
-            href="/go/chloe"
+            href="/discover"
             className="px-4 py-2 bg-[var(--charcoal)] text-[var(--cream)] text-xs tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors"
           >
-            立即預約
+            探索職人
           </Link>
         </div>
       </div>
@@ -56,7 +116,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <Link href="/" className="font-display text-xl text-[var(--charcoal)] block mb-1">MooLah</Link>
-          <p className="text-xs text-[var(--charcoal)]/40">© 2026 MooLah. All rights reserved.</p>
+          <p className="text-xs text-[var(--charcoal)]/40">© 2026 永祥數位有限公司 MooLah. All rights reserved.</p>
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/services" className="hover:text-[var(--oak)] transition-colors">合作方案</Link>
@@ -72,6 +132,10 @@ function Footer() {
 export default function JoinPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }}
+      />
       <Nav />
       <main className="pt-14 md:pt-16">
 
@@ -138,6 +202,29 @@ export default function JoinPage() {
                   <span className="font-display text-5xl md:text-6xl leading-none block mb-5 md:mb-6" style={{ color: 'rgba(166,137,102,0.15)' }}>{b.num}</span>
                   <h3 className="font-display text-xl md:text-2xl mb-3 md:mb-4" style={{ color: 'var(--charcoal)' }}>{b.title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgba(44,40,37,0.55)' }}>{b.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Who should join */}
+        <section className="py-14 md:py-20 px-5 md:px-6" style={{ background: 'white' }}>
+          <div className="max-w-6xl mx-auto">
+            <div data-animate className="mb-10">
+              <p className="text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--oak)' }}>SUITABLE FOR</p>
+              <h2 className="font-display" style={{ fontSize: 'clamp(1.8rem,3.5vw,3rem)', color: 'var(--charcoal)', fontWeight: 400 }}>適合哪些職人加入？</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { label: '髮型設計師', desc: '剪髮、染髮、燙髮皆可上架。自訂服務時長與價格，系統自動管理可用時段，告別紙本記事。' },
+                { label: '寵物美容師', desc: '依毛孩大小與品種設定差異化定價。預約自動記錄，方便查詢毛孩歷史服務紀錄。' },
+                { label: '汽車美容師', desc: '鍍膜、打蠟、清洗等項目分開管理。客人線上選服務、選時段，減少來回確認的溝通時間。' },
+                { label: '美甲師', desc: '光療、凝膠、手繪各式項目上架。作品集照片直接展示在預約頁，提升客人選擇意願。' },
+              ].map((item, i) => (
+                <div key={item.label} data-animate data-delay={String(i * 80)} className="p-6 border" style={{ borderColor: 'rgba(166,137,102,0.18)' }}>
+                  <h3 className="font-display text-lg mb-3" style={{ color: 'var(--charcoal)' }}>{item.label}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(44,40,37,0.60)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

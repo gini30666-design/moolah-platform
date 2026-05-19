@@ -1,5 +1,20 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
+
+const BASE_URL = 'https://moolah-platform.vercel.app'
+
+export const metadata: Metadata = {
+  title: 'MooLah — 台灣美業智慧預約平台 | 髮型設計師、寵物美容、美甲線上預約',
+  description: '台灣美業智慧預約平台，高雄、台南、台中、台北均有合作職人。髮型設計師、寵物美容師、汽車美容師、美甲師，透過 LINE 一鍵預約，雙向即時通知，零 App 安裝。',
+  keywords: ['台灣美業預約', '髮型設計師預約', '寵物美容預約', '汽車美容預約', '美甲預約', 'LINE 預約', '高雄美容預約', '美業平台'],
+  alternates: { canonical: BASE_URL },
+  openGraph: {
+    title: 'MooLah — 質感生活，從容預約',
+    description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。高雄、台南、台中、台北均有合作職人。',
+    url: BASE_URL,
+  },
+}
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Nav() {
@@ -14,12 +29,11 @@ function Nav() {
           <Link href="/services#faq" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">常見問題</Link>
         </div>
         <Link
-          href="/line"
-          className="flex items-center gap-1.5 px-4 md:px-6 py-2.5 md:py-3 text-xs text-white tracking-widest uppercase transition-opacity hover:opacity-90"
-          style={{ background: 'var(--line-green)' }}
+          href="/discover"
+          className="flex items-center gap-1.5 px-4 md:px-6 py-2.5 md:py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-90"
+          style={{ background: 'var(--oak)', color: 'var(--cream)' }}
         >
-          <LineIcon size={14} />
-          <span className="hidden sm:inline">立即預約</span>
+          <span className="hidden sm:inline">探索職人</span>
           <span className="sm:hidden">預約</span>
         </Link>
       </div>
@@ -86,8 +100,8 @@ function Hero() {
 
           {/* CTAs */}
           <div className="anim-fade-up-4 flex flex-wrap items-center gap-3">
-            <Link href="/line" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm text-white tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--line-green)' }}>
-              <LineIcon />立即預約
+            <Link href="/discover" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+              探索職人
             </Link>
             <Link href="/discover" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-7 md:px-9 py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.22)' }}>
               <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', opacity: 0.7 }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
@@ -346,7 +360,7 @@ function Footer() {
         <div data-animate data-delay="100">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>服務</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['髮型設計師', '/go/chloe'], ['寵物美容師', '/services'], ['汽車美容師', '/services'], ['美甲師', '/services']].map(([l, h]) => (
+            {[['髮型設計師', '/discover?category=髮型設計師'], ['寵物美容師', '/discover?category=寵物美容師'], ['汽車美容師', '/discover?category=汽車美容師'], ['美甲師', '/discover?category=美甲師']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>
@@ -369,7 +383,7 @@ function Footer() {
         </div>
       </div>
       <div className="border-t px-5 md:px-16 py-5 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-2" style={{ borderColor: 'rgba(166,137,102,.2)' }}>
-        <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 MOOLAH. ALL RIGHTS RESERVED.</p>
+        <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 永祥數位有限公司 MooLah. ALL RIGHTS RESERVED.</p>
         <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>DESIGNED IN TAIWAN · 高雄出發</p>
       </div>
     </footer>

@@ -1,0 +1,53 @@
+# MooLah
+
+> 台灣美業智慧預約平台 — Taiwan Beauty Industry Smart Booking Platform
+
+MooLah 是一個專為台灣美業職人設計的線上預約管理系統，透過 LINE 深度整合，讓消費者無需下載 App 即可完成預約，設計師透過後台輕鬆管理行程。
+
+## 服務對象
+
+- 髮型設計師（Hair Designers）
+- 寵物美容師（Pet Groomers）
+- 汽車美容師（Auto Detailing Specialists）
+- 美甲師（Nail Artists）
+
+## 核心功能
+
+- LINE 一鍵預約（不需下載 App）
+- 智慧時段管理（Duration-aware 自動排程）
+- 雙向即時通知（預約確認、提醒、取消）
+- 設計師後台管理（預約、服務、作品集）
+- 個人專屬預約頁面
+
+## 主要頁面
+
+- 首頁：https://moolah-platform.vercel.app/
+- 探索職人：https://moolah-platform.vercel.app/discover
+- 合作方案：https://moolah-platform.vercel.app/services
+- 加入合作：https://moolah-platform.vercel.app/join
+- 預約功能介紹：https://moolah-platform.vercel.app/features/booking
+- 排程功能介紹：https://moolah-platform.vercel.app/features/scheduling
+- 通知機制介紹：https://moolah-platform.vercel.app/features/notification
+
+## 聯絡資訊
+
+- Email：moolah118@gmail.com
+- LINE OA：@881zhkla
+- 官方網站：https://moolah-platform.vercel.app
+
+## 服務地區
+
+台灣全島，重點服務高雄市、台南市、台中市、台北市、新北市
+
+## 合作方案
+
+- 基礎入門：NT$600/月
+- 專業職人：NT$1,200/月
+- 工作室方案：客製化報價
+
+## 技術資訊
+
+- 前端：Next.js 15 App Router
+- 通訊整合：LINE Messaging API、LINE LIFF
+- 資料儲存：Google Sheets
+- 部署：Vercel
