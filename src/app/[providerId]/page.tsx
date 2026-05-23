@@ -154,16 +154,41 @@ export default function ProviderPage() {
 
   if (!provider) {
     return (
-      <div style={{ background: 'var(--charcoal-deep)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '50%',
-            border: '2px solid rgba(166,137,102,0.2)', borderTop: '2px solid #A68966',
-            animation: 'spin 0.9s linear infinite', margin: '0 auto 16px',
-          }} />
-          <p style={{ color: 'rgba(251,249,244,0.3)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>載入中</p>
+      <div style={{ background: 'var(--sand)', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', overflow: 'hidden' }}>
+        <style>{`
+          @keyframes shimmer {
+            0%   { background-position: -480px 0 }
+            100% { background-position:  480px 0 }
+          }
+          .sk {
+            background: linear-gradient(90deg, rgba(166,137,102,0.07) 25%, rgba(166,137,102,0.13) 50%, rgba(166,137,102,0.07) 75%);
+            background-size: 960px 100%;
+            animation: shimmer 1.4s infinite linear;
+            border-radius: 10px;
+          }
+        `}</style>
+        {/* Hero skeleton */}
+        <div className="sk" style={{ height: '420px', borderRadius: 0 }} />
+        {/* Glass card skeleton */}
+        <div style={{ padding: '0 16px', marginTop: '-44px', position: 'relative', zIndex: 20 }}>
+          <div style={{ background: 'rgba(245,239,230,0.88)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '22px', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 8px 40px rgba(26,23,20,0.1)' }}>
+            <div className="sk" style={{ width: '72px', height: '72px', borderRadius: '18px', flexShrink: 0 }} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="sk" style={{ height: '18px', width: '60%' }} />
+              <div className="sk" style={{ height: '12px', width: '40%' }} />
+              <div className="sk" style={{ height: '24px', width: '80%', borderRadius: '999px' }} />
+            </div>
+          </div>
         </div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        {/* Stats skeleton */}
+        <div style={{ margin: '20px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}>
+          {[0,1,2].map(i => <div key={i} className="sk" style={{ height: '62px', borderRadius: '14px' }} />)}
+        </div>
+        {/* Section + rows skeleton */}
+        <div style={{ margin: '24px 16px 0' }}>
+          <div className="sk" style={{ height: '14px', width: '30%', marginBottom: '14px' }} />
+          {[0,1,2,3].map(i => <div key={i} className="sk" style={{ height: '72px', borderRadius: '16px', marginBottom: '8px' }} />)}
+        </div>
       </div>
     )
   }
@@ -189,9 +214,9 @@ export default function ProviderPage() {
         .portfolio-item:hover .portfolio-overlay { opacity: 1; }
         .portfolio-overlay-caption { font-size: 12px; color: rgba(251,249,244,0.85); letter-spacing: 0.06em; line-height: 1.4; }
         .portfolio-overlay-icon { margin-left: auto; width: 28px; height: 28px; border-radius: 50%; background: rgba(166,137,102,0.7); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .service-row { display: flex; align-items: center; padding: 18px 16px; background: white; border: 1px solid rgba(166,137,102,0.12); border-radius: 16px; cursor: pointer; gap: 14px; transition: transform 0.2s, box-shadow 0.2s, border-color 0.18s, background 0.18s; }
+        .service-row { display: flex; align-items: center; padding: 18px 16px; background: white; border: 1px solid rgba(166,137,102,0.12); border-radius: 16px; cursor: pointer; gap: 14px; transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, border-color 0.18s, background 0.18s; }
         .service-row:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,23,20,0.08); }
-        .service-row.selected { background: rgba(166,137,102,0.06); border-color: rgba(166,137,102,0.5); box-shadow: 0 4px 20px rgba(166,137,102,0.14); }
+        .service-row.selected { background: rgba(166,137,102,0.06); border-color: rgba(166,137,102,0.5); box-shadow: 0 10px 32px rgba(166,137,102,0.18); transform: scale(1.015) translateY(-3px); }
       `}</style>
 
       {/* ── Sticky Mini Header ─────────────────── */}
@@ -512,15 +537,16 @@ export default function ProviderPage() {
       <div style={{
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: '480px',
-        padding: '16px 20px 32px',
-        background: 'linear-gradient(to top, var(--sand) 65%, transparent)',
+        padding: '12px 16px 28px',
+        background: 'linear-gradient(to top, var(--sand) 70%, transparent)',
         zIndex: 50,
       }}>
+        {/* Service hint */}
         {selectedServiceId
-          ? <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--oak)', letterSpacing: '0.06em', marginBottom: '10px', fontWeight: 500 }}>
+          ? <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--oak)', letterSpacing: '0.06em', marginBottom: '8px', fontWeight: 500 }}>
               ✓ {services.find(s => s.id === selectedServiceId)?.name}
             </p>
-          : <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.35)', letterSpacing: '0.08em', marginBottom: '10px' }}>
+          : <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.32)', letterSpacing: '0.08em', marginBottom: '8px' }}>
               請先選擇上方服務項目
             </p>
         }
@@ -528,23 +554,47 @@ export default function ProviderPage() {
           href={selectedServiceId ? `/${providerId}/book?service=${selectedServiceId}` : undefined}
           onClick={e => { if (!selectedServiceId) e.preventDefault() }}
           style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            width: '100%', padding: '16px',
+            display: 'flex', alignItems: 'center',
+            width: '100%', padding: selectedServiceId ? '12px 16px 12px 12px' : '16px',
             background: selectedServiceId ? 'var(--charcoal)' : 'rgba(44,40,37,0.14)',
             color: selectedServiceId ? 'var(--cream)' : 'rgba(44,40,37,0.3)',
-            borderRadius: '14px', fontSize: '13px', fontWeight: 500,
-            letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none',
-            boxShadow: selectedServiceId ? '0 8px 24px rgba(26,23,20,0.28)' : 'none',
-            transition: 'opacity 0.15s, background 0.2s, color 0.2s, box-shadow 0.2s',
+            borderRadius: '16px', textDecoration: 'none',
+            boxShadow: selectedServiceId ? '0 8px 28px rgba(26,23,20,0.3)' : 'none',
+            transition: 'opacity 0.15s, background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s',
             cursor: selectedServiceId ? 'pointer' : 'default',
+            gap: '12px',
           }}
-          onMouseEnter={e => { if (selectedServiceId) (e.currentTarget as HTMLElement).style.opacity = '0.88' }}
-          onMouseLeave={e => { if (selectedServiceId) (e.currentTarget as HTMLElement).style.opacity = '1' }}
+          onMouseEnter={e => { if (selectedServiceId) { (e.currentTarget as HTMLElement).style.opacity = '0.88'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)' } }}
+          onMouseLeave={e => { if (selectedServiceId) { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = '' } }}
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '15px', height: '15px' }}>
-            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-          </svg>
-          開始預約
+          {/* Avatar — only when service selected */}
+          {selectedServiceId && provider.avatarUrl && (
+            <img
+              src={provider.avatarUrl}
+              alt={provider.name}
+              style={{
+                width: '40px', height: '40px', borderRadius: '10px', objectFit: 'cover',
+                flexShrink: 0, border: '1.5px solid rgba(251,249,244,0.2)',
+              }}
+            />
+          )}
+
+          {/* Label */}
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '15px', height: '15px', flexShrink: 0 }}>
+              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+            </svg>
+            <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase' }}>開始預約</span>
+          </div>
+
+          {/* Price — only when service selected */}
+          {selectedServiceId && (
+            <div style={{ flexShrink: 0, textAlign: 'right' }}>
+              <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '18px', fontWeight: 500, color: 'rgba(251,249,244,0.9)', lineHeight: 1 }}>
+                NT$ {services.find(s => s.id === selectedServiceId)?.price.toLocaleString()}
+              </p>
+            </div>
+          )}
         </a>
       </div>
 

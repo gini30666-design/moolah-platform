@@ -97,8 +97,8 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
       </div>
 
       <div style={{
-        background: 'white',
-        border: '1px solid rgba(166,137,102,0.14)',
+        background: 'rgba(245,239,230,0.55)',
+        border: '1px solid rgba(166,137,102,0.18)',
         borderRadius: '18px',
         overflow: 'hidden',
         padding: '16px 14px 14px',
@@ -146,16 +146,16 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
                         padding: '6px 2px',
                         borderRadius: '8px',
                         cursor: isPast ? 'default' : style.cursor,
-                        background: isToday ? 'rgba(166,137,102,0.1)' : 'transparent',
+                        background: isToday ? 'rgba(166,137,102,0.18)' : 'transparent',
                         opacity: isPast ? 0.3 : 1,
                         transition: 'background 0.15s',
                       }}
                       onMouseEnter={e => {
                         if (!isPast && (cell.status === 'open' || cell.status === 'limited'))
-                          (e.currentTarget as HTMLElement).style.background = 'rgba(166,137,102,0.12)'
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(166,137,102,0.2)'
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.background = isToday ? 'rgba(166,137,102,0.1)' : 'transparent'
+                        (e.currentTarget as HTMLElement).style.background = isToday ? 'rgba(166,137,102,0.18)' : 'transparent'
                       }}
                     >
                       <span style={{
