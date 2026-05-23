@@ -304,11 +304,19 @@ export default function ProviderPage() {
             </div>
           </div>
 
-          {/* Info */}
+          {/* Info — always shows name + store, stars/social as secondary */}
           <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Name */}
+            <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1.1, marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {provider.name}
+            </p>
+            {/* Store name */}
+            {provider.storeName && (
+              <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{provider.storeName}</p>
+            )}
             {/* Stars */}
             {stars !== null && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '6px' }}>
                 <div style={{ display: 'flex', gap: '1px' }}>
                   {[1,2,3,4,5].map(s => (
                     <span key={s} style={{ fontSize: '12px', color: s <= Math.round(stars) ? '#A68966' : 'rgba(166,137,102,0.2)' }}>★</span>
