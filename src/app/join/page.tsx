@@ -39,7 +39,7 @@ const SCHEMA = {
           '@type': 'HowToStep',
           position: 1,
           name: '填寫申請表單',
-          text: '提供姓名、服務項目、聯絡方式，發送 Email 至 moolah118@gmail.com 或加入 LINE OA @881zhkla。',
+          text: '提供姓名、服務項目、聯絡方式，發送 Email 至 moolah118@gmail.com 或加入 LINE OA @492ejbwx。',
         },
         {
           '@type': 'HowToStep',
@@ -167,7 +167,7 @@ export default function JoinPage() {
             </p>
             <div data-animate data-delay="300" className="flex flex-wrap gap-3">
               <a
-                href="https://line.me/R/ti/p/@881zhkla"
+                href="https://line.me/R/ti/p/@492ejbwx"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"

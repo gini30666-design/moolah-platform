@@ -383,7 +383,7 @@ export default function ServicesPage() {
             <h2 className="font-display text-4xl mb-4" style={{ color: 'var(--cream)', fontWeight: 300 }}>準備好了嗎？</h2>
             <p className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(251,249,244,0.50)' }}>免費加入，5 分鐘完成設定，今天就開始接受預約。</p>
             <a
-              href="https://line.me/R/ti/p/@881zhkla"
+              href="https://line.me/R/ti/p/@492ejbwx"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
