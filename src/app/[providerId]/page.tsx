@@ -359,7 +359,7 @@ export default function ProviderPage() {
       {/* ── Description ────────────────────────── */}
       {provider.description && (
         <div data-animate data-delay="50" style={{ padding: '20px 20px 0' }}>
-          <p style={{ fontSize: '14px', lineHeight: 1.8, color: 'rgba(44,40,37,0.62)', letterSpacing: '0.01em' }}>{provider.description}</p>
+          <p style={{ fontSize: '14px', lineHeight: 1.8, color: 'rgba(44,40,37,0.75)', letterSpacing: '0.01em' }}>{provider.description}</p>
         </div>
       )}
 
@@ -560,13 +560,13 @@ export default function ProviderPage() {
 function SectionHeader({ index, title, count }: { index: string; title: string; count?: number }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-      <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '13px', color: 'rgba(166,137,102,0.6)', fontWeight: 300, letterSpacing: '0.08em' }}>{index}</span>
-      <div style={{ width: '1px', height: '14px', background: 'rgba(166,137,102,0.3)' }} />
-      <span style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 500 }}>{title}</span>
+      <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '14px', color: 'var(--oak)', fontWeight: 400, letterSpacing: '0.08em' }}>{index}</span>
+      <div style={{ width: '1px', height: '14px', background: 'rgba(166,137,102,0.5)' }} />
+      <span style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.72)', fontWeight: 600 }}>{title}</span>
       {count !== undefined && (
-        <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.35)', marginLeft: '2px' }}>({count})</span>
+        <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)', marginLeft: '2px' }}>({count})</span>
       )}
-      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(166,137,102,0.2), transparent)' }} />
+      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(44,40,37,0.12), transparent)' }} />
     </div>
   )
 }
@@ -578,8 +578,8 @@ function InfoRow({ icon, label, value, hasBorder }: { icon: React.ReactNode; lab
         {icon}
       </div>
       <div>
-        <p style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.32)', marginBottom: '3px' }}>{label}</p>
-        <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.72)', lineHeight: 1.5 }}>{value}</p>
+        <p style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.48)', marginBottom: '3px' }}>{label}</p>
+        <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.82)', lineHeight: 1.5 }}>{value}</p>
       </div>
     </div>
   )
