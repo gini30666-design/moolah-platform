@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import PwaInit from '@/components/PwaInit'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -101,7 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-Hant" className={`${cormorant.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script
@@ -110,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <GoogleAnalytics />
         <ScrollReveal />
         <PwaInit />
         {children}

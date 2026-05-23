@@ -10,6 +10,7 @@ type Provider = {
 }
 type Service  = { id: string; name: string; price: number; duration: number }
 type Portfolio = { id: string; imageUrl: string; caption: string }
+type ReviewSummary = { count: number; average: number; reviews: Array<{ id: string; customerName: string; rating: number; comment: string; createdAt: string }> }
 
 const CAT_ACCENT: Record<string, { bg: string; text: string }> = {
   '髮型設計師': { bg: 'rgba(196,168,130,0.18)', text: '#c4a882' },
@@ -31,6 +32,7 @@ export default function ProviderPage() {
   const [services, setServices] = useState<Service[]>([])
   const [portfolio, setPortfolio] = useState<Portfolio[]>([])
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
+  const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null)
 
   useEffect(() => {
     fetch(`/api/provider/${providerId}`)
@@ -40,6 +42,10 @@ export default function ProviderPage() {
         setServices(data.services)
         setPortfolio(data.portfolio ?? [])
       })
+    fetch(`/api/review?providerId=${providerId}`)
+      .then(r => r.json())
+      .then(setReviewSummary)
+      .catch(() => {})
   }, [providerId])
 
   if (!provider) {
@@ -223,6 +229,19 @@ export default function ProviderPage() {
           <p style={{ fontSize: '14px', lineHeight: 1.75, color: 'rgba(44,40,37,0.6)', maxWidth: '340px' }}>
             {provider.description}
           </p>
+        )}
+
+        {/* ── Star Rating Summary ── */}
+        {reviewSummary && reviewSummary.count > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px' }}>
+            <div style={{ display: 'flex', gap: '2px' }}>
+              {[1,2,3,4,5].map(s => (
+                <span key={s} style={{ fontSize: '14px', color: s <= Math.round(reviewSummary.average) ? '#A68966' : '#e0d6cc' }}>★</span>
+              ))}
+            </div>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#2C2825' }}>{reviewSummary.average}</span>
+            <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>({reviewSummary.count} 則評價)</span>
+          </div>
         )}
       </div>
 

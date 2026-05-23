@@ -463,6 +463,92 @@ export function buildAdminFlex(): object {
   }
 }
 
+// ── 邀請評價 Flex ──────────────────────────────────────────────────────────
+export function buildReviewFlex(params: {
+  bookingId: string
+  providerId: string
+  providerName: string
+  serviceName: string
+  customerName: string
+  customerUserId: string
+  date: string
+}): object {
+  const { bookingId, providerId, providerName, serviceName, customerName, customerUserId, date } = params
+  const reviewUrl = `${BASE_URL}/review?b=${bookingId}&p=${providerId}&n=${encodeURIComponent(customerName)}&u=${encodeURIComponent(customerUserId)}`
+
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      paddingAll: '20px',
+      spacing: 'none',
+      contents: [
+        {
+          type: 'text',
+          text: '服務體驗如何？',
+          weight: 'bold',
+          size: 'xl',
+          color: '#2C2825',
+        },
+        {
+          type: 'text',
+          text: `感謝您 ${date} 與 ${providerName} 的預約`,
+          size: 'sm',
+          color: '#888',
+          wrap: true,
+          margin: 'sm',
+        },
+        { type: 'separator', margin: 'xl' },
+        {
+          type: 'box',
+          layout: 'vertical',
+          margin: 'xl',
+          spacing: 'xs',
+          contents: [
+            {
+              type: 'text',
+              text: serviceName,
+              weight: 'bold',
+              size: 'md',
+              color: '#2C2825',
+            },
+            {
+              type: 'text',
+              text: '花 30 秒留下評分，幫助更多人找到優質職人 ✨',
+              size: 'xs',
+              color: '#888',
+              wrap: true,
+              margin: 'sm',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: '⭐⭐⭐⭐⭐',
+          align: 'center',
+          margin: 'xl',
+          size: 'lg',
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'vertical',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'button',
+          action: { type: 'uri', label: '立即評分', uri: reviewUrl },
+          style: 'primary',
+          color: '#A68966',
+          height: 'sm',
+        },
+      ],
+    },
+  }
+}
+
 // ── 預設回覆 Flex ──────────────────────────────────────────────────────────
 export function buildDefaultFlex(): object {
   return {
