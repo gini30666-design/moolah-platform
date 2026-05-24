@@ -438,20 +438,15 @@ export default function ProviderPage() {
           padding: '12px 6px',
           borderRadius: '14px',
           textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-          background: 'linear-gradient(145deg, #0a1628 0%, #0d1f3c 60%, #0a1628 100%)',
-          border: '1px solid rgba(0,149,246,0.3)',
-          boxShadow: '0 2px 14px rgba(0,149,246,0.18), inset 0 1px 0 rgba(255,255,255,0.05)',
+          background: 'white',
+          border: '1px solid rgba(166,137,102,0.12)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
         }}>
-          {/* blue glow top-right */}
-          <div style={{ position: 'absolute', top: 0, right: 0, width: '50px', height: '50px', background: 'radial-gradient(circle at top right, rgba(0,149,246,0.2), transparent 70%)', pointerEvents: 'none' }} />
           {/* IG-style blue checkmark badge */}
           <div style={{
-            width: '32px', height: '32px', borderRadius: '50%',
+            width: '34px', height: '34px', borderRadius: '50%',
             background: '#0095F6',
-            boxShadow: '0 2px 10px rgba(0,149,246,0.5)',
+            boxShadow: '0 2px 10px rgba(0,149,246,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             position: 'relative', overflow: 'hidden', flexShrink: 0,
           }}>
@@ -460,8 +455,8 @@ export default function ProviderPage() {
               <path d="M5 10l3.5 3.5L15 6.5" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em', color: '#4db8ff', lineHeight: 1, marginBottom: '1px' }}>官方認證</p>
-          <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>MooLah 職人</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--charcoal)', lineHeight: 1, marginBottom: '1px' }}>官方認證</p>
+          <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.42)', letterSpacing: '0.06em' }}>MooLah 職人</p>
         </div>
       </div>
 
@@ -515,7 +510,7 @@ export default function ProviderPage() {
                   </span>
                   <div style={{ width: '2px', alignSelf: 'stretch', borderRadius: '999px', background: isSelected ? 'var(--oak)' : 'rgba(166,137,102,0.25)', flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
                     <span style={{ fontSize: '10px', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '999px', background: cat.light, color: cat.text, border: `1px solid ${cat.text}33` }}>
                       {s.duration} 分鐘
                     </span>
@@ -716,8 +711,8 @@ function InfoRow({ icon, label, value, hasBorder }: { icon: React.ReactNode; lab
         {icon}
       </div>
       <div>
-        <p style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.48)', marginBottom: '3px' }}>{label}</p>
-        <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.82)', lineHeight: 1.5 }}>{value}</p>
+        <p style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.65)', marginBottom: '3px' }}>{label}</p>
+        <p style={{ fontSize: '15px', color: 'rgba(44,40,37,0.9)', lineHeight: 1.5 }}>{value}</p>
       </div>
     </div>
   )

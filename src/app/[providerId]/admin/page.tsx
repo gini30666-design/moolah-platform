@@ -255,9 +255,9 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
   return (
     <div style={{
       background: isNoShow ? 'rgba(200,60,60,0.04)' : 'white',
-      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.2)' : 'rgba(166,137,102,0.15)'}`,
+      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : 'rgba(166,137,102,0.28)'}`,
       borderRadius: '16px', padding: '18px 20px',
-      boxShadow: '0 2px 12px rgba(26,23,20,0.05)',
+      boxShadow: '0 2px 16px rgba(26,23,20,0.08)',
       position: 'relative', overflow: 'hidden',
     }}>
       {/* left oak accent bar */}
@@ -904,7 +904,7 @@ export default function AdminPage() {
           }}>
             {item.accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
             {item.unit === 'NT$' && (
-              <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: item.accent ? 'rgba(166,137,102,0.6)' : 'rgba(166,137,102,0.5)', marginBottom: '4px' }}>NT$</p>
+              <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: item.accent ? 'rgba(166,137,102,0.7)' : 'rgba(166,137,102,0.65)', marginBottom: '4px' }}>NT$</p>
             )}
             <p style={{
               fontFamily: '"Cormorant Garamond", serif',
@@ -912,9 +912,9 @@ export default function AdminPage() {
               fontWeight: 300, color: item.accent ? cream : oak,
               lineHeight: 1, letterSpacing: '-0.02em',
             }}>
-              {item.value}{item.unit === '筆' && <span style={{ fontSize: '1rem', marginLeft: '3px', opacity: 0.6 }}>筆</span>}
+              {item.value}{item.unit === '筆' && <span style={{ fontSize: '1rem', marginLeft: '3px', opacity: 0.7 }}>筆</span>}
             </p>
-            <p style={{ fontSize: '10px', color: item.accent ? 'rgba(251,249,244,0.4)' : '#b0a89e', marginTop: '8px', letterSpacing: '0.06em' }}>{item.label}</p>
+            <p style={{ fontSize: '10px', color: item.accent ? 'rgba(251,249,244,0.55)' : 'rgba(44,40,37,0.52)', marginTop: '8px', letterSpacing: '0.06em' }}>{item.label}</p>
           </div>
         ))}
       </div>
@@ -945,9 +945,10 @@ export default function AdminPage() {
               {bookingTabs.map(t => (
                 <button key={t.key} onClick={() => setTab(t.key)} style={{
                   padding: '8px 16px', borderRadius: '20px', fontSize: '12px',
-                  fontWeight: tab === t.key ? 600 : 400, border: 'none', cursor: 'pointer',
-                  background: tab === t.key ? oak : 'rgba(166,137,102,0.08)',
-                  color: tab === t.key ? cream : '#8a7e76',
+                  fontWeight: tab === t.key ? 600 : 400, cursor: 'pointer',
+                  background: tab === t.key ? oak : 'transparent',
+                  border: tab === t.key ? `1px solid ${oak}` : '1px solid rgba(166,137,102,0.35)',
+                  color: tab === t.key ? cream : 'rgba(44,40,37,0.62)',
                   transition: 'all 0.18s', whiteSpace: 'nowrap',
                 }}>{t.label}</button>
               ))}
