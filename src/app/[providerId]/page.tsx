@@ -492,66 +492,87 @@ export default function ProviderPage() {
             const isExpanded = expandedServiceId === s.id
             const hasDesc = !!s.description?.trim()
             return (
-              <div key={s.id} style={{
-                borderRadius: '16px', overflow: 'hidden',
-                background: isSelected ? 'var(--charcoal-deep)' : 'white',
-                border: `1px solid ${isSelected ? 'rgba(251,249,244,0.06)' : 'rgba(166,137,102,0.12)'}`,
-                transition: 'transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, border-color 0.18s, background 0.18s',
-                transform: isSelected ? 'scale(1.015) translateY(-3px)' : 'scale(1)',
-                boxShadow: isSelected ? '0 10px 32px rgba(26,23,20,0.3)' : 'none',
-              }}>
-                {/* Main row */}
-                <div
-                  style={{ display: 'flex', alignItems: 'center', padding: '18px 16px', cursor: 'pointer', gap: '14px' }}
-                  onClick={() => setSelectedServiceId(isSelected ? null : s.id)}
+              {isSelected ? (
+                /* ── Selected: editorial summary card (matches book page) ── */
+                <div key={s.id}
+                  onClick={() => setSelectedServiceId(null)}
+                  style={{
+                    background: 'var(--charcoal-deep)', borderRadius: '20px',
+                    padding: '22px 22px 18px', position: 'relative', overflow: 'hidden',
+                    cursor: 'pointer', animation: 'fadeUp 0.2s ease',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 12px 36px rgba(26,23,20,0.32)',
+                  }}
                 >
-                  <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 300, color: isSelected ? 'rgba(251,249,244,0.25)' : 'rgba(166,137,102,0.5)', flexShrink: 0, width: '24px', textAlign: 'center', lineHeight: 1 }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div style={{ width: '2px', alignSelf: 'stretch', borderRadius: '999px', background: isSelected ? 'rgba(251,249,244,0.15)' : 'rgba(166,137,102,0.25)', flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '15px', fontWeight: 500, color: isSelected ? 'var(--cream)' : 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
-                    <span style={{ fontSize: '10px', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '999px', background: isSelected ? 'rgba(251,249,244,0.1)' : cat.light, color: isSelected ? 'rgba(251,249,244,0.65)' : cat.text, border: `1px solid ${isSelected ? 'rgba(251,249,244,0.12)' : cat.text + '33'}` }}>
-                      {s.duration} 分鐘
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '22px', fontWeight: 500, color: isSelected ? 'var(--cream)' : 'var(--charcoal)', lineHeight: 1 }}>{s.price.toLocaleString()}</p>
-                      <p style={{ fontSize: '9px', color: isSelected ? 'rgba(251,249,244,0.35)' : 'rgba(44,40,37,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>NT$</p>
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />
+                  <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: '9px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px' }}>預約服務</p>
+                      <p style={{ fontFamily: 'var(--font-cormorant), "Cormorant Garamond", serif', fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px', letterSpacing: '-0.01em' }}>{s.name}</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.38)', letterSpacing: '0.06em' }}>{s.duration} 分鐘</p>
                     </div>
-                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: isSelected ? 'rgba(251,249,244,0.15)' : 'rgba(166,137,102,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s', flexShrink: 0 }}>
-                      {isSelected
-                        ? <svg viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2.5" style={{ width: '11px', height: '11px' }}><path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        : <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '11px', height: '11px', color: 'var(--oak)' }}><path d="M4 8h8M9 5l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      }
+                    <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
+                      <p style={{ fontFamily: 'var(--font-cormorant), "Cormorant Garamond", serif', fontSize: '2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '8px' }}>NT$&thinsp;{s.price.toLocaleString()}</p>
+                      <span style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', background: 'rgba(166,137,102,0.18)', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.3)' }}>已選擇</span>
                     </div>
-                    {hasDesc && (
-                      <button type="button"
-                        onClick={e => { e.stopPropagation(); setExpandedServiceId(isExpanded ? null : s.id) }}
-                        style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: isSelected ? (isExpanded ? 'var(--cream)' : 'rgba(251,249,244,0.35)') : (isExpanded ? 'var(--oak)' : 'rgba(44,40,37,0.3)'), lineHeight: 0, flexShrink: 0, transition: 'color 0.15s' }}
-                        aria-label="展開說明"
-                      >
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"
-                          style={{ width: '14px', height: '14px', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'none' }}>
-                          <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    )}
                   </div>
                 </div>
-                {/* Description expansion */}
-                {isExpanded && hasDesc && (
-                  <div style={{
-                    padding: '10px 16px 14px 54px',
-                    borderTop: `1px solid ${isSelected ? 'rgba(251,249,244,0.08)' : 'rgba(166,137,102,0.1)'}`,
-                    fontSize: '13px', color: isSelected ? 'rgba(251,249,244,0.6)' : 'rgba(44,40,37,0.62)', lineHeight: 1.7,
-                    animation: 'fadeUp 0.18s ease',
-                  }}>
-                    {s.description}
+              ) : (
+                /* ── Unselected: standard row ── */
+                <div key={s.id} style={{
+                  borderRadius: '16px', overflow: 'hidden', background: 'white',
+                  border: '1px solid rgba(166,137,102,0.12)',
+                  transition: 'transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s',
+                }}>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', padding: '18px 16px', cursor: 'pointer', gap: '14px' }}
+                    onClick={() => setSelectedServiceId(s.id)}
+                  >
+                    <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 300, color: 'rgba(166,137,102,0.5)', flexShrink: 0, width: '24px', textAlign: 'center', lineHeight: 1 }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div style={{ width: '2px', alignSelf: 'stretch', borderRadius: '999px', background: 'rgba(166,137,102,0.25)', flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
+                      <span style={{ fontSize: '10px', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '999px', background: cat.light, color: cat.text, border: `1px solid ${cat.text}33` }}>
+                        {s.duration} 分鐘
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '22px', fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1 }}>{s.price.toLocaleString()}</p>
+                        <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>NT$</p>
+                      </div>
+                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(166,137,102,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '11px', height: '11px', color: 'var(--oak)' }}><path d="M4 8h8M9 5l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      {hasDesc && (
+                        <button type="button"
+                          onClick={e => { e.stopPropagation(); setExpandedServiceId(isExpanded ? null : s.id) }}
+                          style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: isExpanded ? 'var(--oak)' : 'rgba(44,40,37,0.3)', lineHeight: 0, flexShrink: 0, transition: 'color 0.15s' }}
+                          aria-label="展開說明"
+                        >
+                          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"
+                            style={{ width: '14px', height: '14px', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'none' }}>
+                            <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
+                  {isExpanded && hasDesc && (
+                    <div style={{
+                      padding: '10px 16px 14px 54px',
+                      borderTop: '1px solid rgba(166,137,102,0.1)',
+                      fontSize: '13px', color: 'rgba(44,40,37,0.62)', lineHeight: 1.7,
+                      animation: 'fadeUp 0.18s ease',
+                    }}>
+                      {s.description}
+                    </div>
+                  )}
+                </div>
+              )}
             )
           })}
         </div>
