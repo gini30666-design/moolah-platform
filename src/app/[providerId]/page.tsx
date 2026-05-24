@@ -425,7 +425,7 @@ export default function ProviderPage() {
       {/* ── Stats Row ──────────────────────────── */}
       <div data-animate data-delay="80" style={{ margin: '20px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}>
         {[
-          { num: reviewSummary?.count ?? '—', label: '則評價' },
+          { num: starsCount ?? reviewSummary?.count ?? '—', label: '則評價' },
           { num: services.length || '—', label: '項服務' },
         ].map(({ num, label }) => (
           <div key={label} style={{ padding: '14px 8px', background: 'white', border: '1px solid rgba(166,137,102,0.12)', borderRadius: '14px', textAlign: 'center' }}>
