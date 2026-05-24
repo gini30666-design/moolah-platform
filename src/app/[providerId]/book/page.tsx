@@ -448,6 +448,9 @@ export default function BookPage() {
   const [done, setDone] = useState(false)
   const [consumerNotified, setConsumerNotified] = useState(false)
   const [isHairCategory, setIsHairCategory] = useState(false)
+  const [waitlistSlot, setWaitlistSlot] = useState<string | null>(null)
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
+  const [waitlistDone, setWaitlistDone] = useState(false)
 
   useEffect(() => {
     liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
@@ -808,42 +811,54 @@ export default function BookPage() {
                         const isBooked  = slot.status === 'booked'
                         const isHot     = slot.status === 'hot'
                         const isSelected = time === slot.time
+                        const isWaitlistTarget = waitlistSlot === slot.time
                         return (
                           <button
                             key={slot.time}
                             type="button"
-                            disabled={isBooked}
-                            onClick={() => !isBooked && setTime(slot.time)}
+                            onClick={() => {
+                              if (isBooked) {
+                                setWaitlistSlot(isWaitlistTarget ? null : slot.time)
+                                setWaitlistDone(false)
+                              } else {
+                                setTime(slot.time)
+                                setWaitlistSlot(null)
+                              }
+                            }}
                             style={{
                               position: 'relative',
                               padding: '10px 4px',
                               borderRadius: '10px',
                               fontSize: '13px',
-                              cursor: isBooked ? 'not-allowed' : 'pointer',
+                              cursor: 'pointer',
                               border: isSelected
                                 ? '1.5px solid var(--charcoal)'
-                                : isHot
-                                  ? '1.5px solid rgba(196,132,90,0.50)'
-                                  : '1.5px solid rgba(166,137,102,0.18)',
+                                : isWaitlistTarget
+                                  ? '1.5px solid rgba(180,120,40,0.6)'
+                                  : isBooked
+                                    ? '1.5px solid rgba(180,120,40,0.25)'
+                                    : isHot
+                                      ? '1.5px solid rgba(196,132,90,0.50)'
+                                      : '1.5px solid rgba(166,137,102,0.18)',
                               background: isSelected
                                 ? 'var(--charcoal)'
-                                : isBooked
-                                  ? 'rgba(44,40,37,0.04)'
-                                  : isHot
-                                    ? 'rgba(196,132,90,0.10)'
-                                    : 'rgba(255,255,255,0.80)',
+                                : isWaitlistTarget
+                                  ? 'rgba(180,120,40,0.12)'
+                                  : isBooked
+                                    ? 'rgba(180,120,40,0.05)'
+                                    : isHot
+                                      ? 'rgba(196,132,90,0.10)'
+                                      : 'rgba(255,255,255,0.80)',
                               color: isSelected
                                 ? 'var(--cream)'
                                 : isBooked
-                                  ? 'rgba(44,40,37,0.25)'
+                                  ? 'rgba(160,100,30,0.7)'
                                   : isHot
                                     ? '#c4845a'
                                     : 'var(--charcoal)',
                               boxShadow: isSelected
                                 ? '0 3px 10px rgba(44,40,37,0.18)'
-                                : isBooked
-                                  ? 'none'
-                                  : '0 1px 3px rgba(166,137,102,0.08)',
+                                : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
                               transform: isSelected ? 'translateY(-1px)' : 'translateY(0)',
                               fontWeight: isSelected ? 500 : 400,
                               fontFamily: 'var(--font-dm-sans)',
@@ -851,13 +866,54 @@ export default function BookPage() {
                             }}
                           >
                             {slot.time}
-                            {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(44,40,37,0.22)' }}>已客滿</span>}
-                            {isHot && !isSelected && (
+                            {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)' }}>候補</span>}
+                            {isHot && !isSelected && !isBooked && (
                               <span style={{ position: 'absolute', top: '-8px', right: '-6px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
                             )}
                           </button>
                         )
                       })}
+                      {/* Waitlist confirmation */}
+                      {waitlistSlot && !waitlistDone && (
+                        <div style={{ gridColumn: '1/-1', marginTop: '4px', padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px', animation: 'fadeIn 0.2s ease' }}>
+                          <p style={{ fontSize: '12px', color: '#8a5c20', marginBottom: '10px', lineHeight: 1.5 }}>
+                            加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。
+                          </p>
+                          <button
+                            type="button"
+                            disabled={waitlistSubmitting || (!lineUserId && !customerNameInput.trim())}
+                            onClick={async () => {
+                              const wlName = lineUserId ? displayName : customerNameInput.trim()
+                              const wlPhone = lineUserId ? '' : customerPhone.trim()
+                              if (!wlName && !lineUserId) return
+                              setWaitlistSubmitting(true)
+                              try {
+                                await fetch('/api/waitlist', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    providerId, serviceId: service?.id, date,
+                                    time: waitlistSlot, customerName: wlName,
+                                    customerLineUserId: lineUserId, customerPhone: wlPhone,
+                                  }),
+                                })
+                                setWaitlistDone(true)
+                              } finally {
+                                setWaitlistSubmitting(false)
+                              }
+                            }}
+                            style={{ padding: '8px 20px', background: '#8a5c20', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            {waitlistSubmitting ? '處理中…' : '確認加入候補'}
+                          </button>
+                          <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(44,40,37,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
+                        </div>
+                      )}
+                      {waitlistDone && (
+                        <div style={{ gridColumn: '1/-1', marginTop: '4px', padding: '12px 16px', background: 'rgba(34,180,100,0.08)', border: '1px solid rgba(34,180,100,0.2)', borderRadius: '12px', textAlign: 'center' }}>
+                          <p style={{ fontSize: '12px', color: '#22b464', fontWeight: 500 }}>✓ 已加入候補名單，有空位時將立即通知您</p>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}

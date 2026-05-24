@@ -21,8 +21,16 @@ type Booking = {
   status: string
 }
 type Service = { id: string; name: string; price: number; duration: number; description: string }
-type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio'
+type WaitlistEntry = { id: string; date: string; time: string; customerName: string; customerLineUserId: string; customerPhone: string; addedAt: string }
+type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio' | 'waitlist'
 type BookingTab = 'timeline' | 'today' | 'upcoming' | 'past'
+
+const TAGS = [
+  { label: 'VIP', bg: 'rgba(201,169,110,0.18)', color: '#8a6030', border: 'rgba(201,169,110,0.4)' },
+  { label: '首訪', bg: 'rgba(0,149,246,0.1)', color: '#0070c0', border: 'rgba(0,149,246,0.3)' },
+  { label: '常客', bg: 'rgba(34,180,100,0.1)', color: '#1a8a50', border: 'rgba(34,180,100,0.3)' },
+  { label: '高風險', bg: 'rgba(200,60,60,0.1)', color: '#b03030', border: 'rgba(200,60,60,0.3)' },
+]
 
 const todayStr = () => new Date().toISOString().split('T')[0]
 
@@ -57,12 +65,15 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   const [noteText, setNoteText] = useState('')
   const [noteSaving, setNoteSaving] = useState(false)
   const [noteSaved, setNoteSaved] = useState(false)
+  const [tags, setTags] = useState<string[]>([])
+
+  const noShowCount = history.filter(b => b.status === 'no_show').length
 
   useEffect(() => {
     if (isManual) return
     fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`)
       .then(r => r.json())
-      .then(d => setNoteText(d.note ?? ''))
+      .then(d => { setNoteText(d.note ?? ''); setTags(d.tags ?? []) })
       .catch(() => {})
   }, [booking.customerLineUserId, providerId, isManual])
 
@@ -71,11 +82,21 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
     await fetch('/api/admin/customer-note', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText }),
+      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText, tags }),
     })
     setNoteSaving(false)
     setNoteSaved(true)
     setTimeout(() => setNoteSaved(false), 2000)
+  }
+
+  async function toggleTag(label: string) {
+    const next = tags.includes(label) ? tags.filter(t => t !== label) : [...tags, label]
+    setTags(next)
+    await fetch('/api/admin/customer-note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, tags: next }),
+    }).catch(() => {})
   }
 
   return (
@@ -103,17 +124,37 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
         </div>
 
         {!isManual && (
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-            {[
-              { label: '歷史訪問', value: `${history.length} 次` },
-              { label: '累計消費', value: `NT$ ${totalSpend.toLocaleString()}` },
-            ].map(item => (
-              <div key={item.label} style={{ flex: 1, background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', fontWeight: 600, color: oak, lineHeight: 1 }}>{item.value}</p>
-                <p style={{ fontSize: '10px', color: '#7a6e68', marginTop: '5px', letterSpacing: '0.05em' }}>{item.label}</p>
+          <>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+              {[
+                { label: '歷史訪問', value: `${history.filter(b => b.status !== 'no_show').length} 次` },
+                { label: '累計消費', value: `NT$ ${totalSpend.toLocaleString()}` },
+                ...(noShowCount > 0 ? [{ label: '爽約', value: `${noShowCount} 次`, red: true }] : []),
+              ].map((item: { label: string; value: string; red?: boolean }) => (
+                <div key={item.label} style={{ flex: 1, background: item.red ? 'rgba(200,60,60,0.07)' : 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '12px 8px', textAlign: 'center' }}>
+                  <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', fontWeight: 600, color: item.red ? '#b03030' : oak, lineHeight: 1 }}>{item.value}</p>
+                  <p style={{ fontSize: '10px', color: item.red ? '#c05050' : '#7a6e68', marginTop: '4px', letterSpacing: '0.05em' }}>{item.label}</p>
+                </div>
+              ))}
+            </div>
+            {/* Tags */}
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>顧客標籤</p>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {TAGS.map(tag => {
+                  const active = tags.includes(tag.label)
+                  return (
+                    <button key={tag.label} onClick={() => toggleTag(tag.label)} style={{
+                      padding: '5px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: active ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s',
+                      background: active ? tag.bg : 'transparent',
+                      color: active ? tag.color : '#b0a89e',
+                      border: `1px solid ${active ? tag.border : 'rgba(166,137,102,0.18)'}`,
+                    }}>{tag.label}</button>
+                  )
+                })}
               </div>
-            ))}
-          </div>
+            </div>
+          </>
         )}
 
         {!isManual && (
@@ -182,7 +223,10 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
 }) {
   const [cancelling, setCancelling] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [markingNoShow, setMarkingNoShow] = useState(false)
+  const [showNoShowConfirm, setShowNoShowConfirm] = useState(false)
   const isManual = booking.customerLineUserId === 'MANUAL'
+  const isNoShow = booking.status === 'no_show'
 
   async function handleCancel() {
     setCancelling(true)
@@ -196,20 +240,31 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
     setShowConfirm(false)
   }
 
+  async function handleNoShow() {
+    setMarkingNoShow(true)
+    await fetch('/api/admin/booking', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId: booking.id, status: 'no_show' }),
+    })
+    onCancel(booking.id)
+    setMarkingNoShow(false)
+    setShowNoShowConfirm(false)
+  }
+
   return (
-    <div style={{ background: cardBg, backdropFilter: 'blur(12px)', border: `1px solid ${border}`, borderRadius: '16px', padding: '18px 20px' }}>
+    <div style={{ background: isNoShow ? 'rgba(200,60,60,0.04)' : cardBg, backdropFilter: 'blur(12px)', border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.2)' : border}`, borderRadius: '16px', padding: '18px 20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', fontWeight: 600, color: charcoal, lineHeight: 1 }}>{booking.time}</p>
           <p style={{ fontSize: '12px', color: oak, marginTop: '4px', letterSpacing: '0.04em' }}>{booking.serviceName}</p>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', color: charcoal, fontWeight: 500 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
-          {isManual && (
-            <span style={{ fontSize: '10px', color: oak, background: 'rgba(166,137,102,0.1)', padding: '2px 8px', borderRadius: '20px', display: 'inline-block', marginTop: '4px' }}>私下預約</span>
-          )}
+          {isNoShow && <span style={{ fontSize: '10px', color: '#b03030', background: 'rgba(200,60,60,0.12)', padding: '2px 8px', borderRadius: '20px' }}>爽約</span>}
+          {isManual && !isNoShow && <span style={{ fontSize: '10px', color: oak, background: 'rgba(166,137,102,0.1)', padding: '2px 8px', borderRadius: '20px' }}>私下預約</span>}
         </div>
       </div>
 
@@ -228,11 +283,28 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
       {booking.note && <p style={{ fontSize: '11px', color: '#6b5f56', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
       <p style={{ fontSize: '10px', color: '#c8c0b8', marginTop: '8px' }}>#{booking.id}</p>
 
-      {!showConfirm ? (
-        <button onClick={() => setShowConfirm(true)} style={{ marginTop: '14px', width: '100%', fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '12px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>
-          取消此預約
-        </button>
-      ) : (
+      {!isNoShow && !showConfirm && !showNoShowConfirm && (
+        <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+          <button onClick={() => setShowNoShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#a04030', border: '1px solid rgba(200,60,60,0.2)', borderRadius: '12px', padding: '9px', background: 'rgba(200,60,60,0.04)', cursor: 'pointer' }}>
+            標記爽約
+          </button>
+          <button onClick={() => setShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '12px', padding: '9px', background: 'transparent', cursor: 'pointer' }}>
+            取消預約
+          </button>
+        </div>
+      )}
+      {showNoShowConfirm && (
+        <div style={{ marginTop: '14px', background: 'rgba(200,60,60,0.06)', border: '1px solid rgba(200,60,60,0.15)', borderRadius: '12px', padding: '14px' }}>
+          <p style={{ fontSize: '12px', color: '#b04040', textAlign: 'center', marginBottom: '12px' }}>確認標記為爽約？此紀錄將保留在顧客歷史中。</p>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => setShowNoShowConfirm(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>返回</button>
+            <button onClick={handleNoShow} disabled={markingNoShow} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '10px', border: 'none', cursor: 'pointer', opacity: markingNoShow ? 0.6 : 1 }}>
+              {markingNoShow ? '處理中...' : '確認爽約'}
+            </button>
+          </div>
+        </div>
+      )}
+      {showConfirm && (
         <div style={{ marginTop: '14px', background: 'rgba(180,60,60,0.06)', border: '1px solid rgba(180,60,60,0.15)', borderRadius: '12px', padding: '14px' }}>
           <p style={{ fontSize: '12px', color: '#b04040', textAlign: 'center', marginBottom: '12px' }}>
             確定取消？{!isManual && '系統將自動通知客戶。'}
@@ -645,6 +717,8 @@ export default function AdminPage() {
   const [providerName, setProviderName] = useState('')
   const [customerSheet, setCustomerSheet] = useState<Booking | null>(null)
   const [addingService, setAddingService] = useState(false)
+  const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
+  const [removingWL, setRemovingWL] = useState<string | null>(null)
 
   const fetchBookings = useCallback(async () => {
     const res = await fetch(`/api/admin/bookings?providerId=${providerId}`)
@@ -656,6 +730,12 @@ export default function AdminPage() {
     const res = await fetch(`/api/provider/${providerId}`)
     const data = await res.json()
     setServices(data.services ?? [])
+  }, [providerId])
+
+  const fetchWaitlist = useCallback(async () => {
+    const res = await fetch(`/api/admin/waitlist?providerId=${providerId}`)
+    const data = await res.json()
+    setWaitlist(data.entries ?? [])
   }, [providerId])
 
   useEffect(() => {
@@ -676,7 +756,7 @@ export default function AdminPage() {
         const storedUserId = data.provider?.lineUserId ?? ''
         if (storedUserId === lineUserId) {
           setAuthorized(true)
-          await fetchBookings()
+          await Promise.all([fetchBookings(), fetchWaitlist()])
         } else if (!storedUserId) {
           // Unclaimed account — auto-register this LINE user as the owner
           const claimRes = await fetch('/api/admin/claim', {
@@ -802,8 +882,8 @@ export default function AdminPage() {
       {/* ── Main Nav (scrollable) ── */}
       <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '14px', padding: '4px', minWidth: 'max-content' }}>
-        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集']] as [MainView, string][]).map(([v, label]) => (
-          <button key={v} onClick={() => setMainView(v)} style={{
+        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
+          <button key={v} onClick={() => { setMainView(v); if (v === 'waitlist') fetchWaitlist() }} style={{
             padding: '10px 14px', borderRadius: '10px', fontSize: '12px',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
             background: mainView === v ? charcoal : 'transparent',
@@ -932,6 +1012,49 @@ export default function AdminPage() {
 
       {/* ════════════════ PORTFOLIO VIEW ════════════════ */}
       {mainView === 'portfolio' && <PortfolioView providerId={providerId} />}
+
+      {/* ════════════════ WAITLIST VIEW ════════════════ */}
+      {mainView === 'waitlist' && (
+        <section style={{ padding: '0 16px 24px' }}>
+          {waitlist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 20px', background: 'rgba(166,137,102,0.04)', borderRadius: '18px', border: `1px solid ${border}` }}>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', color: 'rgba(44,40,37,0.3)', marginBottom: '8px' }}>目前沒有候補</p>
+              <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.35)' }}>預約頁時段客滿時，顧客可加入候補名單</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {waitlist.map(entry => (
+                <div key={entry.id} style={{ background: 'rgba(180,120,40,0.06)', border: '1px solid rgba(180,120,40,0.22)', borderRadius: '14px', padding: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <div>
+                      <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', fontWeight: 600, color: charcoal }}>{entry.date} {entry.time}</p>
+                      <p style={{ fontSize: '13px', color: '#8a5c20', marginTop: '2px' }}>{entry.customerName}</p>
+                    </div>
+                    <span style={{ fontSize: '10px', color: '#8a5c20', background: 'rgba(180,120,40,0.12)', padding: '3px 10px', borderRadius: '20px' }}>候補中</span>
+                  </div>
+                  {entry.customerPhone && (
+                    <p style={{ fontSize: '11px', color: '#7a6e68', marginBottom: '10px' }}>📱 {entry.customerPhone}</p>
+                  )}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={async () => {
+                        setRemovingWL(entry.id)
+                        await fetch('/api/admin/waitlist', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entryId: entry.id, status: 'cancelled' }) })
+                        setWaitlist(w => w.filter(e => e.id !== entry.id))
+                        setRemovingWL(null)
+                      }}
+                      disabled={removingWL === entry.id}
+                      style={{ flex: 1, fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '10px', padding: '8px', background: 'transparent', cursor: 'pointer', opacity: removingWL === entry.id ? 0.5 : 1 }}
+                    >
+                      移除
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Oak bottom accent */}
       <div style={{ height: '3px', background: `linear-gradient(90deg, transparent, ${oak}, transparent)`, opacity: 0.3, margin: '0 16px 24px' }} />
