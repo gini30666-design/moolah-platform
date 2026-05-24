@@ -663,7 +663,8 @@ export default function AdminPage() {
       .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
       .then(async () => {
         if (!liff.isLoggedIn()) {
-          liff.login({ redirectUri: window.location.href })
+          // Redirect through /dashboard (registered LIFF endpoint) to avoid LINE rejecting unregistered redirectUris
+          window.location.href = '/dashboard'
           return
         }
         const profile = await liff.getProfile()
