@@ -494,42 +494,42 @@ export default function ProviderPage() {
             return (
               <div key={s.id} style={{
                 borderRadius: '16px', overflow: 'hidden',
-                background: isSelected ? 'rgba(166,137,102,0.06)' : 'white',
-                border: `1px solid ${isSelected ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.12)'}`,
+                background: isSelected ? 'var(--charcoal-deep)' : 'white',
+                border: `1px solid ${isSelected ? 'rgba(251,249,244,0.06)' : 'rgba(166,137,102,0.12)'}`,
                 transition: 'transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, border-color 0.18s, background 0.18s',
                 transform: isSelected ? 'scale(1.015) translateY(-3px)' : 'scale(1)',
-                boxShadow: isSelected ? '0 10px 32px rgba(166,137,102,0.18)' : 'none',
+                boxShadow: isSelected ? '0 10px 32px rgba(26,23,20,0.3)' : 'none',
               }}>
                 {/* Main row */}
                 <div
                   style={{ display: 'flex', alignItems: 'center', padding: '18px 16px', cursor: 'pointer', gap: '14px' }}
                   onClick={() => setSelectedServiceId(isSelected ? null : s.id)}
                 >
-                  <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 300, color: 'rgba(166,137,102,0.5)', flexShrink: 0, width: '24px', textAlign: 'center', lineHeight: 1 }}>
+                  <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 300, color: isSelected ? 'rgba(251,249,244,0.25)' : 'rgba(166,137,102,0.5)', flexShrink: 0, width: '24px', textAlign: 'center', lineHeight: 1 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <div style={{ width: '2px', alignSelf: 'stretch', borderRadius: '999px', background: isSelected ? 'var(--oak)' : 'rgba(166,137,102,0.25)', flexShrink: 0 }} />
+                  <div style={{ width: '2px', alignSelf: 'stretch', borderRadius: '999px', background: isSelected ? 'rgba(251,249,244,0.15)' : 'rgba(166,137,102,0.25)', flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
-                    <span style={{ fontSize: '10px', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '999px', background: cat.light, color: cat.text, border: `1px solid ${cat.text}33` }}>
+                    <p style={{ fontSize: '15px', fontWeight: 500, color: isSelected ? 'var(--cream)' : 'var(--charcoal)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
+                    <span style={{ fontSize: '10px', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '999px', background: isSelected ? 'rgba(251,249,244,0.1)' : cat.light, color: isSelected ? 'rgba(251,249,244,0.65)' : cat.text, border: `1px solid ${isSelected ? 'rgba(251,249,244,0.12)' : cat.text + '33'}` }}>
                       {s.duration} 分鐘
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '22px', fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1 }}>{s.price.toLocaleString()}</p>
-                      <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>NT$</p>
+                      <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '22px', fontWeight: 500, color: isSelected ? 'var(--cream)' : 'var(--charcoal)', lineHeight: 1 }}>{s.price.toLocaleString()}</p>
+                      <p style={{ fontSize: '9px', color: isSelected ? 'rgba(251,249,244,0.35)' : 'rgba(44,40,37,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>NT$</p>
                     </div>
-                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: isSelected ? 'var(--oak)' : 'rgba(166,137,102,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s', flexShrink: 0 }}>
+                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: isSelected ? 'rgba(251,249,244,0.15)' : 'rgba(166,137,102,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s', flexShrink: 0 }}>
                       {isSelected
-                        ? <svg viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" style={{ width: '11px', height: '11px' }}><path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        ? <svg viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2.5" style={{ width: '11px', height: '11px' }}><path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         : <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '11px', height: '11px', color: 'var(--oak)' }}><path d="M4 8h8M9 5l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       }
                     </div>
                     {hasDesc && (
                       <button type="button"
                         onClick={e => { e.stopPropagation(); setExpandedServiceId(isExpanded ? null : s.id) }}
-                        style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: isExpanded ? 'var(--oak)' : 'rgba(44,40,37,0.3)', lineHeight: 0, flexShrink: 0, transition: 'color 0.15s' }}
+                        style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: isSelected ? (isExpanded ? 'var(--cream)' : 'rgba(251,249,244,0.35)') : (isExpanded ? 'var(--oak)' : 'rgba(44,40,37,0.3)'), lineHeight: 0, flexShrink: 0, transition: 'color 0.15s' }}
                         aria-label="展開說明"
                       >
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"
@@ -544,8 +544,8 @@ export default function ProviderPage() {
                 {isExpanded && hasDesc && (
                   <div style={{
                     padding: '10px 16px 14px 54px',
-                    borderTop: '1px solid rgba(166,137,102,0.1)',
-                    fontSize: '13px', color: 'rgba(44,40,37,0.62)', lineHeight: 1.7,
+                    borderTop: `1px solid ${isSelected ? 'rgba(251,249,244,0.08)' : 'rgba(166,137,102,0.1)'}`,
+                    fontSize: '13px', color: isSelected ? 'rgba(251,249,244,0.6)' : 'rgba(44,40,37,0.62)', lineHeight: 1.7,
                     animation: 'fadeUp 0.18s ease',
                   }}>
                     {s.description}
