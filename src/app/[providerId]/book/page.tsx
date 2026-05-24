@@ -4,7 +4,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
 type Service = { id: string; name: string; price: number; duration: number }
-type Provider = { id: string; name: string; category: string }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 
@@ -451,6 +451,10 @@ export default function BookPage() {
   const [waitlistSlot, setWaitlistSlot] = useState<string | null>(null)
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
   const [waitlistDone, setWaitlistDone] = useState(false)
+  const [nextAvailable, setNextAvailable] = useState<{ date: string; time: string; label: string } | null>(null)
+  const [forOthers, setForOthers] = useState(false)
+  const [recipientName, setRecipientName] = useState('')
+  const [recipientPhone, setRecipientPhone] = useState('')
 
   useEffect(() => {
     liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
@@ -479,11 +483,15 @@ export default function BookPage() {
       .then(data => {
         setProvider(data.provider)
         setIsHairCategory(HAIR_CATEGORIES.includes(data.provider?.category ?? ''))
-        if (serviceId) {
-          setService(data.services.find((s: Service) => s.id === serviceId) ?? null)
-        } else if (data.services.length > 0) {
-          setService(data.services[0])
-        }
+        const svc = serviceId
+          ? data.services.find((s: Service) => s.id === serviceId) ?? null
+          : data.services[0] ?? null
+        setService(svc)
+        const sid = svc?.id ?? ''
+        fetch(`/api/next-available?providerId=${providerId}&serviceId=${sid}`)
+          .then(r => r.json())
+          .then(d => { if (d.date) setNextAvailable(d) })
+          .catch(() => {})
       })
   }, [providerId, serviceId])
 
@@ -501,8 +509,12 @@ export default function BookPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const name = lineUserId ? displayName : customerNameInput.trim()
-    const phone = lineUserId ? '' : customerPhone.trim()
+    const bookerName = lineUserId ? displayName : customerNameInput.trim()
+    const name  = forOthers ? recipientName.trim() : bookerName
+    const phone = forOthers ? recipientPhone.trim() : (lineUserId ? '' : customerPhone.trim())
+    const finalNote = forOthers && bookerName
+      ? `[代訂人：${bookerName}]${note ? ' ' + note : ''}`
+      : note
     if (!date || !time || !gender || !name) return
     setSubmitting(true)
     const res = await fetch('/api/booking', {
@@ -511,9 +523,9 @@ export default function BookPage() {
       body: JSON.stringify({
         providerId, serviceId: service?.id,
         customerName: name,
-        customerLineUserId: lineUserId || '',
+        customerLineUserId: forOthers ? '' : (lineUserId || ''),
         customerPhone: phone,
-        date, time, note, gender,
+        date, time, note: finalNote, gender,
         hairLength: isHairCategory ? hairLength : '',
       }),
     })
@@ -557,9 +569,11 @@ export default function BookPage() {
 
   const today = new Date().toISOString().split('T')[0]
   const hotCount = slots.filter(s => s.status === 'hot').length
-  const hasCustomerInfo = lineUserId
-    ? true
-    : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
+  const hasCustomerInfo = forOthers
+    ? recipientName.trim().length > 0
+    : lineUserId
+      ? true
+      : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
 
   return (
@@ -577,8 +591,7 @@ export default function BookPage() {
 
         {/* Progress bar */}
         {(() => {
-          const step2Done = !!gender && (isHairCategory ? !!hairLength : true) &&
-            (lineUserId ? true : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0))
+          const step2Done = !!gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo
           const step3Done = !!date && !!time
           const currentStep = !step2Done ? 2 : !step3Done ? 3 : 4
 
@@ -714,6 +727,18 @@ export default function BookPage() {
               <p className="text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'var(--oak)' }}>預約服務</p>
               <p className="text-base font-medium" style={{ color: 'var(--charcoal)' }}>{service.name}</p>
               <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.55)' }}>{service.duration} 分鐘</p>
+              {/* Manual rating display */}
+              {provider.rating && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} style={{ fontSize: '10px', color: s <= Math.round(parseFloat(provider.rating!)) ? '#A68966' : 'rgba(166,137,102,0.2)' }}>★</span>
+                  ))}
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--charcoal)', marginLeft: '2px' }}>{provider.rating}</span>
+                  {provider.reviewCount && (
+                    <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)' }}>({provider.reviewCount})</span>
+                  )}
+                </div>
+              )}
             </div>
             <div className="text-right flex flex-col items-end gap-2">
               <p className="font-display text-2xl" style={{ color: 'var(--charcoal)' }}>NT$ {service.price.toLocaleString()}</p>
@@ -768,6 +793,64 @@ export default function BookPage() {
               </div>
             )}
 
+            {/* 代訂功能 */}
+            <div data-animate data-delay="80" className="book-section">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>替別人預約</p>
+                  <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>幫親友代訂，輸入對方資訊</p>
+                </div>
+                {/* Toggle switch */}
+                <button
+                  type="button"
+                  onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
+                  style={{
+                    width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0,
+                    background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)',
+                    position: 'relative', transition: 'background 0.2s',
+                    padding: 0,
+                  }}
+                >
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
+                    position: 'absolute', top: '3px', left: forOthers ? '21px' : '3px',
+                    transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
+                  }} />
+                </button>
+              </div>
+              {forOthers && (
+                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fadeIn 0.18s ease' }}>
+                  <input
+                    type="text"
+                    placeholder="受預約者姓名（必填）"
+                    value={recipientName}
+                    onChange={e => setRecipientName(e.target.value)}
+                    style={{
+                      width: '100%', padding: '13px 16px', borderRadius: '12px',
+                      border: `1.5px solid ${recipientName ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.25)'}`,
+                      background: 'white', fontSize: '14px', color: 'var(--charcoal)',
+                      outline: 'none', fontFamily: 'var(--font-dm-sans)',
+                    }}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="受預約者電話（選填）"
+                    value={recipientPhone}
+                    onChange={e => setRecipientPhone(e.target.value)}
+                    style={{
+                      width: '100%', padding: '13px 16px', borderRadius: '12px',
+                      border: '1.5px solid rgba(166,137,102,0.25)',
+                      background: 'white', fontSize: '14px', color: 'var(--charcoal)',
+                      outline: 'none', fontFamily: 'var(--font-dm-sans)',
+                    }}
+                  />
+                  <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)', letterSpacing: '0.03em' }}>
+                    預約確認通知將發送給代訂人
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* 性別 */}
             <div data-animate data-delay="100" className="book-section">
               <SectionLabel step="01" label="性別" />
@@ -784,8 +867,31 @@ export default function BookPage() {
 
             {/* 日期 */}
             <div data-animate data-delay="200" className="book-section">
-              <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
-              <InlineCalendar providerId={providerId} value={date} onChange={setDate} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
+                {nextAvailable && (
+                  <button
+                    type="button"
+                    onClick={() => { setDate(nextAvailable.date); setTime(nextAvailable.time) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '5px',
+                      padding: '6px 12px', borderRadius: '999px',
+                      background: 'rgba(166,137,102,0.1)',
+                      border: '1px solid rgba(166,137,102,0.3)',
+                      fontSize: '11px', fontWeight: 600,
+                      color: 'var(--oak)', cursor: 'pointer',
+                      whiteSpace: 'nowrap', flexShrink: 0,
+                      transition: 'background 0.15s',
+                    }}
+                  >
+                    <svg viewBox="0 0 12 12" fill="currentColor" style={{ width: '10px', height: '10px' }}>
+                      <path d="M6 1l1.2 2.4L10 4l-2 1.95.47 2.75L6 7.4l-2.47 1.3.47-2.75L2 4l2.8-.6z"/>
+                    </svg>
+                    最快 {nextAvailable.label} {nextAvailable.time}
+                  </button>
+                )}
+              </div>
+              <InlineCalendar providerId={providerId} value={date} onChange={d => { setDate(d); setTime('') }} />
             </div>
 
             {/* 時段 */}

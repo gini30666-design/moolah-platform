@@ -7,6 +7,7 @@ type Provider = {
   id: string; name: string; category: string; description: string
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   businessHours: string; phone: string; instagram: string
+  rating?: string; reviewCount?: string
 }
 type Service  = { id: string; name: string; price: number; duration: number; description: string }
 type Portfolio = { id: string; imageUrl: string; caption: string }
@@ -196,7 +197,10 @@ export default function ProviderPage() {
 
   const cat = CAT_ACCENT[provider.category] ?? { bg: 'rgba(166,137,102,0.15)', text: '#A68966', light: 'rgba(166,137,102,0.06)' }
   const catIcon = CAT_ICON[provider.category] ?? '✦'
-  const stars = reviewSummary && reviewSummary.count > 0 ? reviewSummary.average : null
+  const manualRating = provider.rating ? parseFloat(provider.rating) : null
+  const manualCount  = provider.reviewCount ? parseInt(provider.reviewCount) : null
+  const stars      = reviewSummary && reviewSummary.count > 0 ? reviewSummary.average : manualRating
+  const starsCount = reviewSummary && reviewSummary.count > 0 ? reviewSummary.count : manualCount
 
   // Split portfolio: featured (first 1) + masonry (rest)
   const featured = portfolio[0] ?? null
@@ -373,8 +377,10 @@ export default function ProviderPage() {
                     <span key={s} style={{ fontSize: '12px', color: s <= Math.round(stars) ? '#A68966' : 'rgba(166,137,102,0.2)' }}>★</span>
                   ))}
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--charcoal)' }}>{stars}</span>
-                <span style={{ fontSize: '11px', color: 'rgba(44,40,37,0.38)' }}>({reviewSummary!.count})</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--charcoal)' }}>{stars.toFixed(1)}</span>
+                {starsCount !== null && (
+                  <span style={{ fontSize: '11px', color: 'rgba(44,40,37,0.38)' }}>({starsCount})</span>
+                )}
               </div>
             )}
             {/* Social */}
