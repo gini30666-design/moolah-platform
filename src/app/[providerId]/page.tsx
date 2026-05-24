@@ -397,28 +397,19 @@ export default function ProviderPage() {
           {/* MooLah 官方認證勳章 */}
           <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
             <div style={{
-              width: '52px', height: '52px', borderRadius: '50%', position: 'relative',
-              background: 'conic-gradient(from 0deg, #c9a96e, #e8c97a, #f5dfa0, #c9a96e, #b8904a, #e8c97a, #c9a96e)',
-              padding: '2.5px',
-              boxShadow: '0 2px 10px rgba(166,137,102,0.45), 0 0 0 1px rgba(166,137,102,0.2)',
+              width: '44px', height: '44px', borderRadius: '50%',
+              background: '#0095F6',
+              boxShadow: '0 2px 12px rgba(0,149,246,0.45), 0 0 0 2.5px rgba(0,149,246,0.15)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', overflow: 'hidden',
             }}>
-              {/* inner gold circle */}
-              <div style={{
-                width: '100%', height: '100%', borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #f5dfa0 0%, #c9a96e 45%, #a07540 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                position: 'relative', overflow: 'hidden',
-              }}>
-                {/* shine */}
-                <div style={{ position: 'absolute', top: '4px', left: '6px', width: '16px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.35)', transform: 'rotate(-25deg)' }} />
-                <svg viewBox="0 0 18 18" fill="none" style={{ width: '16px', height: '16px', position: 'relative', zIndex: 1 }}>
-                  <circle cx="9" cy="9" r="8" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.8"/>
-                  <path d="M5.5 9l2.5 2.5L12.5 6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+              {/* shine */}
+              <div style={{ position: 'absolute', top: '5px', left: '7px', width: '14px', height: '7px', borderRadius: '50%', background: 'rgba(255,255,255,0.3)', transform: 'rotate(-20deg)' }} />
+              <svg viewBox="0 0 20 20" fill="none" style={{ width: '18px', height: '18px', position: 'relative', zIndex: 1 }}>
+                <path d="M5 10l3.5 3.5L15 6.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            <span style={{ fontSize: '8px', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 700, background: 'linear-gradient(90deg,#b8904a,#e8c97a,#b8904a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>官方認證</span>
+            <span style={{ fontSize: '8px', letterSpacing: '0.12em', fontWeight: 700, color: '#0095F6' }}>官方認證</span>
           </div>
         </div>
       </div>
@@ -441,48 +432,35 @@ export default function ProviderPage() {
             <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</p>
           </div>
         ))}
-        {/* MooLah 官方認證勳章卡片 */}
+        {/* MooLah 官方認證卡片 */}
         <div style={{
-          padding: '10px 6px 10px',
+          padding: '12px 6px',
           borderRadius: '14px',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
-          background: 'linear-gradient(135deg, #2C2825 0%, #3d3530 60%, #2C2825 100%)',
-          border: '1px solid rgba(201,169,110,0.35)',
-          boxShadow: '0 2px 12px rgba(166,137,102,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
+          background: 'linear-gradient(145deg, #0a1628 0%, #0d1f3c 60%, #0a1628 100%)',
+          border: '1px solid rgba(0,149,246,0.3)',
+          boxShadow: '0 2px 14px rgba(0,149,246,0.18), inset 0 1px 0 rgba(255,255,255,0.05)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
         }}>
-          {/* shine highlight */}
-          <div style={{ position: 'absolute', top: 0, right: 0, width: '40px', height: '40px', background: 'radial-gradient(circle at top right, rgba(232,201,122,0.18), transparent 70%)', pointerEvents: 'none' }} />
-          {/* ribbon + medal SVG */}
-          <svg viewBox="0 0 32 36" fill="none" style={{ width: '28px', height: '32px', flexShrink: 0 }}>
-            {/* ribbon left */}
-            <path d="M11 16 L7 32 L16 26 L16 16Z" fill="#c9a96e" opacity="0.85"/>
-            {/* ribbon right */}
-            <path d="M21 16 L25 32 L16 26 L16 16Z" fill="#b8904a" opacity="0.85"/>
-            {/* medal outer ring (conic-like via two circles) */}
-            <circle cx="16" cy="13" r="12" fill="url(#goldRing)"/>
-            <circle cx="16" cy="13" r="9.5" fill="url(#goldCenter)"/>
-            {/* inner ring */}
-            <circle cx="16" cy="13" r="9.5" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6"/>
-            {/* checkmark */}
-            <path d="M11 13l3.2 3.2L21 9.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            <defs>
-              <radialGradient id="goldRing" cx="40%" cy="30%" r="60%">
-                <stop offset="0%" stopColor="#f5dfa0"/>
-                <stop offset="50%" stopColor="#c9a96e"/>
-                <stop offset="100%" stopColor="#8a6030"/>
-              </radialGradient>
-              <radialGradient id="goldCenter" cx="38%" cy="32%" r="55%">
-                <stop offset="0%" stopColor="#e8c97a"/>
-                <stop offset="60%" stopColor="#b8904a"/>
-                <stop offset="100%" stopColor="#7a5028"/>
-              </radialGradient>
-            </defs>
-          </svg>
-          <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(90deg,#c9a96e,#f5dfa0,#c9a96e)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1, marginBottom: '1px' }}>官方認證</p>
-          <p style={{ fontSize: '8.5px', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.08em' }}>MooLah 職人</p>
+          {/* blue glow top-right */}
+          <div style={{ position: 'absolute', top: 0, right: 0, width: '50px', height: '50px', background: 'radial-gradient(circle at top right, rgba(0,149,246,0.2), transparent 70%)', pointerEvents: 'none' }} />
+          {/* IG-style blue checkmark badge */}
+          <div style={{
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: '#0095F6',
+            boxShadow: '0 2px 10px rgba(0,149,246,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', overflow: 'hidden', flexShrink: 0,
+          }}>
+            <div style={{ position: 'absolute', top: '4px', left: '5px', width: '12px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.28)', transform: 'rotate(-20deg)' }} />
+            <svg viewBox="0 0 20 20" fill="none" style={{ width: '14px', height: '14px', position: 'relative', zIndex: 1 }}>
+              <path d="M5 10l3.5 3.5L15 6.5" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em', color: '#4db8ff', lineHeight: 1, marginBottom: '1px' }}>官方認證</p>
+          <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>MooLah 職人</p>
         </div>
       </div>
 
