@@ -12,6 +12,151 @@ const GENDER_OPTIONS = ['男性', '女性', '不透露']
 const HAIR_LENGTH_OPTIONS = ['超短髮', '短髮', '中長髮', '長髮', '超長髮']
 const HAIR_CATEGORIES = ['髮型設計師']
 
+type DayStatus = 'open' | 'limited' | 'full' | 'closed'
+
+function InlineCalendar({ providerId, value, onChange }: {
+  providerId: string
+  value: string
+  onChange: (date: string) => void
+}) {
+  const nowDate = new Date()
+  nowDate.setHours(0, 0, 0, 0)
+  const todayStr = nowDate.toISOString().split('T')[0]
+  const currentMonthStr = todayStr.slice(0, 7)
+
+  const [viewMonth, setViewMonth] = useState(() => value ? value.slice(0, 7) : currentMonthStr)
+  const [avail, setAvail] = useState<Record<string, DayStatus>>({})
+
+  useEffect(() => {
+    fetch(`/api/calendar?providerId=${providerId}&days=90`)
+      .then(r => r.json())
+      .then((data: { date: string; status: DayStatus }[]) => {
+        const map: Record<string, DayStatus> = {}
+        data.forEach(d => { map[d.date] = d.status })
+        setAvail(map)
+      })
+      .catch(() => {})
+  }, [providerId])
+
+  const [yr, mo] = viewMonth.split('-').map(Number)
+  const firstDOW = new Date(yr, mo - 1, 1).getDay()
+  const daysInMonth = new Date(yr, mo, 0).getDate()
+
+  const prevM = () => {
+    const d = new Date(yr, mo - 2, 1)
+    setViewMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+  }
+  const nextM = () => {
+    const d = new Date(yr, mo, 1)
+    setViewMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+  }
+
+  const DOW_LABELS = ['日', '一', '二', '三', '四', '五', '六']
+
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.85)',
+      border: '1.5px solid rgba(166,137,102,0.2)',
+      borderRadius: '16px',
+      padding: '14px 12px',
+      boxShadow: '0 2px 12px rgba(26,23,20,0.06)',
+    }}>
+      {/* Month nav */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', padding: '0 4px' }}>
+        <button type="button" onClick={prevM}
+          disabled={viewMonth <= currentMonthStr}
+          style={{
+            background: 'none', border: 'none', fontSize: '20px', lineHeight: 1,
+            color: viewMonth <= currentMonthStr ? 'rgba(166,137,102,0.2)' : 'var(--oak)',
+            cursor: viewMonth <= currentMonthStr ? 'default' : 'pointer',
+            padding: '4px 10px',
+          }}>‹</button>
+        <p style={{
+          fontFamily: 'var(--font-cormorant)',
+          fontSize: '16px', fontWeight: 500,
+          color: 'var(--charcoal)', letterSpacing: '0.04em',
+        }}>{yr} 年 {mo} 月</p>
+        <button type="button" onClick={nextM}
+          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, color: 'var(--oak)', cursor: 'pointer', padding: '4px 10px' }}>›</button>
+      </div>
+
+      {/* DOW labels */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '4px' }}>
+        {DOW_LABELS.map(l => (
+          <div key={l} style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(44,40,37,0.28)', paddingBottom: '6px' }}>{l}</div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+        {Array.from({ length: firstDOW }, (_, i) => <div key={`p${i}`} />)}
+        {Array.from({ length: daysInMonth }, (_, i) => {
+          const day = i + 1
+          const dateStr = `${yr}-${String(mo).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+          const isPast = new Date(dateStr + 'T12:00:00') < nowDate
+          const isToday = dateStr === todayStr
+          const isSelected = dateStr === value
+          const status = avail[dateStr] ?? 'open'
+          const isDisabled = isPast || status === 'closed' || status === 'full'
+
+          return (
+            <button key={day} type="button"
+              disabled={isDisabled}
+              onClick={() => !isDisabled && onChange(dateStr)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+                padding: '7px 2px', borderRadius: '8px', border: 'none',
+                cursor: isDisabled ? 'default' : 'pointer',
+                background: isSelected
+                  ? 'var(--charcoal)'
+                  : isToday
+                    ? 'rgba(166,137,102,0.15)'
+                    : 'transparent',
+                opacity: isPast ? 0.22 : 1,
+                transition: 'background 0.15s',
+              }}
+            >
+              <span style={{
+                fontSize: '13px', lineHeight: 1,
+                fontWeight: isSelected || isToday ? 600 : 400,
+                color: isSelected
+                  ? 'white'
+                  : isToday
+                    ? 'var(--oak)'
+                    : isDisabled && !isPast
+                      ? 'rgba(44,40,37,0.25)'
+                      : 'var(--charcoal)',
+              }}>{day}</span>
+              {!isPast && status !== 'closed' && (
+                <span style={{
+                  width: '4px', height: '4px', borderRadius: '50%', flexShrink: 0,
+                  background: isSelected
+                    ? 'rgba(255,255,255,0.5)'
+                    : status === 'full'
+                      ? 'transparent'
+                      : status === 'limited'
+                        ? 'rgba(166,137,102,0.5)'
+                        : 'var(--oak)',
+                }} />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
+        {[['var(--oak)', '有空位'], ['rgba(166,137,102,0.5)', '少量']].map(([bg, label]) => (
+          <span key={label} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px', color: 'rgba(44,40,37,0.4)' }}>
+            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: bg, display: 'inline-block' }} />
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function PillGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -232,16 +377,41 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
           )}
         </div>
 
-        {/* Back button */}
+        {/* Quick actions */}
+        <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.85s both' }}>
+          <a href="/my-bookings" style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            padding: '11px', borderRadius: '10px',
+            background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)',
+            fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500,
+          }}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}>
+              <rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/>
+            </svg>
+            我的預約
+          </a>
+          <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            padding: '11px', borderRadius: '10px',
+            background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)',
+            fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500,
+          }}>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="#06C755"/>
+            </svg>
+            LINE 聯繫
+          </a>
+        </div>
         <button
           onClick={onBack}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: 'rgba(44,40,37,0.4)',
-            animation: 'fadeSlideUp 0.5s ease 1.85s both',
+            color: 'rgba(44,40,37,0.35)',
+            animation: 'fadeSlideUp 0.5s ease 2s both',
             paddingBottom: '2px',
-            borderBottom: '1px solid rgba(44,40,37,0.2)',
+            borderBottom: '1px solid rgba(44,40,37,0.15)',
+            marginTop: '4px',
           }}
         >
           返回設計師頁面
@@ -358,8 +528,26 @@ export default function BookPage() {
 
   if (!provider || !service) {
     return (
-      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#f5efe6' }}>
-        <div className="w-6 h-6 rounded-full border-2 border-[rgba(166,137,102,0.25)] border-t-[#A68966] animate-spin" />
+      <div style={{ background: '#f5efe6', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', overflow: 'hidden' }}>
+        <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.bsk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:10px;}`}</style>
+        <div style={{ background: 'rgba(240,234,224,0.97)', borderBottom: '1px solid rgba(26,23,20,0.12)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="bsk" style={{ width: '48px', height: '11px' }} />
+          <div className="bsk" style={{ width: '100px', height: '14px' }} />
+          <div style={{ width: '48px' }} />
+        </div>
+        <div style={{ padding: '24px 20px 0', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          <div className="bsk" style={{ height: '86px', borderRadius: '16px' }} />
+          <div>
+            <div className="bsk" style={{ height: '10px', width: '80px', marginBottom: '14px' }} />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {[72, 64, 80].map((w, i) => <div key={i} className="bsk" style={{ height: '38px', width: `${w}px`, borderRadius: '20px' }} />)}
+            </div>
+          </div>
+          <div>
+            <div className="bsk" style={{ height: '10px', width: '80px', marginBottom: '14px' }} />
+            <div className="bsk" style={{ height: '270px', borderRadius: '16px' }} />
+          </div>
+        </div>
       </div>
     )
   }
@@ -594,17 +782,7 @@ export default function BookPage() {
             {/* 日期 */}
             <div data-animate data-delay="200" className="book-section">
               <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
-              <input
-                type="date" min={today} value={date}
-                onChange={e => setDate(e.target.value)}
-                required
-                style={{
-                  width: '100%', padding: '14px 16px', borderRadius: '12px',
-                  border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
-                  fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
-                  fontFamily: 'var(--font-dm-sans)',
-                }}
-              />
+              <InlineCalendar providerId={providerId} value={date} onChange={setDate} />
             </div>
 
             {/* 時段 */}

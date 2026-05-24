@@ -723,11 +723,36 @@ export default function AdminPage() {
 
   // ── Loading ──
   if (loading) return (
-    <div style={{ display: 'flex', height: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '12px', background: cream }}>
-      <div style={{ width: '28px', height: '28px', border: '2px solid rgba(166,137,102,0.25)', borderTop: `2px solid ${oak}`, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      <p style={{ fontSize: '12px', color: '#b0a89e', letterSpacing: '0.08em' }}>載入中</p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+    <main style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
+      <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.ask{background:linear-gradient(90deg,rgba(166,137,102,0.06) 25%,rgba(166,137,102,0.12) 50%,rgba(166,137,102,0.06) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:8px;}`}</style>
+      {/* Header */}
+      <div style={{ background: charcoal, padding: '52px 24px 28px' }}>
+        <div style={{ width: '32px', height: '2px', background: oak, marginBottom: '16px' }} />
+        <div className="ask" style={{ height: '10px', width: '60px', marginBottom: '10px', background: 'rgba(166,137,102,0.25)', animation: 'none', borderRadius: '5px' }} />
+        <div className="ask" style={{ height: '26px', width: '160px', borderRadius: '8px', background: 'rgba(251,249,244,0.12)', animation: 'none' }} />
+      </div>
+      {/* Stats 2×2 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
+        {[0,1,2,3].map(i => (
+          <div key={i} style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: '16px', padding: '16px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+            <div className="ask" style={{ height: '28px', width: '70%' }} />
+            <div className="ask" style={{ height: '10px', width: '50%' }} />
+          </div>
+        ))}
+      </div>
+      {/* Nav bar */}
+      <div style={{ margin: '16px 16px 0' }}>
+        <div className="ask" style={{ height: '44px', borderRadius: '14px' }} />
+      </div>
+      {/* Sub-tabs */}
+      <div style={{ display: 'flex', gap: '6px', margin: '12px 16px 0' }}>
+        {[80,60,80,60].map((w,i) => <div key={i} className="ask" style={{ height: '32px', width: `${w}px`, borderRadius: '20px' }} />)}
+      </div>
+      {/* Booking cards */}
+      <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {[110,90,110].map((h,i) => <div key={i} className="ask" style={{ height: `${h}px`, borderRadius: '16px' }} />)}
+      </div>
+    </main>
   )
 
   // ── Unauthorized ──

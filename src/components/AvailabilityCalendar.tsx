@@ -47,6 +47,21 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
 
   if (!days.length) return null
 
+  const bookableDays = days.filter(d => d.status === 'open' || d.status === 'limited')
+  if (bookableDays.length === 0) return (
+    <section style={{ margin: '0 20px 24px' }}>
+      <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px' }}>可預約日期</p>
+      <div style={{ background: 'rgba(245,239,230,0.55)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '32px 20px', textAlign: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '18px', color: 'rgba(44,40,37,0.35)', marginBottom: '8px' }}>近期已額滿</p>
+        <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.4)', lineHeight: 1.6 }}>目前未來 28 天皆已預約完畢<br />歡迎直接透過 LINE 詢問候補</p>
+        <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '16px', padding: '10px 20px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>
+          聯絡候補
+        </a>
+      </div>
+    </section>
+  )
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const todayStr = today.toISOString().split('T')[0]
