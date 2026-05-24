@@ -218,8 +218,8 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 }
 
 // ─── Booking Card ─────────────────────────────────────────────────────────────
-function BookingCard({ booking, onCancel, onViewCustomer }: {
-  booking: Booking; onCancel: (id: string) => void; onViewCustomer: (b: Booking) => void
+function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
+  booking: Booking; onCancel: (id: string) => void; onViewCustomer: (b: Booking) => void; compact?: boolean
 }) {
   const [cancelling, setCancelling] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -256,16 +256,17 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
     <div style={{
       background: isNoShow ? 'rgba(200,60,60,0.04)' : 'white',
       border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : 'rgba(166,137,102,0.28)'}`,
-      borderRadius: '16px', padding: '18px 20px',
-      boxShadow: '0 2px 16px rgba(26,23,20,0.08)',
+      borderRadius: compact ? '12px' : '16px',
+      padding: compact ? '12px 16px' : '18px 20px',
+      boxShadow: compact ? '0 1px 8px rgba(26,23,20,0.05)' : '0 2px 16px rgba(26,23,20,0.08)',
       position: 'relative', overflow: 'hidden',
     }}>
       {/* left oak accent bar */}
       {!isNoShow && <div style={{ position: 'absolute', left: 0, top: '14px', bottom: '14px', width: '2px', background: 'linear-gradient(to bottom, var(--oak), transparent)', borderRadius: '1px' }} />}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
-          <p style={{ fontSize: '12px', color: oak, marginTop: '5px', letterSpacing: '0.04em' }}>{booking.serviceName}</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: compact ? '1.6rem' : '2rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
+          <p style={{ fontSize: compact ? '11px' : '12px', color: oak, marginTop: '4px', letterSpacing: '0.04em', fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif" }}>{booking.serviceName}</p>
         </div>
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
@@ -891,32 +892,44 @@ export default function AdminPage() {
       {/* ── Stats 2×2 ── */}
       <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
         {[
-          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', accent: true },
-          { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', accent: false },
-          { label: '本月預約', value: `${monthBookings.length}`, unit: '筆', accent: false },
-          { label: '本月營收', value: monthRevenue === 0 ? '—' : monthRevenue.toLocaleString(), unit: monthRevenue > 0 ? 'NT$' : '', accent: false },
-        ].map(item => (
+          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'dark' as const },
+          { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'oak' as const },
+          { label: '本月預約', value: `${monthBookings.length}`, unit: '筆', shade: 'light' as const },
+          { label: '本月營收', value: monthRevenue === 0 ? '—' : monthRevenue.toLocaleString(), unit: monthRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
+        ].map(item => {
+          const isDark = item.shade === 'dark'
+          const isOak  = item.shade === 'oak'
+          const bg     = isDark ? 'var(--charcoal-deep)' : isOak ? 'rgba(166,137,102,0.08)' : cardBg
+          const bdr    = isDark ? '1px solid rgba(166,137,102,0.25)' : isOak ? '1px solid rgba(166,137,102,0.22)' : `1px solid ${border}`
+          const numClr = isDark ? cream : oak
+          const lblClr = isDark ? 'rgba(251,249,244,0.55)' : 'rgba(44,40,37,0.52)'
+          const ntClr  = isDark ? 'rgba(166,137,102,0.7)' : 'rgba(166,137,102,0.65)'
+          return (
           <div key={item.label} style={{
-            background: item.accent ? 'var(--charcoal-deep)' : cardBg,
-            border: item.accent ? '1px solid rgba(166,137,102,0.25)' : `1px solid ${border}`,
+            background: bg, border: bdr,
             borderRadius: '16px', padding: '18px 16px 14px', textAlign: 'center',
             position: 'relative', overflow: 'hidden',
           }}>
-            {item.accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
+            {isDark && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
+            {isOak  && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, rgba(166,137,102,0.5), transparent)' }} />}
             {item.unit === 'NT$' && (
-              <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: item.accent ? 'rgba(166,137,102,0.7)' : 'rgba(166,137,102,0.65)', marginBottom: '4px' }}>NT$</p>
+              <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: ntClr, marginBottom: '4px' }}>NT$</p>
             )}
             <p style={{
               fontFamily: '"Cormorant Garamond", serif',
               fontSize: item.unit === '筆' ? '2.4rem' : '1.9rem',
-              fontWeight: 300, color: item.accent ? cream : oak,
+              fontWeight: 300, color: numClr,
               lineHeight: 1, letterSpacing: '-0.02em',
             }}>
               {item.value}{item.unit === '筆' && <span style={{ fontSize: '1rem', marginLeft: '3px', opacity: 0.7 }}>筆</span>}
             </p>
-            <p style={{ fontSize: '10px', color: item.accent ? 'rgba(251,249,244,0.55)' : 'rgba(44,40,37,0.52)', marginTop: '8px', letterSpacing: '0.06em' }}>{item.label}</p>
+            <p style={{
+              fontSize: '10px', color: lblClr, marginTop: '8px', letterSpacing: '0.08em',
+              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', 'Songti SC', serif",
+            }}>{item.label}</p>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* ── Main Nav (scrollable) ── */}
@@ -990,7 +1003,7 @@ export default function AdminPage() {
                         </div>
                       ))
                     : filteredBookings.map(b => (
-                        <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
+                        <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} compact />
                       ))
                   }
                 </div>

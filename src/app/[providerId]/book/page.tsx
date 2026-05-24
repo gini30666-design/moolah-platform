@@ -171,7 +171,7 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
               padding: '9px 20px',
               borderRadius: '99px',
               fontSize: '13px',
-              fontFamily: 'var(--font-dm-sans)',
+              fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
               border: selected
                 ? '1.5px solid var(--charcoal)'
                 : '1.5px solid rgba(166,137,102,0.28)',
@@ -221,7 +221,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
 }) {
   return (
-    <div style={{ minHeight: '100vh', fontFamily: 'var(--font-dm-sans)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes drawCircle { to { stroke-dashoffset: 0; } }
         @keyframes drawCheck  { to { stroke-dashoffset: 0; } }
@@ -586,7 +586,7 @@ export default function BookPage() {
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
 
   return (
-    <div style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
+    <div style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
 
       {/* ── Sticky mini-header + Progress ──────────── */}
       <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
@@ -805,7 +805,7 @@ export default function BookPage() {
                       width: '100%', padding: '14px 16px', borderRadius: '12px',
                       border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
                       fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
-                      fontFamily: 'var(--font-dm-sans)',
+                      fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
                     }}
                   />
                   <input
@@ -818,7 +818,7 @@ export default function BookPage() {
                       width: '100%', padding: '14px 16px', borderRadius: '12px',
                       border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
                       fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
-                      fontFamily: 'var(--font-dm-sans)',
+                      fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
                     }}
                   />
                 </div>
@@ -861,7 +861,7 @@ export default function BookPage() {
                       width: '100%', padding: '13px 16px', borderRadius: '12px',
                       border: `1.5px solid ${recipientName ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.25)'}`,
                       background: 'white', fontSize: '14px', color: 'var(--charcoal)',
-                      outline: 'none', fontFamily: 'var(--font-dm-sans)',
+                      outline: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
                     }}
                   />
                   <input
@@ -873,7 +873,7 @@ export default function BookPage() {
                       width: '100%', padding: '13px 16px', borderRadius: '12px',
                       border: '1.5px solid rgba(166,137,102,0.25)',
                       background: 'white', fontSize: '14px', color: 'var(--charcoal)',
-                      outline: 'none', fontFamily: 'var(--font-dm-sans)',
+                      outline: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
                     }}
                   />
                   <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)', letterSpacing: '0.03em' }}>
@@ -965,9 +965,9 @@ export default function BookPage() {
                             }}
                             style={{
                               position: 'relative',
-                              padding: '10px 4px',
-                              borderRadius: '10px',
-                              fontSize: '13px',
+                              padding: isSelected ? '13px 4px' : '10px 4px',
+                              borderRadius: isSelected ? '12px' : '10px',
+                              fontSize: isSelected ? '17px' : '13px',
                               cursor: 'pointer',
                               border: isSelected
                                 ? '1.5px solid var(--charcoal)'
@@ -979,7 +979,7 @@ export default function BookPage() {
                                       ? '1.5px solid rgba(196,132,90,0.50)'
                                       : '1.5px solid rgba(166,137,102,0.18)',
                               background: isSelected
-                                ? 'var(--charcoal)'
+                                ? 'var(--charcoal-deep)'
                                 : isWaitlistTarget
                                   ? 'rgba(180,120,40,0.12)'
                                   : isBooked
@@ -995,12 +995,13 @@ export default function BookPage() {
                                     ? '#c4845a'
                                     : 'var(--charcoal)',
                               boxShadow: isSelected
-                                ? '0 3px 10px rgba(44,40,37,0.18)'
+                                ? '0 6px 20px rgba(26,23,20,0.22)'
                                 : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
-                              transform: isSelected ? 'translateY(-1px)' : 'translateY(0)',
-                              fontWeight: isSelected ? 500 : 400,
-                              fontFamily: 'var(--font-dm-sans)',
-                              transition: 'all 0.15s ease',
+                              transform: isSelected ? 'translateY(-3px) scale(1.06)' : 'translateY(0) scale(1)',
+                              fontWeight: 300,
+                              fontFamily: isSelected ? '"Cormorant Garamond", var(--font-cormorant), serif' : 'var(--font-plus-jakarta), var(--font-plus-jakarta), var(--font-dm-sans), sans-serif, sans-serif',
+                              letterSpacing: isSelected ? '0.02em' : '0',
+                              transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
                             }}
                           >
                             {slot.time}
@@ -1011,6 +1012,21 @@ export default function BookPage() {
                           </button>
                         )
                       })}
+                      {/* Selected time confirmation stamp */}
+                      {time && (
+                        <div style={{
+                          gridColumn: '1 / -1', marginTop: '10px',
+                          padding: '11px 18px',
+                          background: 'var(--charcoal-deep)',
+                          borderRadius: '12px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px',
+                          animation: 'fadeUp 0.25s ease',
+                        }}>
+                          <span style={{ fontSize: '8px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
+                          <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1, letterSpacing: '0.02em' }}>{time}</span>
+                          <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.35)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}</span>
+                        </div>
+                      )}
                       {/* Waitlist confirmation */}
                       {waitlistSlot && !waitlistDone && (
                         <div style={{ gridColumn: '1/-1', marginTop: '4px', padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px', animation: 'fadeIn 0.2s ease' }}>
@@ -1070,7 +1086,7 @@ export default function BookPage() {
                   width: '100%', padding: '14px 16px', borderRadius: '12px',
                   border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
                   fontSize: '13px', color: 'var(--charcoal)', outline: 'none',
-                  resize: 'none', fontFamily: 'var(--font-dm-sans)',
+                  resize: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
                 }}
               />
             </div>
@@ -1081,7 +1097,7 @@ export default function BookPage() {
 
       {/* ── Fixed bottom CTA ────────────────────────── */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-5"
-        style={{ background: 'linear-gradient(to top, var(--cream) 0%, var(--cream) 55%, transparent 100%)', borderTop: '1px solid rgba(166,137,102,0.18)' }}>
+        style={{ background: 'linear-gradient(to top, #ede8dc 0%, #ede8dc 60%, transparent 100%)', borderTop: '1px solid rgba(166,137,102,0.28)' }}>
         <button
           onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>}
           disabled={!canSubmit}
@@ -1092,7 +1108,7 @@ export default function BookPage() {
             color: canSubmit ? 'var(--cream)' : 'rgba(44,40,37,0.35)',
             fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase',
             cursor: canSubmit ? 'pointer' : 'not-allowed',
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
             transition: 'all 0.2s ease',
           }}
         >

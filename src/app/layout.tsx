@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import { Cormorant_Garamond, DM_Sans, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import PwaInit from '@/components/PwaInit'
@@ -22,6 +22,13 @@ const dmSans = DM_Sans({
   variable: '--font-dm-sans',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
+})
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: '--font-plus-jakarta',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  display: 'swap',
 })
 
 const BASE_URL = 'https://moolah-platform.vercel.app'
@@ -100,8 +107,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-Hant" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="zh-Hant" className={`${cormorant.variable} ${dmSans.variable} ${plusJakartaSans.variable}`}>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&display=swap" rel="stylesheet" />
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
