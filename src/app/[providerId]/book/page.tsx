@@ -200,9 +200,18 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
 
 function SectionLabel({ step, label }: { step: string; label: string }) {
   return (
-    <div className="flex items-center gap-3 mb-3">
-      <span className="font-display text-lg leading-none" style={{ color: 'rgba(166,137,102,0.65)' }}>{step}</span>
-      <span className="text-[10px] tracking-[0.22em] uppercase" style={{ color: 'var(--charcoal)' }}>{label}</span>
+    <div style={{ marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '8px' }}>
+        <span className="font-display" style={{
+          fontSize: '3.2rem', fontWeight: 300, lineHeight: 1,
+          color: 'rgba(166,137,102,0.22)', letterSpacing: '-0.03em',
+        }}>{step}</span>
+        <span style={{
+          fontSize: '11px', letterSpacing: '0.24em', textTransform: 'uppercase',
+          color: 'var(--charcoal)', fontWeight: 600,
+        }}>{label}</span>
+      </div>
+      <div style={{ height: '1px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.35 }} />
     </div>
   )
 }
@@ -545,7 +554,7 @@ export default function BookPage() {
     return (
       <div style={{ background: '#f5efe6', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', overflow: 'hidden' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.bsk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:10px;}`}</style>
-        <div style={{ background: 'rgba(240,234,224,0.97)', borderBottom: '1px solid rgba(26,23,20,0.12)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="bsk" style={{ width: '48px', height: '11px' }} />
           <div className="bsk" style={{ width: '100px', height: '14px' }} />
           <div style={{ width: '48px' }} />
@@ -577,15 +586,15 @@ export default function BookPage() {
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
 
   return (
-    <div style={{ background: '#f5efe6', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
+    <div style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-dm-sans)' }}>
 
       {/* ── Sticky mini-header + Progress ──────────── */}
-      <div className="sticky top-0 z-40" style={{ background: 'rgba(240,234,224,0.97)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(26,23,20,0.12)', boxShadow: '0 1px 0 rgba(26,23,20,0.06)' }}>
+      <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
           <button onClick={() => router.back()} className="flex items-center gap-2 text-xs tracking-widest uppercase" style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer' }}>
             ← 返回
           </button>
-          <span className="font-display text-base tracking-wide" style={{ color: 'var(--charcoal)' }}>{provider.name}</span>
+          <span className="font-display text-base tracking-[0.12em]" style={{ color: 'var(--cream)' }}>{provider.name}</span>
           <div style={{ width: '48px' }} />
         </div>
 
@@ -633,7 +642,7 @@ export default function BookPage() {
                       <span style={{
                         fontSize: '9px',
                         letterSpacing: '0.08em',
-                        color: isDone || isActive ? 'var(--oak)' : 'rgba(44,40,37,0.3)',
+                        color: isDone || isActive ? 'var(--oak)' : 'rgba(251,249,244,0.28)',
                         fontWeight: isActive ? 600 : 400,
                         whiteSpace: 'nowrap',
                         transition: 'color 0.3s',
@@ -642,7 +651,7 @@ export default function BookPage() {
                     {i < steps.length - 1 && (
                       <div style={{
                         flex: 1, height: '1.5px',
-                        background: isDone ? 'var(--oak)' : 'rgba(166,137,102,0.2)',
+                        background: isDone ? 'var(--oak)' : 'rgba(251,249,244,0.12)',
                         margin: '0 6px',
                         marginBottom: '14px',
                         transition: 'background 0.3s',
@@ -654,6 +663,26 @@ export default function BookPage() {
             </div>
           )
         })()}
+      </div>
+
+      {/* ── Marquee bar ─────────────────────────────── */}
+      <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <style>{`
+          @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+        `}</style>
+        <div style={{ display: 'inline-flex', animation: 'marqueeBook 22s linear infinite', paddingTop: '8px', paddingBottom: '8px' }}>
+          {[0,1].map(i => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)', paddingRight: '0' }}>
+              {provider.rating && <><span style={{ color: 'rgba(251,249,244,0.7)' }}>★&nbsp;</span><span>{provider.rating}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
+              {provider.reviewCount && <><span>{provider.reviewCount} 則好評</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
+              <span>{service.name}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>{service.duration} 分鐘</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>NT$ {service.price.toLocaleString()}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>認證職人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>即時 LINE 通知</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6 pb-52">
@@ -714,38 +743,41 @@ export default function BookPage() {
           </div>
         )}
 
-        {/* ── 服務摘要卡 ─────────────────────────────── */}
-        <div data-animate className="mb-8 p-4" style={{
-          background: 'white',
-          border: '1px solid rgba(26,23,20,0.10)',
-          borderRadius: '16px',
-          borderLeft: '3px solid var(--charcoal)',
-          boxShadow: '0 2px 12px rgba(26,23,20,0.07)',
+        {/* ── 服務摘要卡（深木炭 editorial 樣式）─────── */}
+        <div data-animate className="mb-8" style={{
+          background: 'var(--charcoal-deep)',
+          borderRadius: '20px',
+          padding: '22px 22px 18px',
+          position: 'relative',
+          overflow: 'hidden',
         }}>
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'var(--oak)' }}>預約服務</p>
-              <p className="text-base font-medium" style={{ color: 'var(--charcoal)' }}>{service.name}</p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,40,37,0.55)' }}>{service.duration} 分鐘</p>
-              {/* Manual rating display */}
+          {/* top oak accent line */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />
+          {/* grain texture */}
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '9px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px' }}>預約服務</p>
+              <p className="font-display" style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px', letterSpacing: '-0.01em' }}>{service.name}</p>
+              <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.38)', letterSpacing: '0.06em' }}>{service.duration} 分鐘</p>
               {provider.rating && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginTop: '10px' }}>
                   {[1,2,3,4,5].map(s => (
-                    <span key={s} style={{ fontSize: '10px', color: s <= Math.round(parseFloat(provider.rating!)) ? '#A68966' : 'rgba(166,137,102,0.2)' }}>★</span>
+                    <span key={s} style={{ fontSize: '11px', color: s <= Math.round(parseFloat(provider.rating!)) ? 'var(--oak)' : 'rgba(166,137,102,0.2)' }}>★</span>
                   ))}
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--charcoal)', marginLeft: '2px' }}>{provider.rating}</span>
-                  {provider.reviewCount && (
-                    <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)' }}>({provider.reviewCount})</span>
-                  )}
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--oak)', marginLeft: '4px' }}>{provider.rating}</span>
+                  {provider.reviewCount && <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.3)', marginLeft: '2px' }}>({provider.reviewCount})</span>}
                 </div>
               )}
             </div>
-            <div className="text-right flex flex-col items-end gap-2">
-              <p className="font-display text-2xl" style={{ color: 'var(--charcoal)' }}>NT$ {service.price.toLocaleString()}</p>
+            <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
+              <p className="font-display" style={{ fontSize: '2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '8px' }}>NT$&thinsp;{service.price.toLocaleString()}</p>
               <span style={{
-                fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase',
-                padding: '3px 8px', borderRadius: '4px',
-                background: 'var(--charcoal)', color: 'rgba(251,249,244,0.85)',
+                fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase',
+                padding: '4px 10px', borderRadius: '4px',
+                background: 'rgba(166,137,102,0.18)', color: 'var(--oak)',
+                border: '1px solid rgba(166,137,102,0.3)',
               }}>已選擇</span>
             </div>
           </div>
@@ -754,8 +786,8 @@ export default function BookPage() {
         <form onSubmit={handleSubmit}>
           <div className="space-y-0">
             <style>{`
-              .book-section { padding: 28px 0; border-bottom: 1px solid rgba(26,23,20,0.07); }
-              .book-section:last-child { border-bottom: none; }
+              .book-section { padding: 32px 0; position: relative; }
+              .book-section + .book-section::before { content: ''; display: block; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, var(--oak), transparent); opacity: 0.2; }
             `}</style>
 
             {/* 聯絡資訊（非 LINE 用戶） */}
@@ -1049,7 +1081,7 @@ export default function BookPage() {
 
       {/* ── Fixed bottom CTA ────────────────────────── */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-5"
-        style={{ background: 'linear-gradient(to top, #ede8dc 0%, #f0ebe1 50%, transparent 100%)', borderTop: '1px solid rgba(26,23,20,0.08)' }}>
+        style={{ background: 'linear-gradient(to top, var(--cream) 0%, var(--cream) 55%, transparent 100%)', borderTop: '1px solid rgba(166,137,102,0.18)' }}>
         <button
           onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>}
           disabled={!canSubmit}

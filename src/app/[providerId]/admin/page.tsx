@@ -253,14 +253,22 @@ function BookingCard({ booking, onCancel, onViewCustomer }: {
   }
 
   return (
-    <div style={{ background: isNoShow ? 'rgba(200,60,60,0.04)' : cardBg, backdropFilter: 'blur(12px)', border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.2)' : border}`, borderRadius: '16px', padding: '18px 20px' }}>
+    <div style={{
+      background: isNoShow ? 'rgba(200,60,60,0.04)' : 'white',
+      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.2)' : 'rgba(166,137,102,0.15)'}`,
+      borderRadius: '16px', padding: '18px 20px',
+      boxShadow: '0 2px 12px rgba(26,23,20,0.05)',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* left oak accent bar */}
+      {!isNoShow && <div style={{ position: 'absolute', left: 0, top: '14px', bottom: '14px', width: '2px', background: 'linear-gradient(to bottom, var(--oak), transparent)', borderRadius: '1px' }} />}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', fontWeight: 600, color: charcoal, lineHeight: 1 }}>{booking.time}</p>
-          <p style={{ fontSize: '12px', color: oak, marginTop: '4px', letterSpacing: '0.04em' }}>{booking.serviceName}</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
+          <p style={{ fontSize: '12px', color: oak, marginTop: '5px', letterSpacing: '0.04em' }}>{booking.serviceName}</p>
         </div>
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', color: charcoal, fontWeight: 500 }}>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
           {isNoShow && <span style={{ fontSize: '10px', color: '#b03030', background: 'rgba(200,60,60,0.12)', padding: '2px 8px', borderRadius: '20px' }}>爽約</span>}
@@ -855,40 +863,74 @@ export default function AdminPage() {
     <main style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
 
       {/* ── Header ── */}
-      <div style={{ background: charcoal, padding: '52px 24px 28px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--charcoal-deep)', padding: '52px 24px 28px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
-        <div style={{ width: '32px', height: '2px', background: oak, marginBottom: '16px' }} />
-        <p style={{ fontSize: '10px', color: 'rgba(166,137,102,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '6px' }}>後台管理</p>
-        <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '28px', fontWeight: 600, color: cream, lineHeight: 1.1 }}>{providerName}</h1>
+        {/* top oak accent line */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
+        <p style={{ fontSize: '9px', color: 'var(--oak)', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.8 }}>管理後台</p>
+        <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: cream, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
+        <div style={{ width: '28px', height: '1px', background: oak, marginTop: '14px', opacity: 0.5 }} />
+      </div>
+
+      {/* ── Admin Marquee bar ── */}
+      <div style={{ background: oak, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <style>{`@keyframes marqueeAdmin { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+        <div style={{ display: 'inline-flex', animation: 'marqueeAdmin 20s linear infinite', paddingTop: '7px', paddingBottom: '7px' }}>
+          {[0,1].map(i => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)' }}>
+              <span>今日預約 {todayBookings.length} 件</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>待服務 {upcomingBookings.filter(b => b.date === today).length + todayBookings.length} 人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              <span>本月累計 NT$ {monthRevenue > 0 ? monthRevenue.toLocaleString() : '—'}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+              {waitlist.length > 0 && <><span>候補名單 {waitlist.length} 人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
+              <span>MooLah 後台管理</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* ── Stats 2×2 ── */}
       <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
         {[
-          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆' },
-          { label: '今日營收', value: todayRevenue === 0 ? '—' : `NT$ ${todayRevenue.toLocaleString()}`, unit: '' },
-          { label: '本月預約', value: `${monthBookings.length}`, unit: '筆' },
-          { label: '本月營收', value: monthRevenue === 0 ? '—' : `NT$ ${monthRevenue.toLocaleString()}`, unit: '' },
+          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', accent: true },
+          { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', accent: false },
+          { label: '本月預約', value: `${monthBookings.length}`, unit: '筆', accent: false },
+          { label: '本月營收', value: monthRevenue === 0 ? '—' : monthRevenue.toLocaleString(), unit: monthRevenue > 0 ? 'NT$' : '', accent: false },
         ].map(item => (
-          <div key={item.label} style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: '16px', padding: '16px 14px', textAlign: 'center' }}>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: item.unit ? '30px' : '18px', fontWeight: 600, color: oak, lineHeight: 1 }}>
-              {item.value}{item.unit && <span style={{ fontSize: '14px', marginLeft: '2px' }}>{item.unit}</span>}
+          <div key={item.label} style={{
+            background: item.accent ? 'var(--charcoal-deep)' : cardBg,
+            border: item.accent ? '1px solid rgba(166,137,102,0.25)' : `1px solid ${border}`,
+            borderRadius: '16px', padding: '18px 16px 14px', textAlign: 'center',
+            position: 'relative', overflow: 'hidden',
+          }}>
+            {item.accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
+            {item.unit === 'NT$' && (
+              <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: item.accent ? 'rgba(166,137,102,0.6)' : 'rgba(166,137,102,0.5)', marginBottom: '4px' }}>NT$</p>
+            )}
+            <p style={{
+              fontFamily: '"Cormorant Garamond", serif',
+              fontSize: item.unit === '筆' ? '2.4rem' : '1.9rem',
+              fontWeight: 300, color: item.accent ? cream : oak,
+              lineHeight: 1, letterSpacing: '-0.02em',
+            }}>
+              {item.value}{item.unit === '筆' && <span style={{ fontSize: '1rem', marginLeft: '3px', opacity: 0.6 }}>筆</span>}
             </p>
-            <p style={{ fontSize: '10px', color: '#b0a89e', marginTop: '6px', letterSpacing: '0.04em' }}>{item.label}</p>
+            <p style={{ fontSize: '10px', color: item.accent ? 'rgba(251,249,244,0.4)' : '#b0a89e', marginTop: '8px', letterSpacing: '0.06em' }}>{item.label}</p>
           </div>
         ))}
       </div>
 
       {/* ── Main Nav (scrollable) ── */}
       <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '14px', padding: '4px', minWidth: 'max-content' }}>
+        <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid rgba(166,137,102,0.15)', paddingBottom: '0', minWidth: 'max-content' }}>
         {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => { setMainView(v); if (v === 'waitlist') fetchWaitlist() }} style={{
-            padding: '10px 14px', borderRadius: '10px', fontSize: '12px',
+            padding: '10px 16px 12px', fontSize: '12px',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
-            background: mainView === v ? charcoal : 'transparent',
-            color: mainView === v ? cream : '#8a7e76',
-            transition: 'all 0.2s', whiteSpace: 'nowrap',
+            background: 'transparent',
+            color: mainView === v ? charcoal : 'rgba(44,40,37,0.45)',
+            borderBottom: mainView === v ? `2px solid ${oak}` : '2px solid transparent',
+            transition: 'all 0.18s', whiteSpace: 'nowrap',
+            letterSpacing: '0.02em',
           }}>{label}</button>
         ))}
         </div>
