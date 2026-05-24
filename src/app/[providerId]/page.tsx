@@ -394,21 +394,16 @@ export default function ProviderPage() {
             </div>
           </div>
 
-          {/* MooLah 官方認證勳章 */}
+          {/* MooLah 官方認證勳章 — IG 鋸齒徽章 */}
           <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '50%',
-              background: '#0095F6',
-              boxShadow: '0 2px 12px rgba(0,149,246,0.45), 0 0 0 2.5px rgba(0,149,246,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              position: 'relative', overflow: 'hidden',
-            }}>
-              {/* shine */}
-              <div style={{ position: 'absolute', top: '5px', left: '7px', width: '14px', height: '7px', borderRadius: '50%', background: 'rgba(255,255,255,0.3)', transform: 'rotate(-20deg)' }} />
-              <svg viewBox="0 0 20 20" fill="none" style={{ width: '18px', height: '18px', position: 'relative', zIndex: 1 }}>
-                <path d="M5 10l3.5 3.5L15 6.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 50 50" fill="none" style={{ width: '46px', height: '46px', filter: 'drop-shadow(0 2px 10px rgba(0,149,246,0.55))' }}>
+              {/* 12-point starburst outer ring */}
+              <path d="M25,2 L29.9,6.65 L36.5,5.08 L38.44,11.56 L44.92,13.5 L43.35,20.08 L48,25 L43.35,29.92 L44.92,36.5 L38.44,38.44 L36.5,44.92 L29.92,43.35 L25,48 L20.08,43.35 L13.5,44.92 L11.56,38.44 L5.08,36.5 L6.65,29.92 L2,25 L6.65,20.08 L5.08,13.5 L11.56,11.56 L13.5,5.08 L20.08,6.65 Z" fill="#0095F6"/>
+              {/* shine highlight */}
+              <ellipse cx="18" cy="14" rx="5" ry="3" fill="rgba(255,255,255,0.22)" transform="rotate(-20 18 14)"/>
+              {/* white checkmark */}
+              <path d="M15.5 25.5l5.5 5.5L34.5 18" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             <span style={{ fontSize: '8px', letterSpacing: '0.12em', fontWeight: 700, color: '#0095F6' }}>官方認證</span>
           </div>
         </div>
