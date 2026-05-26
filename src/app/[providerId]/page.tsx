@@ -491,8 +491,7 @@ export default function ProviderPage() {
             const isSelected = selectedServiceId === s.id
             const isExpanded = expandedServiceId === s.id
             const hasDesc = !!s.description?.trim()
-            return (
-              {isSelected ? (
+            return isSelected ? (
                 /* ── Selected: editorial summary card (matches book page) ── */
                 <div key={s.id}
                   onClick={() => setSelectedServiceId(null)}
@@ -572,8 +571,7 @@ export default function ProviderPage() {
                     </div>
                   )}
                 </div>
-              )}
-            )
+              )
           })}
         </div>
       </section>
