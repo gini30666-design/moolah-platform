@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
+import JoinForm from '@/components/JoinForm'
 
 const BASE_URL = 'https://moolah-platform.vercel.app'
 
@@ -265,33 +266,26 @@ export default function JoinPage() {
           </div>
         </section>
 
-        {/* Contact CTA */}
+        {/* Apply Form */}
         <section className="relative overflow-hidden py-16 md:py-24 px-5 md:px-6" style={{ background: 'white' }}>
-          {/* Decorative watermark */}
           <div className="absolute left-0 bottom-0 font-display leading-none pointer-events-none select-none" style={{ fontSize: 'clamp(5rem,20vw,16rem)', color: 'rgba(166,137,102,0.04)', lineHeight: 0.9 }}>Join</div>
-          <div data-animate className="relative max-w-2xl mx-auto text-center">
-            <p className="text-xs tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--oak)' }}>APPLY NOW</p>
-            <h2 className="font-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--charcoal)', fontWeight: 400 }}>
-              準備好開始了嗎？
-            </h2>
-            <p className="text-sm leading-relaxed mb-10" style={{ color: 'rgba(44,40,37,0.55)' }}>
-              發送 Email 給我們，包含你的姓名、服務類別，
-              以及你希望提供的服務項目。我們在 24 小時內回覆。
-            </p>
-
-            <div className="inline-flex flex-col items-center gap-4">
-              <a
-                href="mailto:moolah118@gmail.com?subject=申請加入 MooLah 合作&body=姓名：%0A服務類別（髮型/寵物美容/汽車美容/美甲）：%0ALINE ID：%0A服務項目：%0A備註："
-                className="inline-flex items-center gap-2 px-7 md:px-8 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
-                style={{ background: 'var(--charcoal)', color: 'var(--cream)' }}
-              >
-                moolah118@gmail.com
-              </a>
-              <span className="text-xs" style={{ color: 'rgba(44,40,37,0.40)' }}>點擊即可發送申請 Email</span>
+          <div className="relative max-w-2xl mx-auto">
+            <div data-animate className="text-center mb-10">
+              <p className="text-xs tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--oak)' }}>APPLY NOW</p>
+              <h2 className="font-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--charcoal)', fontWeight: 400 }}>
+                準備好開始了嗎？
+              </h2>
+              <p className="text-sm leading-relaxed" style={{ color: 'rgba(44,40,37,0.55)' }}>
+                填寫下方表單，我們在 24 小時內聯絡你，協助完成上線設定。
+              </p>
             </div>
 
-            <div className="mt-12 pt-8 border-t text-center" style={{ borderColor: 'rgba(166,137,102,0.20)' }}>
-              <p className="text-sm mb-3" style={{ color: 'rgba(44,40,37,0.50)' }}>或查看現有設計師頁面體驗預約流程</p>
+            <div data-animate data-delay="100">
+              <JoinForm />
+            </div>
+
+            <div className="mt-10 pt-8 border-t text-center" style={{ borderColor: 'rgba(166,137,102,0.20)' }}>
+              <p className="text-sm mb-3" style={{ color: 'rgba(44,40,37,0.50)' }}>想先體驗預約流程？</p>
               <Link
                 href="/go/chloe"
                 className="text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
