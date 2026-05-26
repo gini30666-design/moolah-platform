@@ -5,6 +5,8 @@ export function ScrollReveal() {
   useEffect(() => {
     const vh = window.innerHeight
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     const intersectionObs = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -14,13 +16,13 @@ export function ScrollReveal() {
           }
         })
       },
-      { threshold: 0.06, rootMargin: '0px 0px -48px 0px' }
+      { threshold: 0.01, rootMargin: '0px 0px 0px 0px' }
     )
 
     function observe(el: Element) {
       if (el.classList.contains('will-animate') || el.classList.contains('in-view')) return
       const rect = el.getBoundingClientRect()
-      if (rect.top < vh - 40) {
+      if (reducedMotion || rect.top < vh + 20) {
         el.classList.add('in-view')
       } else {
         el.classList.add('will-animate')

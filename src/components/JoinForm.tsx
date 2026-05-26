@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
+import { trackLead } from '@/components/MetaPixel'
 
-const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師']
+const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師', '刺青師']
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
 const METHODS    = ['口頭或電話確認', 'LINE 個人帳號', '無系統（自行記錄）', '已有其他軟體']
 
@@ -26,6 +27,7 @@ export default function JoinForm() {
       })
       if (!res.ok) throw new Error()
       setStatus('success')
+      trackLead()
     } catch {
       setStatus('error'); setError('送出失敗，請稍後再試或直接加入 LINE')
     }
@@ -174,7 +176,7 @@ export default function JoinForm() {
           transition: 'background 0.18s',
         }}
       >
-        {status === 'loading' ? '送出中…' : '送出申請'}
+        {status === 'loading' ? '傳送中…' : '與我們聊聊'}
       </button>
 
       <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.38)', marginTop: '16px', lineHeight: 1.6 }}>

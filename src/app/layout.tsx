@@ -4,6 +4,7 @@ import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import PwaInit from '@/components/PwaInit'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import MetaPixel from '@/components/MetaPixel'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -122,6 +123,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <GoogleAnalytics />
+        <MetaPixel />
         <ScrollReveal />
         <PwaInit />
         {children}
