@@ -760,7 +760,7 @@ export default function BookPage() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 py-6 pb-52">
+      <div className="max-w-lg mx-auto px-5 py-6" style={{ paddingBottom: '120px' }}>
 
         {/* ── LINE OA join card ─── */}
         {liffReady && showLineCard && (
@@ -797,8 +797,9 @@ export default function BookPage() {
                 </div>
               )}
             </div>
-            <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
-              <p className="font-display" style={{ fontSize: '2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '8px' }}>NT$&thinsp;{service.price.toLocaleString()}</p>
+            <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '14px' }}>
+              <p style={{ fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(166,137,102,0.75)', marginBottom: '3px' }}>NT$</p>
+              <p className="font-display" style={{ fontSize: '2.2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '10px', whiteSpace: 'nowrap' }}>{service.price.toLocaleString()}</p>
               <span style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', background: 'rgba(166,137,102,0.18)', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.3)' }}>已選擇</span>
             </div>
           </div>
