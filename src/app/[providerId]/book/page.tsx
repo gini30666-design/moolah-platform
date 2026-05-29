@@ -8,6 +8,7 @@ type Provider = { id: string; name: string; category: string; rating?: string; r
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
+type PortfolioItem = { id: string; imageUrl: string; caption: string }
 
 const GENDER_OPTIONS = ['女性', '男性', '不透露']
 const HAIR_LENGTH_OPTIONS = ['超短髮', '短髮', '中長髮', '長髮', '超長髮']
@@ -113,6 +114,49 @@ function QuickTags({ tags, selected, onToggle }: { tags: string[]; selected: str
           </button>
         )
       })}
+    </div>
+  )
+}
+
+// ── InspirationPicker ─────────────────────────────────────────────────
+function InspirationPicker({ items, selected, onToggle, max = 2 }: {
+  items: PortfolioItem[]; selected: string[]; onToggle: (id: string) => void; max?: number
+}) {
+  if (!items.length) return null
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '2px 0 10px', margin: '0 -20px', paddingLeft: '20px', paddingRight: '20px', scrollbarWidth: 'none' }}>
+        {items.map(item => {
+          const sel = selected.includes(item.id)
+          const dim = !sel && selected.length >= max
+          return (
+            <button key={item.id} type="button" onClick={() => !dim && onToggle(item.id)}
+              style={{
+                flex: '0 0 88px', position: 'relative', height: '110px', borderRadius: '12px', overflow: 'hidden',
+                border: sel ? '2.5px solid var(--oak)' : '2px solid transparent',
+                padding: 0, cursor: dim ? 'default' : 'pointer',
+                opacity: dim ? 0.4 : 1, transition: 'opacity 0.2s, border-color 0.2s', background: '#e0d4c0',
+              }}>
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', background: 'repeating-linear-gradient(135deg, #efe6da 0 10px, #e6dccd 10px 20px)' }} />
+              )}
+              {item.caption && (
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '6px', background: 'linear-gradient(transparent, rgba(26,23,20,0.65))', fontSize: '9px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.2 }}>
+                  {item.caption}
+                </div>
+              )}
+              {sel && (
+                <span style={{ position: 'absolute', top: '6px', right: '6px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--oak)', display: 'grid', placeItems: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                  <svg viewBox="0 0 12 12" style={{ width: '10px', height: '10px' }}><path d="M2 6l2.8 3L10 3" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+      <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)', marginTop: '2px' }}>最多選 {max} 張 · 已選 {selected.length}</p>
     </div>
   )
 }
@@ -375,6 +419,8 @@ export default function BookPage() {
   const [provider, setProvider] = useState<Provider | null>(null)
   const [service, setService] = useState<Service | null>(null)
   const [allServices, setAllServices] = useState<Service[]>([])
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([])
+  const [selectedInspirations, setSelectedInspirations] = useState<string[]>([])
   const [lineUserId, setLineUserId] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [customerNameInput, setCustomerNameInput] = useState('')
@@ -429,6 +475,7 @@ export default function BookPage() {
         setProvider(data.provider)
         setIsHairCategory(HAIR_CATEGORIES.includes(data.provider?.category ?? ''))
         setAllServices(data.services ?? [])
+        setPortfolio(data.portfolio ?? [])
         const svc = serviceId
           ? data.services.find((s: Service) => s.id === serviceId) ?? null
           : data.services[0] ?? null
@@ -457,13 +504,22 @@ export default function BookPage() {
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
   }
 
+  function toggleInspiration(id: string) {
+    setSelectedInspirations(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : prev.length < 2 ? [...prev, id] : prev
+    )
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const bookerName = lineUserId ? displayName : customerNameInput.trim()
     const name = forOthers ? recipientName.trim() : bookerName
     const phone = forOthers ? recipientPhone.trim() : (lineUserId ? '' : customerPhone.trim())
     const tagStr = selectedTags.join('、')
-    const combinedNote = [tagStr, note.trim()].filter(Boolean).join(' / ')
+    const inspirationStr = selectedInspirations.length > 0
+      ? `靈感參考：${selectedInspirations.map(id => portfolio.find(p => p.id === id)?.caption || id).join('、')}`
+      : ''
+    const combinedNote = [tagStr, inspirationStr, note.trim()].filter(Boolean).join(' / ')
     const finalNote = forOthers && bookerName ? `[代訂人：${bookerName}]${combinedNote ? ' ' + combinedNote : ''}` : combinedNote
     if (!date || !time || !gender || !name) return
     setSubmitting(true)
@@ -706,8 +762,8 @@ export default function BookPage() {
 
       <div className="max-w-lg mx-auto px-5 py-6 pb-52">
 
-        {/* ── LINE OA join card (external users) ─── */}
-        {liffReady && !lineUserId && showLineCard && (
+        {/* ── LINE OA join card ─── */}
+        {liffReady && showLineCard && (
           <div className="mb-5" style={{ background: 'linear-gradient(135deg, rgba(6,199,85,0.08), rgba(6,199,85,0.04))', border: '1.5px solid rgba(6,199,85,0.25)', borderRadius: '16px', padding: '15px 16px', position: 'relative' }}>
             <button type="button" onClick={() => setShowLineCard(false)} style={{ position: 'absolute', top: '10px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(44,40,37,0.32)', fontSize: '15px', lineHeight: 1, padding: '2px' }}>✕</button>
             <div className="flex items-start gap-3">
@@ -830,9 +886,17 @@ export default function BookPage() {
 
             {/* Hair length */}
             {isHairCategory && (
-              <div>
+              <div style={{ marginBottom: portfolio.length > 0 ? '20px' : 0 }}>
                 <FieldLabel>目前髮長</FieldLabel>
                 <PillGroup options={HAIR_LENGTH_OPTIONS} value={hairLength} onChange={setHairLength} />
+              </div>
+            )}
+
+            {/* Inspiration picker */}
+            {portfolio.length > 0 && (
+              <div>
+                <FieldLabel hint="最多 2 張">靈感參考 — 從作品集挑選</FieldLabel>
+                <InspirationPicker items={portfolio} selected={selectedInspirations} onToggle={toggleInspiration} max={2} />
               </div>
             )}
           </div>
@@ -892,9 +956,11 @@ export default function BookPage() {
               <p style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px' }}>預約摘要</p>
               {[
                 ['服務', service.name],
+                ['時長', `${service.duration} 分鐘`],
                 ['稱呼', lineUserId ? displayName : (customerNameInput || '—')],
                 ['性別', gender || '—'],
                 ['日期時段', date ? `${fmtDate} ${time || '—'}` : '—'],
+                ...(selectedInspirations.length > 0 ? [['靈感參考', `${selectedInspirations.length} 張已選`]] : [['靈感參考', '—']]),
                 ...(selectedTags.length ? [['備註標籤', selectedTags.join('、')]] : []),
               ].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
