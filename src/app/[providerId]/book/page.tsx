@@ -706,7 +706,7 @@ export default function BookPage() {
       <style>{`
         @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-        .ch-panel { background: rgba(245,239,230,0.7); border: 1px solid rgba(166,137,102,0.16); border-radius: 22px; padding: 26px 20px 28px; margin: 8px 0; }
+        .ch-panel { background: var(--sand-deep); border: 1px solid rgba(166,137,102,0.18); border-radius: 22px; padding: 26px 18px 28px; margin: 14px 0; }
       `}</style>
 
       {/* ── Sticky header + progress ─── */}
@@ -834,7 +834,7 @@ export default function BookPage() {
         <form onSubmit={handleSubmit}>
 
           {/* ════════════ Chapter 01 — 關於你 ════════════ */}
-          <div className="ch-panel">
+          <div style={{ margin: '14px 0' }}>
             <ChapterHeader no="01" eyebrow="About you" title="關於你" />
 
             {/* Contact info (external users) */}
@@ -902,7 +902,7 @@ export default function BookPage() {
           </div>
 
           {/* ════════════ Chapter 02 — 選擇時間 ════════════ */}
-          <div className="ch-panel" style={{ marginTop: '12px' }}>
+          <div className="ch-panel">
             <ChapterHeader no="02" eyebrow="Pick a time" title="選擇時間" />
 
             {/* Date section */}
@@ -941,7 +941,7 @@ export default function BookPage() {
           </div>
 
           {/* ════════════ Chapter 03 — 給設計師的話 ════════════ */}
-          <div className="ch-panel" style={{ marginTop: '12px' }}>
+          <div style={{ margin: '14px 0' }}>
             <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
 
             <FieldLabel hint="選填">快速標籤</FieldLabel>
@@ -975,17 +975,13 @@ export default function BookPage() {
       </div>
 
       {/* ── Fixed bottom CTA ─── */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-5"
-        style={{ background: 'linear-gradient(to top, #ede8dc 0%, #ede8dc 60%, transparent 100%)', borderTop: '1px solid rgba(166,137,102,0.28)' }}>
-        <button onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>} disabled={!canSubmit}
-          style={{ width: '100%', padding: '16px', borderRadius: '8px', border: 'none', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: canSubmit ? 'var(--cream)' : 'rgba(44,40,37,0.35)', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', cursor: canSubmit ? 'pointer' : 'not-allowed', fontFamily: 'inherit', transition: 'all 0.2s ease' }}>
-          {submitting ? '預約中...' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : '確認預約'}
-        </button>
-        {!canSubmit && liffReady && (
-          <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.65)', marginTop: '8px' }}>
-            {!hasCustomerInfo ? '請填入姓名與聯絡電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : !time ? '請選擇時段' : ''}
-          </p>
-        )}
+      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, background: 'linear-gradient(to top, var(--cream) 62%, transparent)', padding: '20px 20px 28px' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <button onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>} disabled={!canSubmit}
+            style={{ width: '100%', padding: '17px', borderRadius: '15px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: 'var(--cream)', fontSize: '15px', fontWeight: 600, letterSpacing: '0.04em', boxShadow: canSubmit ? '0 12px 30px rgba(26,23,20,0.28)' : 'none', transition: 'all .3s cubic-bezier(0.16,1,0.3,1)' }}>
+            {submitting ? '預約中…' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : !hasCustomerInfo ? '請填寫稱呼與電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : '請選擇時段'}
+          </button>
+        </div>
       </div>
     </div>
   )
