@@ -1,31 +1,164 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
-type Service = { id: string; name: string; price: number; duration: number }
+type Service = { id: string; name: string; price: number; duration: number; description?: string }
 type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
-
-const GENDER_OPTIONS = ['男性', '女性', '不透露']
-const HAIR_LENGTH_OPTIONS = ['超短髮', '短髮', '中長髮', '長髮', '超長髮']
-const HAIR_CATEGORIES = ['髮型設計師']
-
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
 
+const GENDER_OPTIONS = ['女性', '男性', '不透露']
+const HAIR_LENGTH_OPTIONS = ['超短髮', '短髮', '中長髮', '長髮', '超長髮']
+const HAIR_CATEGORIES = ['髮型設計師']
+const NOTE_TAGS = ['第一次來', '想換個風格', '特殊場合', '有指定參考', '預算有限', '會晚一點到']
+
+// ── ChapterHeader ─────────────────────────────────────────────────────
+function ChapterHeader({ no, eyebrow, title }: { no: string; eyebrow: string; title: string }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '6px 0 22px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
+        <span style={{ width: '28px', height: '1px', background: 'linear-gradient(to right, transparent, var(--oak))' }} />
+        <span style={{ width: '5px', height: '5px', background: 'var(--oak)', transform: 'rotate(45deg)', flexShrink: 0 }} />
+        <span style={{ width: '28px', height: '1px', background: 'linear-gradient(to left, transparent, var(--oak))' }} />
+      </div>
+      <p style={{ fontSize: '10px', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '6px' }}>{eyebrow}</p>
+      <p className="font-display" style={{ fontSize: '1.55rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.1 }}>{title}</p>
+    </div>
+  )
+}
+
+// ── Segmented (sliding indicator) ────────────────────────────────────
+function Segmented({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
+  const n = options.length
+  const idx = options.indexOf(value)
+  return (
+    <div style={{
+      position: 'relative', display: 'grid', gridTemplateColumns: `repeat(${n}, 1fr)`,
+      background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.22)',
+      borderRadius: '99px', padding: '4px',
+    }}>
+      {idx >= 0 && (
+        <div style={{
+          position: 'absolute', top: '4px', bottom: '4px',
+          left: `calc(4px + ${idx} * (100% - 8px) / ${n})`,
+          width: `calc((100% - 8px) / ${n})`,
+          background: 'var(--charcoal)', borderRadius: '99px',
+          boxShadow: '0 3px 10px rgba(44,40,37,0.25)',
+          transition: 'left 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }} />
+      )}
+      {options.map(o => {
+        const sel = o === value
+        return (
+          <button key={o} type="button" onClick={() => onChange(o)} style={{
+            position: 'relative', zIndex: 1, background: 'none', border: 'none',
+            padding: '11px 4px', cursor: 'pointer',
+            fontSize: '13px', fontWeight: sel ? 600 : 400,
+            color: sel ? 'var(--cream)' : 'var(--charcoal)',
+            transition: 'color 0.3s',
+          }}>{o}</button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── DateQuickChips ────────────────────────────────────────────────────
+function DateQuickChips({ value, onChange }: { value: string; onChange: (d: string) => void }) {
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const tmr = new Date(today); tmr.setDate(today.getDate() + 1)
+  const sat = new Date(today); sat.setDate(today.getDate() + ((6 - today.getDay() + 7) % 7 || 7))
+  const chips = [
+    { label: '今天', d: fmt(today) },
+    { label: '明天', d: fmt(tmr) },
+    { label: '本週末', d: fmt(sat) },
+  ]
+  return (
+    <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+      {chips.map(c => {
+        const sel = value === c.d
+        return (
+          <button key={c.label} type="button" onClick={() => onChange(c.d)} style={{
+            padding: '8px 15px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
+            border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.25)',
+            background: sel ? 'var(--charcoal)' : 'rgba(255,255,255,0.7)',
+            color: sel ? 'var(--cream)' : 'var(--charcoal)',
+            fontWeight: sel ? 600 : 400, transition: 'all 0.18s ease',
+          }}>{c.label}</button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── QuickTags ─────────────────────────────────────────────────────────
+function QuickTags({ tags, selected, onToggle }: { tags: string[]; selected: string[]; onToggle: (tag: string) => void }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+      {tags.map(tag => {
+        const sel = selected.includes(tag)
+        return (
+          <button key={tag} type="button" onClick={() => onToggle(tag)} style={{
+            padding: '7px 14px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
+            border: sel ? '1.5px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.25)',
+            background: sel ? 'rgba(166,137,102,0.14)' : 'rgba(255,255,255,0.6)',
+            color: sel ? 'var(--oak)' : 'rgba(44,40,37,0.7)',
+            fontWeight: sel ? 600 : 400, transition: 'all 0.18s ease',
+            display: 'inline-flex', alignItems: 'center', gap: '5px',
+          }}>
+            {sel && <span style={{ fontSize: '10px' }}>✓</span>}{tag}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── PillGroup (hair length) ───────────────────────────────────────────
+function PillGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map(opt => {
+        const selected = value === opt
+        return (
+          <button key={opt} type="button" onClick={() => onChange(opt)} style={{
+            padding: '9px 20px', borderRadius: '99px', fontSize: '13px',
+            border: selected ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.28)',
+            background: selected ? 'var(--charcoal)' : 'rgba(255,255,255,0.75)',
+            color: selected ? 'var(--cream)' : 'var(--charcoal)',
+            boxShadow: selected ? '0 3px 10px rgba(44,40,37,0.18)' : '0 1px 3px rgba(166,137,102,0.10)',
+            transform: selected ? 'translateY(-1px)' : 'none',
+            transition: 'all 0.18s ease', cursor: 'pointer', fontWeight: selected ? 500 : 400,
+          }}>{opt}</button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── FieldLabel ────────────────────────────────────────────────────────
+function FieldLabel({ children, hint }: { children: React.ReactNode; hint?: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '12px' }}>
+      <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.04em', color: 'var(--charcoal)' }}>{children}</span>
+      {hint && <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)' }}>{hint}</span>}
+    </div>
+  )
+}
+
+// ── InlineCalendar ────────────────────────────────────────────────────
 function InlineCalendar({ providerId, value, onChange }: {
-  providerId: string
-  value: string
-  onChange: (date: string) => void
+  providerId: string; value: string; onChange: (date: string) => void
 }) {
-  const nowDate = new Date()
-  nowDate.setHours(0, 0, 0, 0)
+  const nowDate = new Date(); nowDate.setHours(0, 0, 0, 0)
   const todayStr = nowDate.toISOString().split('T')[0]
   const currentMonthStr = todayStr.slice(0, 7)
-
   const [viewMonth, setViewMonth] = useState(() => value ? value.slice(0, 7) : currentMonthStr)
   const [avail, setAvail] = useState<Record<string, DayStatus>>({})
+  const [ripple, setRipple] = useState<{ key: number; day: string; x: number; y: number } | null>(null)
 
   useEffect(() => {
     fetch(`/api/calendar?providerId=${providerId}&days=90`)
@@ -51,43 +184,37 @@ function InlineCalendar({ providerId, value, onChange }: {
     setViewMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
   }
 
+  function pick(e: React.MouseEvent<HTMLButtonElement>, dateStr: string) {
+    const r = e.currentTarget.getBoundingClientRect()
+    setRipple({ key: Date.now(), day: dateStr, x: e.clientX - r.left, y: e.clientY - r.top })
+    setTimeout(() => setRipple(null), 620)
+    onChange(dateStr)
+  }
+
   const DOW_LABELS = ['日', '一', '二', '三', '四', '五', '六']
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.85)',
-      border: '1.5px solid rgba(166,137,102,0.2)',
-      borderRadius: '16px',
-      padding: '14px 12px',
-      boxShadow: '0 2px 12px rgba(26,23,20,0.06)',
+      background: 'rgba(255,255,255,0.85)', border: '1.5px solid rgba(166,137,102,0.2)',
+      borderRadius: '16px', padding: '14px 12px', boxShadow: '0 2px 12px rgba(26,23,20,0.06)',
     }}>
-      {/* Month nav */}
+      <style>{`@keyframes cal-ripple { to { transform: scale(8); opacity: 0 } }`}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', padding: '0 4px' }}>
-        <button type="button" onClick={prevM}
-          disabled={viewMonth <= currentMonthStr}
-          style={{
-            background: 'none', border: 'none', fontSize: '20px', lineHeight: 1,
+        <button type="button" onClick={prevM} disabled={viewMonth <= currentMonthStr}
+          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, padding: '4px 10px',
             color: viewMonth <= currentMonthStr ? 'rgba(166,137,102,0.2)' : 'var(--oak)',
-            cursor: viewMonth <= currentMonthStr ? 'default' : 'pointer',
-            padding: '4px 10px',
-          }}>‹</button>
-        <p style={{
-          fontFamily: 'var(--font-cormorant)',
-          fontSize: '16px', fontWeight: 500,
-          color: 'var(--charcoal)', letterSpacing: '0.04em',
-        }}>{yr} 年 {mo} 月</p>
+            cursor: viewMonth <= currentMonthStr ? 'default' : 'pointer' }}>‹</button>
+        <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '16px', fontWeight: 500, color: 'var(--charcoal)', letterSpacing: '0.04em' }}>
+          {yr} 年 {mo} 月
+        </p>
         <button type="button" onClick={nextM}
-          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, color: 'var(--oak)', cursor: 'pointer', padding: '4px 10px' }}>›</button>
+          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, padding: '4px 10px', color: 'var(--oak)', cursor: 'pointer' }}>›</button>
       </div>
-
-      {/* DOW labels */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '4px' }}>
         {DOW_LABELS.map(l => (
           <div key={l} style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(44,40,37,0.28)', paddingBottom: '6px' }}>{l}</div>
         ))}
       </div>
-
-      {/* Day cells */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
         {Array.from({ length: firstDOW }, (_, i) => <div key={`p${i}`} />)}
         {Array.from({ length: daysInMonth }, (_, i) => {
@@ -98,53 +225,41 @@ function InlineCalendar({ providerId, value, onChange }: {
           const isSelected = dateStr === value
           const status = avail[dateStr] ?? 'open'
           const isDisabled = isPast || status === 'closed' || status === 'full'
-
+          const rippling = ripple && ripple.day === dateStr
           return (
-            <button key={day} type="button"
-              disabled={isDisabled}
-              onClick={() => !isDisabled && onChange(dateStr)}
+            <button key={day} type="button" disabled={isDisabled}
+              onClick={e => !isDisabled && pick(e, dateStr)}
               style={{
+                position: 'relative', overflow: 'hidden',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
                 padding: '7px 2px', borderRadius: '8px', border: 'none',
                 cursor: isDisabled ? 'default' : 'pointer',
-                background: isSelected
-                  ? 'var(--charcoal)'
-                  : isToday
-                    ? 'rgba(166,137,102,0.15)'
-                    : 'transparent',
-                opacity: isPast ? 0.22 : 1,
-                transition: 'background 0.15s',
-              }}
-            >
+                background: isSelected ? 'var(--charcoal)' : isToday ? 'rgba(166,137,102,0.15)' : 'transparent',
+                opacity: isPast ? 0.22 : 1, transition: 'background 0.15s',
+              }}>
+              {rippling && (
+                <span style={{
+                  position: 'absolute', left: ripple.x, top: ripple.y,
+                  width: '8px', height: '8px', marginLeft: '-4px', marginTop: '-4px',
+                  borderRadius: '50%', background: 'var(--oak)', opacity: 0.5,
+                  pointerEvents: 'none', animation: 'cal-ripple 0.6s ease forwards',
+                }} />
+              )}
               <span style={{
-                fontSize: '13px', lineHeight: 1,
+                fontSize: '13px', lineHeight: 1, position: 'relative', zIndex: 1,
                 fontWeight: isSelected || isToday ? 600 : 400,
-                color: isSelected
-                  ? 'white'
-                  : isToday
-                    ? 'var(--oak)'
-                    : isDisabled && !isPast
-                      ? 'rgba(44,40,37,0.25)'
-                      : 'var(--charcoal)',
+                color: isSelected ? 'white' : isToday ? 'var(--oak)' : isDisabled && !isPast ? 'rgba(44,40,37,0.25)' : 'var(--charcoal)',
               }}>{day}</span>
               {!isPast && status !== 'closed' && (
                 <span style={{
-                  width: '4px', height: '4px', borderRadius: '50%', flexShrink: 0,
-                  background: isSelected
-                    ? 'rgba(255,255,255,0.5)'
-                    : status === 'full'
-                      ? 'transparent'
-                      : status === 'limited'
-                        ? 'rgba(166,137,102,0.5)'
-                        : 'var(--oak)',
+                  width: '4px', height: '4px', borderRadius: '50%', flexShrink: 0, position: 'relative', zIndex: 1,
+                  background: isSelected ? 'rgba(255,255,255,0.5)' : status === 'full' ? 'transparent' : status === 'limited' ? 'rgba(166,137,102,0.5)' : 'var(--oak)',
                 }} />
               )}
             </button>
           )
         })}
       </div>
-
-      {/* Legend */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
         {[['var(--oak)', '有空位'], ['rgba(166,137,102,0.5)', '少量']].map(([bg, label]) => (
           <span key={label} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px', color: 'rgba(44,40,37,0.4)' }}>
@@ -157,65 +272,7 @@ function InlineCalendar({ providerId, value, onChange }: {
   )
 }
 
-function PillGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {options.map(opt => {
-        const selected = value === opt
-        return (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => onChange(opt)}
-            style={{
-              padding: '9px 20px',
-              borderRadius: '99px',
-              fontSize: '13px',
-              fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-              border: selected
-                ? '1.5px solid var(--charcoal)'
-                : '1.5px solid rgba(166,137,102,0.28)',
-              background: selected
-                ? 'var(--charcoal)'
-                : 'rgba(255,255,255,0.75)',
-              color: selected
-                ? 'var(--cream)'
-                : 'var(--charcoal)',
-              boxShadow: selected
-                ? '0 3px 10px rgba(44,40,37,0.18), inset 0 1px 0 rgba(255,255,255,0.08)'
-                : '0 1px 3px rgba(166,137,102,0.10)',
-              transform: selected ? 'translateY(-1px)' : 'translateY(0)',
-              transition: 'all 0.18s ease',
-              cursor: 'pointer',
-              fontWeight: selected ? 500 : 400,
-            }}
-          >
-            {opt}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-function SectionLabel({ step, label }: { step: string; label: string }) {
-  return (
-    <div style={{ marginBottom: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '8px' }}>
-        <span className="font-display" style={{
-          fontSize: '3.2rem', fontWeight: 300, lineHeight: 1,
-          color: 'rgba(166,137,102,0.22)', letterSpacing: '-0.03em',
-        }}>{step}</span>
-        <span style={{
-          fontSize: '11px', letterSpacing: '0.24em', textTransform: 'uppercase',
-          color: 'var(--charcoal)', fontWeight: 600,
-        }}>{label}</span>
-      </div>
-      <div style={{ height: '1px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.35 }} />
-    </div>
-  )
-}
-
+// ── CompletionScreen ──────────────────────────────────────────────────
 function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified }: {
   providerName: string; serviceName: string; date: string; time: string
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
@@ -226,203 +283,79 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
         @keyframes drawCircle { to { stroke-dashoffset: 0; } }
         @keyframes drawCheck  { to { stroke-dashoffset: 0; } }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-        @keyframes pulseRing {
-          0% { transform: scale(0.95); opacity: 0.6; }
-          50% { transform: scale(1.08); opacity: 0.15; }
-          100% { transform: scale(0.95); opacity: 0.6; }
-        }
+        @keyframes pulseRing { 0% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.08); opacity: 0.15; } 100% { transform: scale(0.95); opacity: 0.6; } }
+        @keyframes petalFall { 0% { transform: translateY(-20px) rotate(var(--rot,0deg)); opacity: 0.9; } 100% { transform: translateY(100vh) translateX(var(--drift,0px)) rotate(calc(var(--rot,0deg) + 180deg)); opacity: 0; } }
       `}</style>
-
-      {/* ── Top dark section ─────────────────────── */}
       <div style={{
-        background: 'var(--charcoal-deep)',
-        flex: '0 0 52vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        padding: '40px 24px 48px',
+        background: 'var(--charcoal-deep)', flex: '0 0 52vh',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', overflow: 'hidden', padding: '40px 24px 48px',
       }}>
-        {/* Background grain */}
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.04,
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.75\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'300\' height=\'300\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
-          backgroundSize: '300px 300px',
-        }} />
-        {/* Top oak accent */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)' }} />
-
-        {/* Checkmark animation */}
         <div style={{ position: 'relative', marginBottom: '28px' }}>
-          {/* Pulse ring */}
-          <div style={{
-            position: 'absolute', inset: '-16px', borderRadius: '50%',
-            border: '1px solid rgba(166,137,102,0.25)',
-            animation: 'pulseRing 2.8s ease-in-out 1s infinite',
-          }} />
+          <div style={{ position: 'absolute', inset: '-16px', borderRadius: '50%', border: '1px solid rgba(166,137,102,0.25)', animation: 'pulseRing 2.8s ease-in-out 1s infinite' }} />
           <svg width="100" height="100" viewBox="0 0 96 96">
             <circle cx="48" cy="48" r="44" fill="rgba(166,137,102,0.07)" stroke="rgba(166,137,102,0.18)" strokeWidth="1" />
             <circle cx="48" cy="48" r="44" fill="none" stroke="var(--oak)" strokeWidth="2"
               strokeDasharray="276" strokeDashoffset="276" strokeLinecap="round"
               style={{ animation: 'drawCircle 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards' }} />
             <polyline points="28,50 42,64 68,36" fill="none" stroke="#fbf9f4" strokeWidth="2.5"
-              strokeLinecap="round" strokeLinejoin="round"
-              strokeDasharray="60" strokeDashoffset="60"
+              strokeLinecap="round" strokeLinejoin="round" strokeDasharray="60" strokeDashoffset="60"
               style={{ animation: 'drawCheck 0.5s ease 1s forwards' }} />
           </svg>
         </div>
-
-        {/* Eyebrow + Title */}
-        <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '10px', animation: 'fadeSlideUp 0.5s ease 1.2s both' }}>
-          Booking Confirmed
-        </p>
-        <h1 className="font-display" style={{
-          fontSize: 'clamp(2.4rem,8vw,3.5rem)', fontWeight: 300, letterSpacing: '-0.01em',
-          color: '#fbf9f4', lineHeight: 1.1, textAlign: 'center',
-          animation: 'fadeSlideUp 0.5s ease 1.35s both',
-        }}>
-          預約完成
-        </h1>
-
-        {/* Thin oak divider */}
+        <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '10px', animation: 'fadeSlideUp 0.5s ease 1.2s both' }}>Booking Confirmed</p>
+        <h1 className="font-display" style={{ fontSize: 'clamp(2.4rem,8vw,3.5rem)', fontWeight: 300, letterSpacing: '-0.01em', color: '#fbf9f4', lineHeight: 1.1, textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.35s both' }}>預約完成</h1>
         <div style={{ width: '36px', height: '1px', background: 'var(--oak)', margin: '16px 0', opacity: 0.5, animation: 'fadeSlideUp 0.5s ease 1.4s both' }} />
-
-        {/* Provider · Service */}
-        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.5s both' }}>
-          {providerName} &nbsp;·&nbsp; {serviceName}
-        </p>
+        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.5s both' }}>{providerName} &nbsp;·&nbsp; {serviceName}</p>
       </div>
-
-      {/* ── Bottom light section ──────────────────── */}
-      <div style={{
-        background: '#f5efe6',
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '0 24px 40px',
-        position: 'relative',
-      }}>
-        {/* Booking detail card — overlapping the two sections */}
-        <div style={{
-          marginTop: '-28px',
-          width: '100%', maxWidth: '320px',
-          background: 'white',
-          border: '1px solid rgba(166,137,102,0.18)',
-          borderRadius: '18px',
-          padding: '20px 24px',
-          boxShadow: '0 8px 32px rgba(26,23,20,0.12)',
-          animation: 'fadeSlideUp 0.5s ease 1.55s both',
-          marginBottom: '24px',
-        }}>
-          {/* Date time row */}
+      <div style={{ background: '#f5efe6', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 24px 40px', position: 'relative' }}>
+        <div style={{ marginTop: '-28px', width: '100%', maxWidth: '320px', background: 'white', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '20px 24px', boxShadow: '0 8px 32px rgba(26,23,20,0.12)', animation: 'fadeSlideUp 0.5s ease 1.55s both', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span className="font-display" style={{ fontSize: '28px', fontWeight: 300, color: 'var(--oak)', letterSpacing: '-0.01em' }}>{date}</span>
+            <span className="font-display" style={{ fontSize: '28px', fontWeight: 300, color: 'var(--oak)' }}>{date}</span>
             <span style={{ width: '1px', height: '20px', background: 'rgba(166,137,102,0.3)', display: 'inline-block', alignSelf: 'center' }} />
             <span className="font-display" style={{ fontSize: '24px', fontWeight: 300, color: 'var(--charcoal)' }}>{time}</span>
           </div>
-          {/* Thin separator */}
           <div style={{ height: '1px', background: 'rgba(166,137,102,0.12)', margin: '0 -8px 12px' }} />
-          {/* Detail row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--oak)', opacity: 0.6 }} />
-            <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', letterSpacing: '0.04em' }}>
-              {providerName} · {serviceName}
-            </span>
+            <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)' }}>{providerName} · {serviceName}</span>
           </div>
         </div>
-
-        {/* Notification status */}
         <div style={{ width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.7s both' }}>
           {consumerNotified ? (
-            /* ── Notification sent ── */
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '12px 16px', borderRadius: '12px',
-              background: 'rgba(6,199,85,0.08)', border: '1px solid rgba(6,199,85,0.2)',
-              marginBottom: '20px',
-            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', background: 'rgba(6,199,85,0.08)', border: '1px solid rgba(6,199,85,0.2)', marginBottom: '20px' }}>
               <svg viewBox="0 0 20 20" fill="none" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
                 <path d="M10 1.5C5.31 1.5 1.5 5.31 1.5 10c0 4.69 3.81 8.5 8.5 8.5s8.5-3.81 8.5-8.5c0-4.69-3.81-8.5-8.5-8.5zm-1 12.06l-3-3 1.06-1.06 1.94 1.94 4.44-4.44 1.06 1.06-5.5 5.5z" fill="#06C755"/>
               </svg>
-              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>
-                LINE 確認通知已傳送給您與設計師
-              </p>
+              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>LINE 確認通知已傳送給您與設計師</p>
             </div>
           ) : (
-            /* ── Add OA to receive notification ── */
-            <div style={{
-              padding: '16px',
-              borderRadius: '14px',
-              background: 'rgba(26,23,20,0.04)',
-              border: '1px solid rgba(44,40,37,0.1)',
-              marginBottom: '20px',
-            }}>
+            <div style={{ padding: '16px', borderRadius: '14px', background: 'rgba(26,23,20,0.04)', border: '1px solid rgba(44,40,37,0.1)', marginBottom: '20px' }}>
               <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', marginBottom: '12px', lineHeight: 1.6, textAlign: 'center' }}>
-                {isLineUser
-                  ? '加入 MooLah LINE 好友，即可接收預約確認與提醒'
-                  : '設計師已收到通知。加入 LINE 好友可接收後續提醒'}
+                {isLineUser ? '加入 MooLah LINE 好友，即可接收預約確認與提醒' : '設計師已收到通知。加入 LINE 好友可接收後續提醒'}
               </p>
-              <a
-                href="https://line.me/R/ti/p/@881zhkla"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  padding: '11px 20px', borderRadius: '10px',
-                  background: '#06C755', color: 'white',
-                  fontSize: '13px', fontWeight: 500, textDecoration: 'none',
-                  boxShadow: '0 2px 12px rgba(6,199,85,0.28)',
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/>
-                </svg>
+              <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px 20px', borderRadius: '10px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 500, textDecoration: 'none', boxShadow: '0 2px 12px rgba(6,199,85,0.28)' }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/></svg>
                 加入 MooLah LINE 好友
               </a>
             </div>
           )}
         </div>
-
-        {/* Quick actions */}
         <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.85s both' }}>
-          <a href="/my-bookings" style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-            padding: '11px', borderRadius: '10px',
-            background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)',
-            fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500,
-          }}>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}>
-              <rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/>
-            </svg>
+          <a href="/my-bookings" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
             我的預約
           </a>
-          <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-            padding: '11px', borderRadius: '10px',
-            background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)',
-            fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500,
-          }}>
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="#06C755"/>
-            </svg>
+          <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)', fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500 }}>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="#06C755"/></svg>
             LINE 聯繫
           </a>
         </div>
-        <button
-          onClick={onBack}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: 'rgba(44,40,37,0.35)',
-            animation: 'fadeSlideUp 0.5s ease 2s both',
-            paddingBottom: '2px',
-            borderBottom: '1px solid rgba(44,40,37,0.15)',
-            marginTop: '4px',
-          }}
-        >
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.35)', paddingBottom: '2px', borderBottom: '1px solid rgba(44,40,37,0.15)', marginTop: '18px', animation: 'fadeSlideUp 0.5s ease 2s both' }}>
           返回設計師頁面
         </button>
       </div>
@@ -430,15 +363,18 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
   )
 }
 
+// ── BookPage ──────────────────────────────────────────────────────────
 export default function BookPage() {
   const { providerId } = useParams<{ providerId: string }>()
   const searchParams = useSearchParams()
   const router = useRouter()
   const serviceId = searchParams.get('service') ?? ''
   const initialDate = searchParams.get('date') ?? ''
+  const timeRef = useRef<HTMLDivElement>(null)
 
   const [provider, setProvider] = useState<Provider | null>(null)
   const [service, setService] = useState<Service | null>(null)
+  const [allServices, setAllServices] = useState<Service[]>([])
   const [lineUserId, setLineUserId] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [customerNameInput, setCustomerNameInput] = useState('')
@@ -451,6 +387,7 @@ export default function BookPage() {
   const [gender, setGender] = useState('')
   const [hairLength, setHairLength] = useState('')
   const [note, setNote] = useState('')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [slots, setSlots] = useState<Slot[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -464,6 +401,8 @@ export default function BookPage() {
   const [forOthers, setForOthers] = useState(false)
   const [recipientName, setRecipientName] = useState('')
   const [recipientPhone, setRecipientPhone] = useState('')
+  const [nameInputFocus, setNameInputFocus] = useState(false)
+  const [phoneInputFocus, setPhoneInputFocus] = useState(false)
 
   useEffect(() => {
     liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
@@ -474,11 +413,8 @@ export default function BookPage() {
           setDisplayName(profile.displayName)
           setLiffReady(true)
         } else if (liff.isInClient()) {
-          // In LINE's browser but not yet authenticated → trigger LINE login seamlessly
           liff.login({ redirectUri: window.location.href })
-          // Don't set liffReady; page will redirect then return with token
         } else {
-          // External browser (IG, Safari, Chrome) → show name + phone form
           setLiffReady(true)
         }
       })
@@ -492,6 +428,7 @@ export default function BookPage() {
       .then(data => {
         setProvider(data.provider)
         setIsHairCategory(HAIR_CATEGORIES.includes(data.provider?.category ?? ''))
+        setAllServices(data.services ?? [])
         const svc = serviceId
           ? data.services.find((s: Service) => s.id === serviceId) ?? null
           : data.services[0] ?? null
@@ -516,14 +453,18 @@ export default function BookPage() {
 
   useEffect(() => { fetchSlots(date) }, [date, fetchSlots])
 
+  function toggleTag(tag: string) {
+    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const bookerName = lineUserId ? displayName : customerNameInput.trim()
-    const name  = forOthers ? recipientName.trim() : bookerName
+    const name = forOthers ? recipientName.trim() : bookerName
     const phone = forOthers ? recipientPhone.trim() : (lineUserId ? '' : customerPhone.trim())
-    const finalNote = forOthers && bookerName
-      ? `[代訂人：${bookerName}]${note ? ' ' + note : ''}`
-      : note
+    const tagStr = selectedTags.join('、')
+    const combinedNote = [tagStr, note.trim()].filter(Boolean).join(' / ')
+    const finalNote = forOthers && bookerName ? `[代訂人：${bookerName}]${combinedNote ? ' ' + combinedNote : ''}` : combinedNote
     if (!date || !time || !gender || !name) return
     setSubmitting(true)
     const res = await fetch('/api/booking', {
@@ -531,10 +472,8 @@ export default function BookPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         providerId, serviceId: service?.id,
-        customerName: name,
-        customerLineUserId: forOthers ? '' : (lineUserId || ''),
-        customerPhone: phone,
-        date, time, note: finalNote, gender,
+        customerName: name, customerLineUserId: forOthers ? '' : (lineUserId || ''),
+        customerPhone: phone, date, time, note: finalNote, gender,
         hairLength: isHairCategory ? hairLength : '',
       }),
     })
@@ -576,41 +515,156 @@ export default function BookPage() {
     )
   }
 
-  const today = new Date().toISOString().split('T')[0]
   const hotCount = slots.filter(s => s.status === 'hot').length
   const hasCustomerInfo = forOthers
     ? recipientName.trim().length > 0
-    : lineUserId
-      ? true
-      : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
+    : lineUserId ? true : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
+
+  const fmtDate = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : ''
+
+  // Time slot grouped renderer
+  function renderSlots() {
+    if (loadingSlots) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 0' }}>
+          <div className="w-5 h-5 rounded-full border-2 border-[rgba(166,137,102,0.20)] border-t-[#A68966] animate-spin" />
+          <span style={{ fontSize: '13px', color: 'rgba(44,40,37,0.65)' }}>查詢可用時段中</span>
+        </div>
+      )
+    }
+
+    if (!slots.length) return (
+      <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.45)', padding: '12px 0' }}>此日期暫無可用時段</p>
+    )
+
+    const periods: [string, (s: Slot) => boolean][] = [
+      ['上午', s => Number(s.time.slice(0, 2)) < 12],
+      ['下午', s => { const h = Number(s.time.slice(0, 2)); return h >= 12 && h < 18 }],
+      ['晚上', s => Number(s.time.slice(0, 2)) >= 18],
+    ]
+
+    const slotGrid = (list: Slot[]) => (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        {list.map(slot => {
+          const isBooked = slot.status === 'booked'
+          const isHot = slot.status === 'hot'
+          const isSelected = time === slot.time
+          const isWaitlistTarget = waitlistSlot === slot.time
+          return (
+            <button key={slot.time} type="button"
+              onClick={() => {
+                if (isBooked) {
+                  setWaitlistSlot(isWaitlistTarget ? null : slot.time)
+                  setWaitlistDone(false)
+                } else {
+                  setTime(slot.time)
+                  setWaitlistSlot(null)
+                }
+              }}
+              style={{
+                position: 'relative', padding: isSelected ? '13px 4px' : '10px 4px',
+                borderRadius: isSelected ? '12px' : '10px', fontSize: isSelected ? '17px' : '13px',
+                cursor: 'pointer',
+                border: isSelected ? '1.5px solid var(--charcoal)' : isWaitlistTarget ? '1.5px solid rgba(180,120,40,0.6)' : isBooked ? '1.5px dashed rgba(180,120,40,0.28)' : isHot ? '1.5px solid rgba(196,132,90,0.50)' : '1.5px solid rgba(166,137,102,0.18)',
+                background: isSelected ? 'var(--charcoal-deep)' : isWaitlistTarget ? 'rgba(180,120,40,0.12)' : isBooked ? 'rgba(180,120,40,0.04)' : isHot ? 'rgba(196,132,90,0.10)' : 'rgba(255,255,255,0.82)',
+                color: isSelected ? 'var(--cream)' : isBooked ? 'rgba(160,100,30,0.7)' : isHot ? '#c4845a' : 'var(--charcoal)',
+                boxShadow: isSelected ? '0 6px 20px rgba(26,23,20,0.22)' : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
+                transform: isSelected ? 'translateY(-3px) scale(1.06)' : 'none',
+                fontWeight: isSelected ? 600 : 400,
+                fontFamily: isSelected ? '"Cormorant Garamond", serif' : 'inherit',
+                textDecoration: isBooked ? 'line-through' : 'none',
+                transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+              }}>
+              {slot.time}
+              {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)', textDecoration: 'none' }}>候補</span>}
+              {isHot && !isSelected && !isBooked && (
+                <span style={{ position: 'absolute', top: '-8px', right: '-6px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    )
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        {hotCount > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(196,132,90,0.08)', border: '1px solid rgba(196,132,90,0.22)', borderRadius: '10px' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c4845a', flexShrink: 0 }} />
+            <span style={{ fontSize: '12px', color: '#c4845a' }}>橘色時段為熱門推薦，幫設計師填補空檔</span>
+          </div>
+        )}
+        {periods.map(([label, fn]) => {
+          const list = slots.filter(fn)
+          if (!list.length) return null
+          return (
+            <div key={label}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--oak)' }}>{label}</span>
+                <span style={{ flex: 1, height: '1px', background: 'rgba(166,137,102,0.18)' }} />
+                <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.35)' }}>{list.filter(s => s.status !== 'booked').length} 個可選</span>
+              </div>
+              {slotGrid(list)}
+            </div>
+          )
+        })}
+        {time && (
+          <div style={{ padding: '11px 18px', background: 'var(--charcoal-deep)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', animation: 'fadeUp 0.25s ease' }}>
+            <span style={{ fontSize: '8px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
+            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1 }}>{time}</span>
+            <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.35)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}</span>
+          </div>
+        )}
+        {waitlistSlot && !waitlistDone && (
+          <div style={{ padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px' }}>
+            <p style={{ fontSize: '12px', color: '#8a5c20', marginBottom: '10px', lineHeight: 1.5 }}>加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。</p>
+            <button type="button" disabled={waitlistSubmitting || (!lineUserId && !customerNameInput.trim())}
+              onClick={async () => {
+                const wlName = lineUserId ? displayName : customerNameInput.trim()
+                const wlPhone = lineUserId ? '' : customerPhone.trim()
+                if (!wlName && !lineUserId) return
+                setWaitlistSubmitting(true)
+                try {
+                  await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
+                  setWaitlistDone(true)
+                } finally { setWaitlistSubmitting(false) }
+              }}
+              style={{ padding: '8px 20px', background: '#8a5c20', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+              {waitlistSubmitting ? '處理中…' : '確認加入候補'}
+            </button>
+            <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(44,40,37,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
+          </div>
+        )}
+        {waitlistDone && (
+          <div style={{ padding: '12px 16px', background: 'rgba(34,180,100,0.08)', border: '1px solid rgba(34,180,100,0.2)', borderRadius: '12px', textAlign: 'center' }}>
+            <p style={{ fontSize: '12px', color: '#22b464', fontWeight: 500 }}>✓ 已加入候補名單，有空位時將立即通知您</p>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+      <style>{`
+        @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        .ch-panel { background: rgba(245,239,230,0.7); border: 1px solid rgba(166,137,102,0.16); border-radius: 22px; padding: 26px 20px 28px; margin: 8px 0; }
+      `}</style>
 
-      {/* ── Sticky mini-header + Progress ──────────── */}
-      <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
+      {/* ── Sticky header + progress ─── */}
+      <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
-          <button onClick={() => router.back()} className="flex items-center gap-2 text-xs tracking-widest uppercase" style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer' }}>
-            ← 返回
-          </button>
+          <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em' }}>← 返回</button>
           <span className="font-display text-base tracking-[0.12em]" style={{ color: 'var(--cream)' }}>{provider.name}</span>
           <div style={{ width: '48px' }} />
         </div>
-
-        {/* Progress bar */}
         {(() => {
           const step2Done = !!gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo
           const step3Done = !!date && !!time
           const currentStep = !step2Done ? 2 : !step3Done ? 3 : 4
-
-          const steps = [
-            { label: '服務', done: true },
-            { label: '資料', done: step2Done },
-            { label: '日期', done: step3Done },
-            { label: '送出', done: false },
-          ]
-
+          const steps = [{ label: '服務', done: true }, { label: '資料', done: step2Done }, { label: '日期', done: step3Done }, { label: '送出', done: false }]
           return (
             <div className="max-w-lg mx-auto px-8 pb-3 flex items-center">
               {steps.map((s, i) => {
@@ -619,44 +673,13 @@ export default function BookPage() {
                 return (
                   <div key={s.label} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                      <div style={{
-                        width: '20px', height: '20px', borderRadius: '50%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: isDone ? 'var(--oak)' : isActive ? 'transparent' : 'transparent',
-                        border: isDone ? 'none' : isActive ? '2px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.3)',
-                        transition: 'all 0.3s',
-                        flexShrink: 0,
-                      }}>
-                        {isDone ? (
-                          <svg viewBox="0 0 12 12" fill="none" style={{ width: '10px', height: '10px' }}>
-                            <path d="M2 6l2.8 3L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        ) : (
-                          <div style={{
-                            width: '6px', height: '6px', borderRadius: '50%',
-                            background: isActive ? 'var(--oak)' : 'rgba(166,137,102,0.25)',
-                            transition: 'background 0.3s',
-                          }} />
-                        )}
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? 'var(--oak)' : 'transparent', border: isDone ? 'none' : isActive ? '2px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.3)', transition: 'all 0.3s', flexShrink: 0 }}>
+                        {isDone ? <svg viewBox="0 0 12 12" fill="none" style={{ width: '10px', height: '10px' }}><path d="M2 6l2.8 3L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          : <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isActive ? 'var(--oak)' : 'rgba(166,137,102,0.25)' }} />}
                       </div>
-                      <span style={{
-                        fontSize: '9px',
-                        letterSpacing: '0.08em',
-                        color: isDone || isActive ? 'var(--oak)' : 'rgba(251,249,244,0.28)',
-                        fontWeight: isActive ? 600 : 400,
-                        whiteSpace: 'nowrap',
-                        transition: 'color 0.3s',
-                      }}>{s.label}</span>
+                      <span style={{ fontSize: '9px', letterSpacing: '0.08em', color: isDone || isActive ? 'var(--oak)' : 'rgba(251,249,244,0.28)', fontWeight: isActive ? 600 : 400, whiteSpace: 'nowrap' }}>{s.label}</span>
                     </div>
-                    {i < steps.length - 1 && (
-                      <div style={{
-                        flex: 1, height: '1.5px',
-                        background: isDone ? 'var(--oak)' : 'rgba(251,249,244,0.12)',
-                        margin: '0 6px',
-                        marginBottom: '14px',
-                        transition: 'background 0.3s',
-                      }} />
-                    )}
+                    {i < steps.length - 1 && <div style={{ flex: 1, height: '1.5px', background: isDone ? 'var(--oak)' : 'rgba(251,249,244,0.12)', margin: '0 6px', marginBottom: '14px', transition: 'background 0.3s' }} />}
                   </div>
                 )
               })}
@@ -665,16 +688,12 @@ export default function BookPage() {
         })()}
       </div>
 
-      {/* ── Marquee bar ─────────────────────────────── */}
+      {/* ── Oak marquee ─── */}
       <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <style>{`
-          @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-        `}</style>
         <div style={{ display: 'inline-flex', animation: 'marqueeBook 22s linear infinite', paddingTop: '8px', paddingBottom: '8px' }}>
-          {[0,1].map(i => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)', paddingRight: '0' }}>
+          {[0, 1].map(i => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)' }}>
               {provider.rating && <><span style={{ color: 'rgba(251,249,244,0.7)' }}>★&nbsp;</span><span>{provider.rating}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
-              {provider.reviewCount && <><span>{provider.reviewCount} 則好評</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
               <span>{service.name}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
               <span>{service.duration} 分鐘</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
               <span>NT$ {service.price.toLocaleString()}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
@@ -687,85 +706,36 @@ export default function BookPage() {
 
       <div className="max-w-lg mx-auto px-5 py-6 pb-52">
 
-        {/* ── LINE OA 加入提示（外部瀏覽器才顯示）──────── */}
+        {/* ── LINE OA join card (external users) ─── */}
         {liffReady && !lineUserId && showLineCard && (
-          <div className="mb-6" style={{
-            background: 'linear-gradient(135deg, rgba(6,199,85,0.08) 0%, rgba(6,199,85,0.04) 100%)',
-            border: '1.5px solid rgba(6,199,85,0.25)',
-            borderRadius: '16px',
-            padding: '16px',
-            position: 'relative',
-          }}>
-            <button
-              type="button"
-              onClick={() => setShowLineCard(false)}
-              style={{
-                position: 'absolute', top: '10px', right: '12px',
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: 'rgba(44,40,37,0.35)', fontSize: '16px', lineHeight: 1, padding: '2px',
-              }}
-            >✕</button>
-
+          <div className="mb-5" style={{ background: 'linear-gradient(135deg, rgba(6,199,85,0.08), rgba(6,199,85,0.04))', border: '1.5px solid rgba(6,199,85,0.25)', borderRadius: '16px', padding: '15px 16px', position: 'relative' }}>
+            <button type="button" onClick={() => setShowLineCard(false)} style={{ position: 'absolute', top: '10px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(44,40,37,0.32)', fontSize: '15px', lineHeight: 1, padding: '2px' }}>✕</button>
             <div className="flex items-start gap-3">
-              {/* LINE icon */}
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#06C755', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 2C5.582 2 2 5.088 2 8.9c0 2.477 1.338 4.685 3.43 6.125-.15.555-.544 2.013-.623 2.325-.1.388.143.385.3.28.123-.083 1.97-1.3 2.766-1.829.53.075 1.073.115 1.627.115C14.418 15.916 18 12.828 18 9.04 18 5.25 14.418 2 10 2Z" fill="white"/>
-                </svg>
+              <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#06C755', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.582 2 2 5.088 2 8.9c0 2.477 1.338 4.685 3.43 6.125-.15.555-.544 2.013-.623 2.325-.1.388.143.385.3.28.123-.083 1.97-1.3 2.766-1.829.53.075 1.073.115 1.627.115C14.418 15.916 18 12.828 18 9.04 18 5.25 14.418 2 10 2Z" fill="white"/></svg>
               </div>
-
               <div style={{ flex: 1, paddingRight: '20px' }}>
                 <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>加入 MooLah LINE，接收預約通知</p>
-                <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.60)' }}>加入後可即時收到預約確認，以及前一天的提醒通知</p>
-                <a
-                  href="https://line.me/R/ti/p/@881zhkla"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    padding: '8px 16px', borderRadius: '99px',
-                    background: '#06C755', color: 'white',
-                    fontSize: '12px', fontWeight: 600, textDecoration: 'none',
-                    letterSpacing: '0.02em',
-                  }}
-                >
-                  立即加入 →
-                </a>
-                <span
-                  onClick={() => setShowLineCard(false)}
-                  className="text-xs ml-4"
-                  style={{ color: 'rgba(44,40,37,0.40)', cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                  略過，直接預約
-                </span>
+                <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.60)' }}>加入後可即時收到預約確認與前一天提醒通知</p>
+                <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</a>
+                <span onClick={() => setShowLineCard(false)} className="text-xs ml-4" style={{ color: 'rgba(44,40,37,0.40)', cursor: 'pointer', textDecoration: 'underline' }}>略過</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── 服務摘要卡（深木炭 editorial 樣式）─────── */}
-        <div data-animate className="mb-8" style={{
-          background: 'var(--charcoal-deep)',
-          borderRadius: '20px',
-          padding: '22px 22px 18px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* top oak accent line */}
+        {/* ── Service summary card ─── */}
+        <div data-animate className="mb-5" style={{ background: 'var(--charcoal-deep)', borderRadius: '20px', padding: '22px 22px 18px', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />
-          {/* grain texture */}
           <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
-
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: '9px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px' }}>預約服務</p>
-              <p className="font-display" style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px', letterSpacing: '-0.01em' }}>{service.name}</p>
+              <p className="font-display" style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px' }}>{service.name}</p>
               <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.38)', letterSpacing: '0.06em' }}>{service.duration} 分鐘</p>
               {provider.rating && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginTop: '10px' }}>
-                  {[1,2,3,4,5].map(s => (
-                    <span key={s} style={{ fontSize: '11px', color: s <= Math.round(parseFloat(provider.rating!)) ? 'var(--oak)' : 'rgba(166,137,102,0.2)' }}>★</span>
-                  ))}
+                  {[1,2,3,4,5].map(s => <span key={s} style={{ fontSize: '11px', color: s <= Math.round(parseFloat(provider.rating!)) ? 'var(--oak)' : 'rgba(166,137,102,0.2)' }}>★</span>)}
                   <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--oak)', marginLeft: '4px' }}>{provider.rating}</span>
                   {provider.reviewCount && <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.3)', marginLeft: '2px' }}>({provider.reviewCount})</span>}
                 </div>
@@ -773,349 +743,178 @@ export default function BookPage() {
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
               <p className="font-display" style={{ fontSize: '2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '8px' }}>NT$&thinsp;{service.price.toLocaleString()}</p>
-              <span style={{
-                fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase',
-                padding: '4px 10px', borderRadius: '4px',
-                background: 'rgba(166,137,102,0.18)', color: 'var(--oak)',
-                border: '1px solid rgba(166,137,102,0.3)',
-              }}>已選擇</span>
+              <span style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', background: 'rgba(166,137,102,0.18)', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.3)' }}>已選擇</span>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-0">
-            <style>{`
-              .book-section { padding: 32px 0; position: relative; }
-              .book-section + .book-section::before { content: ''; display: block; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, var(--oak), transparent); opacity: 0.2; }
-            `}</style>
+        {/* ── Service switcher ─── */}
+        {allServices.length > 1 && (
+          <div className="mb-6">
+            <FieldLabel hint="可更換">選擇服務</FieldLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {allServices.map(s => {
+                const sel = service.id === s.id
+                return (
+                  <button key={s.id} type="button" onClick={() => setService(s)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderRadius: '14px', cursor: 'pointer', border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.2)', background: sel ? 'rgba(44,40,37,0.04)' : 'rgba(255,255,255,0.7)', transition: 'all 0.2s ease' }}>
+                    <div>
+                      <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>{s.name}</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>{s.duration} 分鐘</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span className="font-display" style={{ fontSize: '17px', color: 'var(--oak)' }}>NT$ {s.price.toLocaleString()}</span>
+                      <span style={{ width: '18px', height: '18px', borderRadius: '50%', border: sel ? 'none' : '1.5px solid rgba(166,137,102,0.4)', background: sel ? 'var(--charcoal)' : 'transparent', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                        {sel && <svg viewBox="0 0 12 12" style={{ width: '9px', height: '9px' }}><path d="M2 6l2.8 3L10 3" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
-            {/* 聯絡資訊（非 LINE 用戶） */}
+        <form onSubmit={handleSubmit}>
+
+          {/* ════════════ Chapter 01 — 關於你 ════════════ */}
+          <div className="ch-panel">
+            <ChapterHeader no="01" eyebrow="About you" title="關於你" />
+
+            {/* Contact info (external users) */}
             {liffReady && !lineUserId && (
-              <div data-animate data-delay="50" className="book-section">
-                <SectionLabel step="00" label="聯絡資訊" />
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="您的姓名"
-                    value={customerNameInput}
-                    onChange={e => setCustomerNameInput(e.target.value)}
-                    required
-                    style={{
-                      width: '100%', padding: '14px 16px', borderRadius: '12px',
-                      border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
-                      fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
-                      fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-                    }}
-                  />
-                  <input
-                    type="tel"
-                    placeholder="聯絡電話"
-                    value={customerPhone}
-                    onChange={e => setCustomerPhone(e.target.value)}
-                    required
-                    style={{
-                      width: '100%', padding: '14px 16px', borderRadius: '12px',
-                      border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
-                      fontSize: '14px', color: 'var(--charcoal)', outline: 'none',
-                      fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-                    }}
-                  />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: 'rgba(44,40,37,0.6)', marginBottom: '6px', letterSpacing: '0.04em' }}>如何稱呼<span style={{ color: 'var(--oak)' }}>*</span></label>
+                  <input type="text" placeholder="您的姓名或暱稱" value={customerNameInput} onChange={e => setCustomerNameInput(e.target.value)}
+                    onFocus={() => setNameInputFocus(true)} onBlur={() => setNameInputFocus(false)} required
+                    style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', fontFamily: 'inherit', background: '#fff', border: `1.5px solid ${nameInputFocus ? 'var(--oak)' : customerNameInput ? 'rgba(166,137,102,0.4)' : 'rgba(166,137,102,0.22)'}`, boxShadow: nameInputFocus ? '0 0 0 3px rgba(166,137,102,0.12)' : 'none', transition: 'border-color 0.2s, box-shadow 0.2s' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: 'rgba(44,40,37,0.6)', marginBottom: '6px', letterSpacing: '0.04em' }}>聯絡電話<span style={{ color: 'var(--oak)' }}>*</span></label>
+                  <input type="tel" placeholder="09xx-xxx-xxx" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)}
+                    onFocus={() => setPhoneInputFocus(true)} onBlur={() => setPhoneInputFocus(false)} required
+                    style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', fontFamily: 'inherit', background: '#fff', border: `1.5px solid ${phoneInputFocus ? 'var(--oak)' : customerPhone ? 'rgba(166,137,102,0.4)' : 'rgba(166,137,102,0.22)'}`, boxShadow: phoneInputFocus ? '0 0 0 3px rgba(166,137,102,0.12)' : 'none', transition: 'border-color 0.2s, box-shadow 0.2s' }} />
                 </div>
               </div>
             )}
 
-            {/* 代訂功能 */}
-            <div data-animate data-delay="80" className="book-section">
+            {/* For others toggle */}
+            <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>替別人預約</p>
                   <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>幫親友代訂，輸入對方資訊</p>
                 </div>
-                {/* Toggle switch */}
-                <button
-                  type="button"
-                  onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
-                  style={{
-                    width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0,
-                    background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)',
-                    position: 'relative', transition: 'background 0.2s',
-                    padding: 0,
-                  }}
-                >
-                  <div style={{
-                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
-                    position: 'absolute', top: '3px', left: forOthers ? '21px' : '3px',
-                    transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
-                  }} />
+                <button type="button" onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
+                  style={{ width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0, background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)', position: 'relative', transition: 'background 0.2s', padding: 0 }}>
+                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: forOthers ? '21px' : '3px', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
                 </button>
               </div>
               {forOthers && (
-                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fadeIn 0.18s ease' }}>
-                  <input
-                    type="text"
-                    placeholder="受預約者姓名（必填）"
-                    value={recipientName}
-                    onChange={e => setRecipientName(e.target.value)}
-                    style={{
-                      width: '100%', padding: '13px 16px', borderRadius: '12px',
-                      border: `1.5px solid ${recipientName ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.25)'}`,
-                      background: 'white', fontSize: '14px', color: 'var(--charcoal)',
-                      outline: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-                    }}
-                  />
-                  <input
-                    type="tel"
-                    placeholder="受預約者電話（選填）"
-                    value={recipientPhone}
-                    onChange={e => setRecipientPhone(e.target.value)}
-                    style={{
-                      width: '100%', padding: '13px 16px', borderRadius: '12px',
-                      border: '1.5px solid rgba(166,137,102,0.25)',
-                      background: 'white', fontSize: '14px', color: 'var(--charcoal)',
-                      outline: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-                    }}
-                  />
-                  <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)', letterSpacing: '0.03em' }}>
-                    預約確認通知將發送給代訂人
-                  </p>
+                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input type="text" placeholder="受預約者姓名（必填）" value={recipientName} onChange={e => setRecipientName(e.target.value)}
+                    style={{ width: '100%', padding: '13px 16px', borderRadius: '12px', border: `1.5px solid ${recipientName ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.25)'}`, background: 'white', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', fontFamily: 'inherit' }} />
+                  <input type="tel" placeholder="受預約者電話（選填）" value={recipientPhone} onChange={e => setRecipientPhone(e.target.value)}
+                    style={{ width: '100%', padding: '13px 16px', borderRadius: '12px', border: '1.5px solid rgba(166,137,102,0.25)', background: 'white', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', fontFamily: 'inherit' }} />
+                  <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.38)' }}>預約確認通知將發送給代訂人</p>
                 </div>
               )}
             </div>
 
-            {/* 性別 */}
-            <div data-animate data-delay="100" className="book-section">
-              <SectionLabel step="01" label="性別" />
-              <PillGroup options={GENDER_OPTIONS} value={gender} onChange={setGender} />
+            {/* Gender */}
+            <div style={{ marginBottom: isHairCategory ? '20px' : 0 }}>
+              <FieldLabel>性別</FieldLabel>
+              <Segmented options={GENDER_OPTIONS} value={gender} onChange={setGender} />
             </div>
 
-            {/* 髮長 */}
+            {/* Hair length */}
             {isHairCategory && (
-              <div data-animate data-delay="150" className="book-section">
-                <SectionLabel step="02" label="目前髮長" />
+              <div>
+                <FieldLabel>目前髮長</FieldLabel>
                 <PillGroup options={HAIR_LENGTH_OPTIONS} value={hairLength} onChange={setHairLength} />
               </div>
             )}
+          </div>
 
-            {/* 日期 */}
-            <div data-animate data-delay="200" className="book-section">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <SectionLabel step={isHairCategory ? '03' : '02'} label="選擇日期" />
+          {/* ════════════ Chapter 02 — 選擇時間 ════════════ */}
+          <div className="ch-panel" style={{ marginTop: '12px' }}>
+            <ChapterHeader no="02" eyebrow="Pick a time" title="選擇時間" />
+
+            {/* Date section */}
+            <div style={{ marginBottom: '22px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <FieldLabel>日期</FieldLabel>
                 {nextAvailable && (
-                  <button
-                    type="button"
-                    onClick={() => { setDate(nextAvailable.date); setTime(nextAvailable.time) }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '5px',
-                      padding: '6px 12px', borderRadius: '999px',
-                      background: 'rgba(166,137,102,0.1)',
-                      border: '1px solid rgba(166,137,102,0.3)',
-                      fontSize: '11px', fontWeight: 600,
-                      color: 'var(--oak)', cursor: 'pointer',
-                      whiteSpace: 'nowrap', flexShrink: 0,
-                      transition: 'background 0.15s',
+                  <button type="button"
+                    onClick={() => {
+                      setDate(nextAvailable.date)
+                      setTime(nextAvailable.time)
+                      setTimeout(() => timeRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }), 700)
                     }}
-                  >
-                    <svg viewBox="0 0 12 12" fill="currentColor" style={{ width: '10px', height: '10px' }}>
-                      <path d="M6 1l1.2 2.4L10 4l-2 1.95.47 2.75L6 7.4l-2.47 1.3.47-2.75L2 4l2.8-.6z"/>
-                    </svg>
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.3)', fontSize: '11px', fontWeight: 600, color: 'var(--oak)', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    <svg viewBox="0 0 12 12" fill="currentColor" style={{ width: '10px', height: '10px' }}><path d="M6 1l1.2 2.4L10 4l-2 1.95.47 2.75L6 7.4l-2.47 1.3.47-2.75L2 4l2.8-.6z"/></svg>
                     最快 {nextAvailable.label} {nextAvailable.time}
                   </button>
                 )}
               </div>
-              <InlineCalendar providerId={providerId} value={date} onChange={d => { setDate(d); setTime('') }} />
+              <DateQuickChips value={date} onChange={d => { setDate(d); setTime(''); setTimeout(() => timeRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }), 700) }} />
+              <InlineCalendar providerId={providerId} value={date} onChange={d => { setDate(d); setTime(''); setTimeout(() => timeRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }), 700) }} />
             </div>
 
-            {/* 時段 */}
-            {date && (
-              <div data-animate className="book-section">
-                <SectionLabel step={isHairCategory ? '04' : '03'} label="選擇時段" />
-
-                {loadingSlots ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 0' }}>
-                    <div className="w-5 h-5 rounded-full border-2 border-[rgba(166,137,102,0.20)] border-t-[#A68966] animate-spin" />
-                    <span style={{ fontSize: '13px', color: 'rgba(44,40,37,0.65)' }}>查詢可用時段中</span>
-                  </div>
-                ) : (
-                  <>
-                    {hotCount > 0 && (
-                      <div className="mb-3 flex items-center gap-2 px-3 py-2.5" style={{ background: 'rgba(196,132,90,0.08)', border: '1px solid rgba(196,132,90,0.25)', borderRadius: '10px' }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c4845a', flexShrink: 0, display: 'inline-block' }} />
-                        <span style={{ fontSize: '12px', color: '#c4845a' }}>橘色時段為熱門推薦，幫設計師填補空檔</span>
-                      </div>
-                    )}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                      {slots.map(slot => {
-                        const isBooked  = slot.status === 'booked'
-                        const isHot     = slot.status === 'hot'
-                        const isSelected = time === slot.time
-                        const isWaitlistTarget = waitlistSlot === slot.time
-                        return (
-                          <button
-                            key={slot.time}
-                            type="button"
-                            onClick={() => {
-                              if (isBooked) {
-                                setWaitlistSlot(isWaitlistTarget ? null : slot.time)
-                                setWaitlistDone(false)
-                              } else {
-                                setTime(slot.time)
-                                setWaitlistSlot(null)
-                              }
-                            }}
-                            style={{
-                              position: 'relative',
-                              padding: isSelected ? '13px 4px' : '10px 4px',
-                              borderRadius: isSelected ? '12px' : '10px',
-                              fontSize: isSelected ? '17px' : '13px',
-                              cursor: 'pointer',
-                              border: isSelected
-                                ? '1.5px solid var(--charcoal)'
-                                : isWaitlistTarget
-                                  ? '1.5px solid rgba(180,120,40,0.6)'
-                                  : isBooked
-                                    ? '1.5px solid rgba(180,120,40,0.25)'
-                                    : isHot
-                                      ? '1.5px solid rgba(196,132,90,0.50)'
-                                      : '1.5px solid rgba(166,137,102,0.18)',
-                              background: isSelected
-                                ? 'var(--charcoal-deep)'
-                                : isWaitlistTarget
-                                  ? 'rgba(180,120,40,0.12)'
-                                  : isBooked
-                                    ? 'rgba(180,120,40,0.05)'
-                                    : isHot
-                                      ? 'rgba(196,132,90,0.10)'
-                                      : 'rgba(255,255,255,0.80)',
-                              color: isSelected
-                                ? 'var(--cream)'
-                                : isBooked
-                                  ? 'rgba(160,100,30,0.7)'
-                                  : isHot
-                                    ? '#c4845a'
-                                    : 'var(--charcoal)',
-                              boxShadow: isSelected
-                                ? '0 6px 20px rgba(26,23,20,0.22)'
-                                : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
-                              transform: isSelected ? 'translateY(-3px) scale(1.06)' : 'translateY(0) scale(1)',
-                              fontWeight: 300,
-                              fontFamily: isSelected ? '"Cormorant Garamond", var(--font-cormorant), serif' : 'var(--font-plus-jakarta), var(--font-plus-jakarta), var(--font-dm-sans), sans-serif, sans-serif',
-                              letterSpacing: isSelected ? '0.02em' : '0',
-                              transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
-                            }}
-                          >
-                            {slot.time}
-                            {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)' }}>候補</span>}
-                            {isHot && !isSelected && !isBooked && (
-                              <span style={{ position: 'absolute', top: '-8px', right: '-6px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
-                            )}
-                          </button>
-                        )
-                      })}
-                      {/* Selected time confirmation stamp */}
-                      {time && (
-                        <div style={{
-                          gridColumn: '1 / -1', marginTop: '10px',
-                          padding: '11px 18px',
-                          background: 'var(--charcoal-deep)',
-                          borderRadius: '12px',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px',
-                          animation: 'fadeUp 0.25s ease',
-                        }}>
-                          <span style={{ fontSize: '8px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
-                          <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1, letterSpacing: '0.02em' }}>{time}</span>
-                          <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.35)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}</span>
-                        </div>
-                      )}
-                      {/* Waitlist confirmation */}
-                      {waitlistSlot && !waitlistDone && (
-                        <div style={{ gridColumn: '1/-1', marginTop: '4px', padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px', animation: 'fadeIn 0.2s ease' }}>
-                          <p style={{ fontSize: '12px', color: '#8a5c20', marginBottom: '10px', lineHeight: 1.5 }}>
-                            加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。
-                          </p>
-                          <button
-                            type="button"
-                            disabled={waitlistSubmitting || (!lineUserId && !customerNameInput.trim())}
-                            onClick={async () => {
-                              const wlName = lineUserId ? displayName : customerNameInput.trim()
-                              const wlPhone = lineUserId ? '' : customerPhone.trim()
-                              if (!wlName && !lineUserId) return
-                              setWaitlistSubmitting(true)
-                              try {
-                                await fetch('/api/waitlist', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    providerId, serviceId: service?.id, date,
-                                    time: waitlistSlot, customerName: wlName,
-                                    customerLineUserId: lineUserId, customerPhone: wlPhone,
-                                  }),
-                                })
-                                setWaitlistDone(true)
-                              } finally {
-                                setWaitlistSubmitting(false)
-                              }
-                            }}
-                            style={{ padding: '8px 20px', background: '#8a5c20', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                          >
-                            {waitlistSubmitting ? '處理中…' : '確認加入候補'}
-                          </button>
-                          <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(44,40,37,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
-                        </div>
-                      )}
-                      {waitlistDone && (
-                        <div style={{ gridColumn: '1/-1', marginTop: '4px', padding: '12px 16px', background: 'rgba(34,180,100,0.08)', border: '1px solid rgba(34,180,100,0.2)', borderRadius: '12px', textAlign: 'center' }}>
-                          <p style={{ fontSize: '12px', color: '#22b464', fontWeight: 500 }}>✓ 已加入候補名單，有空位時將立即通知您</p>
-                        </div>
-                      )}
-                    </div>
-                  </>
+            {/* Time slots */}
+            <div ref={timeRef}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <FieldLabel>時段</FieldLabel>
+                {date && !loadingSlots && slots.length > 0 && (
+                  <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)' }}>{slots.filter(s => s.status !== 'booked').length} 個可選</span>
                 )}
               </div>
-            )}
-
-            {/* 備註 */}
-            <div data-animate className="book-section">
-              <SectionLabel step={isHairCategory ? '05' : '04'} label="補充說明（選填）" />
-              <textarea
-                value={note}
-                onChange={e => setNote(e.target.value)}
-                placeholder={isHairCategory ? '例：想要偏灰的色調、參考圖已截圖...' : '特殊需求或備註...'}
-                rows={3}
-                style={{
-                  width: '100%', padding: '14px 16px', borderRadius: '12px',
-                  border: '1.5px solid rgba(166,137,102,0.25)', background: 'white',
-                  fontSize: '13px', color: 'var(--charcoal)', outline: 'none',
-                  resize: 'none', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-                }}
-              />
+              {!date ? (
+                <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)', padding: '8px 0' }}>請先選擇日期</p>
+              ) : renderSlots()}
             </div>
-
           </div>
+
+          {/* ════════════ Chapter 03 — 給設計師的話 ════════════ */}
+          <div className="ch-panel" style={{ marginTop: '12px' }}>
+            <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
+
+            <FieldLabel hint="選填">快速標籤</FieldLabel>
+            <QuickTags tags={NOTE_TAGS} selected={selectedTags} onToggle={toggleTag} />
+
+            <textarea value={note} onChange={e => setNote(e.target.value)}
+              placeholder="想嘗試的方向、需要注意的事項…（選填）" rows={3}
+              style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid rgba(166,137,102,0.22)', background: 'rgba(255,255,255,0.78)', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', resize: 'none', fontFamily: 'inherit', lineHeight: 1.6, marginBottom: '20px' }} />
+
+            {/* Summary recap */}
+            <div style={{ background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '14px', padding: '16px 18px' }}>
+              <p style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px' }}>預約摘要</p>
+              {[
+                ['服務', service.name],
+                ['稱呼', lineUserId ? displayName : (customerNameInput || '—')],
+                ['性別', gender || '—'],
+                ['日期時段', date ? `${fmtDate} ${time || '—'}` : '—'],
+                ...(selectedTags.length ? [['備註標籤', selectedTags.join('、')]] : []),
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
+                  <span style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>{k}</span>
+                  <span style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </form>
       </div>
 
-      {/* ── Fixed bottom CTA ────────────────────────── */}
+      {/* ── Fixed bottom CTA ─── */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg px-5 pb-8 pt-5"
         style={{ background: 'linear-gradient(to top, #ede8dc 0%, #ede8dc 60%, transparent 100%)', borderTop: '1px solid rgba(166,137,102,0.28)' }}>
-        <button
-          onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>}
-          disabled={!canSubmit}
-          style={{
-            width: '100%', padding: '16px',
-            borderRadius: '8px', border: 'none',
-            background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)',
-            color: canSubmit ? 'var(--cream)' : 'rgba(44,40,37,0.35)',
-            fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase',
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          {submitting ? '預約中...' : '確認預約'}
+        <button onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>} disabled={!canSubmit}
+          style={{ width: '100%', padding: '16px', borderRadius: '8px', border: 'none', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: canSubmit ? 'var(--cream)' : 'rgba(44,40,37,0.35)', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', cursor: canSubmit ? 'pointer' : 'not-allowed', fontFamily: 'inherit', transition: 'all 0.2s ease' }}>
+          {submitting ? '預約中...' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : '確認預約'}
         </button>
-
-        {/* Progress hint */}
         {!canSubmit && liffReady && (
           <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(44,40,37,0.65)', marginTop: '8px' }}>
             {!hasCustomerInfo ? '請填入姓名與聯絡電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : !time ? '請選擇時段' : ''}
