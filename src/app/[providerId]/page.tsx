@@ -183,7 +183,6 @@ export default function ProviderPage() {
   }
 
   const fromPrice = services.length ? Math.min(...services.map(s => s.price)) : 0
-  const selectedService = services.find(s => s.id === selectedServiceId) ?? null
   const displayName = provider.storeName || provider.name
   const handle     = provider.instagram ? `@${provider.instagram.replace(/^@/, '')}` : ''
   const location   = provider.district  || ''
@@ -391,22 +390,27 @@ export default function ProviderPage() {
           </div>
 
           {/* three-column stats */}
-          <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center' }}>
-            <div style={{ flex: 1, maxWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', gap: '0' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
               <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>最快</span>
-              <span className="font-display" style={{ fontSize: '1.15rem', color: 'var(--cream)', whiteSpace: 'nowrap' }}>
-                {nextAvail ? `${nextAvail.label} ${nextAvail.time}` : '歡迎預約'}
-              </span>
+              {nextAvail ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)', lineHeight: 1.1 }}>{nextAvail.label}</span>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'rgba(251,249,244,0.65)', lineHeight: 1.1 }}>{nextAvail.time}</span>
+                </div>
+              ) : (
+                <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>歡迎預約</span>
+              )}
             </div>
             <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
-            <div style={{ flex: 1, maxWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
               <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>價格</span>
-              <span className="font-display" style={{ fontSize: '1.15rem', color: 'var(--oak)', whiteSpace: 'nowrap' }}>NT$ {fromPrice.toLocaleString()} 起</span>
+              <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--oak)' }}>NT$ {fromPrice.toLocaleString()} 起</span>
             </div>
             <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
-            <div style={{ flex: 1, maxWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
               <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>評分</span>
-              <span className="font-display" style={{ fontSize: '1.15rem', color: 'var(--cream)', whiteSpace: 'nowrap' }}>★ {provider.rating || '—'}</span>
+              <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>★ {provider.rating || '—'}</span>
             </div>
           </div>
 
@@ -425,34 +429,7 @@ export default function ProviderPage() {
           background: 'linear-gradient(to top, rgba(26,23,20,0.98) 65%, rgba(26,23,20,0.85) 82%, transparent)',
           pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: '10px',
         }}>
-          {/* Service pills — only if multiple services */}
-          {services.length > 1 && (
-            <div style={{
-              display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none',
-            }}>
-              {services.map(s => {
-                const sel = selectedServiceId === s.id
-                return (
-                  <button key={s.id} type="button" onClick={() => setSelectedServiceId(s.id)}
-                    style={{
-                      flex: '0 0 auto', padding: '7px 13px', borderRadius: '20px', cursor: 'pointer',
-                      border: sel ? '1.5px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.22)',
-                      background: sel ? 'rgba(166,137,102,0.16)' : 'rgba(255,255,255,0.04)',
-                      color: sel ? 'var(--oak)' : 'rgba(251,249,244,0.5)',
-                      fontSize: '12px', fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
-                      transition: 'all .2s ease',
-                    }}>
-                    {s.name}
-                    <span style={{ marginLeft: '5px', fontSize: '11px', color: sel ? 'rgba(166,137,102,0.8)' : 'rgba(251,249,244,0.3)' }}>
-                      NT${s.price.toLocaleString()}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          {/* CTA button with float animation */}
+          {/* CTA button with float animation — always shows lowest price */}
           <button onClick={handleBook} style={{
             width: '100%', padding: '17px', borderRadius: '15px',
             border: '1px solid rgba(166,137,102,0.5)', cursor: 'pointer',
@@ -465,12 +442,7 @@ export default function ProviderPage() {
             animation: 'float-cta 3s ease-in-out infinite',
           }}>
             開始預約
-            {selectedService && selectedService.price > 0 && (
-              <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>
-                NT$ {selectedService.price.toLocaleString()} 起
-              </span>
-            )}
-            {!selectedService && fromPrice > 0 && (
+            {fromPrice > 0 && (
               <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>
                 NT$ {fromPrice.toLocaleString()} 起
               </span>
