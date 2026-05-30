@@ -6,7 +6,7 @@ type Provider = {
   id: string; name: string; category: string; description: string
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
-  rating?: string; reviewCount?: string; years?: string
+  rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string
 }
 type Service      = { id: string; name: string; price: number; duration: number; description: string }
 type PortfolioItem = { id: string; imageUrl: string; caption: string }
@@ -175,10 +175,14 @@ export default function ProviderPage() {
   const displayName = provider.storeName || provider.name
   const handle     = provider.instagram ? `@${provider.instagram.replace(/^@/, '')}` : ''
   const location   = provider.district  || ''
-  const tagline    = provider.description || ''
+  // tagline = short header phrase (R column); bio = longer intro text (D column)
+  const headerTagline = provider.tagline || ''
+  const bioQuote      = provider.description || ''
 
-  // Specialties: use service names as pills (max 3)
-  const specialties = services.slice(0, 3).map(s => s.name)
+  // Specialties: use S column if available, else fallback to first 3 service names
+  const specialties = provider.specialties
+    ? provider.specialties.split(',').map(s => s.trim()).filter(Boolean)
+    : services.slice(0, 3).map(s => s.name)
 
   return (
     <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
@@ -207,7 +211,7 @@ export default function ProviderPage() {
         </p>
 
         {/* Handle + rating row — always present, IG handle preserved for future */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: tagline ? '16px' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: headerTagline ? '16px' : 0 }}>
           {handle && <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.52)', letterSpacing: '0.02em' }}>{handle}</span>}
           {handle && provider.rating && <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(44,40,37,0.25)', flexShrink: 0 }} />}
           {provider.rating && (
@@ -218,10 +222,10 @@ export default function ProviderPage() {
           )}
         </div>
 
-        {/* Tagline italic serif */}
-        {tagline && (
+        {/* Tagline italic serif — short phrase from R column */}
+        {headerTagline && (
           <p className="font-display" style={{ fontSize: 'clamp(1.2rem,4vw,1.5rem)', fontStyle: 'italic', fontWeight: 400, color: 'var(--oak)', opacity: 0.9 }}>
-            「{tagline}」
+            「{headerTagline}」
           </p>
         )}
       </div>
@@ -283,10 +287,10 @@ export default function ProviderPage() {
             </div>
           </div>
 
-          {/* Bio quote */}
-          {tagline && (
+          {/* Bio quote — longer description from D column */}
+          {bioQuote && (
             <p className="font-display" style={{ fontSize: '1.18rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.7, color: 'rgba(251,249,244,0.82)', marginBottom: '20px' }}>
-              「{tagline}」
+              「{bioQuote}」
             </p>
           )}
 
