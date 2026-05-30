@@ -161,7 +161,7 @@ export default function ProviderPage() {
   // Loading skeleton
   if (!provider) {
     return (
-      <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh' }}>
+      <div style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--cream)', minHeight: '100vh' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.sk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:8px;}`}</style>
         <div style={{ padding: '32px 20px 24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '28px' }}>
@@ -197,13 +197,14 @@ export default function ProviderPage() {
     : services.slice(0, 3).map(s => s.name)
 
   return (
-    <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+    <div style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
       <style>{`
         @keyframes marquee-op { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
         @keyframes lb-fade    { from { opacity: 0 } to { opacity: 1 } }
         @keyframes lb-rise    { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
         @keyframes float-cta  { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+        @-webkit-keyframes float-cta { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
       `}</style>
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
@@ -212,10 +213,19 @@ export default function ProviderPage() {
         background: 'radial-gradient(120% 78% at 50% -18%, rgba(166,137,102,0.16), transparent 62%)',
         animation: 'phase-in .55s cubic-bezier(0.16,1,0.3,1)',
       }}>
-        {/* MooLah + location */}
+        {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
-          <span style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600 }}>MooLah</span>
-          {location && <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(44,40,37,0.42)' }}>{location}</span>}
+          <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
+              <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
+          </button>
+          <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none' }}>MooLah</a>
+          {location
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(44,40,37,0.42)' }}>{location}</span>
+            : <span style={{ width: '40px' }} />
+          }
         </div>
 
         {/* Store name — large serif */}
@@ -410,10 +420,9 @@ export default function ProviderPage() {
         display: 'flex', justifyContent: 'center', pointerEvents: 'none',
       }}>
         <div style={{
-          width: '100%', maxWidth: '440px',
+          width: '100%', maxWidth: '480px',
           padding: '14px 20px calc(20px + env(safe-area-inset-bottom, 0px))',
-          background: 'linear-gradient(to top, rgba(26,23,20,0.97) 72%, rgba(26,23,20,0.82) 88%, transparent)',
-          backdropFilter: 'blur(8px)',
+          background: 'linear-gradient(to top, rgba(26,23,20,0.98) 65%, rgba(26,23,20,0.85) 82%, transparent)',
           pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: '10px',
         }}>
           {/* Service pills — only if multiple services */}
