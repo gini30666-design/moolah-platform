@@ -359,7 +359,7 @@ export default function ProviderPage() {
       {/* ── 5. Closing dark editorial section ───────────────────────────── */}
       <div style={{
         background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
-        padding: '46px 26px 132px', textAlign: 'center',
+        padding: '46px 26px 48px', textAlign: 'center',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: GRAIN, backgroundSize: '300px', pointerEvents: 'none' }} />
@@ -399,6 +399,22 @@ export default function ProviderPage() {
           </div>
 
           <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.32)', marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
+
+          {/* Inline CTA — always visible regardless of position:fixed support */}
+          <button onClick={handleBook} style={{
+            marginTop: '32px', width: '100%', maxWidth: '360px',
+            padding: '17px', borderRadius: '15px',
+            border: '1px solid rgba(166,137,102,0.45)', cursor: 'pointer',
+            background: 'linear-gradient(#27221b, #191510)', color: 'var(--cream)',
+            fontSize: '15px', fontWeight: 600,
+            boxShadow: '0 14px 34px rgba(0,0,0,0.45), inset 0 1px 0 rgba(166,137,102,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            fontFamily: 'inherit',
+          }}>
+            開始預約
+            {fromPrice > 0 && <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>NT$ {fromPrice.toLocaleString()} 起</span>}
+            <span style={{ fontSize: '17px', color: 'var(--oak)' }}>→</span>
+          </button>
         </div>
       </div>
 
