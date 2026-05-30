@@ -8,7 +8,7 @@ export async function GET(
   const { id } = await params
 
   const [providerRows, serviceRows, portfolioRows] = await Promise.all([
-    getSheetData('providers!A2:P'),
+    getSheetData('providers!A2:Q'),
     getSheetData('services!A2:F'),
     getSheetData('portfolio!A2:D'),
   ])
@@ -33,6 +33,7 @@ export async function GET(
     coverUrl:    r[13] ?? '',
     rating:      r[14] ?? '',
     reviewCount: r[15] ?? '',
+    years:       r[16] ?? '',
   }
 
   const services = serviceRows

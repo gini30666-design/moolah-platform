@@ -6,7 +6,7 @@ type Provider = {
   id: string; name: string; category: string; description: string
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
-  rating?: string; reviewCount?: string
+  rating?: string; reviewCount?: string; years?: string
 }
 type Service      = { id: string; name: string; price: number; duration: number; description: string }
 type PortfolioItem = { id: string; imageUrl: string; caption: string }
@@ -274,6 +274,12 @@ export default function ProviderPage() {
             <div style={{ flex: 1 }}>
               <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--cream)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
               <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.5)' }}>{provider.category}</p>
+              {provider.years && (
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '8px' }}>
+                  <span className="font-display" style={{ fontSize: '1.3rem', color: 'var(--oak)', lineHeight: 1 }}>{provider.years}</span>
+                  <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.4)', letterSpacing: '0.08em' }}>年經驗</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -309,7 +315,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 4. Portfolio section ─────────────────────────────────────────── */}
-      <div style={{ padding: '28px 20px 30px', background: '#fff' }}>
+      <div style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
             <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>Selected Work</p>
