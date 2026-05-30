@@ -92,9 +92,20 @@ function PortfolioTile({ item, ratio, radius = 14, onOpen, idx }: {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: radius }} />
       ) : (
         <div style={{
-          position: 'absolute', inset: 0, borderRadius: radius,
+          position: 'absolute', inset: 0, borderRadius: radius, overflow: 'hidden',
           background: `repeating-linear-gradient(135deg,${tone[0]} 0 11px,${tone[1]} 11px 22px)`,
-        }} />
+          display: 'flex', alignItems: 'flex-end',
+        }}>
+          {item.caption && (
+            <span style={{
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+              fontSize: '9.5px', letterSpacing: '0.04em', lineHeight: 1.3,
+              color: 'rgba(44,40,37,0.5)', background: 'rgba(251,249,244,0.82)',
+              padding: '4px 7px', margin: '8px', borderRadius: '5px',
+              maxWidth: 'calc(100% - 16px)',
+            }}>{item.caption}</span>
+          )}
+        </div>
       )}
       {/* caption gradient */}
       <div style={{
