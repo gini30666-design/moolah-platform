@@ -150,7 +150,7 @@ export default function ProviderPage() {
   // Loading skeleton
   if (!provider) {
     return (
-      <div style={{ background: 'var(--cream)', minHeight: '100vh', maxWidth: '480px', margin: '0 auto' }}>
+      <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.sk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:8px;}`}</style>
         <div style={{ padding: '32px 20px 24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '28px' }}>
@@ -181,7 +181,7 @@ export default function ProviderPage() {
   const specialties = services.slice(0, 3).map(s => s.name)
 
   return (
-    <div style={{ background: 'var(--cream)', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+    <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
       <style>{`
         @keyframes marquee-op { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
