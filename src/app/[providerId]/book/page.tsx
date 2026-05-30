@@ -547,7 +547,7 @@ export default function BookPage() {
 
   if (!provider || !service) {
     return (
-      <div style={{ background: '#f5efe6', minHeight: '100vh', maxWidth: '480px', margin: '0 auto', overflow: 'hidden' }}>
+      <div className="max-w-[480px] mx-auto" style={{ background: '#f5efe6', minHeight: '100vh', overflow: 'hidden' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.bsk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:10px;}`}</style>
         <div style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="bsk" style={{ width: '48px', height: '11px' }} />
@@ -702,7 +702,7 @@ export default function BookPage() {
   }
 
   return (
-    <div style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+    <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
       <style>{`
         @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
