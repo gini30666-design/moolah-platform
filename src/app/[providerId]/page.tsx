@@ -6,7 +6,7 @@ type Provider = {
   id: string; name: string; category: string; description: string
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
-  rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string
+  rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string; role?: string
 }
 type Service      = { id: string; name: string; price: number; duration: number; description: string }
 type PortfolioItem = { id: string; imageUrl: string; caption: string }
@@ -288,7 +288,7 @@ export default function ProviderPage() {
             </div>
             <div style={{ flex: 1 }}>
               <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--cream)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
-              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.5)' }}>{provider.category}</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.5)' }}>{provider.role || provider.category}</p>
               {provider.years && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '8px' }}>
                   <span className="font-display" style={{ fontSize: '1.3rem', color: 'var(--oak)', lineHeight: 1 }}>{provider.years}</span>
