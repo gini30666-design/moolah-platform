@@ -183,6 +183,7 @@ export default function ProviderPage() {
   }
 
   const fromPrice = services.length ? Math.min(...services.map(s => s.price)) : 0
+  const selectedService = services.find(s => s.id === selectedServiceId) ?? null
   const displayName = provider.storeName || provider.name
   const handle     = provider.instagram ? `@${provider.instagram.replace(/^@/, '')}` : ''
   const location   = provider.district  || ''
@@ -202,6 +203,7 @@ export default function ProviderPage() {
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
         @keyframes lb-fade    { from { opacity: 0 } to { opacity: 1 } }
         @keyframes lb-rise    { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
+        @keyframes float-cta  { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
       `}</style>
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
@@ -359,7 +361,7 @@ export default function ProviderPage() {
       {/* ── 5. Closing dark editorial section ───────────────────────────── */}
       <div style={{
         background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
-        padding: '46px 26px 48px', textAlign: 'center',
+        padding: '46px 26px 160px', textAlign: 'center',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: GRAIN, backgroundSize: '300px', pointerEvents: 'none' }} />
@@ -399,36 +401,24 @@ export default function ProviderPage() {
           </div>
 
           <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.32)', marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
-
-          {/* Inline CTA — always visible regardless of position:fixed support */}
-          <button onClick={handleBook} style={{
-            marginTop: '32px', width: '100%', maxWidth: '360px',
-            padding: '17px', borderRadius: '15px',
-            border: '1px solid rgba(166,137,102,0.45)', cursor: 'pointer',
-            background: 'linear-gradient(#27221b, #191510)', color: 'var(--cream)',
-            fontSize: '15px', fontWeight: 600,
-            boxShadow: '0 14px 34px rgba(0,0,0,0.45), inset 0 1px 0 rgba(166,137,102,0.18)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            fontFamily: 'inherit',
-          }}>
-            開始預約
-            {fromPrice > 0 && <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>NT$ {fromPrice.toLocaleString()} 起</span>}
-            <span style={{ fontSize: '17px', color: 'var(--oak)' }}>→</span>
-          </button>
         </div>
       </div>
 
-      {/* ── 6. Service selector (mini, above CTA) ───────────────────────── */}
-      {services.length > 1 && (
+      {/* ── 6 + 7. Combined fixed bottom bar: pills + CTA ───────────────── */}
+      <div style={{
+        position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30,
+        display: 'flex', justifyContent: 'center', pointerEvents: 'none',
+      }}>
         <div style={{
-          position: 'fixed', left: 0, right: 0, bottom: '84px', zIndex: 29,
-          display: 'flex', justifyContent: 'center', pointerEvents: 'none',
+          width: '100%', maxWidth: '440px',
+          padding: '14px 20px calc(20px + env(safe-area-inset-bottom, 0px))',
+          background: 'linear-gradient(to top, rgba(26,23,20,0.97) 72%, rgba(26,23,20,0.82) 88%, transparent)',
+          backdropFilter: 'blur(8px)',
+          pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: '10px',
         }}>
-          <div style={{ width: '100%', maxWidth: '440px', padding: '0 20px', pointerEvents: 'auto' }}>
+          {/* Service pills — only if multiple services */}
+          {services.length > 1 && (
             <div style={{
-              background: 'rgba(26,23,20,0.92)', backdropFilter: 'blur(12px)',
-              borderRadius: '16px', padding: '10px 12px',
-              border: '1px solid rgba(166,137,102,0.22)',
               display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none',
             }}>
               {services.map(s => {
@@ -436,47 +426,47 @@ export default function ProviderPage() {
                 return (
                   <button key={s.id} type="button" onClick={() => setSelectedServiceId(s.id)}
                     style={{
-                      flex: '0 0 auto', padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
-                      border: sel ? '1.5px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.2)',
-                      background: sel ? 'rgba(166,137,102,0.18)' : 'transparent',
-                      color: sel ? 'var(--oak)' : 'rgba(251,249,244,0.55)',
+                      flex: '0 0 auto', padding: '7px 13px', borderRadius: '20px', cursor: 'pointer',
+                      border: sel ? '1.5px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.22)',
+                      background: sel ? 'rgba(166,137,102,0.16)' : 'rgba(255,255,255,0.04)',
+                      color: sel ? 'var(--oak)' : 'rgba(251,249,244,0.5)',
                       fontSize: '12px', fontWeight: sel ? 600 : 400, whiteSpace: 'nowrap',
                       transition: 'all .2s ease',
                     }}>
                     {s.name}
-                    <span style={{ marginLeft: '6px', fontSize: '11px', color: sel ? 'var(--oak)' : 'rgba(251,249,244,0.35)' }}>
+                    <span style={{ marginLeft: '5px', fontSize: '11px', color: sel ? 'rgba(166,137,102,0.8)' : 'rgba(251,249,244,0.3)' }}>
                       NT${s.price.toLocaleString()}
                     </span>
                   </button>
                 )
               })}
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* ── 7. Fixed sticky CTA ─────────────────────────────────────────── */}
-      <div style={{
-        position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30,
-        display: 'flex', justifyContent: 'center', pointerEvents: 'none',
-      }}>
-        <div style={{
-          width: '100%', maxWidth: '440px', padding: '24px 20px 24px',
-          background: 'linear-gradient(to top, var(--charcoal-deep) 56%, rgba(26,23,20,0.78) 78%, transparent)',
-          pointerEvents: 'auto',
-        }}>
+          {/* CTA button with float animation */}
           <button onClick={handleBook} style={{
             width: '100%', padding: '17px', borderRadius: '15px',
-            border: '1px solid rgba(166,137,102,0.45)', cursor: 'pointer',
-            background: 'linear-gradient(#27221b, #191510)', color: 'var(--cream)',
+            border: '1px solid rgba(166,137,102,0.5)', cursor: 'pointer',
+            background: 'linear-gradient(160deg, #2d2720 0%, #191510 100%)',
+            color: 'var(--cream)',
             fontSize: '15px', fontWeight: 600,
-            boxShadow: '0 14px 34px rgba(0,0,0,0.45), inset 0 1px 0 rgba(166,137,102,0.18)',
+            boxShadow: '0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(166,137,102,0.22)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
             fontFamily: 'inherit',
+            animation: 'float-cta 3s ease-in-out infinite',
           }}>
             開始預約
-            {fromPrice > 0 && <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>NT$ {fromPrice.toLocaleString()} 起</span>}
-            <span style={{ fontSize: '17px', color: 'var(--oak)' }}>→</span>
+            {selectedService && selectedService.price > 0 && (
+              <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>
+                NT$ {selectedService.price.toLocaleString()} 起
+              </span>
+            )}
+            {!selectedService && fromPrice > 0 && (
+              <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>
+                NT$ {fromPrice.toLocaleString()} 起
+              </span>
+            )}
+            <span style={{ fontSize: '16px', color: 'var(--oak)' }}>→</span>
           </button>
         </div>
       </div>
