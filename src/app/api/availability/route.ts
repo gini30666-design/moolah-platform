@@ -45,8 +45,9 @@ export async function GET(req: NextRequest) {
 
   // Check if the day of week is open (note: new Date('2026-05-11') is UTC midnight)
   const dayOfWeek = new Date(date + 'T12:00:00').getDay()
-  const daySchedule = scheduleRows.find(r => r[2] === String(dayOfWeek))
-  if (daySchedule && daySchedule[5] === 'FALSE') return NextResponse.json(allBooked)
+  const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+  const daySchedule = scheduleRows.find(r => r[2] === DOW_NAMES[dayOfWeek])
+  if (daySchedule && daySchedule[5]?.toLowerCase() === 'false') return NextResponse.json(allBooked)
 
   // Working hours for the day (default 09:00–19:00 if no schedule set)
   const startTime = daySchedule ? (daySchedule[3] || '09:00') : '09:00'

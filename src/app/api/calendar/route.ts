@@ -39,9 +39,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Schedule-based open/close
-    const daySchedule = scheduleRows.find(r => r[2] === String(dow))
+    const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+    const daySchedule = scheduleRows.find(r => r[2] === DOW_NAMES[dow])
     const isClosed =
-      (hasSchedule && daySchedule && daySchedule[5] === 'FALSE') ||
+      (hasSchedule && daySchedule && daySchedule[5]?.toLowerCase() === 'false') ||
       (hasSchedule && !daySchedule) || // day not in schedule = closed
       (!hasSchedule && dow === 0)       // no schedule → Sunday closed by default
 
