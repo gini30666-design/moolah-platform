@@ -932,6 +932,10 @@ export default function AdminPage() {
         })}
       </div>
 
+      {/* ── Sand content panel ── */}
+      <div style={{ position: 'relative', marginTop: '14px', background: 'var(--sand)', borderTop: '1px solid rgba(166,137,102,0.16)', borderRadius: '22px 22px 0 0', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5)', paddingBottom: '8px' }}>
+        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '46px', height: '3px', borderRadius: '0 0 3px 3px', background: 'var(--oak)', opacity: 0.5 }} />
+
       {/* ── Main Nav (scrollable) ── */}
       <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid rgba(166,137,102,0.15)', paddingBottom: '0', minWidth: 'max-content' }}>
@@ -1112,8 +1116,33 @@ export default function AdminPage() {
         </section>
       )}
 
-      {/* Oak bottom accent */}
-      <div style={{ height: '3px', background: `linear-gradient(90deg, transparent, ${oak}, transparent)`, opacity: 0.3, margin: '0 16px 24px' }} />
+      </div>{/* end sand panel */}
+
+      {/* ── Dark footer ── */}
+      <div style={{ background: 'var(--charcoal-deep)', padding: '34px 24px 44px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
+        {/* Diamond ornament */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '16px', position: 'relative' }}>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(166,137,102,0.38))' }} />
+          <span style={{ fontSize: '14px', color: oak, letterSpacing: '0.08em' }}>◆</span>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(166,137,102,0.38))' }} />
+        </div>
+        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.45rem', fontWeight: 300, color: cream, marginBottom: '20px', position: 'relative' }}>{providerName}</p>
+        {/* 3-col mini stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px', marginBottom: '22px', position: 'relative' }}>
+          {([
+            { label: '今日預約', value: `${todayBookings.length}` },
+            { label: '本月預約', value: `${monthBookings.length}` },
+            { label: '本月營收', value: monthRevenue > 0 ? `NT$${monthRevenue.toLocaleString()}` : '—' },
+          ] as { label: string; value: string }[]).map(s => (
+            <div key={s.label} style={{ padding: '10px 4px' }}>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', fontWeight: 300, color: cream, lineHeight: 1 }}>{s.value}</p>
+              <p style={{ fontSize: '9px', color: 'rgba(251,249,244,0.32)', letterSpacing: '0.08em', marginTop: '5px' }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.25)', letterSpacing: '0.14em', textTransform: 'uppercase', position: 'relative' }}>MooLah · 合作夥伴後台</p>
+      </div>
 
       {/* ── Customer History Sheet ── */}
       {customerSheet && (
