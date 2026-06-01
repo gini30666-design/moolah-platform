@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         customerName: r[3] as string,
         date: r[5] as string,
         time: r[6] as string,
-        notes: (r[9] as string) ?? '',
+        notes: (r[7] as string) ?? '',
         status: (r[12] as string) ?? 'confirmed',
         isPast: (r[5] as string) < today,
         providerName: (provider?.[1] as string) ?? '設計師',
@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest) {
 
   if (!row) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
   if (row[4] !== userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-  if ((row[11] as string) === 'cancelled') {
+  if ((row[12] as string) === 'cancelled') {
     return NextResponse.json({ error: 'Already cancelled' }, { status: 409 })
   }
 
