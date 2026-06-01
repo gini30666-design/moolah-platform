@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
 
   const [bookingRows, serviceRows, availRows] = await Promise.all([
-    getSheetData('bookings!A2:I'),
+    getSheetData('bookings!A2:M'),
     getSheetData('services!A2:F'),
     getSheetData('availability!A2:F'),
   ])
@@ -50,13 +50,14 @@ export async function GET(req: NextRequest) {
     if (blockRows.some(r => r[2] === dateStr)) continue
 
     const dow = d.getDay()
-    const daySched = scheduleRows.find(r => r[2] === String(dow))
-    if (daySched && daySched[5] === 'FALSE') continue
+    const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+    const daySched = scheduleRows.find(r => r[2] === DOW_NAMES[dow])
+    if (daySched && daySched[5]?.toLowerCase() === 'false') continue
 
     const startMin = timeToMinutes(daySched ? (daySched[3] || '09:00') : '09:00')
     const endMin   = timeToMinutes(daySched ? (daySched[4] || '19:00') : '19:00')
 
-    const dayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === dateStr)
+    const dayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === dateStr && (r[12] ?? '') !== 'cancelled')
     const occupied = new Set<string>()
     for (const b of dayBookings) {
       const svc = serviceRows.find(r => r[0] === providerId && r[1] === b[2])

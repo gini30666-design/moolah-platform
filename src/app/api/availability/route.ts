@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   }
 
   const [bookingRows, serviceRows, availRows] = await Promise.all([
-    getSheetData('bookings!A2:I'),
+    getSheetData('bookings!A2:M'),
     getSheetData('services!A2:F'),
     getSheetData('availability!A2:F'),
   ])
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
   const endMin    = timeToMinutes(endTime)
 
   // Existing bookings for this provider + date
-  const todayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === date)
+  const todayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === date && (r[12] ?? '') !== 'cancelled')
   const occupiedSlots = new Set<string>()
 
   for (const booking of todayBookings) {

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
 
   const [bookingRows, availRows] = await Promise.all([
-    getSheetData('bookings!A2:I'),
+    getSheetData('bookings!A2:M'),
     getSheetData('availability!A2:F'),
   ])
 
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 
     // Count non-cancelled bookings
     const booked = bookingRows.filter(
-      r => r[1] === providerId && r[5] === dateStr && r[8] !== 'cancelled'
+      r => r[1] === providerId && r[5] === dateStr && (r[12] ?? '') !== 'cancelled'
     ).length
 
     const status: DayStatus =

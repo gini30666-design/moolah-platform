@@ -19,10 +19,10 @@ export async function GET(req: NextRequest) {
 
   const [providerRows, bookingRows] = await Promise.all([
     getSheetData('providers!A2:F'),
-    getSheetData('bookings!A2:I'),
+    getSheetData('bookings!A2:M'),
   ])
 
-  const todayBookings = bookingRows.filter(r => r[5] === today)
+  const todayBookings = bookingRows.filter(r => r[5] === today && (r[12] ?? '') !== 'cancelled')
 
   if (todayBookings.length === 0) {
     return NextResponse.json({ sent: 0 })
