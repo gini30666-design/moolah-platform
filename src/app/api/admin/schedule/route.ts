@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow, sheets, SHEET_ID } from '@/lib/sheets'
 
+const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+
 const DEFAULT_SCHEDULE = [
   { day: 0, startTime: '09:00', endTime: '19:00', isOpen: false },
   { day: 1, startTime: '09:00', endTime: '19:00', isOpen: true },
@@ -22,13 +24,13 @@ export async function GET(req: NextRequest) {
   const blockRows = providerRows.filter(r => r[1] === 'block')
 
   const schedule = DEFAULT_SCHEDULE.map(def => {
-    const found = scheduleRows.find(r => r[2] === String(def.day))
+    const found = scheduleRows.find(r => r[2] === DOW_NAMES[def.day])
     if (!found) return def
     return {
       day: def.day,
       startTime: found[3] ?? '09:00',
       endTime: found[4] ?? '19:00',
-      isOpen: found[5] === 'TRUE',
+      isOpen: found[5]?.toUpperCase() === 'TRUE',
     }
   })
 
@@ -58,7 +60,7 @@ export async function PUT(req: NextRequest) {
 
   for (const s of schedule ?? []) {
     await appendRow('availability!A:F', [
-      providerId, 'schedule', String(s.day), s.startTime, s.endTime, s.isOpen ? 'TRUE' : 'FALSE',
+      providerId, 'schedule', DOW_NAMES[s.day], s.startTime, s.endTime, s.isOpen ? 'TRUE' : 'FALSE',
     ])
   }
 
