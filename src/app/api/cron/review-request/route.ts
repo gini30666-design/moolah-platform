@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const [providerRows, serviceRows, bookingRows, reviewRows] = await Promise.all([
     getSheetData('providers!A2:F'),
     getSheetData('services!A2:F'),
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
     getSheetData('reviews!A2:B'),
   ])
 
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   // 今日已完成且有 LINE userId 且尚未評價的預約
   const toNotify = bookingRows.filter(r =>
     r[5] === todayStr &&
-    (r[11] ?? '') !== 'cancelled' &&
+    (r[12] ?? '') !== 'cancelled' &&
     r[4] && // 有 customerLineUserId
     r[4] !== 'MANUAL' &&
     !reviewedIds.has(r[0])

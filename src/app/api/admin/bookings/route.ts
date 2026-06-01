@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
 
   const [bookingRows, serviceRows] = await Promise.all([
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
     getSheetData('services!A2:F'),
   ])
 
@@ -29,7 +29,8 @@ export async function GET(req: NextRequest) {
         createdAt: r[8] ?? '',
         gender: r[9] ?? '',
         hairLength: r[10] ?? '',
-        status: r[11] ?? 'active',
+        customerPhone: r[11] ?? '',
+        status: r[12] ?? 'active',
       }
     })
     .filter(b => b.status !== 'cancelled')

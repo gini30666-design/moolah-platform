@@ -14,7 +14,7 @@ export async function PATCH(req: NextRequest) {
   if (!success) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
 
   if (status === 'cancelled') {
-    const rows = await getSheetData('bookings!A2:L')
+    const rows = await getSheetData('bookings!A2:M')
     const row = rows.find(r => r[0] === bookingId)
     if (row) {
       const customerLineUserId = row[4]

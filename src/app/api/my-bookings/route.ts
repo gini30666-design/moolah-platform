@@ -11,13 +11,13 @@ export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
 
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
     getSheetData('services!A2:F'),
     getSheetData('providers!A2:B'),
   ])
 
   const bookings = bookingRows
-    .filter(r => r[4] === userId && (r[11] ?? '') !== 'cancelled')
+    .filter(r => r[4] === userId && (r[12] ?? '') !== 'cancelled')
     .map(r => {
       const provider = providerRows.find(p => p[0] === r[1])
       const service = serviceRows.find(s => s[0] === r[1] && s[1] === r[2])
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         date: r[5] as string,
         time: r[6] as string,
         notes: (r[9] as string) ?? '',
-        status: (r[11] as string) ?? 'confirmed',
+        status: (r[12] as string) ?? 'confirmed',
         isPast: (r[5] as string) < today,
         providerName: (provider?.[1] as string) ?? '設計師',
         servicePrice: (service?.[3] as string) ?? '',
@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'bookingId and userId required' }, { status: 400 })
   }
 
-  const rows = await getSheetData('bookings!A2:L')
+  const rows = await getSheetData('bookings!A2:M')
   const row = rows.find(r => r[0] === bookingId)
 
   if (!row) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })

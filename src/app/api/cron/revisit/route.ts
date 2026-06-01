@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const target30Str = target30.toISOString().split('T')[0]
 
   const [bookingRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
     getSheetData('providers!A2:N'),
   ])
 
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const customerMap = new Map<string, { lastDate: string; providerId: string; providerName: string; userId: string }>()
 
   for (const r of bookingRows) {
-    const status = r[11] ?? 'active'
+    const status = r[12] ?? 'active'
     if (status === 'cancelled') continue
     const userId = r[4]
     const providerId = r[1]
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     const hasFuture = bookingRows.some(r =>
       r[4] === userId && r[1] === providerId &&
       r[5] > today.toISOString().split('T')[0] &&
-      (r[11] ?? 'active') !== 'cancelled'
+      (r[12] ?? 'active') !== 'cancelled'
     )
     if (hasFuture) continue
 

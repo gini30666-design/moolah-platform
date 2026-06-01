@@ -16,13 +16,13 @@ async function getUpcomingBookings(lineUserId: string) {
   const today = new Date().toISOString().split('T')[0]
 
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
     getSheetData('services!A2:F'),
     getSheetData('providers!A2:B'),
   ])
 
   return bookingRows
-    .filter(r => r[4] === lineUserId && (r[5] ?? '') >= today && (r[11] ?? '') !== 'cancelled')
+    .filter(r => r[4] === lineUserId && (r[5] ?? '') >= today && (r[12] ?? '') !== 'cancelled')
     .slice(0, 3)
     .map(r => {
       const provider = providerRows.find(p => p[0] === r[1])

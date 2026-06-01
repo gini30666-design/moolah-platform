@@ -18,11 +18,11 @@ export async function GET(req: NextRequest) {
   const [providerRows, serviceRows, bookingRows] = await Promise.all([
     getSheetData('providers!A2:F'),
     getSheetData('services!A2:F'),
-    getSheetData('bookings!A2:L'),
+    getSheetData('bookings!A2:M'),
   ])
 
   const tomorrowBookings = bookingRows.filter(
-    r => r[5] === tomorrowStr && (r[11] ?? '') !== 'cancelled'
+    r => r[5] === tomorrowStr && (r[12] ?? '') !== 'cancelled'
   )
 
   if (tomorrowBookings.length === 0) {

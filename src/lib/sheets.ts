@@ -70,7 +70,7 @@ export async function updateBookingStatus(bookingId: string, status: string) {
   const sheetRow = rowIndex + 1 // 1-based, row 1 is header so data starts at row 2
   await sheets.spreadsheets.values.update({
     spreadsheetId: SHEET_ID,
-    range: `bookings!L${sheetRow}`,
+    range: `bookings!M${sheetRow}`,
     valueInputOption: 'RAW',
     requestBody: { values: [[status]] },
   })
