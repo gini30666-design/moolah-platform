@@ -38,7 +38,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <Link href="/" className="font-display text-xl text-[var(--charcoal)] block mb-1">MooLah</Link>
-          <p className="text-xs text-[var(--charcoal)]/40">© 2026 MooLah. All rights reserved.</p>
+          <p className="text-xs text-[var(--charcoal)]/40">© 2026 永翔數位有限公司. All rights reserved.</p>
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/join" className="hover:text-[var(--oak)] transition-colors">加入合作</Link>
@@ -102,6 +102,7 @@ const SECTIONS = [
     title: '七、聯絡方式',
     content: `如您對本隱私政策有任何疑問，或需要行使個人資料相關權利，請聯絡：
 
+公司名稱：永翔數位有限公司
 Email：moolah118@gmail.com
 LINE 官方帳號：@881zhkla
 
@@ -111,7 +112,7 @@ LINE 官方帳號：@881zhkla
     title: '八、政策更新',
     content: `本隱私政策如有變更，將於本頁面公告。重大變更時，我們會透過 LINE 通知曾使用本服務的用戶。
 
-最後更新日期：2026 年 5 月 11 日`,
+最後更新日期：2026 年 6 月 1 日`,
   },
 ]
 
