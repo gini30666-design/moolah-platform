@@ -43,11 +43,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Already reviewed' }, { status: 409 })
   }
 
-  const reviewId = `RV${Date.now()}`
   const createdAt = new Date().toISOString()
 
   await appendRow('reviews!A:G', [
-    reviewId,
+    bookingId,
     providerId,
     customerName ?? '',
     String(rating),
