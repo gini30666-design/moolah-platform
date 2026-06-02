@@ -120,7 +120,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <Link href="/" className="font-display text-xl text-[var(--charcoal)] block mb-1">MooLah</Link>
-          <p className="text-xs text-[var(--charcoal)]/40">© 2026 永祥數位有限公司 MooLah. All rights reserved.</p>
+          <p className="text-xs text-[var(--charcoal)]/40">© 2026 永翔數位有限公司 MooLah. All rights reserved.</p>
         </div>
         <div className="flex flex-wrap gap-4 md:gap-6 text-xs text-[var(--charcoal)]/50">
           <Link href="/services" className="hover:text-[var(--oak)] transition-colors">合作方案</Link>

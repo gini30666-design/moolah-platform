@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
+import HomeLeadForm from '@/components/HomeLeadForm'
 
 const BASE_URL = 'https://moolah-platform.vercel.app'
 
@@ -321,24 +322,39 @@ function Pillars() {
 // ── Partner CTA ───────────────────────────────────────────────────────────────
 function PartnerCTA() {
   return (
-    <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)' }}>
-      <div className="max-w-[1440px] mx-auto">
-        <div className="pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
+    <section id="apply" className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)' }}>
+      <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Left: pitch */}
+        <div className="lg:col-span-7 pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
           <span data-animate className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
           <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
             <TextReveal as="span" delay={80} stagger={52} className="block">成為 MooLah</TextReveal>
             <TextReveal as="span" delay={320} stagger={52} className="block">合作設計師</TextReveal>
           </h2>
-          <p className="text-base leading-relaxed mb-8 md:mb-10 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
+          <p className="text-base leading-relaxed mb-6 md:mb-8 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
             免費加入，立即擁有專屬預約頁面。讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。
           </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer" className="px-8 md:px-10 py-3.5 md:py-4 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
-              立即申請
-            </a>
-            <Link href="/services" className="px-8 md:px-10 py-3.5 md:py-4 text-sm text-[var(--cream)] tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.3)' }}>
-              查看方案
-            </Link>
+          <ul className="space-y-2 mb-8 max-w-lg">
+            {['前 20 位合作夥伴免費 3 個月', 'LINE 一鍵預約，客戶零學習成本', '不抽佣金、不綁約、30 天可終止'].map(t => (
+              <li key={t} className="flex items-start gap-3 text-sm" style={{ color: 'var(--cream)' }}>
+                <span style={{ width: '6px', height: '6px', background: 'var(--oak)', borderRadius: '50%', marginTop: '8px', flexShrink: 0 }} />
+                {t}
+              </li>
+            ))}
+          </ul>
+          <Link href="/services" className="inline-block text-sm tracking-widest uppercase border-b pb-1 hover:opacity-80 transition-opacity" style={{ color: 'var(--oak)', borderColor: 'var(--oak)' }}>
+            查看完整方案說明 →
+          </Link>
+        </div>
+
+        {/* Right: lead form */}
+        <div className="lg:col-span-5" data-animate data-delay="180">
+          <div style={{ padding: '28px 24px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.22)', borderRadius: '20px' }}>
+            <p className="text-xs tracking-[.18em] uppercase mb-2" style={{ color: 'var(--oak)' }}>30 秒申請</p>
+            <h3 className="font-display mb-5" style={{ fontSize: 'clamp(1.4rem,3vw,1.8rem)', color: 'var(--cream)', fontWeight: 400, lineHeight: 1.25 }}>
+              留下資料<br/>讓 Gini 親自聯絡你
+            </h3>
+            <HomeLeadForm />
           </div>
         </div>
       </div>
@@ -386,7 +402,7 @@ function Footer() {
         </div>
       </div>
       <div className="border-t px-5 md:px-16 py-5 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-2" style={{ borderColor: 'rgba(166,137,102,.2)' }}>
-        <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 永祥數位有限公司 MooLah. ALL RIGHTS RESERVED.</p>
+        <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>© 2026 永翔數位有限公司 MooLah. ALL RIGHTS RESERVED.</p>
         <p className="text-xs tracking-widest" style={{ color: 'var(--oak-dim)' }}>DESIGNED IN TAIWAN · 高雄出發</p>
       </div>
     </footer>
