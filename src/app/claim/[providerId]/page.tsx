@@ -54,7 +54,9 @@ export default function ClaimPage() {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
 
         if (!liff.isLoggedIn()) {
-          liff.login({ redirectUri: window.location.href })
+          // /claim/ is not a registered callback URL in LINE Login channel.
+          // Route through /dashboard (which is registered) and use ?to= to return here.
+          window.location.href = `/dashboard?to=/claim/${providerId}`
           return
         }
 
