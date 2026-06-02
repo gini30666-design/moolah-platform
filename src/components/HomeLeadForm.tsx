@@ -101,11 +101,11 @@ export default function HomeLeadForm() {
           transition: 'background 0.18s', fontFamily: 'inherit', fontWeight: 600,
         }}
       >
-        {status === 'loading' ? '傳送中…' : '免費試用 3 個月 →'}
+        {status === 'loading' ? '傳送中…' : '立即申請 →'}
       </button>
 
       <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(251,249,244,0.42)', marginTop: '12px', lineHeight: 1.6 }}>
-        前 20 位合作夥伴免費 · 24 小時內專人聯絡
+        送出後 24 小時內專人聯絡 · 資料僅用於聯絡用途
       </p>
     </form>
   )

@@ -332,10 +332,10 @@ function PartnerCTA() {
             <TextReveal as="span" delay={320} stagger={52} className="block">合作設計師</TextReveal>
           </h2>
           <p className="text-base leading-relaxed mb-6 md:mb-8 max-w-xl" style={{ color: 'var(--oak-dim)' }}>
-            免費加入，立即擁有專屬預約頁面。讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。
+            擁有專屬預約頁面，讓 MooLah 負責排程、通知、客戶管理，你只需要專注在技術與服務。
           </p>
           <ul className="space-y-2 mb-8 max-w-lg">
-            {['前 20 位合作夥伴免費 3 個月', 'LINE 一鍵預約，客戶零學習成本', '不抽佣金、不綁約、30 天可終止'].map(t => (
+            {['LINE 一鍵預約，客戶零學習成本', '不抽佣金、不綁約、30 天可終止', '專人 onboard 協助上線設定'].map(t => (
               <li key={t} className="flex items-start gap-3 text-sm" style={{ color: 'var(--cream)' }}>
                 <span style={{ width: '6px', height: '6px', background: 'var(--oak)', borderRadius: '50%', marginTop: '8px', flexShrink: 0 }} />
                 {t}
@@ -347,14 +347,40 @@ function PartnerCTA() {
           </Link>
         </div>
 
-        {/* Right: lead form */}
+        {/* Right: lead form + LINE QR */}
         <div className="lg:col-span-5" data-animate data-delay="180">
           <div style={{ padding: '28px 24px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.22)', borderRadius: '20px' }}>
             <p className="text-xs tracking-[.18em] uppercase mb-2" style={{ color: 'var(--oak)' }}>30 秒申請</p>
             <h3 className="font-display mb-5" style={{ fontSize: 'clamp(1.4rem,3vw,1.8rem)', color: 'var(--cream)', fontWeight: 400, lineHeight: 1.25 }}>
-              留下資料<br/>讓 Gini 親自聯絡你
+              留下資料<br/>讓 MooLah 聯絡你
             </h3>
             <HomeLeadForm />
+
+            {/* LINE OA QR — 也可以直接加 LINE 私訊 */}
+            <div className="mt-6 pt-6" style={{ borderTop: '1px solid rgba(166,137,102,0.2)' }}>
+              <p className="text-xs text-center mb-3" style={{ color: 'rgba(251,249,244,0.55)', letterSpacing: '0.06em' }}>
+                或掃 QR Code 加 LINE 直接聯繫
+              </p>
+              <div className="flex items-center justify-center gap-4">
+                <div style={{ background: 'white', padding: '8px', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.18)' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/line_oa_partner_qr.png" alt="MooLah 招商 LINE QR Code" width={96} height={96} style={{ display: 'block', borderRadius: '4px' }} />
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <p className="text-[10px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--oak)' }}>LINE OA</p>
+                  <p className="text-base font-semibold" style={{ color: 'var(--cream)' }}>@492ejbwx</p>
+                  <a
+                    href="https://line.me/R/ti/p/@492ejbwx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs mt-2 px-3 py-1.5 transition-opacity hover:opacity-80"
+                    style={{ background: 'var(--line-green)', color: 'white', borderRadius: '6px' }}
+                  >
+                    加好友 →
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
