@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ providers: [] })
   }
 
-  const rows = await getSheetData('providers!A2:M')
+  const rows = await getSheetData('providers!A2:T')
 
   const providers = rows
     .filter(r => {
@@ -27,6 +27,9 @@ export async function GET(req: NextRequest) {
       address: r[7] ?? '',
       district: r[8] ?? '',
       shortCode: r[12] ?? '',
+      rating: r[14] ?? '',
+      reviewCount: r[15] ?? '',
+      tagline: r[17] ?? '',
     }))
 
   return NextResponse.json({ providers })

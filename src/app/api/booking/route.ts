@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const bookingId = generateId()
   const createdAt = new Date().toISOString()
 
-  await appendRow('bookings!A:L', [
+  await appendRow('bookings!A:M', [
     bookingId,
     providerId,
     serviceId,
@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     gender ?? '',
     hairLength ?? '',
     customerPhone ?? '',
+    'confirmed',
   ])
 
   const providerName = providerRow[1]

@@ -4,7 +4,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string }
-type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -317,10 +317,54 @@ function InlineCalendar({ providerId, value, onChange }: {
 }
 
 // ── CompletionScreen ──────────────────────────────────────────────────
-function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified }: {
+function buildICS({ title, location, startISO, endISO, description }: {
+  title: string; location: string; startISO: string; endISO: string; description: string
+}) {
+  const fmt = (iso: string) => iso.replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  const lines = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//MooLah//Booking//ZH-TW', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:${Date.now()}@moolah`,
+    `DTSTAMP:${fmt(new Date().toISOString())}`,
+    `DTSTART:${fmt(startISO)}`,
+    `DTEND:${fmt(endISO)}`,
+    `SUMMARY:${title}`,
+    `LOCATION:${location}`,
+    `DESCRIPTION:${description}`,
+    'END:VEVENT', 'END:VCALENDAR',
+  ]
+  return lines.join('\r\n')
+}
+
+function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, providerAddress }: {
   providerName: string; serviceName: string; date: string; time: string
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
+  serviceDuration: number; providerAddress: string
 }) {
+  function handleAddToCalendar() {
+    const start = new Date(`${date}T${time}:00+08:00`)
+    const end = new Date(start.getTime() + (serviceDuration || 60) * 60000)
+    const ics = buildICS({
+      title: `${providerName} · ${serviceName}`,
+      location: providerAddress || '',
+      startISO: start.toISOString(),
+      endISO: end.toISOString(),
+      description: `MooLah 預約 - ${serviceName}`,
+    })
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `moolah-${date}-${time.replace(':', '')}.ics`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const mapUrl = providerAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(providerAddress)}`
+    : ''
   return (
     <div style={{ minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', display: 'flex', flexDirection: 'column' }}>
       <style>{`
@@ -388,7 +432,33 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.85s both' }}>
+        {/* Reassurance action grid: calendar + map */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.8s both', marginBottom: '10px' }}>
+          <button onClick={handleAddToCalendar} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'var(--charcoal)', color: 'var(--cream)', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', letterSpacing: '0.02em' }}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '14px', height: '14px' }}>
+              <rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 1.5v3M11 1.5v3M2 7h12"/>
+            </svg>
+            加入行事曆
+          </button>
+          {mapUrl ? (
+            <a href={mapUrl} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'rgba(166,137,102,0.14)', color: 'var(--oak)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(166,137,102,0.25)', letterSpacing: '0.02em' }}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '14px', height: '14px' }}>
+                <path d="M8 1.5a4.5 4.5 0 014.5 4.5c0 3.5-4.5 8-4.5 8s-4.5-4.5-4.5-8A4.5 4.5 0 018 1.5z"/><circle cx="8" cy="6" r="1.5"/>
+              </svg>
+              查看地圖
+            </a>
+          ) : (
+            <a href="/my-bookings"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'rgba(166,137,102,0.14)', color: 'var(--oak)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(166,137,102,0.25)', letterSpacing: '0.02em' }}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
+              我的預約
+            </a>
+          )}
+        </div>
+
+        {/* Secondary actions */}
+        <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.9s both' }}>
           <a href="/my-bookings" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
             我的預約
@@ -542,7 +612,16 @@ export default function BookPage() {
   }
 
   if (done && provider && service) {
-    return <CompletionScreen providerName={provider.name} serviceName={service.name} date={date} time={time} onBack={() => router.push(`/${providerId}`)} isLineUser={!!lineUserId} consumerNotified={consumerNotified} />
+    return <CompletionScreen
+      providerName={provider.storeName || provider.name}
+      serviceName={service.name}
+      date={date} time={time}
+      onBack={() => router.push(`/${providerId}`)}
+      isLineUser={!!lineUserId}
+      consumerNotified={consumerNotified}
+      serviceDuration={service.duration}
+      providerAddress={provider.address ?? ''}
+    />
   }
 
   if (!provider || !service) {

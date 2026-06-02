@@ -10,12 +10,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const today = new Date().toLocaleDateString('zh-TW', {
+  // en-CA 直接輸出 YYYY-MM-DD，避免 zh-TW 在不同 Node 版本格式不一致
+  const today = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Taipei',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).replace(/\//g, '-')
+  }).format(new Date())
 
   const [providerRows, bookingRows] = await Promise.all([
     getSheetData('providers!A2:F'),

@@ -932,6 +932,35 @@ export default function AdminPage() {
         })}
       </div>
 
+      {/* ── 本月對帳透明化 panel ── */}
+      <div data-animate data-delay="60" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'linear-gradient(135deg, rgba(166,137,102,0.10), rgba(166,137,102,0.04))', border: '1px solid rgba(166,137,102,0.24)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>本月對帳</p>
+          <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.42)', letterSpacing: '0.06em' }}>{today.slice(0, 7).replace('-', ' / ')}</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0', alignItems: 'stretch' }}>
+          <div style={{ textAlign: 'center', padding: '4px 6px' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{monthBookings.length}</p>
+            <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>成交數</p>
+          </div>
+          <div style={{ textAlign: 'center', padding: '4px 6px', borderLeft: '1px solid rgba(166,137,102,0.18)', borderRight: '1px solid rgba(166,137,102,0.18)' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{monthRevenue > 0 ? monthRevenue.toLocaleString() : '—'}</p>
+            <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>營收 NT$</p>
+          </div>
+          <div style={{ textAlign: 'center', padding: '4px 6px' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>0</p>
+            <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>應付月費 NT$</p>
+          </div>
+        </div>
+        <div style={{ marginTop: '14px', padding: '10px 12px', background: 'rgba(255,255,255,0.55)', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.16)' }}>
+          <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
+            <span style={{ fontWeight: 600, color: oak }}>✓ 基礎方案（驗證期免費）</span>
+            <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　月底前 20 位合作夥伴均為 NT$0，正式上線後 7 天前通知</span>
+          </p>
+        </div>
+      </div>
+
       {/* ── Sand content panel ── */}
       <div style={{ position: 'relative', marginTop: '14px', background: 'var(--sand)', borderTop: '1px solid rgba(166,137,102,0.16)', borderRadius: '22px 22px 0 0', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5)', paddingBottom: '8px' }}>
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '46px', height: '3px', borderRadius: '0 0 3px 3px', background: 'var(--oak)', opacity: 0.5 }} />

@@ -235,14 +235,43 @@ export default function ClaimPage() {
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.6rem', fontWeight: 300, color: cream, marginBottom: '8px' }}>
               {stage === 'already_owner' ? '帳號已綁定' : '綁定成功'}
             </p>
-            <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', marginBottom: '28px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', marginBottom: '24px', lineHeight: 1.6 }}>
               {stage === 'already_owner'
                 ? '此 LINE 帳號已是後台擁有者'
                 : `${providerName} 的後台已與您的 LINE 帳號連結`}
             </p>
+
+            {/* 3-step walkthrough — only for fresh claim */}
+            {stage === 'success' && (
+              <div style={{ textAlign: 'left', marginBottom: '24px', padding: '16px 14px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '14px' }}>
+                <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center', fontWeight: 600 }}>接下來 3 步驟</p>
+                {[
+                  { n: '1', title: '補上頭像', desc: '進「服務管理」上方頭像區編輯', emoji: '◆' },
+                  { n: '2', title: '設定可預約時段', desc: '進「排班設定」開啟營業日與時段', emoji: '◆' },
+                  { n: '3', title: '綁定 IG + 店家資訊', desc: '完整個人頁可提升 30% 預約率', emoji: '◆' },
+                ].map((s) => (
+                  <div key={s.n} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                    <span style={{ flexShrink: 0, width: '20px', height: '20px', borderRadius: '50%', background: oak, color: cream, fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px' }}>{s.n}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: '12.5px', color: cream, fontWeight: 600, marginBottom: '2px', letterSpacing: '0.02em' }}>{s.title}</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.48)', lineHeight: 1.5 }}>{s.desc}</p>
+                    </div>
+                  </div>
+                ))}
+                <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.32)', marginTop: '6px', lineHeight: 1.6, textAlign: 'center' }}>※ 作品集照片由 MooLah 審核後上架，請傳 LINE 給客服</p>
+              </div>
+            )}
+
             <button onClick={() => router.push('/dashboard')} style={{ width: '100%', padding: '16px', borderRadius: '14px', border: 'none', background: oak, color: cream, fontSize: '15px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.04em' }}>
               進入後台管理
             </button>
+            <a href={`/contract/${providerId}`} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '14px', fontSize: '12px', color: 'rgba(251,249,244,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(251,249,244,0.2)', paddingBottom: '2px' }}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '12px', height: '12px' }}>
+                <path d="M3 1.5h7l3 3v10H3z"/><path d="M10 1.5v3h3M5 8h6M5 11h6"/>
+              </svg>
+              下載合約 PDF（可留底存證）
+            </a>
           </div>
         )}
 

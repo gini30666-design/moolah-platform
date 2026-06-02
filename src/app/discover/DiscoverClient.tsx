@@ -11,6 +11,9 @@ type Provider = {
   address: string
   district: string
   shortCode: string
+  rating?: string
+  reviewCount?: string
+  tagline?: string
 }
 
 const CATEGORIES = [
@@ -397,15 +400,28 @@ export default function DiscoverClient({ initialCategory }: { initialCategory: s
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate" style={{ color: 'var(--cream)' }}>
-                        {p.storeName || p.name}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--cream)' }}>
+                          {p.storeName || p.name}
+                        </p>
+                        {p.rating && (
+                          <span className="text-[11px] font-semibold flex items-center gap-0.5 flex-shrink-0" style={{ color: 'var(--oak)' }}>
+                            ★ {p.rating}
+                            {p.reviewCount && <span style={{ color: 'rgba(214,197,178,0.45)', fontWeight: 400 }}>({p.reviewCount})</span>}
+                          </span>
+                        )}
+                      </div>
                       {p.storeName && (
                         <p className="text-xs truncate mt-0.5" style={{ color: 'rgba(214,197,178,0.55)' }}>{p.name}</p>
                       )}
                       <span className="inline-block text-[10px] px-2 py-0.5 mt-1 tracking-wide" style={{ color: 'var(--oak)', background: 'rgba(166,137,102,0.13)', borderRadius: '99px' }}>
                         {p.category}
                       </span>
+                      {p.tagline && (
+                        <p className="text-xs italic mt-1 truncate" style={{ color: 'rgba(214,197,178,0.55)' }}>
+                          「{p.tagline}」
+                        </p>
+                      )}
                       {p.address && (
                         <p className="text-xs mt-1.5 truncate flex items-center gap-1" style={{ color: 'rgba(214,197,178,0.45)' }}>
                           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 flex-shrink-0">
