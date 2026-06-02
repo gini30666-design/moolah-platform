@@ -949,14 +949,14 @@ export default function AdminPage() {
             <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>營收 NT$</p>
           </div>
           <div style={{ textAlign: 'center', padding: '4px 6px' }}>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>0</p>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>599</p>
             <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>應付月費 NT$</p>
           </div>
         </div>
         <div style={{ marginTop: '14px', padding: '10px 12px', background: 'rgba(255,255,255,0.55)', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.16)' }}>
           <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
-            <span style={{ fontWeight: 600, color: oak }}>✓ 基礎方案（驗證期免費）</span>
-            <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　月底前 20 位合作夥伴均為 NT$0，正式上線後 7 天前通知</span>
+            <span style={{ fontWeight: 600, color: oak }}>✓ 月費 NT$599</span>
+            <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　0% 抽佣 · 不綁約 · 解約提前 1 週通知</span>
           </p>
         </div>
       </div>
