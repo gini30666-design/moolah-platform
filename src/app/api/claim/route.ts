@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, sheets, SHEET_ID } from '@/lib/sheets'
 
 export async function POST(req: NextRequest) {
-  const { providerId, lineUserId } = await req.json()
+  const { providerId, lineUserId, agreedAt } = await req.json()
 
   if (!providerId || !lineUserId) {
     return NextResponse.json({ error: 'missing_params' }, { status: 400 })
@@ -25,11 +25,17 @@ export async function POST(req: NextRequest) {
   }
 
   const sheetRow = rowIndex + 2 // 1-indexed + 1 for header row
-  await sheets.spreadsheets.values.update({
+
+  // Write lineUserId to column E and agreedAt to column U in one batch
+  await sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: SHEET_ID,
-    range: `providers!E${sheetRow}`,
-    valueInputOption: 'RAW',
-    requestBody: { values: [[lineUserId]] },
+    requestBody: {
+      valueInputOption: 'RAW',
+      data: [
+        { range: `providers!E${sheetRow}`, values: [[lineUserId]] },
+        { range: `providers!U${sheetRow}`, values: [[agreedAt ?? new Date().toISOString()]] },
+      ],
+    },
   })
 
   return NextResponse.json({ success: true })

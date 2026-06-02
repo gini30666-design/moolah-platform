@@ -55,5 +55,5 @@ export async function POST(req: NextRequest) {
     createdAt,
   ])
 
-  return NextResponse.json({ success: true, reviewId })
+  return NextResponse.json({ success: true })
 }
