@@ -11,6 +11,7 @@ import {
   buildDefaultFlex,
   buildProviderScheduleFlex,
   buildCustomerHistoryFlex,
+  buildRebookFlex,
 } from '@/lib/line'
 import { getSheetData } from '@/lib/sheets'
 
@@ -78,6 +79,38 @@ async function getProviderBookingsForRange(providerId: string, fromDate: string,
         customerPhone: (r[11] as string) ?? '',
       }
     })
+}
+
+async function getLastBookingForCustomer(lineUserId: string) {
+  const [bookingRows, serviceRows, providerRows] = await Promise.all([
+    getSheetData('bookings!A2:M'),
+    getSheetData('services!A2:F'),
+    getSheetData('providers!A2:H'),  // need storeName at index 6
+  ])
+
+  // 最新一筆「非取消」的預約（不管未來或過去都可重訂）
+  const sorted = bookingRows
+    .filter(r => r[4] === lineUserId && (r[12] ?? '') !== 'cancelled')
+    .sort((a, b) => (b[5] + b[6]).localeCompare(a[5] + a[6]))
+
+  if (sorted.length === 0) return { hasLast: false as const }
+
+  const last = sorted[0]
+  const providerId = last[1] as string
+  const serviceId = last[2] as string
+  const provider = providerRows.find(p => p[0] === providerId)
+  const service = serviceRows.find(s => s[0] === providerId && s[1] === serviceId)
+
+  return {
+    hasLast: true as const,
+    providerId,
+    providerName: (provider?.[1] as string) ?? '設計師',
+    storeName: (provider?.[6] as string) ?? '',
+    serviceId,
+    serviceName: (service?.[2] as string) ?? '服務',
+    servicePrice: service ? Number(service[3]) : undefined,
+    lastDate: last[5] as string,
+  }
 }
 
 async function getCustomerHistory(providerId: string, customerName: string) {
@@ -193,6 +226,19 @@ export async function POST(req: NextRequest) {
       }
 
       // ── 顧客端關鍵字 ────────────────────────────────────────────────────
+      // 快速再預約（#1）— 一鍵帶入上次同款設計師 + 同款服務
+      if (
+        lower.includes('再約') ||
+        lower.includes('再次預約') ||
+        lower.includes('上次') ||
+        lower.includes('rebook') ||
+        lower === '再一次'
+      ) {
+        const lastBooking = await getLastBookingForCustomer(userId)
+        await pushFlexMessage(userId, '再次預約', buildRebookFlex(lastBooking))
+        continue
+      }
+
       // 我的預約 — 用 push 避免 replyToken 超時（需查 Sheets）
       if (lower.includes('我的預約') || lower.includes('my booking')) {
         const bookings = await getUpcomingBookings(userId)

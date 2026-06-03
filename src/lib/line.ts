@@ -550,6 +550,79 @@ export function buildReviewFlex(params: {
 }
 
 // ── 預設回覆 Flex ──────────────────────────────────────────────────────────
+// ── 顧客：快速再預約 Flex ──────────────────────────────────────────────────
+export function buildRebookFlex(params: {
+  hasLast: boolean
+  providerId?: string
+  providerName?: string
+  storeName?: string
+  serviceId?: string
+  serviceName?: string
+  servicePrice?: number
+  lastDate?: string
+}): object {
+  const { hasLast, providerId, providerName, storeName, serviceId, serviceName, servicePrice, lastDate } = params
+
+  if (!hasLast) {
+    return {
+      type: 'bubble',
+      body: {
+        type: 'box', layout: 'vertical', paddingAll: '20px',
+        contents: [
+          { type: 'text', text: '還沒有上次的紀錄', weight: 'bold', size: 'lg', color: '#2C2825' },
+          { type: 'text', text: '你還沒在 MooLah 預約過 — 來探索一下吧！', size: 'sm', color: '#888', margin: 'md', wrap: true },
+        ],
+      },
+      footer: {
+        type: 'box', layout: 'vertical', paddingAll: '16px',
+        contents: [
+          { type: 'button', action: { type: 'uri', label: '探索職人', uri: `${BASE_URL}/discover` }, style: 'primary', color: '#A68966', height: 'sm' },
+        ],
+      },
+    }
+  }
+
+  const display = storeName || providerName
+  const priceText = servicePrice ? `NT$ ${servicePrice.toLocaleString()}` : ''
+  const rebookUrl = `${BASE_URL}/${providerId}/book${serviceId ? `?service=${serviceId}` : ''}`
+
+  return {
+    type: 'bubble',
+    header: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', backgroundColor: '#2C2825',
+      contents: [
+        { type: 'text', text: 'WELCOME BACK', size: 'xs', color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' },
+        { type: 'text', text: '再次預約', weight: 'bold' as const, size: 'xl', color: '#fbf9f4', margin: 'sm' },
+      ],
+    },
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'md',
+      contents: [
+        { type: 'text', text: '你上次預約的是', size: 'sm', color: '#888' },
+        {
+          type: 'box', layout: 'vertical', spacing: 'xs',
+          paddingAll: '14px',
+          backgroundColor: '#faf7f2',
+          cornerRadius: '8px',
+          contents: [
+            { type: 'text', text: display ?? '', weight: 'bold' as const, size: 'md', color: '#2C2825' },
+            { type: 'text', text: serviceName ?? '', size: 'sm', color: '#A68966' },
+            { type: 'text', text: `上次：${lastDate}${priceText ? `　·　${priceText}` : ''}`, size: 'xs', color: '#888', margin: 'sm' },
+          ],
+        },
+        { type: 'text', text: '一鍵帶入同款設計師、同款服務，只要選個新日期就好。', size: 'xs', color: '#bbb', wrap: true, margin: 'md' },
+      ],
+    },
+    footer: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
+      contents: [
+        { type: 'button', action: { type: 'uri', label: '重訂同款服務', uri: rebookUrl }, style: 'primary', color: '#A68966', height: 'sm' },
+        { type: 'button', action: { type: 'uri', label: '看看其他職人', uri: `${BASE_URL}/discover` }, style: 'link', color: '#888', height: 'sm' },
+      ],
+    },
+  }
+}
+
 // ── 設計師：今日/明日/本週排程 Flex ─────────────────────────────────────────
 export function buildProviderScheduleFlex(params: {
   providerName: string
