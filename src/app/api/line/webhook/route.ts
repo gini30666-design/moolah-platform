@@ -149,6 +149,7 @@ function matchFaq(lower: string, raw: string): FaqEntry | null {
   return null
 }
 import { getSheetData, updateBookingStatus, appendRow } from '@/lib/sheets'
+import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
 
 async function getUpcomingBookings(lineUserId: string) {
   const today = new Date().toISOString().split('T')[0]
@@ -618,6 +619,21 @@ export async function POST(req: NextRequest) {
                 type: 'text',
                 text: `✓ 已標記 no-show\n\n客人：${booking.customerName}\n時段：${booking.date} ${booking.time}\n\n該時段已釋出，新的預約可進來。`,
               }])
+              // 觸發自動拉黑檢查（達 3 次 no-show 會自動進黑名單 + push 通知）
+              try {
+                const bRows = await getSheetData('bookings!A2:M')
+                const bRow = bRows.find(r => r[0] === booking.bookingId)
+                const customerLineUserId = ((bRow?.[4] as string) ?? '').trim()
+                await autoBlacklistIfThresholdReached({
+                  providerId: provider.providerId,
+                  providerLineUserId: userId,
+                  providerName: provider.name,
+                  customerLineUserId,
+                  customerName: booking.customerName,
+                })
+              } catch (err) {
+                console.error('[webhook noshow → blacklist check]', err)
+              }
             } else {
               await replyMessage(replyToken, [{ type: 'text', text: '系統錯誤，請至後台手動標記' }])
             }

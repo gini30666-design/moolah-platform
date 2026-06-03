@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateBookingStatus, getSheetData, updateRow } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
+import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json()
@@ -12,6 +13,31 @@ export async function PATCH(req: NextRequest) {
 
   const success = await updateBookingStatus(bookingId, status)
   if (!success) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+
+  // 標記為 no_show 後檢查是否達自動拉黑門檻
+  if (status === 'no_show') {
+    try {
+      const rows = await getSheetData('bookings!A2:M')
+      const row = rows.find(r => r[0] === bookingId)
+      if (row) {
+        const providerId = row[1] as string
+        const customerName = row[3] as string
+        const customerLineUserId = (row[4] as string) ?? ''
+
+        const providers = await getSheetData('providers!A2:E')
+        const provider = providers.find(p => p[0] === providerId)
+        const providerLineUserId = (provider?.[4] as string) ?? ''
+        const providerName = (provider?.[1] as string) ?? ''
+
+        await autoBlacklistIfThresholdReached({
+          providerId, providerLineUserId, providerName,
+          customerLineUserId, customerName,
+        })
+      }
+    } catch (err) {
+      console.error('[admin/booking no_show → blacklist check]', err)
+    }
+  }
 
   if (status === 'cancelled') {
     const rows = await getSheetData('bookings!A2:M')
