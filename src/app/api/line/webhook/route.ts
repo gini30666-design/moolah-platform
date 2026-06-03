@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   verifySignature,
   replyMessage,
+  pushMessage,
   pushFlexMessage,
   buildWelcomeFlex,
   buildStartBookingFlex,
@@ -144,7 +145,7 @@ function matchFaq(lower: string, raw: string): FaqEntry | null {
   }
   return null
 }
-import { getSheetData, updateBookingStatus } from '@/lib/sheets'
+import { getSheetData, updateBookingStatus, appendRow } from '@/lib/sheets'
 
 async function getUpcomingBookings(lineUserId: string) {
   const today = new Date().toISOString().split('T')[0]
@@ -210,6 +211,94 @@ async function getProviderBookingsForRange(providerId: string, fromDate: string,
         customerPhone: (r[11] as string) ?? '',
       }
     })
+}
+
+// ── #8 休假快速設定 helpers ────────────────────────────────────────────────
+function pad2(n: number): string { return String(n).padStart(2, '0') }
+
+function resolveDate(month: number, day: number): string {
+  const today = todayTW()
+  const todayObj = new Date(today + 'T12:00:00+08:00')
+  const year = todayObj.getFullYear()
+  const candidate = `${year}-${pad2(month)}-${pad2(day)}`
+  // 若已過：假設是明年
+  if (candidate < today) return `${year + 1}-${pad2(month)}-${pad2(day)}`
+  return candidate
+}
+
+function generateDateRange(fromDate: string, toDate: string): string[] {
+  const dates: string[] = []
+  let cur = fromDate
+  let safety = 0
+  while (cur <= toDate && safety < 90) {
+    dates.push(cur)
+    cur = addDays(cur, 1)
+    safety++
+  }
+  return dates
+}
+
+function parseHolidayDates(text: string): string[] {
+  if (!/休假|請假|不上班|休息/.test(text)) return []
+
+  // 1. 相對日：今天/明天/後天/大後天
+  if (/今天|今日/.test(text)) return [todayTW()]
+  if (/明天|明日/.test(text)) return [addDays(todayTW(), 1)]
+  if (/後天/.test(text)) return [addDays(todayTW(), 2)]
+  if (/大後天/.test(text)) return [addDays(todayTW(), 3)]
+
+  // 2. 區間：M/D - M/D 或 M月D日 - M月D日
+  const range = text.match(/(\d{1,2})[\/月](\d{1,2})日?\s*[-~–至到]\s*(\d{1,2})[\/月](\d{1,2})日?/)
+  if (range) {
+    const from = resolveDate(parseInt(range[1]), parseInt(range[2]))
+    const to = resolveDate(parseInt(range[3]), parseInt(range[4]))
+    return generateDateRange(from, to)
+  }
+
+  // 3. 單日：M/D 或 M月D日
+  const single = text.match(/(\d{1,2})[\/月](\d{1,2})日?/)
+  if (single) {
+    return [resolveDate(parseInt(single[1]), parseInt(single[2]))]
+  }
+
+  return []
+}
+
+async function blockDatesForProvider(providerId: string, dates: string[]) {
+  for (const d of dates) {
+    await appendRow('availability!A:F', [providerId, 'block', d, '', '', ''])
+  }
+}
+
+async function findAffectedBookings(providerId: string, dates: string[]) {
+  const dateSet = new Set(dates)
+  const rows = await getSheetData('bookings!A2:M')
+  return rows
+    .filter(r => r[1] === providerId && dateSet.has(r[5] as string) && (r[12] ?? '') !== 'cancelled')
+    .map(r => ({
+      bookingId: r[0] as string,
+      customerName: r[3] as string,
+      customerLineUserId: r[4] as string,
+      date: r[5] as string,
+      time: r[6] as string,
+    }))
+}
+
+async function notifyAffectedAndCancel(providerName: string, affected: Awaited<ReturnType<typeof findAffectedBookings>>) {
+  for (const b of affected) {
+    // 自動取消預約（設計師既然休假，原預約無效）
+    await updateBookingStatus(b.bookingId, 'cancelled')
+    if (b.customerLineUserId) {
+      try {
+        await pushMessage(
+          b.customerLineUserId,
+          `🙏 設計師臨時休假通知\n\n您原本 ${b.date} ${b.time} 預約 ${providerName} 的預約已取消。\n造成不便深感抱歉，歡迎重新預約其他時段。`
+        )
+      } catch (e) {
+        console.error('[holiday notify failed]', b.bookingId, e)
+      }
+    }
+  }
 }
 
 // 找最近一筆「該客人對該設計師」的 booking 用於 no-show 標記
@@ -373,6 +462,36 @@ export async function POST(req: NextRequest) {
             providerName: provider.name, providerId: provider.providerId,
             rangeLabel: '本週', dateRangeText: `${from.slice(5)} – ${to.slice(5)}`, bookings,
           }))
+          continue
+        }
+
+        // 休假快速設定（#8）
+        // 格式：「今天休假」「明天休假」「6/15 休假」「6月15日休假」「6/15-6/17 休假」
+        if (/休假|請假|不上班/.test(userText)) {
+          const dates = parseHolidayDates(userText)
+          if (dates.length === 0) {
+            await replyMessage(replyToken, [{
+              type: 'text',
+              text: '無法解析休假日期。請用以下格式：\n\n• 今天休假\n• 明天休假\n• 6/15 休假\n• 6月15日休假\n• 6/15-6/17 休假（區間）',
+            }])
+            continue
+          }
+
+          const affected = await findAffectedBookings(provider.providerId, dates)
+          await blockDatesForProvider(provider.providerId, dates)
+
+          if (affected.length > 0) {
+            await notifyAffectedAndCancel(provider.name, affected)
+          }
+
+          const dateText = dates.length === 1
+            ? dates[0]
+            : `${dates[0]} – ${dates[dates.length - 1]}（共 ${dates.length} 天）`
+
+          await replyMessage(replyToken, [{
+            type: 'text',
+            text: `✓ 休假已設定\n\n日期：${dateText}\n受影響預約：${affected.length} 筆${affected.length > 0 ? '\n\n已自動取消並推播通知所有客人' : ''}`,
+          }])
           continue
         }
 
