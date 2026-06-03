@@ -39,7 +39,40 @@ export async function multicastMessage(userIds: string[], text: string) {
   })
 }
 
-export async function pushFlexMessage(to: string, altText: string, contents: object) {
+// LINE Quick Reply 預設套組 (#16)
+type QuickReplyItem = { label: string; text: string; emoji?: string }
+function buildQuickReply(items: QuickReplyItem[]) {
+  return {
+    items: items.slice(0, 13).map(it => ({
+      type: 'action' as const,
+      imageUrl: undefined,
+      action: { type: 'message' as const, label: `${it.emoji ?? ''} ${it.label}`.trim().slice(0, 20), text: it.text },
+    })),
+  }
+}
+
+// 顧客通用 Quick Reply（4 個最常用入口）
+export const CUSTOMER_QUICK_REPLY: QuickReplyItem[] = [
+  { label: '探索職人', text: '預約' },
+  { label: '我的預約', text: '我的預約' },
+  { label: '再約一次', text: '再約' },
+  { label: '聯絡客服', text: '客服' },
+]
+
+// 設計師通用 Quick Reply（5 個常用指令）
+export const PROVIDER_QUICK_REPLY: QuickReplyItem[] = [
+  { label: '今日', text: '今日' },
+  { label: '明日', text: '明日' },
+  { label: '本週', text: '本週' },
+  { label: '進入後台', text: '我的後台' },
+  { label: '聯絡客服', text: '客服' },
+]
+
+export async function pushFlexMessage(to: string, altText: string, contents: object, quickReply?: QuickReplyItem[]) {
+  const message: Record<string, unknown> = { type: 'flex', altText, contents }
+  if (quickReply && quickReply.length > 0) {
+    message.quickReply = buildQuickReply(quickReply)
+  }
   const res = await fetch(`${LINE_API}/push`, {
     method: 'POST',
     headers: {
@@ -48,7 +81,7 @@ export async function pushFlexMessage(to: string, altText: string, contents: obj
     },
     body: JSON.stringify({
       to,
-      messages: [{ type: 'flex', altText, contents }],
+      messages: [message],
     }),
   })
   if (!res.ok) {
@@ -82,59 +115,84 @@ export function verifySignature(body: string, signature: string): boolean {
 }
 
 // 歡迎訊息 Flex Message（加好友時發送）
-export function buildWelcomeFlex(): object {
+// ── 歡迎 Flex（carousel 4 卡：探索／我的預約／FAQ／客服） #15 ──────────────
+function welcomeCard(params: {
+  emoji: string
+  eyebrow: string
+  title: string
+  desc: string
+  ctaLabel: string
+  ctaAction: { type: 'uri'; uri: string } | { type: 'message'; text: string }
+  bgColor?: string
+}): object {
+  const { emoji, eyebrow, title, desc, ctaLabel, ctaAction, bgColor } = params
   return {
     type: 'bubble',
+    size: 'kilo',
     body: {
-      type: 'box',
-      layout: 'vertical',
-      paddingAll: '20px',
-      spacing: 'none',
+      type: 'box', layout: 'vertical', paddingAll: '18px', spacing: 'none',
+      backgroundColor: bgColor ?? '#fbf9f4',
       contents: [
-        { type: 'text', text: '歡迎使用 MooLah 🌿', weight: 'bold', size: 'xl', color: '#2C2825' },
-        {
-          type: 'text',
-          text: '您的專屬美業預約助理，髮型・美甲・寵物・汽車美容，一站搞定。',
-          size: 'sm',
-          color: '#888',
-          wrap: true,
-          margin: 'sm',
-        },
-        { type: 'separator', margin: 'xl' },
-        {
-          type: 'box',
-          layout: 'vertical',
-          spacing: 'sm',
-          margin: 'lg',
-          contents: [
-            bulletText('輸入「我的預約」查看預約紀錄'),
-            bulletText('輸入「取消預約」申請取消'),
-            bulletText('輸入「設計師後台」進入後台管理'),
-          ],
-        },
-        {
-          type: 'text',
-          text: '點下方按鈕開始探索職人並立即預約',
-          size: 'xs',
-          color: '#bbb',
-          margin: 'xl',
-        },
+        { type: 'text', text: emoji, size: '3xl', align: 'center' as const },
+        { type: 'text', text: eyebrow, size: 'xs', color: '#A68966', letterSpacing: '0.18em', weight: 'bold' as const, align: 'center' as const, margin: 'md' as const },
+        { type: 'text', text: title, weight: 'bold' as const, size: 'lg', color: '#2C2825', align: 'center' as const, margin: 'sm' as const },
+        { type: 'text', text: desc, size: 'xs', color: '#888', wrap: true, align: 'center' as const, margin: 'sm' as const },
       ],
     },
     footer: {
-      type: 'box',
-      layout: 'vertical',
-      paddingAll: '16px',
+      type: 'box', layout: 'vertical', paddingAll: '14px',
       contents: [
         {
           type: 'button',
-          action: { type: 'uri', label: '立即預約', uri: `${BASE_URL}/discover` },
+          action: ctaAction.type === 'uri'
+            ? { type: 'uri', label: ctaLabel, uri: ctaAction.uri }
+            : { type: 'message', label: ctaLabel, text: ctaAction.text },
           style: 'primary',
-          color: '#06C755',
+          color: '#A68966',
           height: 'sm',
         },
       ],
     },
+  }
+}
+
+export function buildWelcomeFlex(): object {
+  return {
+    type: 'carousel',
+    contents: [
+      welcomeCard({
+        emoji: '✨',
+        eyebrow: 'DISCOVER',
+        title: '探索職人',
+        desc: '髮型・美甲・寵物・汽車美容，4 大類別精選職人',
+        ctaLabel: '開始探索',
+        ctaAction: { type: 'uri', uri: `${BASE_URL}/discover` },
+      }),
+      welcomeCard({
+        emoji: '📅',
+        eyebrow: 'MY BOOKINGS',
+        title: '我的預約',
+        desc: '即時查詢、取消、改期紀錄',
+        ctaLabel: '查看預約',
+        ctaAction: { type: 'message', text: '我的預約' },
+      }),
+      welcomeCard({
+        emoji: '💬',
+        eyebrow: 'FAQ',
+        title: '常見問題',
+        desc: '預約 / 付款 / 改期，傳關鍵字即可',
+        ctaLabel: '問問看',
+        ctaAction: { type: 'message', text: '客服' },
+      }),
+      welcomeCard({
+        emoji: '🌿',
+        eyebrow: 'SUPPORT',
+        title: '聯絡 MooLah',
+        desc: '需要協助？直接傳訊息給我們',
+        ctaLabel: '聯絡客服',
+        ctaAction: { type: 'message', text: '聯絡客服' },
+      }),
+    ],
   }
 }
 

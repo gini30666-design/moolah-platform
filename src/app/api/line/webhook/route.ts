@@ -15,6 +15,8 @@ import {
   buildRebookFlex,
   buildFaqFlex,
   buildMapFlex,
+  CUSTOMER_QUICK_REPLY,
+  PROVIDER_QUICK_REPLY,
 } from '@/lib/line'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
@@ -468,7 +470,8 @@ export async function POST(req: NextRequest) {
         await pushFlexMessage(
           event.source.userId,
           '歡迎使用 MooLah 預約系統！',
-          buildWelcomeFlex()
+          buildWelcomeFlex(),
+          CUSTOMER_QUICK_REPLY
         )
         continue
       }
@@ -491,7 +494,7 @@ export async function POST(req: NextRequest) {
           await pushFlexMessage(userId, '今日預約', buildProviderScheduleFlex({
             providerName: provider.name, providerId: provider.providerId,
             rangeLabel: '今日', dateRangeText: t, bookings,
-          }))
+          }), PROVIDER_QUICK_REPLY)
           continue
         }
 
@@ -502,7 +505,7 @@ export async function POST(req: NextRequest) {
           await pushFlexMessage(userId, '明日預約', buildProviderScheduleFlex({
             providerName: provider.name, providerId: provider.providerId,
             rangeLabel: '明日', dateRangeText: t, bookings,
-          }))
+          }), PROVIDER_QUICK_REPLY)
           continue
         }
 
@@ -514,7 +517,7 @@ export async function POST(req: NextRequest) {
           await pushFlexMessage(userId, '本週預約', buildProviderScheduleFlex({
             providerName: provider.name, providerId: provider.providerId,
             rangeLabel: '本週', dateRangeText: `${from.slice(5)} – ${to.slice(5)}`, bookings,
-          }))
+          }), PROVIDER_QUICK_REPLY)
           continue
         }
 
@@ -665,7 +668,7 @@ export async function POST(req: NextRequest) {
       // 我的預約 — 用 push 避免 replyToken 超時（需查 Sheets）
       if (lower.includes('我的預約') || lower.includes('my booking')) {
         const bookings = await getUpcomingBookings(userId)
-        await pushFlexMessage(userId, '我的預約紀錄', buildMyBookingsFlex(bookings))
+        await pushFlexMessage(userId, '我的預約紀錄', buildMyBookingsFlex(bookings), CUSTOMER_QUICK_REPLY)
         continue
       }
 
