@@ -799,6 +799,34 @@ export default function AdminPage() {
   const todayRevenue = todayBookings.reduce((s, b) => s + b.servicePrice, 0)
   const monthRevenue = monthBookings.reduce((s, b) => s + b.servicePrice, 0)
 
+  // ── 回購率分析（#24）— 近 90 天範圍 ──
+  const normalizeName = (s: string) => s.replace(/\s+/g, '').toLowerCase()
+  const past90Start = (() => {
+    const d = new Date(today + 'T12:00:00+08:00'); d.setDate(d.getDate() - 90)
+    return d.toISOString().slice(0, 10)
+  })()
+  const past90Bookings = bookings.filter(b => b.date >= past90Start && b.date <= today && b.status !== 'cancelled')
+  const customerVisits: Record<string, string[]> = {}  // customerKey → dates
+  for (const b of past90Bookings) {
+    const key = (b as { customerLineUserId?: string }).customerLineUserId || normalizeName(b.customerName)
+    if (!customerVisits[key]) customerVisits[key] = []
+    customerVisits[key].push(b.date)
+  }
+  const customerKeys = Object.keys(customerVisits)
+  const repeatCustomers = customerKeys.filter(k => customerVisits[k].length >= 2)
+  const newCustomers = customerKeys.filter(k => customerVisits[k].length === 1)
+  const repeatRate = customerKeys.length === 0 ? 0 : Math.round(repeatCustomers.length / customerKeys.length * 100)
+  // 平均回購間隔（天）
+  const intervals: number[] = []
+  for (const k of repeatCustomers) {
+    const sorted = [...customerVisits[k]].sort()
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = Math.round((new Date(sorted[i]).getTime() - new Date(sorted[i-1]).getTime()) / 86400000)
+      intervals.push(diff)
+    }
+  }
+  const avgInterval = intervals.length === 0 ? 0 : Math.round(intervals.reduce((a, b) => a + b, 0) / intervals.length)
+
   const bookingTabs: { key: BookingTab; label: string }[] = [
     { key: 'timeline', label: '時段視圖' },
     { key: 'today', label: '今日' },
@@ -959,6 +987,48 @@ export default function AdminPage() {
             <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　0% 抽佣 · 不綁約 · 解約提前 1 週通知</span>
           </p>
         </div>
+      </div>
+
+      {/* ── 回購率 dashboard (#24) ── */}
+      <div data-animate data-delay="70" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,0.25)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>回購分析 · 近 90 天</p>
+          <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.42)', letterSpacing: '0.06em' }}>{past90Bookings.length} 筆預約</span>
+        </div>
+        {customerKeys.length === 0 ? (
+          <p style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', textAlign: 'center', padding: '10px 0', lineHeight: 1.6 }}>
+            近 90 天還沒有預約資料<br/>
+            <span style={{ fontSize: '11px', color: 'rgba(251,249,244,0.35)' }}>開始接單後這裡會有完整分析</span>
+          </p>
+        ) : (
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0', alignItems: 'stretch' }}>
+              <div style={{ textAlign: 'center', padding: '4px 4px' }}>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: oak, lineHeight: 1 }}>{repeatRate}<span style={{ fontSize: '1rem', opacity: 0.7 }}>%</span></p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(251,249,244,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回購率</p>
+              </div>
+              <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(166,137,102,0.18)' }}>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: cream, lineHeight: 1 }}>{repeatCustomers.length}</p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(251,249,244,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回頭客</p>
+              </div>
+              <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(166,137,102,0.18)' }}>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: cream, lineHeight: 1 }}>{newCustomers.length}</p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(251,249,244,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>新客</p>
+              </div>
+              <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(166,137,102,0.18)' }}>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: cream, lineHeight: 1 }}>{avgInterval || '—'}<span style={{ fontSize: '0.9rem', opacity: 0.7, marginLeft: '2px' }}>{avgInterval ? '天' : ''}</span></p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(251,249,244,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回購間隔</p>
+              </div>
+            </div>
+            <p style={{ fontSize: '10.5px', color: 'rgba(251,249,244,0.42)', marginTop: '12px', lineHeight: 1.55, textAlign: 'center' }}>
+              {repeatRate >= 50 ? '🌟 黏著度很高，繼續維持品質！' :
+               repeatRate >= 30 ? '👍 回購表現不錯，可加強回訪提醒' :
+               repeatRate >= 15 ? '📈 回購率有成長空間，建議追蹤老客戶' :
+               '💡 多數是新客，思考如何讓他們再來'}
+            </p>
+          </>
+        )}
       </div>
 
       {/* ── Sand content panel ── */}
