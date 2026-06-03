@@ -9,7 +9,7 @@ export async function GET(
 
   const [providerRows, serviceRows, portfolioRows] = await Promise.all([
     getSheetData('providers!A2:T'),
-    getSheetData('services!A2:F'),
+    getSheetData('services!A2:G'),  // G = imageUrl (#11)
     getSheetData('portfolio!A2:D'),
   ])
 
@@ -47,6 +47,7 @@ export async function GET(
       price: Number(row[3]),
       duration: Number(row[4]),
       description: row[5] ?? '',
+      imageUrl: row[6] ?? '',  // #11
     }))
 
   const portfolio = portfolioRows

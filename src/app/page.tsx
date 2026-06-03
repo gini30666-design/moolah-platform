@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import HomeLeadForm from '@/components/HomeLeadForm'
+import TrustBar from '@/components/TrustBar'
+import TestimonialWall from '@/components/TestimonialWall'
 
 const BASE_URL = 'https://moolah-platform.vercel.app'
 
@@ -468,6 +470,7 @@ export default function HomePage() {
       <Nav />
       <main className="pt-16 md:pt-20">
         <Hero />
+        <TrustBar />
         <Marquee />
         <Services />
         <FeatureRow
@@ -514,6 +517,7 @@ export default function HomePage() {
           bg="#f5efe6"
         />
         <Pillars />
+        <TestimonialWall />
         <PartnerCTA />
       </main>
       <Footer />

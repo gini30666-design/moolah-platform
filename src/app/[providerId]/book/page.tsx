@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
-type Service = { id: string; name: string; price: number; duration: number; description?: string }
+type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
 type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
@@ -860,10 +860,17 @@ export default function BookPage() {
         )}
 
         {/* ── Service summary card ─── */}
-        <div data-animate className="mb-5" style={{ background: 'var(--charcoal-deep)', borderRadius: '20px', padding: '22px 22px 18px', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />
+        <div data-animate className="mb-5" style={{ background: 'var(--charcoal-deep)', borderRadius: '20px', padding: service.imageUrl ? '0 0 18px' : '22px 22px 18px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', zIndex: 2 }} />
+          {service.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={service.imageUrl} alt={service.name} style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }} />
+          )}
+          {service.imageUrl && (
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '180px', background: 'linear-gradient(to bottom, transparent 60%, rgba(26,23,20,0.55))', pointerEvents: 'none' }} />
+          )}
           <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', padding: service.imageUrl ? '18px 22px 0' : '0' }}>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: '9px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px' }}>預約服務</p>
               <p className="font-display" style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px' }}>{service.name}</p>
@@ -893,8 +900,14 @@ export default function BookPage() {
                 const sel = service.id === s.id
                 return (
                   <button key={s.id} type="button" onClick={() => setService(s)}
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderRadius: '14px', cursor: 'pointer', border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.2)', background: sel ? 'rgba(44,40,37,0.04)' : 'rgba(255,255,255,0.7)', transition: 'all 0.2s ease' }}>
-                    <div>
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', borderRadius: '14px', cursor: 'pointer', border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.2)', background: sel ? 'rgba(44,40,37,0.04)' : 'rgba(255,255,255,0.7)', transition: 'all 0.2s ease', gap: '12px' }}>
+                    {s.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.imageUrl} alt={s.name} style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', flexShrink: 0 }} />
+                    ) : (
+                      <div style={{ width: '52px', height: '52px', borderRadius: '10px', background: 'repeating-linear-gradient(135deg, #efe6da 0 8px, #e6dccd 8px 16px)', flexShrink: 0 }} />
+                    )}
+                    <div style={{ flex: 1, textAlign: 'left' }}>
                       <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>{s.name}</p>
                       <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>{s.duration} 分鐘</p>
                     </div>

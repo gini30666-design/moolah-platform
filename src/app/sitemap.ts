@@ -7,6 +7,11 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: base,                             lastModified: new Date('2026-05-18'), changeFrequency: 'weekly',  priority: 1.0 },
   { url: `${base}/discover`,               lastModified: new Date('2026-05-18'), changeFrequency: 'daily',   priority: 0.9 },
   { url: `${base}/services`,               lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
+  // Category landing pages (#4)
+  { url: `${base}/services/hair-stylist`,  lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/pet-grooming`,  lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/auto-detailing`,lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/nail`,          lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/join`,                   lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
   { url: `${base}/features/booking`,       lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/scheduling`,    lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
