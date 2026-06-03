@@ -550,6 +550,127 @@ export function buildReviewFlex(params: {
 }
 
 // ── 預設回覆 Flex ──────────────────────────────────────────────────────────
+// ── 設計師：今日/明日/本週排程 Flex ─────────────────────────────────────────
+export function buildProviderScheduleFlex(params: {
+  providerName: string
+  providerId: string
+  rangeLabel: string  // 例「今日」「明日」「本週」
+  dateRangeText: string  // 例「2026-06-03」「6/3 - 6/9」
+  bookings: Array<{
+    date: string
+    time: string
+    customerName: string
+    serviceName: string
+    customerPhone?: string
+  }>
+}): object {
+  const { providerName, providerId, rangeLabel, dateRangeText, bookings } = params
+  const hasBookings = bookings.length > 0
+
+  const items = hasBookings
+    ? bookings.slice(0, 8).flatMap((b, i) => [
+        ...(i > 0 ? [{ type: 'separator' as const, margin: 'md' as const }] : []),
+        {
+          type: 'box' as const,
+          layout: 'vertical' as const,
+          spacing: 'xs' as const,
+          margin: 'md' as const,
+          contents: [
+            {
+              type: 'box' as const,
+              layout: 'horizontal' as const,
+              contents: [
+                { type: 'text' as const, text: `${b.date.slice(5)} ${b.time}`, size: 'sm' as const, weight: 'bold' as const, color: '#A68966', flex: 0 },
+                { type: 'text' as const, text: `  ${b.customerName}`, size: 'sm' as const, color: '#2C2825', flex: 1 },
+              ],
+            },
+            { type: 'text' as const, text: b.serviceName + (b.customerPhone ? `　·　${b.customerPhone}` : ''), size: 'xs' as const, color: '#888' },
+          ],
+        },
+      ])
+    : []
+
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'none',
+      contents: [
+        { type: 'text', text: `${rangeLabel}預約`, weight: 'bold', size: 'xl', color: '#2C2825' },
+        { type: 'text', text: `${providerName}　·　${dateRangeText}`, size: 'xs', color: '#888', margin: 'sm' },
+        ...(hasBookings
+          ? [
+              { type: 'text', text: `共 ${bookings.length} 筆`, size: 'sm', color: '#A68966', margin: 'sm', weight: 'bold' as const },
+              { type: 'separator', margin: 'xl' },
+              ...items,
+              ...(bookings.length > 8 ? [{ type: 'text', text: `… 還有 ${bookings.length - 8} 筆，請進後台查看`, size: 'xs' as const, color: '#bbb', margin: 'lg' as const }] : []),
+            ]
+          : [
+              { type: 'separator', margin: 'xl' },
+              { type: 'text', text: `${rangeLabel}沒有預約 ✓`, size: 'sm', color: '#888', margin: 'md', wrap: true },
+              { type: 'text', text: '可以休息或補上社群貼文～', size: 'xs', color: '#bbb', margin: 'sm' },
+            ]),
+      ],
+    },
+    footer: {
+      type: 'box', layout: 'vertical', paddingAll: '16px',
+      contents: [
+        { type: 'button', action: { type: 'uri', label: '進入後台管理', uri: `${BASE_URL}/${providerId}/admin` }, style: 'primary', color: '#A68966', height: 'sm' },
+      ],
+    },
+  }
+}
+
+// ── 設計師：查詢客人歷史 Flex ──────────────────────────────────────────────
+export function buildCustomerHistoryFlex(params: {
+  customerName: string
+  found: boolean
+  totalVisits?: number
+  lastVisitDate?: string
+  recentBookings?: Array<{ date: string; time: string; serviceName: string; status: string }>
+}): object {
+  const { customerName, found, totalVisits, lastVisitDate, recentBookings } = params
+
+  if (!found) {
+    return {
+      type: 'bubble',
+      body: {
+        type: 'box', layout: 'vertical', paddingAll: '20px',
+        contents: [
+          { type: 'text', text: `找不到「${customerName}」`, weight: 'bold', size: 'lg', color: '#2C2825' },
+          { type: 'text', text: '可能此客人尚未預約過，或姓名拼字不同。', size: 'sm', color: '#888', margin: 'md', wrap: true },
+          { type: 'text', text: '可至後台「預約管理」搜尋更完整紀錄。', size: 'xs', color: '#bbb', margin: 'lg' },
+        ],
+      },
+    }
+  }
+
+  const items = (recentBookings ?? []).slice(0, 5).flatMap((b, i) => [
+    ...(i > 0 ? [{ type: 'separator' as const, margin: 'sm' as const }] : []),
+    {
+      type: 'box' as const, layout: 'horizontal' as const, margin: 'sm' as const,
+      contents: [
+        { type: 'text' as const, text: b.date, size: 'xs' as const, color: '#A68966', flex: 0 },
+        { type: 'text' as const, text: `  ${b.serviceName}`, size: 'xs' as const, color: '#2C2825', flex: 1 },
+        { type: 'text' as const, text: b.status === 'cancelled' ? '取消' : b.status === 'no_show' ? 'no-show' : '完成', size: 'xs' as const, color: b.status === 'no_show' ? '#c25' : '#888', align: 'end' as const, flex: 0 },
+      ],
+    },
+  ])
+
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'none',
+      contents: [
+        { type: 'text', text: customerName, weight: 'bold', size: 'xl', color: '#2C2825' },
+        { type: 'text', text: `累計到訪 ${totalVisits} 次　·　最後 ${lastVisitDate}`, size: 'xs', color: '#888', margin: 'sm' },
+        { type: 'separator', margin: 'xl' },
+        { type: 'text', text: '最近 5 筆紀錄', size: 'xs', color: '#A68966', margin: 'lg', weight: 'bold' as const },
+        ...items,
+      ],
+    },
+  }
+}
+
 export function buildDefaultFlex(): object {
   return {
     type: 'bubble',
