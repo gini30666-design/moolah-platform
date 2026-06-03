@@ -14,6 +14,7 @@ import {
   buildCustomerHistoryFlex,
   buildRebookFlex,
   buildFaqFlex,
+  buildMapFlex,
 } from '@/lib/line'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
@@ -332,6 +333,35 @@ async function findRecentBookingForNoShow(providerId: string, customerName: stri
   }
 }
 
+async function getNextBookingWithAddress(lineUserId: string) {
+  const today = todayTW()
+  const [bookingRows, providerRows] = await Promise.all([
+    getSheetData('bookings!A2:M'),
+    getSheetData('providers!A2:H'),  // need address (H) and storeName (G)
+  ])
+
+  const upcoming = bookingRows
+    .filter(r => r[4] === lineUserId && r[5] >= today && (r[12] ?? '') !== 'cancelled')
+    .sort((a, b) => (a[5] + a[6]).localeCompare(b[5] + b[6]))
+
+  if (upcoming.length === 0) return { found: false as const }
+
+  const b = upcoming[0]
+  const provider = providerRows.find(p => p[0] === b[1])
+  const address = (provider?.[7] as string) ?? ''
+
+  if (!address) return { found: false as const }
+
+  return {
+    found: true as const,
+    providerName: (provider?.[1] as string) ?? '',
+    storeName: (provider?.[6] as string) ?? '',
+    address,
+    date: b[5] as string,
+    time: b[6] as string,
+  }
+}
+
 async function getLastBookingForCustomer(lineUserId: string) {
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
     getSheetData('bookings!A2:M'),
@@ -537,6 +567,21 @@ export async function POST(req: NextRequest) {
       }
 
       // ── 顧客端關鍵字 ────────────────────────────────────────────────────
+      // 地圖一鍵導航（#18）
+      if (
+        lower.includes('地圖') ||
+        lower.includes('怎麼去') ||
+        lower.includes('店在哪') ||
+        lower.includes('地址') ||
+        lower.includes('位置') ||
+        lower === 'map' ||
+        lower === 'location'
+      ) {
+        const next = await getNextBookingWithAddress(userId)
+        await pushFlexMessage(userId, '前往店家', buildMapFlex(next))
+        continue
+      }
+
       // 快速再預約（#1）— 一鍵帶入上次同款設計師 + 同款服務
       if (
         lower.includes('再約') ||

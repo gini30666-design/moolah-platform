@@ -550,6 +550,72 @@ export function buildReviewFlex(params: {
 }
 
 // ── 預設回覆 Flex ──────────────────────────────────────────────────────────
+// ── 地圖/位置 Flex ─────────────────────────────────────────────────────────
+export function buildMapFlex(params: {
+  found: boolean
+  storeName?: string
+  providerName?: string
+  address?: string
+  date?: string
+  time?: string
+}): object {
+  const { found, storeName, providerName, address, date, time } = params
+
+  if (!found) {
+    return {
+      type: 'bubble',
+      body: {
+        type: 'box', layout: 'vertical', paddingAll: '20px',
+        contents: [
+          { type: 'text', text: '沒有即將到來的預約', weight: 'bold', size: 'lg', color: '#2C2825' },
+          { type: 'text', text: '預約完成後系統可以告訴你怎麼去。', size: 'sm', color: '#888', margin: 'md', wrap: true },
+        ],
+      },
+      footer: {
+        type: 'box', layout: 'vertical', paddingAll: '16px',
+        contents: [
+          { type: 'button', action: { type: 'uri', label: '探索職人', uri: `${BASE_URL}/discover` }, style: 'primary', color: '#A68966', height: 'sm' },
+        ],
+      },
+    }
+  }
+
+  const display = storeName || providerName || '設計師'
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address ?? '')}`
+
+  return {
+    type: 'bubble',
+    header: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', backgroundColor: '#2C2825',
+      contents: [
+        { type: 'text', text: 'NAVIGATION', size: 'xs', color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' },
+        { type: 'text', text: '前往店家', weight: 'bold' as const, size: 'xl', color: '#fbf9f4', margin: 'sm' },
+      ],
+    },
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'md',
+      contents: [
+        { type: 'text', text: `${date}　${time}`, size: 'sm', color: '#A68966', weight: 'bold' as const },
+        { type: 'text', text: display, weight: 'bold' as const, size: 'lg', color: '#2C2825' },
+        { type: 'separator', margin: 'md' },
+        {
+          type: 'box', layout: 'horizontal', spacing: 'sm', margin: 'md',
+          contents: [
+            { type: 'text', text: '📍', size: 'sm', flex: 0 },
+            { type: 'text', text: address ?? '', size: 'sm', color: '#555', wrap: true, flex: 1 },
+          ],
+        },
+      ],
+    },
+    footer: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
+      contents: [
+        { type: 'button', action: { type: 'uri', label: 'Google Maps 導航', uri: mapUrl }, style: 'primary', color: '#A68966', height: 'sm' },
+      ],
+    },
+  }
+}
+
 // ── FAQ 答覆 Flex（通用版型）──────────────────────────────────────────────
 type FaqAction = { label: string; uri?: string; text?: string }
 export function buildFaqFlex(params: {
