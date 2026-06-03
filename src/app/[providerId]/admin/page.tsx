@@ -1243,6 +1243,25 @@ export default function AdminPage() {
         <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.25)', letterSpacing: '0.14em', textTransform: 'uppercase', position: 'relative' }}>MooLah · 合作夥伴後台</p>
       </div>
 
+      {/* ── 嵌入到 IG/網站 widget snippet (#30) ── */}
+      <details style={{ margin: '0 16px 24px', padding: '14px 18px', background: 'rgba(166,137,102,0.08)', border: '1px solid rgba(166,137,102,0.25)', borderRadius: '12px' }}>
+        <summary style={{ cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: oak, letterSpacing: '0.06em', listStyle: 'none' }}>
+          📌 嵌入到 IG bio / 自己網站
+        </summary>
+        <div style={{ marginTop: '12px', fontSize: '11px', color: 'rgba(44,40,37,0.7)', lineHeight: 1.7 }}>
+          <p style={{ marginBottom: '10px' }}>把以下程式碼貼到你的網站，客人可直接看到最近可預約時段：</p>
+          <pre style={{ background: '#2C2825', color: '#A68966', padding: '12px', borderRadius: '8px', fontSize: '10.5px', overflowX: 'auto', fontFamily: 'ui-monospace, Menlo, monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
+{`<iframe src="https://moolah-platform.vercel.app/embed/${providerId}" width="360" height="540" frameborder="0" style="border:0;border-radius:14px;"></iframe>`}
+          </pre>
+          <p style={{ marginTop: '8px', fontSize: '10px', color: 'rgba(44,40,37,0.5)' }}>
+            或直接分享連結：
+            <a href={`/embed/${providerId}`} target="_blank" rel="noopener noreferrer" style={{ color: oak, marginLeft: '4px', textDecoration: 'underline' }}>
+              預覽 widget →
+            </a>
+          </p>
+        </div>
+      </details>
+
       {/* ── Customer History Sheet ── */}
       {customerSheet && (
         <CustomerSheet booking={customerSheet} allBookings={bookings} onClose={() => setCustomerSheet(null)} providerId={providerId} />
