@@ -550,6 +550,49 @@ export function buildReviewFlex(params: {
 }
 
 // ── 預設回覆 Flex ──────────────────────────────────────────────────────────
+// ── FAQ 答覆 Flex（通用版型）──────────────────────────────────────────────
+type FaqAction = { label: string; uri?: string; text?: string }
+export function buildFaqFlex(params: {
+  title: string
+  eyebrow?: string
+  bodyLines: string[]
+  primaryAction?: FaqAction
+  secondaryAction?: FaqAction
+}): object {
+  const { title, eyebrow, bodyLines, primaryAction, secondaryAction } = params
+
+  const actionToButton = (a: FaqAction, style: 'primary' | 'link', color: string) => ({
+    type: 'button' as const,
+    action: a.uri
+      ? { type: 'uri' as const, label: a.label, uri: a.uri }
+      : { type: 'message' as const, label: a.label, text: a.text ?? a.label },
+    style, color, height: 'sm' as const,
+  })
+
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'sm',
+      contents: [
+        ...(eyebrow ? [{ type: 'text' as const, text: eyebrow, size: 'xs' as const, color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' }] : []),
+        { type: 'text', text: title, weight: 'bold' as const, size: 'lg' as const, color: '#2C2825', margin: 'sm' as const },
+        { type: 'separator', margin: 'md' as const },
+        ...bodyLines.map((line, i) => ({
+          type: 'text' as const, text: line, size: 'sm' as const, color: '#555',
+          margin: i === 0 ? 'lg' as const : 'sm' as const, wrap: true,
+        })),
+      ],
+    },
+    footer: (primaryAction || secondaryAction) ? {
+      type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
+      contents: [
+        ...(primaryAction ? [actionToButton(primaryAction, 'primary', '#A68966')] : []),
+        ...(secondaryAction ? [actionToButton(secondaryAction, 'link', '#888')] : []),
+      ],
+    } : undefined,
+  }
+}
+
 // ── 顧客：快速再預約 Flex ──────────────────────────────────────────────────
 export function buildRebookFlex(params: {
   hasLast: boolean

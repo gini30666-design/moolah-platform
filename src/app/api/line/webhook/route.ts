@@ -12,7 +12,138 @@ import {
   buildProviderScheduleFlex,
   buildCustomerHistoryFlex,
   buildRebookFlex,
+  buildFaqFlex,
 } from '@/lib/line'
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
+
+// ── FAQ 條目（關鍵字 → 答覆）─────────────────────────────────────────────
+// 順序：先比對的優先；複合關鍵字寫在前面避免被單字搶走
+type FaqEntry = {
+  keywords: string[]
+  build: () => object
+}
+
+const FAQ_ENTRIES: FaqEntry[] = [
+  // 改期 / 改時間
+  {
+    keywords: ['改期', '改時間', '改預約', '改一下', 'reschedule'],
+    build: () => buildFaqFlex({
+      eyebrow: 'FAQ',
+      title: '怎麼改期？',
+      bodyLines: [
+        '系統目前無法直接改期，請以下列方式處理：',
+        '① 進「我的預約」取消原本的預約',
+        '② 重新選擇新的時段下單',
+        '※ 若距離原預約 < 2 小時，請直接聯絡設計師',
+      ],
+      primaryAction: { label: '進入我的預約', uri: `${BASE_URL}/my-bookings` },
+      secondaryAction: { label: '聯絡 MooLah 客服', text: '聯絡客服' },
+    }),
+  },
+  // 付款方式
+  {
+    keywords: ['付款', '怎麼付', '怎麼收費', '收費方式', '可以刷卡嗎', '現金'],
+    build: () => buildFaqFlex({
+      eyebrow: 'FAQ',
+      title: '怎麼付款？',
+      bodyLines: [
+        'MooLah 不收任何預付金或手續費。',
+        '所有服務費用「到店後」由設計師直接收取（現金 / LINE Pay / 設計師接受的方式）。',
+        '價格在預約頁與「我的預約」均可查看。',
+      ],
+      primaryAction: { label: '我的預約', uri: `${BASE_URL}/my-bookings` },
+    }),
+  },
+  // 找設計師 / 怎麼找
+  {
+    keywords: ['找設計師', '怎麼找', '找職人', '推薦設計師', '推薦職人', '哪位'],
+    build: () => buildFaqFlex({
+      eyebrow: 'FAQ',
+      title: '怎麼找設計師？',
+      bodyLines: [
+        '點下方「探索職人」，依「類別 → 縣市」三步驟即可看到合作職人列表。',
+        '每位職人都有完整作品集、評價與服務項目可供參考。',
+      ],
+      primaryAction: { label: '探索職人', uri: `${BASE_URL}/discover` },
+    }),
+  },
+  // 發票
+  {
+    keywords: ['發票', '收據', '報帳', 'invoice'],
+    build: () => buildFaqFlex({
+      eyebrow: 'FAQ',
+      title: '可以開發票嗎？',
+      bodyLines: [
+        '若需要服務費發票或收據，請直接向設計師索取（每位設計師營業狀態不同）。',
+        'MooLah 平台月費（限合作設計師）由永翔數位有限公司開立電子發票。',
+      ],
+      secondaryAction: { label: '聯絡 MooLah 客服', text: '聯絡客服' },
+    }),
+  },
+  // 客服 / 聯絡
+  {
+    keywords: ['客服', '聯絡客服', '聯絡', '人工', '客訴', '不滿意'],
+    build: () => buildFaqFlex({
+      eyebrow: 'SUPPORT',
+      title: '聯絡 MooLah',
+      bodyLines: [
+        '✉️  moolah118@gmail.com',
+        '🕐 客服時間：每日 09:00 – 21:00',
+        '若是「預約 / 設計師相關問題」，請先點下方按鈕加入合作 LINE 客服。',
+      ],
+      primaryAction: { label: '加入客服 LINE', uri: 'https://line.me/R/ti/p/@492ejbwx' },
+    }),
+  },
+  // 我的後台（設計師）
+  {
+    keywords: ['我的後台', 'dashboard'],
+    build: () => buildFaqFlex({
+      eyebrow: 'PROVIDER',
+      title: '進入設計師後台',
+      bodyLines: [
+        '點下方按鈕，系統會自動以您的 LINE 帳號識別並跳轉到您的後台。',
+        '若顯示「尚未綁定」，請先完成 /claim 認領流程。',
+      ],
+      primaryAction: { label: '進入後台', uri: `${BASE_URL}/dashboard` },
+    }),
+  },
+  // 會員 / 注冊
+  {
+    keywords: ['會員', '註冊', '註冊帳號', 'sign up', 'register'],
+    build: () => buildFaqFlex({
+      eyebrow: 'FAQ',
+      title: '不用註冊',
+      bodyLines: [
+        'MooLah 不需要註冊帳號 — 加 LINE 好友就能直接預約。',
+        '你的 LINE 大頭貼即是你的識別，預約紀錄會自動綁定。',
+      ],
+      primaryAction: { label: '開始預約', uri: `${BASE_URL}/discover` },
+    }),
+  },
+  // 隱私 / 個資
+  {
+    keywords: ['隱私', '個資', '個人資料', 'privacy'],
+    build: () => buildFaqFlex({
+      eyebrow: 'PRIVACY',
+      title: '你的資料安全',
+      bodyLines: [
+        'MooLah 僅收集預約必要資料（姓名 / 聯絡方式 / LINE userId）。',
+        '不出售、不外流給第三方。完整政策請見下方連結。',
+      ],
+      primaryAction: { label: '閱讀隱私政策', uri: `${BASE_URL}/privacy` },
+    }),
+  },
+]
+
+function matchFaq(lower: string, raw: string): FaqEntry | null {
+  for (const entry of FAQ_ENTRIES) {
+    if (entry.keywords.some(kw => lower.includes(kw) || raw.includes(kw))) {
+      return entry
+    }
+  }
+  return null
+}
 import { getSheetData } from '@/lib/sheets'
 
 async function getUpcomingBookings(lineUserId: string) {
@@ -243,6 +374,15 @@ export async function POST(req: NextRequest) {
       if (lower.includes('我的預約') || lower.includes('my booking')) {
         const bookings = await getUpcomingBookings(userId)
         await pushFlexMessage(userId, '我的預約紀錄', buildMyBookingsFlex(bookings))
+        continue
+      }
+
+      // FAQ 大擴充（#2）— 在「取消」/「預約」廣義關鍵字之前比對，避免被誤捕
+      const faqMatch = matchFaq(lower, userText)
+      if (faqMatch) {
+        await replyMessage(replyToken, [
+          { type: 'flex', altText: 'MooLah 常見問題', contents: faqMatch.build() },
+        ])
         continue
       }
 
