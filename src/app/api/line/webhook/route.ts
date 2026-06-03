@@ -144,7 +144,7 @@ function matchFaq(lower: string, raw: string): FaqEntry | null {
   }
   return null
 }
-import { getSheetData } from '@/lib/sheets'
+import { getSheetData, updateBookingStatus } from '@/lib/sheets'
 
 async function getUpcomingBookings(lineUserId: string) {
   const today = new Date().toISOString().split('T')[0]
@@ -210,6 +210,37 @@ async function getProviderBookingsForRange(providerId: string, fromDate: string,
         customerPhone: (r[11] as string) ?? '',
       }
     })
+}
+
+// 找最近一筆「該客人對該設計師」的 booking 用於 no-show 標記
+// 優先：今日 → 昨日 → 前 3 天範圍內最近的一筆 confirmed
+async function findRecentBookingForNoShow(providerId: string, customerName: string) {
+  const today = todayTW()
+  const threeDaysAgo = addDays(today, -3)
+
+  const rows = await getSheetData('bookings!A2:M')
+  const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+  const needle = norm(customerName)
+
+  const candidates = rows
+    .filter(r =>
+      r[1] === providerId &&
+      norm(r[3] as string).includes(needle) &&
+      (r[5] as string) >= threeDaysAgo &&
+      (r[5] as string) <= today &&
+      (r[12] ?? '') === 'confirmed'
+    )
+    .sort((a, b) => (b[5] + b[6]).localeCompare(a[5] + a[6])) // 最新優先
+
+  if (candidates.length === 0) return null
+
+  const c = candidates[0]
+  return {
+    bookingId: c[0] as string,
+    customerName: c[3] as string,
+    date: c[5] as string,
+    time: c[6] as string,
+  }
 }
 
 async function getLastBookingForCustomer(lineUserId: string) {
@@ -342,6 +373,36 @@ export async function POST(req: NextRequest) {
             providerName: provider.name, providerId: provider.providerId,
             rangeLabel: '本週', dateRangeText: `${from.slice(5)} – ${to.slice(5)}`, bookings,
           }))
+          continue
+        }
+
+        // No-show 一鍵標記（#9）
+        // 格式：「@客名 noshow」「@客名 no-show」「@客名 沒來」「客名 noshow」
+        // 支援 @ 開頭或無 @ 但含 noshow 關鍵字
+        const noShowMatch =
+          userText.match(/^@?(.+?)\s+(?:no[-\s]?show|沒來|缺席)$/i) ||
+          userText.match(/^(?:no[-\s]?show|沒來|缺席)\s+@?(.+)$/i)
+
+        if (noShowMatch) {
+          const customerName = noShowMatch[1].trim()
+          const booking = await findRecentBookingForNoShow(provider.providerId, customerName)
+
+          if (!booking) {
+            await replyMessage(replyToken, [{
+              type: 'text',
+              text: `找不到「${customerName}」近 3 天內的預約。\n如需標記較舊紀錄，請至後台「預約管理」處理。`,
+            }])
+          } else {
+            const ok = await updateBookingStatus(booking.bookingId, 'no_show')
+            if (ok) {
+              await replyMessage(replyToken, [{
+                type: 'text',
+                text: `✓ 已標記 no-show\n\n客人：${booking.customerName}\n時段：${booking.date} ${booking.time}\n\n該時段已釋出，新的預約可進來。`,
+              }])
+            } else {
+              await replyMessage(replyToken, [{ type: 'text', text: '系統錯誤，請至後台手動標記' }])
+            }
+          }
           continue
         }
 
