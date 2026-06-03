@@ -26,6 +26,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Provider or service not found' }, { status: 404 })
   }
 
+  // 黑名單檢查（#19）— 比對 LINE userId 或姓名
+  try {
+    const blacklistRows = await getSheetData('blacklist!A2:E')
+    const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+    const isBlocked = blacklistRows.some(r => {
+      if (r[0] !== providerId) return false
+      const matchById = customerLineUserId && r[1] && r[1] === customerLineUserId
+      const matchByName = customerName && r[2] && norm(r[2] as string) === norm(customerName)
+      return matchById || matchByName
+    })
+    if (isBlocked) {
+      return NextResponse.json({ error: 'Booking not allowed', message: '此設計師目前無法接受您的預約，請改選其他設計師。' }, { status: 403 })
+    }
+  } catch {
+    // blacklist sheet 可能尚未建立，不擋預約
+  }
+
   const bookingId = generateId()
   const createdAt = new Date().toISOString()
 

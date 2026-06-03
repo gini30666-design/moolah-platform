@@ -214,6 +214,29 @@ async function getProviderBookingsForRange(providerId: string, fromDate: string,
     })
 }
 
+// ── #19 黑名單 helpers ─────────────────────────────────────────────────────
+async function findBlacklistEntry(providerId: string, customerName: string) {
+  const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+  const needle = norm(customerName)
+  try {
+    const rows = await getSheetData('blacklist!A2:E')
+    return rows.findIndex(r => r[0] === providerId && norm(r[2] as string).includes(needle))
+  } catch {
+    return -1
+  }
+}
+
+async function getCustomerLineUserId(providerId: string, customerName: string): Promise<string> {
+  // 從歷史預約找出該客人的 lineUserId（最近一筆）
+  const rows = await getSheetData('bookings!A2:M')
+  const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+  const needle = norm(customerName)
+  const found = rows
+    .filter(r => r[1] === providerId && norm(r[3] as string).includes(needle) && (r[4] as string))
+    .sort((a, b) => (b[5] + b[6]).localeCompare(a[5] + a[6]))
+  return (found[0]?.[4] as string) ?? ''
+}
+
 // ── #8 休假快速設定 helpers ────────────────────────────────────────────────
 function pad2(n: number): string { return String(n).padStart(2, '0') }
 
@@ -522,6 +545,50 @@ export async function POST(req: NextRequest) {
             type: 'text',
             text: `✓ 休假已設定\n\n日期：${dateText}\n受影響預約：${affected.length} 筆${affected.length > 0 ? '\n\n已自動取消並推播通知所有客人' : ''}`,
           }])
+          continue
+        }
+
+        // 黑名單 加入 / 移除（#19）
+        // 加入：「黑名單 @客名」「拉黑 @客名 原因說明」
+        // 移除：「移除黑名單 @客名」「解封 @客名」
+        const removeMatch = userText.match(/^(?:移除黑名單|解封|移出黑名單|解除黑名單)\s*@?(.+)$/)
+        const addMatch = userText.match(/^(?:黑名單|拉黑|封鎖)\s+@?(.+?)(?:\s+(.+))?$/)
+
+        if (removeMatch) {
+          const customerName = removeMatch[1].trim()
+          const idx = await findBlacklistEntry(provider.providerId, customerName)
+          if (idx === -1) {
+            await replyMessage(replyToken, [{ type: 'text', text: `「${customerName}」不在黑名單中` }])
+          } else {
+            // 用 updateRow 把該列清空
+            const { updateRow } = await import('@/lib/sheets')
+            await updateRow('blacklist', idx + 2, ['', '', '', '', ''])
+            await replyMessage(replyToken, [{ type: 'text', text: `✓ 已將「${customerName}」從黑名單移除` }])
+          }
+          continue
+        }
+
+        if (addMatch) {
+          const customerName = addMatch[1].trim()
+          const reason = (addMatch[2] ?? '').trim() || '（未填寫原因）'
+          const existing = await findBlacklistEntry(provider.providerId, customerName)
+          if (existing !== -1) {
+            await replyMessage(replyToken, [{ type: 'text', text: `「${customerName}」已在黑名單中` }])
+          } else {
+            const lineId = await getCustomerLineUserId(provider.providerId, customerName)
+            try {
+              await appendRow('blacklist!A:E', [
+                provider.providerId, lineId, customerName, reason, new Date().toISOString(),
+              ])
+              await replyMessage(replyToken, [{
+                type: 'text',
+                text: `✓ 已加入黑名單\n\n客人：${customerName}\n原因：${reason}\n\n該客戶將無法再預約你的服務。`,
+              }])
+            } catch (err) {
+              console.error('[blacklist add]', err)
+              await replyMessage(replyToken, [{ type: 'text', text: '系統錯誤，請至 Google Sheets 確認 blacklist 分頁是否存在' }])
+            }
+          }
           continue
         }
 
