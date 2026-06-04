@@ -29,10 +29,10 @@ function Nav() {
       <div className="max-w-[1440px] mx-auto flex justify-between items-center px-5 md:px-16 h-16 md:h-20">
         <Link href="/" className="font-display text-lg md:text-xl tracking-[.2em] uppercase text-[var(--cream)]">MooLah</Link>
         <div className="hidden md:flex items-center gap-10">
-          <Link href="/how-it-works" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">怎麼用</Link>
-          <Link href="/discover" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">服務類別</Link>
+          <Link href="/how-it-works" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">顧客怎麼用</Link>
+          <Link href="/for-providers" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">設計師加入</Link>
+          <Link href="/discover" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">探索職人</Link>
           <Link href="/services" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">合作方案</Link>
-          <Link href="/join" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">加入合作</Link>
         </div>
         <Link
           href="/discover"
@@ -104,14 +104,15 @@ function Hero() {
             LINE 一鍵預約，讓每次服務都成為享受。<br className="hidden sm:block" />深度整合台灣美業，從此不再手忙腳亂。
           </p>
 
-          {/* CTAs */}
+          {/* CTAs — 雙入口：消費者 vs 設計師 */}
           <div className="anim-fade-up-4 flex flex-wrap items-center gap-3">
             <Link href="/discover" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+              <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
               探索職人
             </Link>
-            <Link href="/discover" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-7 md:px-9 py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.22)' }}>
-              <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', opacity: 0.7 }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
-              瀏覽職人
+            <Link href="/for-providers" className="flex items-center gap-2 text-xs md:text-sm text-[var(--cream)] px-7 md:px-9 py-4 tracking-widest uppercase border hover:border-[var(--oak)] transition-colors" style={{ borderColor: 'rgba(251,249,244,.22)' }}>
+              <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', opacity: 0.7 }}><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
+              設計師加入
             </Link>
           </div>
 
@@ -415,7 +416,7 @@ function Footer() {
         <div data-animate data-delay="200">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['60 秒看懂怎麼用', '/how-it-works'], ['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
+            {[['顧客 · 怎麼用', '/how-it-works'], ['設計師 · 功能介紹', '/for-providers'], ['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>

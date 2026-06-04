@@ -192,6 +192,34 @@ export default function HowItWorksPage() {
           ))}
         </section>
 
+        {/* Consumer Features */}
+        <section style={{ background: cream, padding: '20px 24px 50px' }}>
+          <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
+            <p style={{ fontSize: 11, letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', textAlign: 'center', marginBottom: 14 }}>WHAT YOU GET</p>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.7rem,3.5vw,2.4rem)', color: charcoal, textAlign: 'center', marginBottom: 36, fontWeight: 400 }}>
+              你用 MooLah 預約可以做什麼
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+              {[
+                { e: '🔍', t: '搜尋附近職人', d: '按類別 × 縣市快速篩選，看評價挑職人' },
+                { e: '🎨', t: '作品集 + 評價', d: '挑職人前先看真實作品與星等評分' },
+                { e: '⚡', t: '即時時段查詢', d: '一眼看完最近 14 天的空檔，挑你方便的' },
+                { e: '💬', t: 'LINE 雙向通知', d: '預約成立、前一天提醒、改期通知都自動推播' },
+                { e: '📅', t: '加入行事曆', d: '預約完成自動產生 .ics 檔，加入你的行事曆 APP' },
+                { e: '📍', t: '地圖導航', d: '預約後直接傳「地圖」，跳出 Google Maps 路線' },
+                { e: '🔄', t: '一鍵再約', d: '傳「再約」帶入上次同款設計師，2 個 tap 完成' },
+                { e: '❓', t: '智能 FAQ', d: '傳「改期」「付款」「客服」即時得到答案' },
+              ].map((f, i) => (
+                <div key={i} style={{ background: 'white', borderRadius: '14px', padding: '20px 20px', border: `1px solid ${oak}22` }}>
+                  <p style={{ fontSize: '24px', marginBottom: '8px' }}>{f.e}</p>
+                  <p style={{ fontSize: '14px', fontWeight: 700, color: charcoal, marginBottom: '4px' }}>{f.t}</p>
+                  <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.6)', lineHeight: 1.7 }}>{f.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Promises */}
         <section style={{ background: sand, padding: '50px 24px' }}>
           <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
