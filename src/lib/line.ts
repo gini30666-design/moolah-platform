@@ -135,7 +135,7 @@ function welcomeCard(params: {
         { type: 'text', text: emoji, size: '3xl', align: 'center' as const },
         { type: 'text', text: eyebrow, size: 'xs', color: '#A68966', weight: 'bold' as const, align: 'center' as const, margin: 'md' as const },
         { type: 'text', text: title, weight: 'bold' as const, size: 'lg', color: '#2C2825', align: 'center' as const, margin: 'sm' as const },
-        { type: 'text', text: desc, size: 'xs', color: '#888', wrap: true, align: 'center' as const, margin: 'sm' as const },
+        { type: 'text', text: desc, size: 'xs', color: '#888888', wrap: true, align: 'center' as const, margin: 'sm' as const },
       ],
     },
     footer: {
@@ -202,7 +202,7 @@ function bulletText(text: string) {
     spacing: 'sm',
     contents: [
       { type: 'text', text: '•', size: 'sm', color: '#9b8ea0', flex: 0 },
-      { type: 'text', text, size: 'sm', color: '#555', wrap: true },
+      { type: 'text', text, size: 'sm', color: '#555555', wrap: true },
     ],
   }
 }
@@ -213,8 +213,8 @@ function numberedStep(num: string, text: string) {
     layout: 'horizontal',
     spacing: 'sm',
     contents: [
-      { type: 'text', text: `${num}.`, size: 'sm', color: '#999', flex: 0 },
-      { type: 'text', text, size: 'sm', color: '#555', wrap: true },
+      { type: 'text', text: `${num}.`, size: 'sm', color: '#999999', flex: 0 },
+      { type: 'text', text, size: 'sm', color: '#555555', wrap: true },
     ],
   }
 }
@@ -234,7 +234,7 @@ export function buildStartBookingFlex(): object {
           type: 'text',
           text: '選擇喜愛的職人，輕鬆完成線上預約。',
           size: 'sm',
-          color: '#888',
+          color: '#888888',
           wrap: true,
           margin: 'sm',
         },
@@ -254,7 +254,7 @@ export function buildStartBookingFlex(): object {
           type: 'text',
           text: '全程線上操作，不需電話聯絡',
           size: 'xs',
-          color: '#bbb',
+          color: '#bbbbbb',
           margin: 'xl',
         },
       ],
@@ -323,7 +323,7 @@ export function buildMyBookingsFlex(
               type: 'text' as const,
               text: `${b.providerName}・${b.serviceName}`,
               size: 'xs' as const,
-              color: '#888',
+              color: '#888888',
             },
           ],
         },
@@ -345,7 +345,7 @@ export function buildMyBookingsFlex(
                 type: 'text',
                 text: `即將到來：${bookings.length} 筆`,
                 size: 'sm',
-                color: '#888',
+                color: '#888888',
                 margin: 'sm',
               },
               { type: 'separator', margin: 'xl' },
@@ -356,7 +356,7 @@ export function buildMyBookingsFlex(
                 type: 'text',
                 text: '目前沒有待服務的預約。',
                 size: 'sm',
-                color: '#888',
+                color: '#888888',
                 margin: 'md',
                 wrap: true,
               },
@@ -364,7 +364,7 @@ export function buildMyBookingsFlex(
                 type: 'text',
                 text: '點下方按鈕開始探索職人',
                 size: 'xs',
-                color: '#bbb',
+                color: '#bbbbbb',
                 margin: 'sm',
               },
             ]),
@@ -388,7 +388,7 @@ export function buildMyBookingsFlex(
               type: 'button',
               action: { type: 'uri', label: '繼續預約', uri: `${BASE_URL}/discover` },
               style: 'link',
-              color: '#888',
+              color: '#888888',
               height: 'sm',
             },
           ]
@@ -420,7 +420,7 @@ export function buildCancelFlex(): object {
           type: 'text',
           text: '前往「我的預約」頁面，一鍵取消指定預約。',
           size: 'sm',
-          color: '#888',
+          color: '#888888',
           wrap: true,
           margin: 'sm',
         },
@@ -440,7 +440,7 @@ export function buildCancelFlex(): object {
           type: 'text',
           text: '取消後設計師將自動收到通知，感謝配合',
           size: 'xs',
-          color: '#bbb',
+          color: '#bbbbbb',
           margin: 'xl',
         },
       ],
@@ -477,7 +477,7 @@ export function buildAdminFlex(): object {
           type: 'text',
           text: '查看預約・管理服務・設定排班。',
           size: 'sm',
-          color: '#888',
+          color: '#888888',
           wrap: true,
           margin: 'sm',
         },
@@ -498,7 +498,7 @@ export function buildAdminFlex(): object {
           type: 'text',
           text: '以您的 LINE 帳號登入，自動跳轉至您的後台',
           size: 'xs',
-          color: '#bbb',
+          color: '#bbbbbb',
           margin: 'xl',
         },
       ],
@@ -552,7 +552,7 @@ export function buildReviewFlex(params: {
           type: 'text',
           text: `感謝您 ${date} 與 ${providerName} 的預約`,
           size: 'sm',
-          color: '#888',
+          color: '#888888',
           wrap: true,
           margin: 'sm',
         },
@@ -574,7 +574,7 @@ export function buildReviewFlex(params: {
               type: 'text',
               text: '花 30 秒留下評分，幫助更多人找到優質職人 ✨',
               size: 'xs',
-              color: '#888',
+              color: '#888888',
               wrap: true,
               margin: 'sm',
             },
@@ -625,7 +625,7 @@ export function buildMapFlex(params: {
         type: 'box', layout: 'vertical', paddingAll: '20px',
         contents: [
           { type: 'text', text: '沒有即將到來的預約', weight: 'bold', size: 'lg', color: '#2C2825' },
-          { type: 'text', text: '預約完成後系統可以告訴你怎麼去。', size: 'sm', color: '#888', margin: 'md', wrap: true },
+          { type: 'text', text: '預約完成後系統可以告訴你怎麼去。', size: 'sm', color: '#888888', margin: 'md', wrap: true },
         ],
       },
       footer: {
@@ -659,7 +659,7 @@ export function buildMapFlex(params: {
           type: 'box', layout: 'horizontal', spacing: 'sm', margin: 'md',
           contents: [
             { type: 'text', text: '📍', size: 'sm', flex: 0 },
-            { type: 'text', text: address ?? '', size: 'sm', color: '#555', wrap: true, flex: 1 },
+            { type: 'text', text: address ?? '', size: 'sm', color: '#555555', wrap: true, flex: 1 },
           ],
         },
       ],
@@ -701,7 +701,7 @@ export function buildFaqFlex(params: {
         { type: 'text', text: title, weight: 'bold' as const, size: 'lg' as const, color: '#2C2825', margin: 'sm' as const },
         { type: 'separator', margin: 'md' as const },
         ...bodyLines.map((line, i) => ({
-          type: 'text' as const, text: line, size: 'sm' as const, color: '#555',
+          type: 'text' as const, text: line, size: 'sm' as const, color: '#555555',
           margin: i === 0 ? 'lg' as const : 'sm' as const, wrap: true,
         })),
       ],
@@ -710,7 +710,7 @@ export function buildFaqFlex(params: {
       type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
       contents: [
         ...(primaryAction ? [actionToButton(primaryAction, 'primary', '#A68966')] : []),
-        ...(secondaryAction ? [actionToButton(secondaryAction, 'link', '#888')] : []),
+        ...(secondaryAction ? [actionToButton(secondaryAction, 'link', '#888888')] : []),
       ],
     } : undefined,
   }
@@ -736,7 +736,7 @@ export function buildRebookFlex(params: {
         type: 'box', layout: 'vertical', paddingAll: '20px',
         contents: [
           { type: 'text', text: '還沒有上次的紀錄', weight: 'bold', size: 'lg', color: '#2C2825' },
-          { type: 'text', text: '你還沒在 MooLah 預約過 — 來探索一下吧！', size: 'sm', color: '#888', margin: 'md', wrap: true },
+          { type: 'text', text: '你還沒在 MooLah 預約過 — 來探索一下吧！', size: 'sm', color: '#888888', margin: 'md', wrap: true },
         ],
       },
       footer: {
@@ -764,7 +764,7 @@ export function buildRebookFlex(params: {
     body: {
       type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'md',
       contents: [
-        { type: 'text', text: '你上次預約的是', size: 'sm', color: '#888' },
+        { type: 'text', text: '你上次預約的是', size: 'sm', color: '#888888' },
         {
           type: 'box', layout: 'vertical', spacing: 'xs',
           paddingAll: '14px',
@@ -773,17 +773,17 @@ export function buildRebookFlex(params: {
           contents: [
             { type: 'text', text: display ?? '', weight: 'bold' as const, size: 'md', color: '#2C2825' },
             { type: 'text', text: serviceName ?? '', size: 'sm', color: '#A68966' },
-            { type: 'text', text: `上次：${lastDate}${priceText ? `　·　${priceText}` : ''}`, size: 'xs', color: '#888', margin: 'sm' },
+            { type: 'text', text: `上次：${lastDate}${priceText ? `　·　${priceText}` : ''}`, size: 'xs', color: '#888888', margin: 'sm' },
           ],
         },
-        { type: 'text', text: '一鍵帶入同款設計師、同款服務，只要選個新日期就好。', size: 'xs', color: '#bbb', wrap: true, margin: 'md' },
+        { type: 'text', text: '一鍵帶入同款設計師、同款服務，只要選個新日期就好。', size: 'xs', color: '#bbbbbb', wrap: true, margin: 'md' },
       ],
     },
     footer: {
       type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
       contents: [
         { type: 'button', action: { type: 'uri', label: '重訂同款服務', uri: rebookUrl }, style: 'primary', color: '#A68966', height: 'sm' },
-        { type: 'button', action: { type: 'uri', label: '看看其他職人', uri: `${BASE_URL}/discover` }, style: 'link', color: '#888', height: 'sm' },
+        { type: 'button', action: { type: 'uri', label: '看看其他職人', uri: `${BASE_URL}/discover` }, style: 'link', color: '#888888', height: 'sm' },
       ],
     },
   }
@@ -823,7 +823,7 @@ export function buildProviderScheduleFlex(params: {
                 { type: 'text' as const, text: `  ${b.customerName}`, size: 'sm' as const, color: '#2C2825', flex: 1 },
               ],
             },
-            { type: 'text' as const, text: b.serviceName + (b.customerPhone ? `　·　${b.customerPhone}` : ''), size: 'xs' as const, color: '#888' },
+            { type: 'text' as const, text: b.serviceName + (b.customerPhone ? `　·　${b.customerPhone}` : ''), size: 'xs' as const, color: '#888888' },
           ],
         },
       ])
@@ -835,18 +835,18 @@ export function buildProviderScheduleFlex(params: {
       type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'none',
       contents: [
         { type: 'text', text: `${rangeLabel}預約`, weight: 'bold', size: 'xl', color: '#2C2825' },
-        { type: 'text', text: `${providerName}　·　${dateRangeText}`, size: 'xs', color: '#888', margin: 'sm' },
+        { type: 'text', text: `${providerName}　·　${dateRangeText}`, size: 'xs', color: '#888888', margin: 'sm' },
         ...(hasBookings
           ? [
               { type: 'text', text: `共 ${bookings.length} 筆`, size: 'sm', color: '#A68966', margin: 'sm', weight: 'bold' as const },
               { type: 'separator', margin: 'xl' },
               ...items,
-              ...(bookings.length > 8 ? [{ type: 'text', text: `… 還有 ${bookings.length - 8} 筆，請進後台查看`, size: 'xs' as const, color: '#bbb', margin: 'lg' as const }] : []),
+              ...(bookings.length > 8 ? [{ type: 'text', text: `… 還有 ${bookings.length - 8} 筆，請進後台查看`, size: 'xs' as const, color: '#bbbbbb', margin: 'lg' as const }] : []),
             ]
           : [
               { type: 'separator', margin: 'xl' },
-              { type: 'text', text: `${rangeLabel}沒有預約 ✓`, size: 'sm', color: '#888', margin: 'md', wrap: true },
-              { type: 'text', text: '可以休息或補上社群貼文～', size: 'xs', color: '#bbb', margin: 'sm' },
+              { type: 'text', text: `${rangeLabel}沒有預約 ✓`, size: 'sm', color: '#888888', margin: 'md', wrap: true },
+              { type: 'text', text: '可以休息或補上社群貼文～', size: 'xs', color: '#bbbbbb', margin: 'sm' },
             ]),
       ],
     },
@@ -876,8 +876,8 @@ export function buildCustomerHistoryFlex(params: {
         type: 'box', layout: 'vertical', paddingAll: '20px',
         contents: [
           { type: 'text', text: `找不到「${customerName}」`, weight: 'bold', size: 'lg', color: '#2C2825' },
-          { type: 'text', text: '可能此客人尚未預約過，或姓名拼字不同。', size: 'sm', color: '#888', margin: 'md', wrap: true },
-          { type: 'text', text: '可至後台「預約管理」搜尋更完整紀錄。', size: 'xs', color: '#bbb', margin: 'lg' },
+          { type: 'text', text: '可能此客人尚未預約過，或姓名拼字不同。', size: 'sm', color: '#888888', margin: 'md', wrap: true },
+          { type: 'text', text: '可至後台「預約管理」搜尋更完整紀錄。', size: 'xs', color: '#bbbbbb', margin: 'lg' },
         ],
       },
     }
@@ -890,7 +890,7 @@ export function buildCustomerHistoryFlex(params: {
       contents: [
         { type: 'text' as const, text: b.date, size: 'xs' as const, color: '#A68966', flex: 0 },
         { type: 'text' as const, text: `  ${b.serviceName}`, size: 'xs' as const, color: '#2C2825', flex: 1 },
-        { type: 'text' as const, text: b.status === 'cancelled' ? '取消' : b.status === 'no_show' ? 'no-show' : '完成', size: 'xs' as const, color: b.status === 'no_show' ? '#c25' : '#888', align: 'end' as const, flex: 0 },
+        { type: 'text' as const, text: b.status === 'cancelled' ? '取消' : b.status === 'no_show' ? 'no-show' : '完成', size: 'xs' as const, color: b.status === 'no_show' ? '#cc2255' : '#888888', align: 'end' as const, flex: 0 },
       ],
     },
   ])
@@ -901,7 +901,7 @@ export function buildCustomerHistoryFlex(params: {
       type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'none',
       contents: [
         { type: 'text', text: customerName, weight: 'bold', size: 'xl', color: '#2C2825' },
-        { type: 'text', text: `累計到訪 ${totalVisits} 次　·　最後 ${lastVisitDate}`, size: 'xs', color: '#888', margin: 'sm' },
+        { type: 'text', text: `累計到訪 ${totalVisits} 次　·　最後 ${lastVisitDate}`, size: 'xs', color: '#888888', margin: 'sm' },
         { type: 'separator', margin: 'xl' },
         { type: 'text', text: '最近 5 筆紀錄', size: 'xs', color: '#A68966', margin: 'lg', weight: 'bold' as const },
         ...items,
@@ -924,7 +924,7 @@ export function buildDefaultFlex(): object {
           type: 'text',
           text: '請選擇以下服務，或直接輸入問題。',
           size: 'sm',
-          color: '#888',
+          color: '#888888',
           wrap: true,
           margin: 'sm',
         },
