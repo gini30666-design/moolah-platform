@@ -22,22 +22,61 @@ export const metadata: Metadata = {
 }
 
 type Feature = {
-  emoji: string
+  icon: React.ReactNode
   title: string
   desc: string
 }
 
+// 線條圖示元件 — oak 色、細線、24x24 viewBox（match MooLah 視覺）
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none' as const,
+  stroke: 'currentColor',
+  strokeWidth: 1.5,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  style: { width: '24px', height: '24px' },
+}
+
+const IconCalendarSmart = () => (
+  <svg {...iconProps}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 11h18M9 16l2 2 4-4" /></svg>
+)
+const IconLineChat = () => (
+  <svg {...iconProps}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" /></svg>
+)
+const IconWorkPortfolio = () => (
+  <svg {...iconProps}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-5-5L5 21" /></svg>
+)
+const IconChart = () => (
+  <svg {...iconProps}><line x1="3" y1="21" x2="21" y2="21" /><rect x="6" y="13" width="3" height="8" /><rect x="11" y="9" width="3" height="12" /><rect x="16" y="5" width="3" height="16" /></svg>
+)
+const IconRetention = () => (
+  <svg {...iconProps}><path d="M21 12a9 9 0 11-3-6.7" /><polyline points="21 4 21 10 15 10" /></svg>
+)
+const IconShield = () => (
+  <svg {...iconProps}><path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z" /><line x1="9" y1="12" x2="15" y2="12" /></svg>
+)
+const IconBolt = () => (
+  <svg {...iconProps}><polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2" /></svg>
+)
+const IconCode = () => (
+  <svg {...iconProps}><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+)
+const IconReceipt = () => (
+  <svg {...iconProps}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="8" y1="13" x2="16" y2="13" /><line x1="8" y1="17" x2="13" y2="17" /></svg>
+)
+
 // 功能介紹 — 只講「能做什麼」、不講「怎麼做」（避免抄襲）
 const FEATURES: Feature[] = [
-  { emoji: '📅', title: '智慧時段管理', desc: '自動排程、衝突阻擋、緊湊填補空檔，讓你每天最佳化營收。' },
-  { emoji: '💬', title: 'LINE 雙向通知', desc: '客人預約你收到、你確認客人也收到，前一天系統自動推播提醒。' },
-  { emoji: '⭐', title: '專屬作品頁面', desc: '個人預約頁含作品集、評價、服務項目，貼到 IG bio 即可接案。' },
-  { emoji: '📊', title: '本月對帳儀表板', desc: '今日成交、本月營收、應付月費、回購率一目了然。' },
-  { emoji: '🔄', title: '回購率分析', desc: '近 90 天回頭客 vs 新客比例 + 平均回購間隔，幫你看清經營體質。' },
-  { emoji: '🛡️', title: '客人黑名單', desc: '惡意 no-show 客人系統自動標記，3 次後拒絕再次預約。' },
-  { emoji: '🎯', title: '快捷指令操作', desc: '透過 LINE 一句話完成今日查詢、休假設定、no-show 標記。' },
-  { emoji: '🌐', title: '嵌入式 widget', desc: '把預約時段嵌入你的 IG bio link / 個人網站，零跳轉接單。' },
-  { emoji: '📋', title: '月度自動對帳', desc: '每月 1 號自動生成 PDF 對帳單，LINE 推播給你。' },
+  { icon: <IconCalendarSmart />, title: '智慧時段管理', desc: '自動排程、衝突阻擋、緊湊填補空檔，讓你每天最佳化營收。' },
+  { icon: <IconLineChat />,      title: 'LINE 雙向通知', desc: '客人預約你收到、你確認客人也收到，前一天系統自動推播提醒。' },
+  { icon: <IconWorkPortfolio />, title: '專屬作品頁面', desc: '個人預約頁含作品集、評價、服務項目，貼到 IG bio 即可接案。' },
+  { icon: <IconChart />,         title: '本月對帳儀表板', desc: '今日成交、本月營收、應付月費、回購率一目了然。' },
+  { icon: <IconRetention />,     title: '回購率分析', desc: '近 90 天回頭客 vs 新客比例 + 平均回購間隔，幫你看清經營體質。' },
+  { icon: <IconShield />,        title: '客人黑名單', desc: '惡意 no-show 客人系統自動標記，3 次後拒絕再次預約。' },
+  { icon: <IconBolt />,          title: '快捷指令操作', desc: '透過 LINE 一句話完成今日查詢、休假設定、no-show 標記。' },
+  { icon: <IconCode />,          title: '嵌入式 widget', desc: '把預約時段嵌入你的 IG bio link / 個人網站，零跳轉接單。' },
+  { icon: <IconReceipt />,       title: '月度自動對帳', desc: '每月 1 號自動生成 PDF 對帳單，LINE 推播給你。' },
 ]
 
 const HIGHLIGHTS = [
@@ -147,8 +186,18 @@ export default function ForProvidersPage() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>
               {FEATURES.map(f => (
-                <div key={f.title} style={{ background: 'white', borderRadius: '14px', padding: '22px 22px 20px', border: `1px solid ${oak}22` }}>
-                  <p style={{ fontSize: '28px', marginBottom: '10px' }}>{f.emoji}</p>
+                <div key={f.title} style={{ background: 'white', borderRadius: '14px', padding: '24px 22px 22px', border: `1px solid ${oak}22`, transition: 'all 0.25s' }}>
+                  <div style={{
+                    width: '44px', height: '44px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: `${oak}12`,
+                    color: oak,
+                    borderRadius: '10px',
+                    marginBottom: '14px',
+                    border: `1px solid ${oak}25`,
+                  }}>
+                    {f.icon}
+                  </div>
                   <p style={{ fontSize: '15px', fontWeight: 700, color: charcoal, marginBottom: '6px', letterSpacing: '0.02em' }}>{f.title}</p>
                   <p style={{ fontSize: '12.5px', color: 'rgba(44,40,37,0.6)', lineHeight: 1.7 }}>{f.desc}</p>
                 </div>
