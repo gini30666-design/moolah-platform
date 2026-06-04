@@ -29,10 +29,10 @@ function Nav() {
       <div className="max-w-[1440px] mx-auto flex justify-between items-center px-5 md:px-16 h-16 md:h-20">
         <Link href="/" className="font-display text-lg md:text-xl tracking-[.2em] uppercase text-[var(--cream)]">MooLah</Link>
         <div className="hidden md:flex items-center gap-10">
-          <Link href="/services" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">服務類別</Link>
+          <Link href="/how-it-works" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">怎麼用</Link>
+          <Link href="/discover" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">服務類別</Link>
           <Link href="/services" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">合作方案</Link>
           <Link href="/join" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">加入合作</Link>
-          <Link href="/services#faq" className="text-sm text-[var(--oak-dim)] hover:text-[var(--cream)] transition-colors tracking-wide">常見問題</Link>
         </div>
         <Link
           href="/discover"
@@ -415,7 +415,7 @@ function Footer() {
         <div data-animate data-delay="200">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
+            {[['60 秒看懂怎麼用', '/how-it-works'], ['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>

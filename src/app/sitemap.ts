@@ -6,6 +6,7 @@ const base = 'https://moolah-platform.vercel.app'
 const staticPages: MetadataRoute.Sitemap = [
   { url: base,                             lastModified: new Date('2026-05-18'), changeFrequency: 'weekly',  priority: 1.0 },
   { url: `${base}/discover`,               lastModified: new Date('2026-05-18'), changeFrequency: 'daily',   priority: 0.9 },
+  { url: `${base}/how-it-works`,           lastModified: new Date('2026-06-04'), changeFrequency: 'monthly', priority: 0.9 },
   { url: `${base}/services`,               lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
   // Category landing pages (#4)
   { url: `${base}/services/hair-stylist`,  lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },

@@ -184,12 +184,12 @@ export function buildWelcomeFlex(): object {
         ctaAction: { type: 'message', text: '客服' },
       }),
       welcomeCard({
-        emoji: '🌿',
-        eyebrow: 'SUPPORT',
-        title: '聯絡 MooLah',
-        desc: '需要協助？直接傳訊息給我們',
-        ctaLabel: '聯絡客服',
-        ctaAction: { type: 'message', text: '聯絡客服' },
+        emoji: '🎬',
+        eyebrow: 'HOW IT WORKS',
+        title: '60 秒看懂',
+        desc: '4 步驟學會用 MooLah，新手必看',
+        ctaLabel: '看怎麼用',
+        ctaAction: { type: 'uri', uri: `${BASE_URL}/how-it-works` },
       }),
     ],
   }
