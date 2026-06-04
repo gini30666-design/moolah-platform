@@ -45,7 +45,6 @@ function buildQuickReply(items: QuickReplyItem[]) {
   return {
     items: items.slice(0, 13).map(it => ({
       type: 'action' as const,
-      imageUrl: undefined,
       action: { type: 'message' as const, label: `${it.emoji ?? ''} ${it.label}`.trim().slice(0, 20), text: it.text },
     })),
   }
@@ -134,7 +133,7 @@ function welcomeCard(params: {
       backgroundColor: bgColor ?? '#fbf9f4',
       contents: [
         { type: 'text', text: emoji, size: '3xl', align: 'center' as const },
-        { type: 'text', text: eyebrow, size: 'xs', color: '#A68966', letterSpacing: '0.18em', weight: 'bold' as const, align: 'center' as const, margin: 'md' as const },
+        { type: 'text', text: eyebrow, size: 'xs', color: '#A68966', weight: 'bold' as const, align: 'center' as const, margin: 'md' as const },
         { type: 'text', text: title, weight: 'bold' as const, size: 'lg', color: '#2C2825', align: 'center' as const, margin: 'sm' as const },
         { type: 'text', text: desc, size: 'xs', color: '#888', wrap: true, align: 'center' as const, margin: 'sm' as const },
       ],
@@ -646,7 +645,7 @@ export function buildMapFlex(params: {
     header: {
       type: 'box', layout: 'vertical', paddingAll: '16px', backgroundColor: '#2C2825',
       contents: [
-        { type: 'text', text: 'NAVIGATION', size: 'xs', color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' },
+        { type: 'text', text: 'NAVIGATION', size: 'xs', color: '#A68966', weight: 'bold' as const},
         { type: 'text', text: '前往店家', weight: 'bold' as const, size: 'xl', color: '#fbf9f4', margin: 'sm' },
       ],
     },
@@ -698,7 +697,7 @@ export function buildFaqFlex(params: {
     body: {
       type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'sm',
       contents: [
-        ...(eyebrow ? [{ type: 'text' as const, text: eyebrow, size: 'xs' as const, color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' }] : []),
+        ...(eyebrow ? [{ type: 'text' as const, text: eyebrow, size: 'xs' as const, color: '#A68966', weight: 'bold' as const}] : []),
         { type: 'text', text: title, weight: 'bold' as const, size: 'lg' as const, color: '#2C2825', margin: 'sm' as const },
         { type: 'separator', margin: 'md' as const },
         ...bodyLines.map((line, i) => ({
@@ -758,7 +757,7 @@ export function buildRebookFlex(params: {
     header: {
       type: 'box', layout: 'vertical', paddingAll: '16px', backgroundColor: '#2C2825',
       contents: [
-        { type: 'text', text: 'WELCOME BACK', size: 'xs', color: '#A68966', weight: 'bold' as const, letterSpacing: '0.18em' },
+        { type: 'text', text: 'WELCOME BACK', size: 'xs', color: '#A68966', weight: 'bold' as const},
         { type: 'text', text: '再次預約', weight: 'bold' as const, size: 'xl', color: '#fbf9f4', margin: 'sm' },
       ],
     },
