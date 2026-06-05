@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import JoinForm from '@/components/JoinForm'
+import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
@@ -115,17 +117,10 @@ const FAQ = [
 export default function ForProvidersPage() {
   return (
     <>
-      <main style={{ minHeight: '100vh', background: cream }}>
-        {/* Nav */}
-        <nav style={{ background: charcoalDeep, borderBottom: `1px solid ${oak}33`, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
-          <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', height: '64px' }}>
-            <Link href="/" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', letterSpacing: '0.2em', color: cream, textDecoration: 'none', textTransform: 'uppercase', fontWeight: 600 }}>MOOLAH</Link>
-            <a href="#apply" style={{ background: oak, color: cream, padding: '10px 22px', fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>立即申請</a>
-          </div>
-        </nav>
-
+      <SiteNav />
+      <main style={{ minHeight: '100vh', background: cream }} className="pt-16 md:pt-20">
         {/* Hero */}
-        <section style={{ background: charcoalDeep, padding: '120px 24px 60px', textAlign: 'center', color: cream, position: 'relative', overflow: 'hidden' }}>
+        <section style={{ background: charcoalDeep, padding: '90px 24px 60px', textAlign: 'center', color: cream, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
           <p style={{ fontSize: '11px', letterSpacing: '0.3em', color: oak, textTransform: 'uppercase', marginBottom: '16px' }}>FOR BEAUTY PROFESSIONALS</p>
           <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(2.4rem,7vw,4.5rem)', fontWeight: 300, lineHeight: 1.15, marginBottom: '20px', letterSpacing: '-0.01em' }}>
@@ -284,11 +279,8 @@ export default function ForProvidersPage() {
           ))}
         </section>
 
-        {/* Footer */}
-        <footer style={{ background: charcoalDeep, padding: '32px 24px', textAlign: 'center', color: 'rgba(166,137,102,0.6)', fontSize: '12px' }}>
-          <p>© 2026 永翔數位有限公司 MooLah · <Link href="/" style={{ color: oak, textDecoration: 'none' }}>回首頁</Link> · <Link href="/privacy" style={{ color: oak, textDecoration: 'none' }}>隱私政策</Link> · <Link href="/terms" style={{ color: oak, textDecoration: 'none' }}>使用條款</Link></p>
-        </footer>
       </main>
+      <SiteFooter />
     </>
   )
 }
