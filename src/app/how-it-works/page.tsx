@@ -109,37 +109,55 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* Steps */}
+        {/* Steps — vertical timeline */}
         <section className="py-16 md:py-24 px-5 lg:px-16">
-          <div className="max-w-[1080px] mx-auto">
+          <div className="max-w-[760px] mx-auto">
             <div className="text-center mb-12 md:mb-16">
               <p className="text-xs tracking-[0.28em] uppercase mb-4" style={{ color: oak }}>4 Steps</p>
               <h2 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', color: charcoal, fontWeight: 400 }}>
-                從加好友到收提醒
+                從加好友到<span style={{ fontStyle: 'italic', color: oak }}>收提醒</span>
               </h2>
             </div>
-            <div className="space-y-12 md:space-y-20">
-              {STEPS.map((step, i) => (
-                <div key={step.no} className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16" style={{ flexDirection: i % 2 === 0 ? undefined : 'row-reverse' }}>
-                  {/* 左：大數字 + 圖示 */}
-                  <div className="md:w-2/5 flex items-start gap-6">
+
+            <div style={{ position: 'relative' }}>
+              {/* 垂直連線（連接 4 個步驟的圖示）*/}
+              <div style={{
+                position: 'absolute',
+                left: '31px',
+                top: '32px',
+                bottom: '32px',
+                width: '1.5px',
+                background: `linear-gradient(to bottom, ${oak}55 0%, ${oak}22 50%, ${oak}55 100%)`,
+                zIndex: 0,
+              }} className="hidden sm:block" />
+
+              <ol style={{ listStyle: 'none', padding: 0, margin: 0 }} className="space-y-8 md:space-y-10">
+                {STEPS.map(step => (
+                  <li key={step.no} style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', position: 'relative', zIndex: 1 }}>
+                    {/* 左側 icon 圓圈（壓在垂直線上）*/}
                     <div style={{
                       width: '64px', height: '64px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: `${oak}12`, color: oak,
-                      borderRadius: '14px', border: `1px solid ${oak}30`, flexShrink: 0,
+                      background: cream,
+                      color: oak,
+                      borderRadius: '50%',
+                      border: `1.5px solid ${oak}`,
+                      flexShrink: 0,
+                      boxShadow: `0 0 0 6px ${cream}`,  // 蓋住連線
                     }}>
                       {step.icon}
                     </div>
-                    <p className="font-display" style={{ fontSize: 'clamp(3.4rem,7vw,5rem)', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em', opacity: 0.5 }}>{step.no}</p>
-                  </div>
-                  {/* 右：標題 + 說明 */}
-                  <div className="md:w-3/5">
-                    <h3 className="font-display mb-3" style={{ fontSize: 'clamp(1.5rem,2.5vw,1.9rem)', fontWeight: 500, color: charcoal, lineHeight: 1.3 }}>{step.title}</h3>
-                    <p style={{ fontSize: '15px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.85 }}>{step.desc}</p>
-                  </div>
-                </div>
-              ))}
+                    {/* 右側內容 */}
+                    <div style={{ flex: 1, paddingTop: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: oak, fontWeight: 700 }}>STEP {step.no}</span>
+                      </div>
+                      <h3 className="font-display" style={{ fontSize: 'clamp(1.4rem,2.5vw,1.7rem)', fontWeight: 500, color: charcoal, lineHeight: 1.3, marginBottom: '8px' }}>{step.title}</h3>
+                      <p style={{ fontSize: '14.5px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.85 }}>{step.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </section>
