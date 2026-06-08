@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import MoolahLoader from '@/components/MoolahLoader'
 
@@ -127,17 +127,16 @@ function PortfolioTile({ item, ratio, radius = 14, onOpen, idx }: {
 function ProviderReveal({ name, avatar, startReveal, onDone }: {
   name: string; avatar?: string; startReveal: boolean; onDone: () => void
 }) {
-  const [phase, setPhase] = useState<'m' | 'name' | 'fade'>('m')
+  const [fading, setFading] = useState(false)
   useEffect(() => {
     if (!startReveal) return
-    setPhase('name')
-    const t1 = setTimeout(() => setPhase('fade'), 820)
+    const t1 = setTimeout(() => setFading(true), 820)
     const t2 = setTimeout(onDone, 820 + 480)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [startReveal, onDone])
 
   // 資料未到 / 最短時間未到 → 維持 M 動畫（與 MoolahLoader 視覺一致，銜接無縫）
-  if (phase === 'm') return <MoolahLoader label="正在開啟作品集…" />
+  if (!startReveal) return <MoolahLoader label="正在開啟作品集…" />
 
   return (
     <div
@@ -145,9 +144,9 @@ function ProviderReveal({ name, avatar, startReveal, onDone }: {
       style={{
         position: 'fixed', inset: 0, zIndex: 60, background: '#1a1714',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px',
-        opacity: phase === 'fade' ? 0 : 1,
+        opacity: fading ? 0 : 1,
         transition: 'opacity .48s cubic-bezier(0.4,0,0.2,1)',
-        pointerEvents: phase === 'fade' ? 'none' : 'auto',
+        pointerEvents: fading ? 'none' : 'auto',
         fontFamily: 'var(--font-cormorant), Georgia, serif',
       }}
     >
@@ -180,10 +179,29 @@ export default function ProviderPage() {
   // 進場動畫至少顯示這段時間，避免快速載入時一閃而過顯得草率
   const [minTimePassed, setMinTimePassed] = useState(false)
   const [entranceDone, setEntranceDone] = useState(false)
+  const headerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const t = setTimeout(() => setMinTimePassed(true), 650)
     return () => clearTimeout(t)
   }, [])
+
+  // 頭部微視差：隨滾動緩慢上移並淡出，製造景深（passive + rAF，效能友善）
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const el = headerRef.current
+        if (!el) return
+        const y = window.scrollY
+        el.style.transform = `translate3d(0, ${Math.min(y * 0.14, 60)}px, 0)`
+        el.style.opacity = String(Math.max(0.2, 1 - y / 520))
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
+  }, [entranceDone])
 
   useEffect(() => {
     if (!providerId) return
@@ -240,10 +258,11 @@ export default function ProviderPage() {
       `}</style>
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
-      <div style={{
+      <div ref={headerRef} style={{
         padding: '34px 20px 26px', position: 'relative',
         background: 'radial-gradient(120% 78% at 50% -18%, rgba(166,137,102,0.16), transparent 62%)',
         animation: 'phase-in .55s cubic-bezier(0.16,1,0.3,1)',
+        willChange: 'transform, opacity',
       }}>
         {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
@@ -299,7 +318,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 3. Designer intro dark section ──────────────────────────────── */}
-      <div style={{
+      <div data-animate data-dir="up" style={{
         background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
         padding: '38px 22px 40px', margin: '8px 0',
       }}>
@@ -374,7 +393,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 4. Portfolio section ─────────────────────────────────────────── */}
-      <div style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
+      <div data-animate data-dir="up" style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
             <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>Selected Work</p>
@@ -388,7 +407,7 @@ export default function ProviderPage() {
         {portfolio.length > 0 ? (
           <div style={{ columnCount: 2, columnGap: '10px' }}>
             {portfolio.map((item, i) => (
-              <div key={item.id} style={{ breakInside: 'avoid', marginBottom: '10px' }}>
+              <div key={item.id} data-animate data-dir="scale" data-delay={[50, 100, 150, 200][i % 4]} style={{ breakInside: 'avoid', marginBottom: '10px' }}>
                 <PortfolioTile item={item} ratio={PF_RATIOS[i % PF_RATIOS.length]} radius={14} onOpen={() => setLightbox(i)} idx={i} />
               </div>
             ))}
@@ -401,7 +420,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 5. Closing dark editorial section ───────────────────────────── */}
-      <div style={{
+      <div data-animate data-dir="up" style={{
         background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
         padding: '46px 26px 160px', textAlign: 'center',
       }}>

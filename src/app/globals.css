@@ -28,6 +28,16 @@
 
 html { scroll-behavior: smooth; }
 
+/* ── 微互動：點擊回饋 + 移除行動裝置灰色點擊高光（去廉價感）─────────────── */
+a, button, [role="button"] { -webkit-tap-highlight-color: transparent; }
+button { transition: transform 0.13s cubic-bezier(0.4, 0, 0.2, 1); }
+button:active:not(:disabled) { transform: scale(0.972); }
+.tap-press { transition: transform 0.14s cubic-bezier(0.4, 0, 0.2, 1); }
+.tap-press:active { transform: scale(0.975); }
+@media (prefers-reduced-motion: reduce) {
+  button:active:not(:disabled), .tap-press:active { transform: none; }
+}
+
 body {
   background: var(--cream);
   color: var(--charcoal);

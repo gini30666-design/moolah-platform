@@ -125,7 +125,7 @@ function InspirationPicker({ items, selected, onToggle, max = 2 }: {
   if (!items.length) return null
   return (
     <div>
-      <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '2px 0 10px', margin: '0 -20px', paddingLeft: '20px', paddingRight: '20px', scrollbarWidth: 'none' }}>
+      <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '2px 0 10px', margin: '0 -20px', paddingLeft: '20px', paddingRight: '20px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', scrollSnapType: 'x proximity' }}>
         {items.map(item => {
           const sel = selected.includes(item.id)
           const dim = !sel && selected.length >= max
@@ -134,8 +134,8 @@ function InspirationPicker({ items, selected, onToggle, max = 2 }: {
               style={{
                 flex: '0 0 88px', position: 'relative', height: '110px', borderRadius: '12px', overflow: 'hidden',
                 border: sel ? '2.5px solid var(--oak)' : '2px solid transparent',
-                padding: 0, cursor: dim ? 'default' : 'pointer',
-                opacity: dim ? 0.4 : 1, transition: 'opacity 0.2s, border-color 0.2s', background: '#e0d4c0',
+                padding: 0, cursor: dim ? 'default' : 'pointer', scrollSnapAlign: 'start',
+                opacity: dim ? 0.4 : 1, transition: 'opacity 0.2s, border-color 0.2s, transform 0.13s', background: '#e0d4c0',
               }}>
               {item.imageUrl ? (
                 <img src={item.imageUrl} alt={item.caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
