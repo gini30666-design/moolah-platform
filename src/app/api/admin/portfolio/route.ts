@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSheetData, appendRow, sheets, SHEET_ID } from '@/lib/sheets'
+import { getSheetData, sheets, SHEET_ID } from '@/lib/sheets'
 import { verifyOwner } from '@/lib/auth'
 
 function generatePortfolioId() {
@@ -37,13 +37,22 @@ export async function POST(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const rows = await getSheetData('portfolio!A2:F')
-  const existingCount = rows.filter(r => r[0] === providerId && r[1]).length
+  // 明確計算下一個可寫入列，再用 values.update 寫死範圍 A{n}:F{n}。
+  // 不用 values.append —— 它的「表格自動偵測」在有空白列/稀疏欄位的表上會把整列寫偏。
+  const colA = await getSheetData('portfolio!A:A')  // 含標題列；長度 = 最後一筆非空列號
+  const nextRow = colA.length + 1
+  const dataRows = await getSheetData('portfolio!A2:F')
+  const existingCount = dataRows.filter(r => r[0] === providerId && r[1]).length
 
   const imageId = generatePortfolioId()
-  await appendRow('portfolio!A:F', [
-    providerId, imageId, imageUrl, caption ?? '', String(existingCount), new Date().toISOString(),
-  ])
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `portfolio!A${nextRow}:F${nextRow}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: {
+      values: [[providerId, imageId, imageUrl, caption ?? '', String(existingCount), new Date().toISOString()]],
+    },
+  })
 
   return NextResponse.json({ ok: true, imageId })
 }
