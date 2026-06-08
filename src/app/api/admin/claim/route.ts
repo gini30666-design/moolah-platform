@@ -1,31 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSheetData, sheets, SHEET_ID } from '@/lib/sheets'
+import { NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
-  const { providerId, lineUserId } = await req.json()
-  if (!providerId || !lineUserId) {
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
-  }
-
-  const rows = await getSheetData('providers!A2:E')
-  const rowIndex = rows.findIndex(r => r[0] === providerId)
-  if (rowIndex === -1) {
-    return NextResponse.json({ error: 'Provider not found' }, { status: 404 })
-  }
-
-  const existingUserId = rows[rowIndex][4] ?? ''
-  if (existingUserId && existingUserId !== lineUserId) {
-    return NextResponse.json({ error: 'Already claimed' }, { status: 403 })
-  }
-
-  // Already claimed by same user, or unclaimed — write/confirm
-  const sheetRow = rowIndex + 2 // +1 for header, +1 for 1-based index
-  await sheets.spreadsheets.values.update({
-    spreadsheetId: SHEET_ID,
-    range: `providers!E${sheetRow}`,
-    valueInputOption: 'RAW',
-    requestBody: { values: [[lineUserId]] },
-  })
-
-  return NextResponse.json({ ok: true })
+// 已停用：認領一律走 /api/claim（需同意合約條款）。
+// 此端點過去允許未經保護的自動認領，已移除以防帳號被搶佔。
+export async function POST() {
+  return NextResponse.json({ error: 'gone', message: '請改用 /claim/{providerId} 認領流程' }, { status: 410 })
 }

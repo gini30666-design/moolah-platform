@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
+import { verifyOwner } from '@/lib/auth'
 
 export const maxDuration = 30
 
@@ -8,6 +9,10 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData()
     const file = formData.get('file') as File | null
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+
+    const providerId = formData.get('providerId') as string | null
+    const auth = await verifyOwner(req, providerId)
+    if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
     if (file.size > 4 * 1024 * 1024) {
       return NextResponse.json({ error: '圖片大小不可超過 4MB' }, { status: 400 })

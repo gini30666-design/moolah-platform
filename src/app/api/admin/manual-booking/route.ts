@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 function generateId() {
   return `MN${Date.now()}`
@@ -12,6 +13,9 @@ export async function POST(req: NextRequest) {
   if (!providerId || !serviceId || !date || !time) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const createdAt = new Date().toISOString()
   const bookingId = generateId()

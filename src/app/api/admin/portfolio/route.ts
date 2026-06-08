@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow, sheets, SHEET_ID } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 function generatePortfolioId() {
   return `PFO${Date.now()}`
@@ -9,6 +10,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const providerId = searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('portfolio!A2:F')
   const items = rows
@@ -30,6 +34,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const rows = await getSheetData('portfolio!A2:F')
   const existingCount = rows.filter(r => r[0] === providerId && r[1]).length
 
@@ -46,6 +53,9 @@ export async function DELETE(req: NextRequest) {
   if (!providerId || !imageId) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('portfolio!A2:B')
   const idx = rows.findIndex(r => r[0] === providerId && r[1] === imageId)

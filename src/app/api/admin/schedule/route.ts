@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow, sheets, SHEET_ID } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
@@ -17,6 +18,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const providerId = searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('availability!A2:F')
   const providerRows = rows.filter(r => r[0] === providerId && r[1])
@@ -42,6 +46,9 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const { providerId, schedule, blockedDates } = await req.json()
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('availability!A2:F')
   const indicesToClear: number[] = []

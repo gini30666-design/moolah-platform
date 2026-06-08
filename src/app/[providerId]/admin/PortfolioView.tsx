@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import { authHeader } from '@/lib/clientAuth'
 
 type PortfolioItem = { id: string; imageUrl: string; caption: string; order: number }
 
@@ -26,7 +27,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function fetchItems() {
-    const res = await fetch(`/api/admin/portfolio?providerId=${providerId}`)
+    const res = await fetch(`/api/admin/portfolio?providerId=${providerId}`, { headers: authHeader() })
     const data = await res.json()
     setItems(data.items ?? [])
     setLoading(false)
@@ -44,7 +45,8 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
     const formData = new FormData()
     formData.append('file', file)
-    const uploadRes = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+    formData.append('providerId', providerId)
+    const uploadRes = await fetch('/api/admin/upload', { method: 'POST', headers: authHeader(), body: formData })
     const uploadData = await uploadRes.json()
 
     if (!uploadRes.ok) {
@@ -57,7 +59,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
     setUploadProgress('儲存中...')
     await fetch('/api/admin/portfolio', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageUrl: uploadData.url, caption }),
     })
 
@@ -82,7 +84,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
     await fetch('/api/admin/portfolio', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageUrl, caption }),
     })
 
@@ -98,7 +100,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
     setDeletingId(item.id)
     await fetch('/api/admin/portfolio', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageId: item.id }),
     })
     setDeletingId(null)

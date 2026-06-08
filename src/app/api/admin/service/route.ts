@@ -3,6 +3,7 @@ import {
   getSheetData, appendRow,
   findServiceRow, updateServiceAtRow, clearServiceAtRow,
 } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 function generateServiceId() {
   return `SVC${Date.now()}`
@@ -13,6 +14,10 @@ export async function POST(req: NextRequest) {
   if (!providerId || !name || price == null || !duration) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const serviceId = generateServiceId()
   await appendRow('services!A:F', [
     providerId, serviceId, name, String(price), String(duration), description ?? '',
@@ -25,6 +30,10 @@ export async function PATCH(req: NextRequest) {
   if (!providerId || !serviceId || !name || price == null || !duration) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const serviceRows = await getSheetData('services!A2:F')
   const row = serviceRows.find(r => r[1] === serviceId)
   if (!row || row[0] !== providerId) {
@@ -43,6 +52,10 @@ export async function DELETE(req: NextRequest) {
   if (!providerId || !serviceId) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const serviceRows = await getSheetData('services!A2:F')
   const row = serviceRows.find(r => r[1] === serviceId)
   if (!row || row[0] !== providerId) {

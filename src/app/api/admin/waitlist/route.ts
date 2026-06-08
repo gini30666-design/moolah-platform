@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, updateRow } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const providerId = new URL(req.url).searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ entries: [] })
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('waitlist!A2:J')
   const entries = rows
@@ -26,6 +30,10 @@ export async function PATCH(req: NextRequest) {
   const rows = await getSheetData('waitlist!A2:J')
   const idx = rows.findIndex(r => r[0] === entryId)
   if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  // 從候補資料反查 providerId，確認呼叫者是該店擁有者
+  const auth = await verifyOwner(req, rows[idx][1])
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const r = rows[idx]
   await updateRow('waitlist', idx + 2, [r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], status])

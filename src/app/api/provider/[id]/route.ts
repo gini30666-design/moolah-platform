@@ -21,7 +21,6 @@ export async function GET(
     name: r[1],
     category: r[2],
     description: r[3],
-    lineUserId: r[4],
     avatarUrl: r[5] ?? '',
     storeName: r[6] ?? '',
     address: r[7] ?? '',

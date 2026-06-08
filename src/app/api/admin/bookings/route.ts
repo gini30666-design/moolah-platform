@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const providerId = searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const [bookingRows, serviceRows] = await Promise.all([
     getSheetData('bookings!A2:M'),

@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import liff from '@line/liff'
+import { authHeader } from '@/lib/clientAuth'
 import ScheduleView from './ScheduleView'
 import PortfolioView from './PortfolioView'
 
@@ -71,7 +72,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
   useEffect(() => {
     if (isManual) return
-    fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`)
+    fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`, { headers: authHeader() })
       .then(r => r.json())
       .then(d => { setNoteText(d.note ?? ''); setTags(d.tags ?? []) })
       .catch(() => {})
@@ -81,7 +82,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
     setNoteSaving(true)
     await fetch('/api/admin/customer-note', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText, tags }),
     })
     setNoteSaving(false)
@@ -94,7 +95,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
     setTags(next)
     await fetch('/api/admin/customer-note', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, tags: next }),
     }).catch(() => {})
   }
@@ -232,7 +233,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
     setCancelling(true)
     await fetch('/api/admin/booking', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ bookingId: booking.id, status: 'cancelled' }),
     })
     onCancel(booking.id)
@@ -244,7 +245,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
     setMarkingNoShow(true)
     await fetch('/api/admin/booking', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ bookingId: booking.id, status: 'no_show' }),
     })
     onCancel(booking.id)
@@ -498,7 +499,7 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
     setSubmitting(true)
     const res = await fetch('/api/admin/manual-booking', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, serviceId, customerName, date, time, note }),
     })
     setSubmitting(false)
@@ -601,7 +602,7 @@ function ServiceForm({ service, providerId, onSuccess, onClose }: {
     setSubmitting(true)
     await fetch('/api/admin/service', {
       method: isNew ? 'POST' : 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({
         providerId,
         ...(isNew ? {} : { serviceId: service!.id }),
@@ -669,7 +670,7 @@ function ServiceItem({ service, providerId, onRefresh }: {
     setDeleting(true)
     await fetch('/api/admin/service', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ serviceId: service.id, providerId }),
     })
     setDeleting(false)
@@ -730,7 +731,7 @@ export default function AdminPage() {
   const [removingWL, setRemovingWL] = useState<string | null>(null)
 
   const fetchBookings = useCallback(async () => {
-    const res = await fetch(`/api/admin/bookings?providerId=${providerId}`)
+    const res = await fetch(`/api/admin/bookings?providerId=${providerId}`, { headers: authHeader() })
     const data = await res.json()
     setBookings(data.bookings ?? [])
   }, [providerId])
@@ -742,7 +743,7 @@ export default function AdminPage() {
   }, [providerId])
 
   const fetchWaitlist = useCallback(async () => {
-    const res = await fetch(`/api/admin/waitlist?providerId=${providerId}`)
+    const res = await fetch(`/api/admin/waitlist?providerId=${providerId}`, { headers: authHeader() })
     const data = await res.json()
     setWaitlist(data.entries ?? [])
   }, [providerId])
@@ -756,29 +757,23 @@ export default function AdminPage() {
           window.location.href = '/dashboard'
           return
         }
-        const profile = await liff.getProfile()
-        const lineUserId = profile.userId
-        const res = await fetch(`/api/provider/${providerId}`)
-        const data = await res.json()
+        // 擁有權判斷改由伺服器端（token 認證）決定，不再從公開 API 取得 lineUserId
+        const [provRes, accessRes] = await Promise.all([
+          fetch(`/api/provider/${providerId}`),
+          fetch(`/api/admin/access?providerId=${providerId}`, { headers: authHeader() }),
+        ])
+        const data = await provRes.json()
         setProviderName(data.provider?.name ?? '')
         setServices(data.services ?? [])
-        const storedUserId = data.provider?.lineUserId ?? ''
-        if (storedUserId === lineUserId) {
+
+        const access = await accessRes.json()
+        if (access.status === 'owner') {
           setAuthorized(true)
           await Promise.all([fetchBookings(), fetchWaitlist()])
-        } else if (!storedUserId) {
-          // Unclaimed account — auto-register this LINE user as the owner
-          const claimRes = await fetch('/api/admin/claim', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ providerId, lineUserId }),
-          })
-          if (claimRes.ok) {
-            setAuthorized(true)
-            await fetchBookings()
-          } else {
-            setAuthorized(false)
-          }
+        } else if (access.status === 'unclaimed') {
+          // 尚未認領 — 一律導去合約認領流程（/claim），不在此自動認領
+          window.location.href = `/claim/${providerId}`
+          return
         } else {
           setAuthorized(false)
         }
@@ -1198,7 +1193,7 @@ export default function AdminPage() {
                     <button
                       onClick={async () => {
                         setRemovingWL(entry.id)
-                        await fetch('/api/admin/waitlist', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entryId: entry.id, status: 'cancelled' }) })
+                        await fetch('/api/admin/waitlist', { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify({ entryId: entry.id, status: 'cancelled' }) })
                         setWaitlist(w => w.filter(e => e.id !== entry.id))
                         setRemovingWL(null)
                       }}

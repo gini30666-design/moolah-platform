@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow, updateRow } from '@/lib/sheets'
+import { verifyOwner } from '@/lib/auth'
 
 // customer_notes sheet: A=providerId, B=customerLineUserId, C=note, D=updatedAt, E=tags(JSON)
 
@@ -15,6 +16,9 @@ export async function GET(req: NextRequest) {
   const customerLineUserId = searchParams.get('customerLineUserId')
   if (!providerId || !customerLineUserId) return NextResponse.json({ note: '', tags: [] })
 
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const { rows, rowIndex } = await findNoteRow(providerId, customerLineUserId)
   if (rowIndex === -1) return NextResponse.json({ note: '', tags: [] })
   const note = rows[rowIndex][2] ?? ''
@@ -27,6 +31,10 @@ export async function POST(req: NextRequest) {
   if (!providerId || !customerLineUserId) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
+
+  const auth = await verifyOwner(req, providerId)
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
   const { rows, rowIndex, sheetRow } = await findNoteRow(providerId, customerLineUserId)
   const now = new Date().toISOString()
 

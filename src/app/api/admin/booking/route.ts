@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { updateBookingStatus, getSheetData, updateRow } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
 import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
+import { verifyOwner } from '@/lib/auth'
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json()
@@ -10,6 +11,13 @@ export async function PATCH(req: NextRequest) {
   if (!bookingId || !['cancelled', 'confirmed', 'no_show'].includes(status)) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
+
+  // 從預約反查 providerId，確認呼叫者是該預約所屬店家的擁有者
+  const allBookings = await getSheetData('bookings!A2:M')
+  const target = allBookings.find(r => r[0] === bookingId)
+  if (!target) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+  const auth = await verifyOwner(req, target[1])
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const success = await updateBookingStatus(bookingId, status)
   if (!success) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })

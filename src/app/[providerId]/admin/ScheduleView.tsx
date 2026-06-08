@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { authHeader } from '@/lib/clientAuth'
 
 type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean }
 
@@ -23,7 +24,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`/api/admin/schedule?providerId=${providerId}`)
+    fetch(`/api/admin/schedule?providerId=${providerId}`, { headers: authHeader() })
       .then(r => r.json())
       .then(d => {
         setSchedule(d.schedule ?? [])
@@ -54,7 +55,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
     setSaving(true)
     await fetch('/api/admin/schedule', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, schedule, blockedDates }),
     })
     setSaving(false)
