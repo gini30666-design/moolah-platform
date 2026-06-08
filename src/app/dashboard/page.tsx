@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import liff from '@line/liff'
+import MoolahLoader from '@/components/MoolahLoader'
 
 type State = 'loading' | 'not_found' | 'error'
 
@@ -54,12 +55,7 @@ export default function DashboardPage() {
   }, [router])
 
   if (state === 'loading') {
-    return (
-      <div className="flex h-screen items-center justify-center flex-col gap-3">
-        <div className="w-8 h-8 border-2 border-[#A68966] border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs text-gray-400">識別身份中...</p>
-      </div>
-    )
+    return <MoolahLoader label="識別身份中…" />
   }
 
   if (state === 'error') {

@@ -34,6 +34,9 @@ body {
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* iOS / LIFF webview：開啟慣性動量滾動與頁面回彈（浮動感）*/
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
 }
 
 /* Subtle grain texture */
