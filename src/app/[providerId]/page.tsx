@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import MoolahLoader from '@/components/MoolahLoader'
 
 type Provider = {
   id: string; name: string; category: string; description: string
@@ -133,6 +134,12 @@ export default function ProviderPage() {
   const [lightbox, setLightbox]   = useState<number | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<string>('')
   const [nextAvail, setNextAvail] = useState<{ label: string; time: string } | null>(null)
+  // 進場動畫至少顯示這段時間，避免快速載入時一閃而過顯得草率
+  const [minTimePassed, setMinTimePassed] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setMinTimePassed(true), 650)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     if (!providerId) return
@@ -158,28 +165,9 @@ export default function ProviderPage() {
     router.push(`/${providerId}/book${selectedServiceId ? `?service=${selectedServiceId}` : ''}`)
   }
 
-  // Loading skeleton
-  if (!provider) {
-    return (
-      <div style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--cream)', minHeight: '100vh' }}>
-        <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.sk{background:linear-gradient(90deg,rgba(166,137,102,0.07) 25%,rgba(166,137,102,0.14) 50%,rgba(166,137,102,0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:8px;}`}</style>
-        <div style={{ padding: '32px 20px 24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '28px' }}>
-            <div className="sk" style={{ width: '60px', height: '11px' }} />
-            <div className="sk" style={{ width: '60px', height: '11px' }} />
-          </div>
-          <div className="sk" style={{ width: '72%', height: '52px', marginBottom: '14px', borderRadius: '4px' }} />
-          <div className="sk" style={{ width: '44%', height: '13px', marginBottom: '18px' }} />
-          <div className="sk" style={{ width: '56%', height: '20px' }} />
-        </div>
-        <div className="sk" style={{ height: '38px', borderRadius: 0, marginBottom: '32px' }} />
-        <div style={{ padding: '0 20px', columnCount: 2, columnGap: '10px' }}>
-          {[0.78, 1.0, 1.32, 0.85].map((r, i) => (
-            <div key={i} className="sk" style={{ width: '100%', aspectRatio: String(1/r), marginBottom: '10px', breakInside: 'avoid', borderRadius: '14px' }} />
-          ))}
-        </div>
-      </div>
-    )
+  // 進場品牌動畫（短網址首次進入 / 從探索頁跳轉皆適用）
+  if (!provider || !minTimePassed) {
+    return <MoolahLoader label="正在開啟作品集…" />
   }
 
   const fromPrice = services.length ? Math.min(...services.map(s => s.price)) : 0
