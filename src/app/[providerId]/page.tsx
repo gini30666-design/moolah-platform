@@ -123,6 +123,49 @@ function PortfolioTile({ item, ratio, radius = 14, onOpen, idx }: {
   )
 }
 
+/* ── 進場銜接：M 動畫 → 顯示職人頭像/名字 → crossfade 淡出露出頁面 ───────────── */
+function ProviderReveal({ name, avatar, startReveal, onDone }: {
+  name: string; avatar?: string; startReveal: boolean; onDone: () => void
+}) {
+  const [phase, setPhase] = useState<'m' | 'name' | 'fade'>('m')
+  useEffect(() => {
+    if (!startReveal) return
+    setPhase('name')
+    const t1 = setTimeout(() => setPhase('fade'), 820)
+    const t2 = setTimeout(onDone, 820 + 480)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [startReveal, onDone])
+
+  // 資料未到 / 最短時間未到 → 維持 M 動畫（與 MoolahLoader 視覺一致，銜接無縫）
+  if (phase === 'm') return <MoolahLoader label="正在開啟作品集…" />
+
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: 'fixed', inset: 0, zIndex: 60, background: '#1a1714',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px',
+        opacity: phase === 'fade' ? 0 : 1,
+        transition: 'opacity .48s cubic-bezier(0.4,0,0.2,1)',
+        pointerEvents: phase === 'fade' ? 'none' : 'auto',
+        fontFamily: 'var(--font-cormorant), Georgia, serif',
+      }}
+    >
+      <style>{`@keyframes pr-rise{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}`}</style>
+      <div style={{ animation: 'pr-rise .55s cubic-bezier(0.22,1,0.36,1) both', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
+        {avatar
+          ? <img src={avatar} alt="" style={{ width: '88px', height: '88px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(166,137,102,0.55)' }} />
+          : <div style={{ width: '88px', height: '88px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(166,137,102,0.4)', color: '#A98A5E', fontSize: '38px' }}>M</div>
+        }
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif', fontSize: '10px', letterSpacing: '0.34em', textTransform: 'uppercase', color: '#A68966', opacity: 0.7, marginBottom: '10px' }}>MooLah</p>
+          <p style={{ fontSize: '1.7rem', fontWeight: 400, color: '#fbf9f4', letterSpacing: '0.01em' }}>{name}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Main provider page ────────────────────────────────────────────────────── */
 export default function ProviderPage() {
   const { providerId } = useParams<{ providerId: string }>()
@@ -136,6 +179,7 @@ export default function ProviderPage() {
   const [nextAvail, setNextAvail] = useState<{ label: string; time: string } | null>(null)
   // 進場動畫至少顯示這段時間，避免快速載入時一閃而過顯得草率
   const [minTimePassed, setMinTimePassed] = useState(false)
+  const [entranceDone, setEntranceDone] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setMinTimePassed(true), 650)
     return () => clearTimeout(t)
@@ -165,8 +209,9 @@ export default function ProviderPage() {
     router.push(`/${providerId}/book${selectedServiceId ? `?service=${selectedServiceId}` : ''}`)
   }
 
-  // 進場品牌動畫（短網址首次進入 / 從探索頁跳轉皆適用）
-  if (!provider || !minTimePassed) {
+  // 資料未到前顯示 M 進場動畫（短網址首入 / 探索頁跳轉皆適用）；
+  // 資料到齊後，下方 ProviderReveal 接手做「頭像→名字」銜接與 crossfade。
+  if (!provider) {
     return <MoolahLoader label="正在開啟作品集…" />
   }
 
@@ -443,6 +488,16 @@ export default function ProviderPage() {
       {/* Lightbox */}
       {lightbox !== null && (
         <Lightbox items={portfolio} startIdx={lightbox} onClose={() => setLightbox(null)} />
+      )}
+
+      {/* 進場個人化銜接 + crossfade（疊在頁面上方，淡出露出頁面）*/}
+      {!entranceDone && (
+        <ProviderReveal
+          name={displayName}
+          avatar={provider.avatarUrl}
+          startReveal={minTimePassed}
+          onDone={() => setEntranceDone(true)}
+        />
       )}
     </div>
   )
