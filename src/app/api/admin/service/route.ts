@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
-  getSheetData, appendRow,
+  getSheetData, sheets, SHEET_ID,
   findServiceRow, updateServiceAtRow, clearServiceAtRow,
 } from '@/lib/sheets'
 import { verifyOwner } from '@/lib/auth'
@@ -18,10 +18,19 @@ export async function POST(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
+  // 明確計算下一可寫列，再用 values.update 寫死範圍，避免 values.append
+  // 在有空白列（刪除服務後留下的）的表上把整列寫偏。
+  const colA = await getSheetData('services!A:A')
+  const nextRow = colA.length + 1
   const serviceId = generateServiceId()
-  await appendRow('services!A:F', [
-    providerId, serviceId, name, String(price), String(duration), description ?? '',
-  ])
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `services!A${nextRow}:F${nextRow}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: {
+      values: [[providerId, serviceId, name, String(price), String(duration), description ?? '']],
+    },
+  })
   return NextResponse.json({ ok: true, serviceId })
 }
 
