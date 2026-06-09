@@ -12,6 +12,10 @@ export async function POST(req: NextRequest) {
   const ownerId = process.env.OPS_TELEGRAM_USER_ID
   if (!token || !ownerId || !process.env.ANTHROPIC_API_KEY) return OK
 
+  // 驗證請求確實來自 Telegram（secret_token），擋掉偽造 webhook 請求
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET
+  if (secret && req.headers.get('x-telegram-bot-api-secret-token') !== secret) return OK
+
   let update: { message?: { text?: string; chat?: { id: number }; from?: { id: number } } }
   try {
     update = await req.json()
