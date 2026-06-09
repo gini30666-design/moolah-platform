@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@line/liff": "^2.28.0",
     "@vercel/blob": "^2.3.3",
     "googleapis": "^171.4.0",
