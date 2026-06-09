@@ -131,7 +131,7 @@ export async function runOps(userText: string): Promise<string> {
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userText }]
   for (let i = 0; i < 6; i++) {
     const res = await client.messages.create({
-      model: 'claude-opus-4-8',
+      model: 'claude-haiku-4-5',
       max_tokens: 2048,
       thinking: { type: 'disabled' },
       system: SYSTEM,
