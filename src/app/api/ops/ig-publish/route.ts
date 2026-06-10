@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export const maxDuration = 60
-const GRAPH = 'https://graph.facebook.com/v21.0'
+// Instagram API with Instagram Login（graph.instagram.com）
+const GRAPH = 'https://graph.instagram.com/v21.0'
 
-// 發布單張圖到 Instagram（Graph API 內容發布：建容器 → 發布）
+// 發布單張圖到 Instagram（內容發布：建容器 → 發布）
 // body: { imageUrl, caption }；需 header x-ops-secret
 export async function POST(req: NextRequest) {
   const igUser = process.env.IG_USER_ID
