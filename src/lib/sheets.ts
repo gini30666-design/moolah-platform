@@ -28,6 +28,19 @@ export async function appendRow(range: string, values: string[]) {
   })
 }
 
+// 確保分頁存在；不存在就建立並寫入表頭
+export async function ensureSheet(title: string, headers: string[]) {
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID })
+  const exists = meta.data.sheets?.some(s => s.properties?.title === title)
+  if (!exists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SHEET_ID,
+      requestBody: { requests: [{ addSheet: { properties: { title } } }] },
+    })
+    await appendRow(`${title}!A1`, headers)
+  }
+}
+
 export async function findServiceRow(serviceId: string): Promise<number> {
   const rows = await getSheetData('services!B2:B')
   const idx = rows.findIndex(r => r[0] === serviceId)
