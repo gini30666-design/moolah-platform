@@ -32,6 +32,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ step: 'create', error: created }, { status: 400 })
   }
 
+  // 1.5) 等容器處理完成（IG 需數秒，否則 media_publish 回 9007）
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+  let ready = false
+  for (let i = 0; i < 12; i++) {
+    await sleep(3000)
+    const stRes = await fetch(`${GRAPH}/${created.id}?fields=status_code&access_token=${encodeURIComponent(token)}`)
+    const st = await stRes.json()
+    if (st.status_code === 'FINISHED') { ready = true; break }
+    if (st.status_code === 'ERROR' || st.status_code === 'EXPIRED') {
+      return NextResponse.json({ step: 'process', error: st, creationId: created.id }, { status: 400 })
+    }
+  }
+  if (!ready) return NextResponse.json({ step: 'process', error: 'container_timeout', creationId: created.id }, { status: 400 })
+
   // 2) 發布
   const pubRes = await fetch(`${GRAPH}/${igUser}/media_publish`, {
     method: 'POST',
