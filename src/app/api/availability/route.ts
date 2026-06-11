@@ -59,9 +59,14 @@ export async function GET(req: NextRequest) {
   const todayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === date && (r[12] ?? '') !== 'cancelled')
   const occupiedSlots = new Set<string>()
 
+  // Sheets 可能把 "09:00" 存成 "9:00"（去前導零）→ 補回來才對得上 TIME_SLOTS
+  const padTime = (t: string) => {
+    const m = String(t ?? '').match(/^(\d{1,2}):(\d{2})$/)
+    return m ? `${m[1].padStart(2, '0')}:${m[2]}` : String(t ?? '')
+  }
   for (const booking of todayBookings) {
     const bookedServiceId = booking[2]
-    const startSlotTime = booking[6]
+    const startSlotTime = padTime(booking[6])
     const serviceRow = serviceRows.find(r => r[0] === providerId && r[1] === bookedServiceId)
     const duration = serviceRow ? Number(serviceRow[4]) : 30
     const startIdx = TIME_SLOTS.indexOf(startSlotTime)

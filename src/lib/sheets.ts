@@ -19,11 +19,15 @@ export async function getSheetData(range: string) {
   return res.data.values ?? []
 }
 
-export async function appendRow(range: string, values: string[]) {
+export async function appendRow(
+  range: string,
+  values: string[],
+  valueInputOption: 'USER_ENTERED' | 'RAW' = 'USER_ENTERED',
+) {
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
     range,
-    valueInputOption: 'USER_ENTERED',
+    valueInputOption,
     requestBody: { values: [values] },
   })
 }

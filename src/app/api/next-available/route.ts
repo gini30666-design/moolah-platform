@@ -59,10 +59,14 @@ export async function GET(req: NextRequest) {
 
     const dayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === dateStr && (r[12] ?? '') !== 'cancelled')
     const occupied = new Set<string>()
+    const padTime = (t: string) => {
+      const m = String(t ?? '').match(/^(\d{1,2}):(\d{2})$/)
+      return m ? `${m[1].padStart(2, '0')}:${m[2]}` : String(t ?? '')
+    }
     for (const b of dayBookings) {
       const svc = serviceRows.find(r => r[0] === providerId && r[1] === b[2])
       const dur = svc ? Math.ceil(Number(svc[4]) / 30) : 1
-      const startIdx = TIME_SLOTS.indexOf(b[6])
+      const startIdx = TIME_SLOTS.indexOf(padTime(b[6]))
       if (startIdx === -1) continue
       for (let i = 0; i < dur; i++) {
         if (TIME_SLOTS[startIdx + i]) occupied.add(TIME_SLOTS[startIdx + i])

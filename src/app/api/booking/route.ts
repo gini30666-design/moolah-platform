@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     hairLength ?? '',
     customerPhone ?? '',
     'confirmed',
-  ])
+  ], 'RAW') // RAW：避免 Sheets 把 "09:00" 解析成時間而改成 "9:00"（會害 availability 找不到時段）
 
   const providerName = providerRow[1]
   const providerLineUserId = providerRow[4]
