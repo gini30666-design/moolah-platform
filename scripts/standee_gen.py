@@ -26,6 +26,7 @@ IDX  = {"regular": 1, "medium": 4, "semibold": 7}  # PingFang TC
 SIZES = {"A6": (1240, 1748), "A5": (1748, 2480), "A4": (2480, 3508)}
 
 BASE_URL = "https://moolah-platform.vercel.app/go/"
+LIFF_ID = "2009980332-eM2b6gtT"  # MooLah Booking LIFF
 
 
 def font(weight, px):
@@ -106,12 +107,19 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--store", required=True)
     ap.add_argument("--designer", required=True)
-    ap.add_argument("--short", help="shortCode，會接在 BASE_URL 後")
-    ap.add_argument("--url", help="完整 QR 目標網址（優先於 --short）")
+    ap.add_argument("--provider", help="providerId → 直接開 LINE App 的 LIFF QR（推薦，最穩）")
+    ap.add_argument("--liff", default=LIFF_ID, help="LIFF ID")
+    ap.add_argument("--short", help="shortCode → /go 短網址（網頁入口，相機掃碼較不穩開 App）")
+    ap.add_argument("--url", help="完整 QR 目標網址（最優先）")
     ap.add_argument("--size", default="A6", choices=list(SIZES))
     ap.add_argument("--outdir", default=".")
     a = ap.parse_args()
-    url = a.url or (BASE_URL + a.short if a.short else None)
-    if not url:
-        raise SystemExit("需要 --short 或 --url")
+    if a.url:
+        url = a.url
+    elif a.provider:
+        url = f"https://liff.line.me/{a.liff}?to=/{a.provider}/book"
+    elif a.short:
+        url = BASE_URL + a.short
+    else:
+        raise SystemExit("需要 --provider / --short / --url 其一")
     print("OK ->", generate(a.store, a.designer, url, a.size, a.outdir), "| QR:", url)
