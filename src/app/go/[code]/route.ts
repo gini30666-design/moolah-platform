@@ -26,7 +26,6 @@ export async function GET(
   const html = `<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MooLah 預約</title>
-<script>setTimeout(function(){location.replace(${JSON.stringify(liffUrl)})},900)</script>
 <style>
 :root{--charcoal:#1a1714;--oak:#A68966;--cream:#fbf9f4}
 *{margin:0;box-sizing:border-box}
@@ -40,9 +39,9 @@ padding:15px 34px;border-radius:99px;text-decoration:none;font-size:16px}
 .dot{width:6px;height:6px;background:var(--oak);transform:rotate(45deg);display:inline-block;margin:0 6px}
 </style></head><body>
 <div class="brand">MooLah</div>
-<div class="t">正在用 LINE 開啟預約…<br>於 LINE 中開啟可一鍵預約並收到提醒 <span class="dot"></span></div>
-<a class="btn" href="${liffUrl}">用 LINE 開啟預約</a>
-<a class="sub" href="${webUrl}">改用瀏覽器繼續</a>
+<div class="t">點下方按鈕用 <b style="color:var(--oak)">LINE</b> 開啟<br>即可一鍵預約並收到提醒 <span class="dot"></span></div>
+<a class="btn" href="${liffUrl}">用 LINE 開啟預約 →</a>
+<a class="sub" href="${webUrl}">沒有 LINE？用瀏覽器繼續</a>
 </body></html>`
 
   return new NextResponse(html, {
