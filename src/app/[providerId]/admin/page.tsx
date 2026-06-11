@@ -861,6 +861,23 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
+        {/* 預覽我的預約頁（客人掃碼看到的頁面）*/}
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/${providerId}/book`
+            try { liff.openWindow({ url, external: false }) }
+            catch { window.open(url, '_blank') }
+          }}
+          style={{
+            position: 'absolute', top: '20px', right: '18px', zIndex: 3,
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)',
+            color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em',
+            padding: '7px 13px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)',
+          }}
+        >
+          <span style={{ fontSize: '13px' }}>👁</span> 預覽預約頁
+        </button>
         <p style={{ fontSize: '9px', color: 'var(--oak)', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.8 }}>管理後台</p>
         <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: cream, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
         <div style={{ width: '28px', height: '1px', background: oak, marginTop: '14px', opacity: 0.5 }} />
