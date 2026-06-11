@@ -497,6 +497,7 @@ export default function BookPage() {
   const [customerPhone, setCustomerPhone] = useState('')
   const [liffReady, setLiffReady] = useState(false)
   const [showLineCard, setShowLineCard] = useState(true)
+  const [needAddFriend, setNeedAddFriend] = useState(false)
 
   const [date, setDate] = useState(initialDate)
   const [time, setTime] = useState('')
@@ -528,6 +529,11 @@ export default function BookPage() {
           setLineUserId(profile.userId)
           setDisplayName(profile.displayName)
           setLiffReady(true)
+          // 檢查是否已加 OA 好友——沒加就收不到 LINE 預約提醒
+          try {
+            const fs = await liff.getFriendship()
+            if (!fs.friendFlag) setNeedAddFriend(true)
+          } catch { /* 外部瀏覽器不支援，略過 */ }
         } else if (liff.isInClient()) {
           liff.login({ redirectUri: window.location.href })
         } else {
@@ -782,6 +788,29 @@ export default function BookPage() {
 
   return (
     <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+      {needAddFriend && (
+        <button
+          onClick={() => {
+            try { liff.openWindow({ url: 'https://line.me/R/ti/p/@881zhkla', external: false }) }
+            catch { window.location.href = 'https://line.me/R/ti/p/@881zhkla' }
+            setNeedAddFriend(false)
+          }}
+          style={{
+            position: 'fixed', left: '50%', bottom: '16px', transform: 'translateX(-50%)',
+            zIndex: 60, width: 'calc(100% - 28px)', maxWidth: '452px',
+            display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', textAlign: 'left',
+            background: 'var(--charcoal-deep)', color: 'var(--cream)',
+            border: '1px solid rgba(166,137,102,0.4)', borderRadius: '16px',
+            padding: '12px 14px', boxShadow: '0 10px 28px rgba(0,0,0,0.28)',
+          }}
+        >
+          <span style={{ fontSize: '20px' }}>🔔</span>
+          <span style={{ flex: 1, fontSize: '13px', lineHeight: 1.45 }}>
+            加 <b style={{ color: 'var(--oak)' }}>MooLah</b> 好友，才收得到預約確認與提醒
+          </span>
+          <span style={{ background: 'var(--oak)', color: 'var(--charcoal-deep)', fontWeight: 700, fontSize: '13px', padding: '8px 14px', borderRadius: '99px', whiteSpace: 'nowrap' }}>加好友</span>
+        </button>
+      )}
       <style>{`
         @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
