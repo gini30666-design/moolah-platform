@@ -20,7 +20,8 @@ export async function GET(
   const path = `/${providerId}/book`
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID
   const webUrl = new URL(path, req.url).toString()
-  const liffUrl = liffId ? `https://liff.line.me/${liffId}${path}` : webUrl
+  // Endpoint URL 是 /dashboard，靠 ?to= 由 dashboard 轉址（消費者會被導到目標頁）
+  const liffUrl = liffId ? `https://liff.line.me/${liffId}?to=${encodeURIComponent(path)}` : webUrl
 
   const html = `<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
