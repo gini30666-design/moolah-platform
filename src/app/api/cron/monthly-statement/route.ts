@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       `${displayName}\n` +
       `成交：${valid.length} 筆\n` +
       `營收：NT$ ${revenue.toLocaleString()}\n` +
-      `應付月費：NT$ 599\n\n` +
+      `應付月費：NT$ 699\n\n` +
       `👉 完整對帳單：\n${statementUrl}\n\n` +
       `（請於收到後 5 個工作日內完成匯款）`
 

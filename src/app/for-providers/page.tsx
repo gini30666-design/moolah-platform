@@ -14,11 +14,11 @@ const sand = '#f5efe6'
 
 export const metadata: Metadata = {
   title: '設計師加入 MooLah | 美業職人專屬預約管理平台',
-  description: 'MooLah 為髮型設計師、寵物美容師、汽車美容師、美甲師打造的智慧預約管理平台。NT$599 月費、0 抽佣、不綁約。LINE 一鍵預約，自動排程，雙向通知。',
+  description: 'MooLah 為髮型設計師、寵物美容師、汽車美容師、美甲師打造的智慧預約管理平台。NT$699 月費、14 天免費試用、0 抽佣、不綁約。LINE 一鍵預約，自動排程，雙向通知。',
   alternates: { canonical: `${BASE_URL}/for-providers` },
   openGraph: {
     title: '設計師加入 MooLah',
-    description: '0 抽佣 · NT$599 月費 · 不綁約。LINE 一鍵預約管理平台',
+    description: '14 天免費試用 · NT$699 月費 · 0 抽佣 · 不綁約。LINE 一鍵預約管理平台',
     url: `${BASE_URL}/for-providers`,
   },
 }
@@ -82,7 +82,8 @@ const FEATURES: Feature[] = [
 ]
 
 const HIGHLIGHTS = [
-  { val: 'NT$ 599', label: '月費', sub: '隨時可終止' },
+  { val: 'NT$ 699', label: '月費', sub: '14 天免費試用 · 隨時可終止' },
+  // 試用：14 天全功能、上限 20 筆預約；不需試用可直接加入
   { val: '0%', label: '抽佣', sub: '永不收佣金' },
   { val: '0 天', label: '綁約期', sub: '提前 1 週通知' },
 ]
@@ -90,7 +91,7 @@ const HIGHLIGHTS = [
 const FAQ = [
   {
     q: '需要綁約嗎？',
-    a: '不需要。MooLah 採月費制（NT$599/月），不抽佣、無綁約、無解約金。任何時候想停止合作，提前 1 週書面通知即可。',
+    a: '不需要。MooLah 採月費制（14 天免費試用，之後 NT$699/月），不抽佣、無綁約、無解約金。任何時候想停止合作，提前 1 週書面通知即可。',
   },
   {
     q: '客人需要下載 App 嗎？',
@@ -210,11 +211,11 @@ export default function ForProvidersPage() {
             </h2>
             <div style={{ background: charcoalDeep, color: cream, borderRadius: '20px', padding: '40px 30px', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
-              <p style={{ fontSize: '11px', letterSpacing: '0.24em', color: oak, marginBottom: '14px' }}>髮型設計師方案</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.24em', color: oak, marginBottom: '14px' }}>標準方案 · 14 天免費試用</p>
               <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(3rem,8vw,5rem)', fontWeight: 300, color: cream, lineHeight: 1, marginBottom: '6px' }}>
-                NT$ 599<span style={{ fontSize: '0.4em', color: 'rgba(251,249,244,0.55)' }}> / 月</span>
+                NT$ 699<span style={{ fontSize: '0.4em', color: 'rgba(251,249,244,0.55)' }}> / 月</span>
               </p>
-              <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', marginBottom: '28px' }}>所有功能含在內 · 隨時可終止</p>
+              <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', marginBottom: '28px' }}>14 天免費試用（全功能・上限 20 筆預約）· 不需試用可直接加入</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', textAlign: 'left' }}>
                 {['✓ 0% 抽佣', '✓ 不綁約', '✓ 無解約金', '✓ 24h 上線'].map(t => (
                   <p key={t} style={{ fontSize: '13px', color: oak, padding: '8px 12px', background: 'rgba(166,137,102,0.1)', borderRadius: '6px' }}>{t}</p>

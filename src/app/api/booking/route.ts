@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [providerRows, serviceRows] = await Promise.all([
-    getSheetData('providers!A2:L'),
+    getSheetData('providers!A2:X'),
     getSheetData('services!A2:F'),
   ])
 
@@ -24,6 +24,23 @@ export async function POST(req: NextRequest) {
 
   if (!providerRow || !serviceRow) {
     return NextResponse.json({ error: 'Provider or service not found' }, { status: 404 })
+  }
+
+  // 方案限制：trial=14 天 + 20 筆上限；expired=已暫停。active / 舊資料(空)=不限。
+  // V(21)=plan、X(23)=trialEndsAt。對客人一律回中性訊息，不暴露試用機制。
+  const TRIAL_BOOKING_LIMIT = 20
+  const plan = (providerRow[21] ?? '').toString().trim().toLowerCase()
+  if (plan === 'trial' || plan === 'expired') {
+    const trialEndsAt = providerRow[23]
+    const isExpired = plan === 'expired' || (trialEndsAt && Date.now() > new Date(trialEndsAt).getTime())
+    if (isExpired) {
+      return NextResponse.json({ error: 'unavailable', message: '此設計師暫不開放線上預約，請稍後再試或直接聯繫店家。' }, { status: 403 })
+    }
+    const allBookings = await getSheetData('bookings!A2:M')
+    const used = allBookings.filter(r => r[1] === providerId && r[12] !== 'cancelled').length
+    if (used >= TRIAL_BOOKING_LIMIT) {
+      return NextResponse.json({ error: 'unavailable', message: '此設計師暫不開放線上預約，請稍後再試或直接聯繫店家。' }, { status: 403 })
+    }
   }
 
   // 黑名單檢查（#19）— 比對 LINE userId 或姓名

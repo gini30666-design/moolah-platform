@@ -726,6 +726,8 @@ export default function AdminPage() {
   const [tab, setTab] = useState<BookingTab>('timeline')
   const [mainView, setMainView] = useState<MainView>('bookings')
   const [providerName, setProviderName] = useState('')
+  const [plan, setPlan] = useState('')               // trial | active | expired | ''(舊資料=正式)
+  const [trialEndsAt, setTrialEndsAt] = useState('')
   const [customerSheet, setCustomerSheet] = useState<Booking | null>(null)
   const [addingService, setAddingService] = useState(false)
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
@@ -765,6 +767,8 @@ export default function AdminPage() {
         ])
         const data = await provRes.json()
         setProviderName(data.provider?.name ?? '')
+        setPlan(data.provider?.plan ?? '')
+        setTrialEndsAt(data.provider?.trialEndsAt ?? '')
         setServices(data.services ?? [])
 
         const access = await accessRes.json()
@@ -794,6 +798,14 @@ export default function AdminPage() {
   const upcomingBookings = bookings.filter(b => b.date > today)
   const todayRevenue = todayBookings.reduce((s, b) => s + b.servicePrice, 0)
   const monthRevenue = monthBookings.reduce((s, b) => s + b.servicePrice, 0)
+
+  // ── 方案 / 試用狀態 ──
+  const TRIAL_LIMIT = 20
+  const isTrial = plan === 'trial'
+  const trialEndMs = trialEndsAt ? new Date(trialEndsAt).getTime() : 0
+  const isExpired = plan === 'expired' || (isTrial && trialEndMs > 0 && Date.now() > trialEndMs)
+  const trialDaysLeft = trialEndMs ? Math.max(0, Math.ceil((trialEndMs - Date.now()) / 86400000)) : 0
+  const trialUsed = bookings.length // 後台 bookings 已是本職人未取消的預約
 
   // ── 回購率分析（#24）— 近 90 天範圍 ──
   const normalizeName = (s: string) => s.replace(/\s+/g, '').toLowerCase()
@@ -959,15 +971,36 @@ export default function AdminPage() {
             <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>營收 NT$</p>
           </div>
           <div style={{ textAlign: 'center', padding: '4px 6px' }}>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>599</p>
-            <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>應付月費 NT$</p>
+            {isTrial && !isExpired ? (
+              <>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>{trialDaysLeft}</p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>試用剩餘天</p>
+              </>
+            ) : (
+              <>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>699</p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>應付月費 NT$</p>
+              </>
+            )}
           </div>
         </div>
         <div style={{ marginTop: '14px', padding: '10px 12px', background: 'rgba(255,255,255,0.55)', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.16)' }}>
-          <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
-            <span style={{ fontWeight: 600, color: oak }}>✓ 月費 NT$599</span>
-            <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　0% 抽佣 · 不綁約 · 解約提前 1 週通知</span>
-          </p>
+          {isExpired ? (
+            <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
+              <span style={{ fontWeight: 600, color: '#b4533a' }}>⏰ 試用已結束</span>
+              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　後台即將暫停，正式加入（NT$699/月）即可繼續服務並獲贈免費客製立牌</span>
+            </p>
+          ) : isTrial ? (
+            <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
+              <span style={{ fontWeight: 600, color: oak }}>🎁 試用中 · 剩 {trialDaysLeft} 天 · 已用 {trialUsed}/{TRIAL_LIMIT} 筆</span>
+              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　正式加入 NT$699/月解鎖無限預約 + 免費客製立牌</span>
+            </p>
+          ) : (
+            <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
+              <span style={{ fontWeight: 600, color: oak }}>✓ 月費 NT$699</span>
+              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　0% 抽佣 · 不綁約 · 解約提前 1 週通知</span>
+            </p>
+          )}
         </div>
       </div>
 

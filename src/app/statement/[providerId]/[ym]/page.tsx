@@ -66,7 +66,7 @@ export default async function StatementPage({ params }: { params: Promise<{ prov
     serviceBreakdown[name].revenue += price
   }
 
-  const MONTHLY_FEE = 599
+  const MONTHLY_FEE = 699
 
   return (
     <>

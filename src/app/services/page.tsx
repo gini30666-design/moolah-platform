@@ -6,14 +6,14 @@ const BASE_URL = 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
   title: '合作方案與定價 — 美業預約管理平台',
-  description: 'MooLah 三大合作方案：基礎入門 NT$600/月、專業職人 NT$1,200/月、工作室客製報價。零技術門檻，5 分鐘設定。高雄、台南髮型設計師、寵物美容、汽車美容、美甲師立即加入。',
+  description: 'MooLah 合作方案：標準方案 NT$699/月（14 天免費試用），含完整功能、0% 抽佣、不綁約、免費客製立牌；工作室方案依規模洽詢。零技術門檻，5 分鐘設定。高雄、台南髮型設計師、寵物美容、汽車美容、美甲師立即加入。',
   alternates: {
     canonical: `${BASE_URL}/services`,
     languages: { 'zh-Hant-TW': `${BASE_URL}/services`, 'x-default': `${BASE_URL}/services` },
   },
   openGraph: {
     title: '合作方案與定價 | MooLah 美業預約平台',
-    description: '三種方案滿足個人職人到工作室的需求。零技術門檻，5 分鐘設定，透過 LINE 接受預約，不用下載 App。',
+    description: '標準方案 NT$699/月，14 天免費試用；工作室方案依規模洽詢。零技術門檻，5 分鐘設定，透過 LINE 接受預約，不用下載 App。',
     url: `${BASE_URL}/services`,
   },
 }
@@ -39,18 +39,9 @@ const SCHEMA = {
       offers: [
         {
           '@type': 'Offer',
-          name: '基礎入門方案',
-          description: '1 位設計師帳號、個人預約頁面、LINE 雙向通知、每日預約上限 20 筆、基礎後台管理',
-          price: '600',
-          priceCurrency: 'TWD',
-          billingIncrement: 'P1M',
-          eligibleRegion: { '@type': 'Country', name: 'TW' },
-        },
-        {
-          '@type': 'Offer',
-          name: '專業職人方案',
-          description: '無限預約筆數、作品集上傳 10 張、客戶備註與標籤、每月營業分析報表、優先客服支援',
-          price: '1200',
+          name: '標準方案',
+          description: '14 天免費試用（全功能，試用期上限 20 筆預約）；不需試用可直接正式加入。完整功能：個人預約頁面、無限預約筆數、作品集上傳、LINE 雙向通知、時段管理、客戶備註與標籤、每月對帳報表、後台管理。0% 抽佣、不綁約，正式加入後免費提供客製立牌。',
+          price: '699',
           priceCurrency: 'TWD',
           billingIncrement: 'P1M',
           eligibleRegion: { '@type': 'Country', name: 'TW' },
@@ -100,34 +91,20 @@ const SCHEMA = {
 
 const PLANS = [
   {
-    name: '基礎入門方案',
-    en: 'Starter',
-    price: 'NT$ 600',
-    priceNote: '/月',
+    name: '標準方案',
+    en: 'Standard',
+    price: 'NT$ 699',
+    priceNote: '/月 · 14 天免費試用',
     features: [
-      '1 位設計師帳號',
-      '個人預約頁面',
-      'LINE 雙向通知',
-      '每日預約上限 20 筆',
-      '基礎後台管理',
+      '14 天免費試用（全功能・上限 20 筆預約）',
+      '個人預約頁面 · 無限預約筆數',
+      '作品集上傳 · 服務與價格管理',
+      'LINE 雙向通知 · 時段管理',
+      '客戶備註與標籤 · 每月對帳報表',
+      '0% 抽佣 · 不綁約',
+      '正式加入後免費客製立牌',
     ],
     cta: '立即加入',
-    href: '/join',
-    highlight: false,
-  },
-  {
-    name: '專業職人方案',
-    en: 'Professional',
-    price: 'NT$ 1,200',
-    priceNote: '/月',
-    features: [
-      '無限預約筆數',
-      '作品集上傳（10 張）',
-      '客戶備註與標籤',
-      '每月營業分析報表',
-      '優先客服支援',
-    ],
-    cta: '申請方案',
     href: '/join',
     highlight: true,
   },
@@ -135,7 +112,7 @@ const PLANS = [
     name: '工作室方案',
     en: 'Studio',
     price: '洽詢',
-    priceNote: '客製化報價',
+    priceNote: '依規模客製報價',
     features: [
       '多位設計師帳號',
       '統一品牌預約頁',
@@ -289,7 +266,7 @@ export default function ServicesPage() {
         {/* Plans */}
         <section className="py-16 md:py-24 px-5 md:px-6" style={{ background: '#f5efe6' }}>
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-4 md:gap-px md:bg-[var(--border)]">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-px md:bg-[var(--border)] max-w-3xl mx-auto">
               {PLANS.map((plan, i) => (
                 <div
                   key={plan.name}

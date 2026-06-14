@@ -5,9 +5,13 @@ import { trackLead } from '@/components/MetaPixel'
 const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師', '刺青師']
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
 const METHODS    = ['口頭或電話確認', 'LINE 個人帳號', '無系統（自行記錄）', '已有其他軟體']
+const PLANS      = [
+  { key: 'trial',  title: '14 天免費試用', desc: '全功能體驗・試用期上限 20 筆預約' },
+  { key: 'direct', title: '直接正式加入', desc: '免試用・NT$699/月・立即寄送客製立牌' },
+]
 
 export default function JoinForm() {
-  const [form, setForm] = useState({ name: '', category: '', district: '', contact: '', currentMethod: '' })
+  const [form, setForm] = useState({ name: '', category: '', district: '', contact: '', currentMethod: '', plan: 'trial' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
 
@@ -157,6 +161,29 @@ export default function JoinForm() {
               transition: 'all 0.15s',
             }}>{m}</button>
           ))}
+        </div>
+      </div>
+
+      {/* Plan choice */}
+      <div style={{ marginBottom: '28px' }}>
+        <label style={labelStyle}>我想要 *</label>
+        <div style={{ display: 'grid', gap: '10px' }}>
+          {PLANS.map(p => {
+            const active = form.plan === p.key
+            return (
+              <button key={p.key} type="button" onClick={() => set('plan', p.key)} style={{
+                textAlign: 'left', padding: '14px 16px', borderRadius: '10px', cursor: 'pointer',
+                border: `1.5px solid ${active ? 'var(--oak)' : 'rgba(166,137,102,0.25)'}`,
+                background: active ? 'rgba(166,137,102,0.08)' : 'white',
+                transition: 'all 0.15s',
+              }}>
+                <span style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: active ? 'var(--oak)' : 'var(--charcoal)', marginBottom: '3px' }}>
+                  {active ? '◉ ' : '○ '}{p.title}
+                </span>
+                <span style={{ display: 'block', fontSize: '12px', color: 'rgba(44,40,37,0.55)' }}>{p.desc}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 

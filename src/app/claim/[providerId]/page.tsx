@@ -10,8 +10,8 @@ const CONTRACT_TERMS = `合作服務條款
 一、服務說明
 MooLah 為職人提供線上預約管理系統，包含個人頁面、時段管理、LINE 雙向通知及後台管理。
 
-二、月費方案
-依所選方案收取固定月費（基礎方案 NT$0 / 專業方案 NT$599），MooLah 保留依市場調整定價之權利，並提前 30 天通知。
+二、方案與試用
+新加入享 14 天免費試用（全功能，試用期間預約上限 20 筆）。試用期滿轉標準方案 NT$699／月；不需試用者可直接正式加入。工作室方案依規模另行報價。客製立牌於正式加入後免費提供。試用期滿未續約，後台暫停、資料保留 30 天。MooLah 保留依市場調整定價之權利，並提前 30 天通知。
 
 三、付款方式
 每月月結，收到付款通知後 5 個工作日內完成匯款。逾期未繳將暫停後台服務，惟已受理之預約不受影響。
@@ -47,16 +47,21 @@ export default function ClaimPage() {
   const [pictureUrl, setPictureUrl] = useState('')
   const [lineUserId, setLineUserId] = useState('')
   const [agreed, setAgreed] = useState(false)
+  const [direct, setDirect] = useState(false)   // ?direct=1 = 跳過試用、直接正式加入
 
   useEffect(() => {
     async function init() {
       try {
+        const isDirect = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('direct') === '1'
+        setDirect(isDirect)
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
 
         if (!liff.isLoggedIn()) {
           // /claim/ is not a registered callback URL in LINE Login channel.
           // Route through /dashboard (which is registered) and use ?to= to return here.
-          window.location.href = `/dashboard?to=/claim/${providerId}`
+          // 保住 direct 參數（跳過試用）跨過 LIFF 登入轉址
+          const back = `/claim/${providerId}${isDirect ? '?direct=1' : ''}`
+          window.location.href = `/dashboard?to=${encodeURIComponent(back)}`
           return
         }
 
@@ -88,7 +93,7 @@ export default function ClaimPage() {
       const res = await fetch('/api/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId, lineUserId, agreedAt: new Date().toISOString() }),
+        body: JSON.stringify({ providerId, lineUserId, agreedAt: new Date().toISOString(), direct }),
       })
       const data = await res.json()
 
@@ -140,7 +145,14 @@ export default function ClaimPage() {
             <div style={{ height: '1px', background: 'rgba(166,137,102,0.15)', margin: '0 0 24px' }} />
 
             <p style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', marginBottom: '6px' }}>綁定後台帳號</p>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.25rem', color: oak, marginBottom: '24px' }}>{providerName}</p>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.25rem', color: oak, marginBottom: '16px' }}>{providerName}</p>
+
+            {/* 方案徽章 */}
+            <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: '999px', background: 'rgba(166,137,102,0.14)', border: '1px solid rgba(166,137,102,0.35)', marginBottom: '24px' }}>
+              <span style={{ fontSize: '12px', color: oak, fontWeight: 600 }}>
+                {direct ? '正式加入 · NT$699/月（含免費客製立牌）' : '14 天免費試用 · 全功能・上限 20 筆預約'}
+              </span>
+            </div>
 
             {/* Contract Terms */}
             <div style={{ textAlign: 'left', marginBottom: '16px' }}>
@@ -210,7 +222,7 @@ export default function ClaimPage() {
                 transition: 'all 0.2s',
               }}
             >
-              確認綁定後台
+              {direct ? '確認正式加入' : '開始 14 天免費試用'}
             </button>
             <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.25)', marginTop: '14px', lineHeight: 1.6 }}>綁定後您可透過此 LINE 帳號登入後台管理預約</p>
           </div>
