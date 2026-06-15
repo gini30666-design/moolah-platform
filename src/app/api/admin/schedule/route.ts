@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSheetData, appendRow, sheets, SHEET_ID } from '@/lib/sheets'
+import { getSheetData } from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { verifyOwner } from '@/lib/auth'
 
 const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
@@ -50,31 +51,19 @@ export async function PUT(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const rows = await getSheetData('availability!A2:F')
-  const indicesToClear: number[] = []
-  rows.forEach((row, idx) => {
-    if (row[0] === providerId) indicesToClear.push(idx + 2)
-  })
+  // 砍掉該職人所有舊排班/休假，重建（取代舊「清空+append」）
+  await sb.from('availability').delete().eq('provider_id', providerId)
 
-  for (const rowIdx of indicesToClear) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: SHEET_ID,
-      range: `availability!A${rowIdx}:F${rowIdx}`,
-      valueInputOption: 'RAW',
-      requestBody: { values: [['', '', '', '', '', '']] },
-    })
-  }
-
+  const rows: Record<string, unknown>[] = []
   for (const s of schedule ?? []) {
-    await appendRow('availability!A:F', [
-      providerId, 'schedule', DOW_NAMES[s.day], s.startTime, s.endTime, s.isOpen ? 'TRUE' : 'FALSE',
-    ])
+    rows.push({ provider_id: providerId, type: 'schedule', day_or_date: DOW_NAMES[s.day], start_time: s.startTime, end_time: s.endTime, active: !!s.isOpen })
   }
-
   for (const date of blockedDates ?? []) {
-    await appendRow('availability!A:F', [
-      providerId, 'block', date, '', '', 'TRUE',
-    ])
+    rows.push({ provider_id: providerId, type: 'block', day_or_date: date, start_time: null, end_time: null, active: true })
+  }
+  if (rows.length) {
+    const { error } = await sb.from('availability').insert(rows)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })

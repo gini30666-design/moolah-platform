@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateBookingStatus, getSheetData, updateRow } from '@/lib/sheets'
+import { updateBookingStatus, getSheetData } from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { pushMessage } from '@/lib/line'
 import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
 import { verifyOwner } from '@/lib/auth'
@@ -87,10 +88,7 @@ export async function PATCH(req: NextRequest) {
             )
           }
           // Mark waitlist entry as notified
-          await updateRow('waitlist', entryIdx + 2, [
-            entry[0], entry[1], entry[2], entry[3], entry[4],
-            entry[5], entry[6], entry[7], entry[8], 'notified',
-          ])
+          await sb.from('waitlist').update({ status: 'notified' }).eq('id', entry[0])
         }
       } catch {
         // Waitlist notification failure should not block the response

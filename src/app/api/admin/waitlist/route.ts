@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSheetData, updateRow } from '@/lib/sheets'
+import { getSheetData } from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { verifyOwner } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
@@ -35,7 +36,6 @@ export async function PATCH(req: NextRequest) {
   const auth = await verifyOwner(req, rows[idx][1])
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const r = rows[idx]
-  await updateRow('waitlist', idx + 2, [r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], status])
+  await sb.from('waitlist').update({ status }).eq('id', entryId)
   return NextResponse.json({ ok: true })
 }

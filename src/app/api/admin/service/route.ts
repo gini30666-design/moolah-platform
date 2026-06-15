@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  getSheetData, sheets, SHEET_ID,
-  findServiceRow, updateServiceAtRow, clearServiceAtRow,
-} from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { verifyOwner } from '@/lib/auth'
 
 function generateServiceId() {
@@ -18,19 +15,12 @@ export async function POST(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  // 明確計算下一可寫列，再用 values.update 寫死範圍，避免 values.append
-  // 在有空白列（刪除服務後留下的）的表上把整列寫偏。
-  const colA = await getSheetData('services!A:A')
-  const nextRow = colA.length + 1
   const serviceId = generateServiceId()
-  await sheets.spreadsheets.values.update({
-    spreadsheetId: SHEET_ID,
-    range: `services!A${nextRow}:F${nextRow}`,
-    valueInputOption: 'USER_ENTERED',
-    requestBody: {
-      values: [[providerId, serviceId, name, String(price), String(duration), description ?? '']],
-    },
+  const { error } = await sb.from('services').insert({
+    service_id: serviceId, provider_id: providerId, name,
+    price: Number(price), duration: Number(duration), description: description ?? '',
   })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true, serviceId })
 }
 
@@ -43,16 +33,11 @@ export async function PATCH(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const serviceRows = await getSheetData('services!A2:F')
-  const row = serviceRows.find(r => r[1] === serviceId)
-  if (!row || row[0] !== providerId) {
-    return NextResponse.json({ error: 'Service not found' }, { status: 404 })
-  }
-  const sheetRow = await findServiceRow(serviceId)
-  if (sheetRow === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  await updateServiceAtRow(sheetRow, [
-    providerId, serviceId, name, String(price), String(duration), description ?? '',
-  ])
+  const { data, error } = await sb.from('services')
+    .update({ name, price: Number(price), duration: Number(duration), description: description ?? '' })
+    .eq('service_id', serviceId).eq('provider_id', providerId).select('service_id')
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!data || data.length === 0) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }
 
@@ -65,13 +50,9 @@ export async function DELETE(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const serviceRows = await getSheetData('services!A2:F')
-  const row = serviceRows.find(r => r[1] === serviceId)
-  if (!row || row[0] !== providerId) {
-    return NextResponse.json({ error: 'Service not found' }, { status: 404 })
-  }
-  const sheetRow = await findServiceRow(serviceId)
-  if (sheetRow === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  await clearServiceAtRow(sheetRow)
+  const { data, error } = await sb.from('services')
+    .delete().eq('service_id', serviceId).eq('provider_id', providerId).select('service_id')
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!data || data.length === 0) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }

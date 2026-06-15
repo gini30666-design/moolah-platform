@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSheetData, appendRow, updateRow } from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { verifyOwner } from '@/lib/auth'
 
-// customer_notes sheet: A=providerId, B=customerLineUserId, C=note, D=updatedAt, E=tags(JSON)
-
-async function findNoteRow(providerId: string, customerLineUserId: string) {
-  const rows = await getSheetData('customer_notes!A2:E')
-  const idx = rows.findIndex(r => r[0] === providerId && r[1] === customerLineUserId)
-  return { rows, rowIndex: idx, sheetRow: idx >= 0 ? idx + 2 : -1 }
-}
+// customer_notes: (provider_id, customer_line_user_id) 複合主鍵；tags 為 jsonb
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -19,11 +13,9 @@ export async function GET(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const { rows, rowIndex } = await findNoteRow(providerId, customerLineUserId)
-  if (rowIndex === -1) return NextResponse.json({ note: '', tags: [] })
-  const note = rows[rowIndex][2] ?? ''
-  const tags: string[] = (() => { try { return JSON.parse(rows[rowIndex][4] ?? '[]') } catch { return [] } })()
-  return NextResponse.json({ note, tags })
+  const { data } = await sb.from('customer_notes')
+    .select('note, tags').eq('provider_id', providerId).eq('customer_line_user_id', customerLineUserId).maybeSingle()
+  return NextResponse.json({ note: data?.note ?? '', tags: Array.isArray(data?.tags) ? data!.tags : [] })
 }
 
 export async function POST(req: NextRequest) {
@@ -35,15 +27,17 @@ export async function POST(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const { rows, rowIndex, sheetRow } = await findNoteRow(providerId, customerLineUserId)
-  const now = new Date().toISOString()
+  // 部分更新：未提供的欄位沿用既有值
+  const { data: existing } = await sb.from('customer_notes')
+    .select('note, tags').eq('provider_id', providerId).eq('customer_line_user_id', customerLineUserId).maybeSingle()
 
-  if (rowIndex >= 0) {
-    const existingNote = note !== undefined ? note : (rows[rowIndex][2] ?? '')
-    const existingTags = tags !== undefined ? JSON.stringify(tags) : (rows[rowIndex][4] ?? '[]')
-    await updateRow('customer_notes', sheetRow, [providerId, customerLineUserId, existingNote, now, existingTags])
-  } else {
-    await appendRow('customer_notes!A:E', [providerId, customerLineUserId, note ?? '', now, JSON.stringify(tags ?? [])])
-  }
+  const finalNote = note !== undefined ? note : (existing?.note ?? '')
+  const finalTags = tags !== undefined ? tags : (Array.isArray(existing?.tags) ? existing!.tags : [])
+
+  const { error } = await sb.from('customer_notes').upsert({
+    provider_id: providerId, customer_line_user_id: customerLineUserId,
+    note: finalNote, updated_at: new Date().toISOString(), tags: finalTags,
+  }, { onConflict: 'provider_id,customer_line_user_id' })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

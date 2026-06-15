@@ -149,6 +149,7 @@ function matchFaq(lower: string, raw: string): FaqEntry | null {
   return null
 }
 import { getSheetData, updateBookingStatus, appendRow } from '@/lib/sheets'
+import { sb } from '@/lib/supabase'
 import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
 
 async function getUpcomingBookings(lineUserId: string) {
@@ -560,13 +561,15 @@ export async function POST(req: NextRequest) {
 
         if (removeMatch) {
           const customerName = removeMatch[1].trim()
-          const idx = await findBlacklistEntry(provider.providerId, customerName)
-          if (idx === -1) {
+          const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+          const needle = norm(customerName)
+          const blRows = await getSheetData('blacklist!A2:E')
+          const match = blRows.find(r => r[0] === provider.providerId && norm(r[2] as string).includes(needle))
+          if (!match) {
             await replyMessage(replyToken, [{ type: 'text', text: `「${customerName}」不在黑名單中` }])
           } else {
-            // 用 updateRow 把該列清空
-            const { updateRow } = await import('@/lib/sheets')
-            await updateRow('blacklist', idx + 2, ['', '', '', '', ''])
+            // 從黑名單刪除該筆（by provider + 比對到的精確客名）
+            await sb.from('blacklist').delete().eq('provider_id', provider.providerId).eq('customer_name', match[2])
             await replyMessage(replyToken, [{ type: 'text', text: `✓ 已將「${customerName}」從黑名單移除` }])
           }
           continue

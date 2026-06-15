@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sheets, SHEET_ID } from '@/lib/sheets'
+import { appendRow } from '@/lib/sheets'
 
 export async function POST(req: Request) {
   try {
@@ -13,14 +13,7 @@ export async function POST(req: Request) {
     // plan：trial=14 天免費試用（預設）／direct=直接正式加入（免試用）
     const planChoice = plan === 'direct' ? 'direct' : 'trial'
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SHEET_ID,
-      range: 'leads!A:I',
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [[id, name.trim(), category, district, contact.trim(), currentMethod || '', createdAt, 'new', planChoice]],
-      },
-    })
+    await appendRow('leads!A:I', [id, name.trim(), category, district, contact.trim(), currentMethod || '', createdAt, 'new', planChoice])
 
     return NextResponse.json({ ok: true })
   } catch (e) {
