@@ -528,6 +528,7 @@ export default function BookPage() {
           const profile = await liff.getProfile()
           setLineUserId(profile.userId)
           setDisplayName(profile.displayName)
+          setCustomerNameInput(prev => prev || profile.displayName)  // 預填 LINE 名方便，仍可改、仍必填
           setLiffReady(true)
           // 檢查是否已加 OA 好友——沒加就收不到 LINE 預約提醒
           try {
@@ -588,16 +589,16 @@ export default function BookPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const bookerName = lineUserId ? displayName : customerNameInput.trim()
+    const bookerName = customerNameInput.trim()
     const name = forOthers ? recipientName.trim() : bookerName
-    const phone = forOthers ? recipientPhone.trim() : (lineUserId ? '' : customerPhone.trim())
+    const phone = forOthers ? recipientPhone.trim() : customerPhone.trim()
     const tagStr = selectedTags.join('、')
     const inspirationStr = selectedInspirations.length > 0
       ? `靈感參考：${selectedInspirations.map(id => portfolio.find(p => p.id === id)?.caption || id).join('、')}`
       : ''
     const combinedNote = [tagStr, inspirationStr, note.trim()].filter(Boolean).join(' / ')
     const finalNote = forOthers && bookerName ? `[代訂人：${bookerName}]${combinedNote ? ' ' + combinedNote : ''}` : combinedNote
-    if (!date || !time || !gender || !name) return
+    if (!date || !time || !gender || !name || (!forOthers && !phone)) return
     setSubmitting(true)
     const res = await fetch('/api/booking', {
       method: 'POST',
@@ -659,7 +660,7 @@ export default function BookPage() {
   const hotCount = slots.filter(s => s.status === 'hot').length
   const hasCustomerInfo = forOthers
     ? recipientName.trim().length > 0
-    : lineUserId ? true : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
+    : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
 
   const fmtDate = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : ''
@@ -760,11 +761,11 @@ export default function BookPage() {
         {waitlistSlot && !waitlistDone && (
           <div style={{ padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px' }}>
             <p style={{ fontSize: '12px', color: '#8a5c20', marginBottom: '10px', lineHeight: 1.5 }}>加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。</p>
-            <button type="button" disabled={waitlistSubmitting || (!lineUserId && !customerNameInput.trim())}
+            <button type="button" disabled={waitlistSubmitting || !customerNameInput.trim()}
               onClick={async () => {
-                const wlName = lineUserId ? displayName : customerNameInput.trim()
-                const wlPhone = lineUserId ? '' : customerPhone.trim()
-                if (!wlName && !lineUserId) return
+                const wlName = customerNameInput.trim()
+                const wlPhone = customerPhone.trim()
+                if (!wlName) return
                 setWaitlistSubmitting(true)
                 try {
                   await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
@@ -959,8 +960,8 @@ export default function BookPage() {
           <div style={{ margin: '14px 0' }}>
             <ChapterHeader no="01" eyebrow="About you" title="關於你" />
 
-            {/* Contact info (external users) */}
-            {liffReady && !lineUserId && (
+            {/* 稱呼 + 電話：一律必填（給設計師的聯絡資訊），不論是否抓到 LINE */}
+            {liffReady && (
               <div style={{ marginBottom: '20px' }}>
                 <div style={{ marginBottom: '12px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: 'rgba(44,40,37,0.6)', marginBottom: '6px', letterSpacing: '0.04em' }}>如何稱呼<span style={{ color: 'var(--oak)' }}>*</span></label>
@@ -1079,7 +1080,7 @@ export default function BookPage() {
               {[
                 ['服務', service.name],
                 ['時長', `${service.duration} 分鐘`],
-                ['稱呼', lineUserId ? displayName : (customerNameInput || '—')],
+                ['稱呼', customerNameInput || '—'],
                 ['性別', gender || '—'],
                 ['日期時段', date ? `${fmtDate} ${time || '—'}` : '—'],
                 ...(selectedInspirations.length > 0 ? [['靈感參考', `${selectedInspirations.length} 張已選`]] : [['靈感參考', '—']]),
