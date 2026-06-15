@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     }
 
     const id = `lead-${Date.now()}`
-    const createdAt = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })
+    const createdAt = new Date().toISOString()  // timestamptz 欄位需 ISO（原本 toLocaleString 的「上午/下午」會讓 Postgres 解析失敗→500）
     // plan：trial=14 天免費試用（預設）／direct=直接正式加入（免試用）
     const planChoice = plan === 'direct' ? 'direct' : 'trial'
 
