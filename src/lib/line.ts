@@ -67,7 +67,7 @@ export const PROVIDER_QUICK_REPLY: QuickReplyItem[] = [
   { label: '聯絡客服', text: '客服' },
 ]
 
-export async function pushFlexMessage(to: string, altText: string, contents: object, quickReply?: QuickReplyItem[]) {
+export async function pushFlexMessage(to: string, altText: string, contents: object, quickReply?: QuickReplyItem[]): Promise<boolean> {
   const message: Record<string, unknown> = { type: 'flex', altText, contents }
   if (quickReply && quickReply.length > 0) {
     message.quickReply = buildQuickReply(quickReply)
@@ -86,6 +86,74 @@ export async function pushFlexMessage(to: string, altText: string, contents: obj
   if (!res.ok) {
     const err = await res.text()
     console.error('[LINE pushFlexMessage error]', res.status, err, { to })
+    return false
+  }
+  return true
+}
+
+// ── 預約通知 Flex 卡片（取代純文字通知）─────────────────────────────────
+const _OAK = '#A68966'
+const _CHARCOAL = '#2C2825'
+function _infoRow(label: string, value: string): object {
+  return {
+    type: 'box', layout: 'baseline', spacing: 'sm',
+    contents: [
+      { type: 'text', text: label, color: '#9b9b9b', size: 'sm', flex: 2 },
+      { type: 'text', text: value || '—', color: _CHARCOAL, size: 'sm', flex: 5, wrap: true, weight: 'bold' },
+    ],
+  }
+}
+
+// 消費者：預約成功卡（查看/管理預約；略過 Google 行事曆）
+export function consumerBookingFlex(p: { bookingId: string; serviceName: string; storeName: string; date: string; time: string; viewUrl: string }): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: '🎉 預約成功', weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: '我們已收到您的預約，期待為您服務 ✨', size: 'sm', color: '#888888', wrap: true },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('預約單號', p.bookingId),
+          _infoRow('服務項目', p.serviceName),
+          _infoRow('服務店家', p.storeName),
+          _infoRow('預約日期', p.date),
+          _infoRow('預約時段', p.time),
+        ] },
+      ],
+    },
+    footer: {
+      type: 'box', layout: 'vertical', spacing: 'sm',
+      contents: [
+        { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看 / 管理預約', uri: p.viewUrl } },
+      ],
+    },
+  }
+}
+
+// 設計師：新預約卡（聯絡客人 tel + 查看後台）
+export function providerBookingFlex(p: { customerName: string; customerPhone: string; serviceName: string; date: string; time: string; adminUrl: string }): object {
+  const footer: object[] = []
+  if (p.customerPhone) footer.push({ type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '📞 聯絡客人', uri: `tel:${p.customerPhone}` } })
+  footer.push({ type: 'button', style: 'secondary', height: 'sm', action: { type: 'uri', label: '查看後台', uri: p.adminUrl } })
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: '📋 新預約', weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('客戶', p.customerName),
+          ...(p.customerPhone ? [_infoRow('電話', p.customerPhone)] : []),
+          _infoRow('服務項目', p.serviceName),
+          _infoRow('預約日期', p.date),
+          _infoRow('預約時段', p.time),
+        ] },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: footer },
   }
 }
 

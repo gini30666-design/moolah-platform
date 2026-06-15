@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
-import { pushMessage } from '@/lib/line'
+import { pushFlexMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
 
 function generateId() {
   return `BK${Date.now()}`
@@ -81,19 +81,24 @@ export async function POST(req: NextRequest) {
 
   const providerName = providerRow[1]
   const providerLineUserId = providerRow[4]
+  const storeName = providerRow[6] || providerName
   const serviceName = serviceRow[2]
-  const servicePrice = serviceRow[3]
+
+  // LIFF 連結（透過 /dashboard endpoint 的 ?to= 轉址）
+  const liffId = process.env.NEXT_PUBLIC_LIFF_ID
+  const viewUrl = `https://liff.line.me/${liffId}?to=${encodeURIComponent('/my-bookings')}`
+  const adminUrl = `https://liff.line.me/${liffId}?to=${encodeURIComponent(`/${providerId}/admin`)}`
 
   let consumerNotified = false
   try {
-    const providerMsg = pushMessage(
-      providerLineUserId,
-      `📋 新預約通知\n\n客戶：${customerName}${customerPhone ? `（${customerPhone}）` : ''}\n服務：${serviceName}\n日期：${date} ${time}\n\n請至後台確認詳情。`
+    const providerMsg = pushFlexMessage(
+      providerLineUserId, '📋 新預約',
+      providerBookingFlex({ customerName, customerPhone: customerPhone ?? '', serviceName, date, time, adminUrl })
     )
     const consumerMsg = customerLineUserId
-      ? pushMessage(
-          customerLineUserId,
-          `✅ 預約確認！\n\n設計師：${providerName}\n服務：${serviceName}\n日期：${date} ${time}\n金額：NT$ ${Number(servicePrice).toLocaleString()}\n\n預約編號：${bookingId}\n\n若需取消或查詢，請至 MooLah 我的預約。`
+      ? pushFlexMessage(
+          customerLineUserId, '🎉 預約成功',
+          consumerBookingFlex({ bookingId, serviceName, storeName, date, time, viewUrl })
         )
       : Promise.resolve(false)
 

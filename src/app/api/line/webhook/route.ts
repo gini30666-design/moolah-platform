@@ -469,6 +469,15 @@ export async function POST(req: NextRequest) {
   for (const event of events) {
     try {
       if (event.type === 'follow') {
+        await pushMessage(
+          event.source.userId,
+          '🌿 歡迎加入 MooLah！\n\n' +
+          'MooLah 是為美業職人打造的質感預約系統。在這裡，你可以線上預約、瀏覽職人的作品與服務，預約後也會在這收到確認與提醒。\n\n' +
+          '・點下方選單「探索職人」開始探索\n' +
+          '・「我的預約」隨時查看或管理你的預約\n' +
+          '・有任何問題，直接在這裡留言，我們會盡快協助你 😊\n\n' +
+          '讓 MooLah 陪你，把美好的時間留給自己 ✨'
+        )
         await pushFlexMessage(
           event.source.userId,
           '歡迎使用 MooLah 預約系統！',
