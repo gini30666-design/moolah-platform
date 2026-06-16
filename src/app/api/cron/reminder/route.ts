@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
-import { pushMessage } from '@/lib/line'
+import { pushFlexMessage, customerReminderFlex, providerReminderFlex, liffUrl } from '@/lib/line'
 
 // Vercel Cron: 每日 UTC 10:00（台灣 18:00）推播明日預約提醒
 // vercel.json: { "path": "/api/cron/reminder", "schedule": "0 10 * * *" }
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
   const [providerRows, serviceRows, bookingRows] = await Promise.all([
-    getSheetData('providers!A2:F'),
+    getSheetData('providers!A2:G'),
     getSheetData('services!A2:F'),
     getSheetData('bookings!A2:M'),
   ])
@@ -44,16 +44,15 @@ export async function GET(req: NextRequest) {
     const providerRow = providerRows.find(r => r[0] === providerId)
     if (!providerRow?.[4]) continue
 
-    const lines = bookings
+    const items = bookings
       .sort((a, b) => (a[6] as string).localeCompare(b[6] as string))
       .map(b => {
         const svc = serviceRows.find(s => s[0] === providerId && s[1] === b[2])
-        return `• ${b[6]}　${b[3] || '顧客'}（${(svc?.[2] as string) ?? b[2]}）`
+        return { time: b[6] as string, customerName: (b[3] as string) || '顧客', serviceName: (svc?.[2] as string) ?? (b[2] as string) }
       })
-      .join('\n')
 
-    const msg = `🗓 明日預約提醒 ${tomorrowStr}\n\n${lines}\n\n共 ${bookings.length} 筆，請準時就位 ✨`
-    await pushMessage(providerRow[4] as string, msg)
+    await pushFlexMessage(providerRow[4] as string, `🗓 明日預約 ${tomorrowStr}`,
+      providerReminderFlex({ date: tomorrowStr, items, adminUrl: liffUrl(`/${providerId}/admin`) }))
     providerSent++
   }
 
@@ -64,11 +63,11 @@ export async function GET(req: NextRequest) {
 
     const providerRow = providerRows.find(r => r[0] === b[1])
     const svc = serviceRows.find(s => s[0] === b[1] && s[1] === b[2])
-    const providerName = (providerRow?.[1] as string) ?? '設計師'
+    const storeName = (providerRow?.[6] as string) || (providerRow?.[1] as string) || '店家'
     const serviceName = (svc?.[2] as string) ?? '服務'
 
-    const msg = `✨ 預約提醒\n\n明天 ${tomorrowStr} ${b[6]} 您有一筆預約：\n\n服務：${serviceName}\n職人：${providerName}\n\n期待為您服務 🙏`
-    await pushMessage(customerLineUserId, msg)
+    await pushFlexMessage(customerLineUserId, '✨ 預約提醒',
+      customerReminderFlex({ storeName, serviceName, date: tomorrowStr, time: b[6] as string, viewUrl: liffUrl('/my-bookings') }))
     customerSent++
   }
 

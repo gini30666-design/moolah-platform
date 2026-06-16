@@ -3,6 +3,9 @@ import crypto from 'crypto'
 const LINE_API = 'https://api.line.me/v2/bot/message'
 const TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN!
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
+const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || ''
+// 需要 LINE 身分的頁面（我的預約/後台/預約）→ 用 LIFF 連結，在 LINE 內帶身分開啟
+export const liffUrl = (path: string) => `https://liff.line.me/${LIFF_ID}?to=${encodeURIComponent(path)}`
 
 export async function pushMessage(to: string, text: string): Promise<boolean> {
   if (!to) return false
@@ -154,6 +157,81 @@ export function providerBookingFlex(p: { customerName: string; customerPhone: st
       ],
     },
     footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: footer },
+  }
+}
+
+// 顧客：明日預約提醒卡
+export function customerReminderFlex(p: { storeName: string; serviceName: string; date: string; time: string; viewUrl: string }): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: '✨ 預約提醒', weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: '別忘了，明天有一筆預約等著您 🙏', size: 'sm', color: '#888888', wrap: true },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('預約日期', p.date),
+          _infoRow('預約時段', p.time),
+          _infoRow('服務項目', p.serviceName),
+          _infoRow('服務店家', p.storeName),
+        ] },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看 / 管理預約', uri: p.viewUrl } },
+    ] },
+  }
+}
+
+// 設計師：明日排程摘要卡
+export function providerReminderFlex(p: { date: string; items: Array<{ time: string; customerName: string; serviceName: string }>; adminUrl: string }): object {
+  const rows = p.items.map(it => ({
+    type: 'box', layout: 'baseline', spacing: 'sm',
+    contents: [
+      { type: 'text', text: it.time, color: _OAK, size: 'sm', weight: 'bold', flex: 2 },
+      { type: 'text', text: `${it.customerName}・${it.serviceName}`, color: _CHARCOAL, size: 'sm', flex: 6, wrap: true },
+    ],
+  }))
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: `🗓 明日預約 · ${p.date}`, weight: 'bold', size: 'lg', color: _CHARCOAL },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: rows },
+        { type: 'text', text: `共 ${p.items.length} 筆，請準時就位 ✨`, size: 'xs', color: '#888888', margin: 'md' },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看後台', uri: p.adminUrl } },
+    ] },
+  }
+}
+
+// 顧客：預約被取消通知卡（設計師取消/休假）
+export function cancelNoticeFlex(p: { providerName: string; serviceName: string; date: string; time: string; rebookUrl: string }): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: '🙏 預約已取消', weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: '很抱歉，您的這筆預約已由設計師取消，造成不便深感抱歉。', size: 'sm', color: '#888888', wrap: true },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('原預約日期', p.date),
+          _infoRow('原預約時段', p.time),
+          _infoRow('服務項目', p.serviceName),
+          _infoRow('職人', p.providerName),
+        ] },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '重新預約其他時段', uri: p.rebookUrl } },
+      { type: 'button', style: 'link', color: '#888888', height: 'sm', action: { type: 'uri', label: '看看其他職人', uri: `${BASE_URL}/discover` } },
+    ] },
   }
 }
 
@@ -447,7 +525,7 @@ export function buildMyBookingsFlex(
         ? [
             {
               type: 'button',
-              action: { type: 'uri', label: '查看與修改預約', uri: `${BASE_URL}/my-bookings` },
+              action: { type: 'uri', label: '查看與修改預約', uri: liffUrl('/my-bookings') },
               style: 'primary',
               color: '#A68966',
               height: 'sm',
@@ -520,7 +598,7 @@ export function buildCancelFlex(): object {
       contents: [
         {
           type: 'button',
-          action: { type: 'uri', label: '前往我的預約', uri: `${BASE_URL}/my-bookings` },
+          action: { type: 'uri', label: '前往我的預約', uri: liffUrl('/my-bookings') },
           style: 'primary',
           color: '#06C755',
           height: 'sm',
@@ -578,7 +656,7 @@ export function buildAdminFlex(): object {
       contents: [
         {
           type: 'button',
-          action: { type: 'uri', label: '進入後台管理', uri: `${BASE_URL}/dashboard` },
+          action: { type: 'uri', label: '進入後台管理', uri: liffUrl('/dashboard') },
           style: 'primary',
           color: '#A68966',
           height: 'sm',
@@ -818,7 +896,7 @@ export function buildRebookFlex(params: {
 
   const display = storeName || providerName
   const priceText = servicePrice ? `NT$ ${servicePrice.toLocaleString()}` : ''
-  const rebookUrl = `${BASE_URL}/${providerId}/book${serviceId ? `?service=${serviceId}` : ''}`
+  const rebookUrl = liffUrl(`/${providerId}/book${serviceId ? `?service=${serviceId}` : ''}`)
 
   return {
     type: 'bubble',
@@ -921,7 +999,7 @@ export function buildProviderScheduleFlex(params: {
     footer: {
       type: 'box', layout: 'vertical', paddingAll: '16px',
       contents: [
-        { type: 'button', action: { type: 'uri', label: '進入後台管理', uri: `${BASE_URL}/${providerId}/admin` }, style: 'primary', color: '#A68966', height: 'sm' },
+        { type: 'button', action: { type: 'uri', label: '進入後台管理', uri: liffUrl(`/${providerId}/admin`) }, style: 'primary', color: '#A68966', height: 'sm' },
       ],
     },
   }

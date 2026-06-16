@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateBookingStatus, getSheetData } from '@/lib/sheets'
 import { sb } from '@/lib/supabase'
-import { pushMessage } from '@/lib/line'
+import { pushMessage, pushFlexMessage, cancelNoticeFlex, liffUrl } from '@/lib/line'
 import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
 import { verifyOwner } from '@/lib/auth'
 
@@ -54,13 +54,20 @@ export async function PATCH(req: NextRequest) {
     if (row) {
       const customerLineUserId = row[4]
       const providerId = row[1]
+      const serviceId = row[2]
       const date = row[5]
       const time = row[6]
 
       if (customerLineUserId) {
-        await pushMessage(
-          customerLineUserId,
-          `您好，您在 ${date} ${time} 的預約已由設計師取消。\n如需重新預約，請點選預約連結重新安排。\n造成不便深感抱歉 🙏`
+        const [provRows, svcRows] = await Promise.all([
+          getSheetData('providers!A2:B'),
+          getSheetData('services!A2:C'),
+        ])
+        const providerName = provRows.find(p => p[0] === providerId)?.[1] || '設計師'
+        const serviceName = svcRows.find(s => s[0] === providerId && s[1] === serviceId)?.[2] || '服務'
+        await pushFlexMessage(
+          customerLineUserId, '🙏 預約已取消',
+          cancelNoticeFlex({ providerName, serviceName, date, time, rebookUrl: liffUrl(`/${providerId}/book`) })
         )
       }
 
