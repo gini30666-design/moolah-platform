@@ -1,26 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
+import { isSlotBookable } from '@/lib/slots'
 import { pushFlexMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
 
 function generateId() {
   return `BK${Date.now()}`
-}
-
-// 與 availability route 一致的時段表（含午休斷點）
-const TIME_SLOTS = [
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
-]
-const DOW_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-// "9:00" → "09:00"（相容歷史去前導零資料）
-function padTime(t: unknown): string {
-  const m = String(t ?? '').match(/^(\d{1,2}):(\d{2})$/)
-  return m ? `${m[1].padStart(2, '0')}:${m[2]}` : String(t ?? '')
-}
-function toMinutes(t: string): number {
-  const [h, m] = padTime(t).split(':').map(Number)
-  return h * 60 + (m || 0)
 }
 
 export async function POST(req: NextRequest) {
@@ -78,54 +62,26 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 伺服器端時段重驗（防繞過 UI / race）────────────────────────────
-  // DB 唯一約束只擋「完全同 provider+date+time」。以下補上：休假日 / 該weekday公休 /
-  // 非營業時段 / 服務時長跨格重疊（例：60分服務佔 09:00+09:30，別人不能再訂 09:30）。
-  const reqTime = padTime(time)
-  const reqDuration = Number(serviceRow[4]) || 30
-  const reqSlots = Math.ceil(reqDuration / 30)
-  const SLOT_TAKEN = { error: 'slot_unavailable', message: '此時段剛被預約或不可預約，請改選其他時段。' }
+  // 與 availability 顯示端共用 computeAvailability：該時段在畫面上「可約」才放行。
+  // 涵蓋休假日 / weekday 公休 / 非營業時段 / 服務時長跨格重疊（DB 唯一約束只擋完全同時段）。
+  // DB 唯一約束仍為最後防線；重驗自身出錯則放行不誤擋。
   try {
     const [availRows, dayBookingRows] = await Promise.all([
       getSheetData('availability!A2:F'),
       getSheetData('bookings!A2:M'),
     ])
-    const provAvail = availRows.filter(r => r[0] === providerId)
-
-    // 1) 整天休假（block）
-    if (provAvail.some(r => r[1] === 'block' && r[2] === date)) {
-      return NextResponse.json(SLOT_TAKEN, { status: 409 })
-    }
-    // 2) 該 weekday 公休 + 營業時段
-    const dow = new Date(date + 'T12:00:00').getDay()
-    const daySched = provAvail.find(r => r[1] === 'schedule' && r[2] === DOW_NAMES[dow])
-    if (daySched && (daySched[5] ?? '').toLowerCase() === 'false') {
-      return NextResponse.json(SLOT_TAKEN, { status: 409 })
-    }
-    const startMin = toMinutes(daySched ? (daySched[3] || '09:00') : '09:00')
-    const endMin = toMinutes(daySched ? (daySched[4] || '19:00') : '19:00')
-    const reqMin = toMinutes(reqTime)
-    // 3) 起始在營業時段內，且整段服務做完不超過打烊
-    if (reqMin < startMin || reqMin + reqDuration > endMin) {
-      return NextResponse.json(SLOT_TAKEN, { status: 409 })
-    }
-    // 4) 服務時長跨格重疊（DB 唯一約束擋不到）
-    const occupied = new Set<string>()
-    for (const b of dayBookingRows) {
-      if (b[1] !== providerId || b[5] !== date || (b[12] ?? '') === 'cancelled') continue
-      const bIdx = TIME_SLOTS.indexOf(padTime(b[6]))
-      if (bIdx === -1) continue
-      const bSvc = serviceRows.find(r => r[0] === providerId && r[1] === b[2])
-      const bSlots = Math.ceil((bSvc ? Number(bSvc[4]) : 30) / 30)
-      for (let i = 0; i < bSlots; i++) if (TIME_SLOTS[bIdx + i]) occupied.add(TIME_SLOTS[bIdx + i])
-    }
-    const reqIdx = TIME_SLOTS.indexOf(reqTime)
-    const reqCells = reqIdx === -1 ? [reqTime] : Array.from({ length: reqSlots }, (_, i) => TIME_SLOTS[reqIdx + i])
-    if (reqCells.some(t => t === undefined || occupied.has(t))) {
-      return NextResponse.json(SLOT_TAKEN, { status: 409 })
+    const bookable = isSlotBookable(
+      { providerId, date, serviceId, bookingRows: dayBookingRows, serviceRows, availRows },
+      time,
+    )
+    if (!bookable) {
+      return NextResponse.json(
+        { error: 'slot_unavailable', message: '此時段剛被預約或不可預約，請改選其他時段。' },
+        { status: 409 },
+      )
     }
   } catch (e) {
     console.error('[booking] slot revalidation error:', e)
-    // 驗證流程本身出錯不應誤擋（DB 唯一約束仍是最後防線）→ 放行
   }
 
   const bookingId = generateId()
