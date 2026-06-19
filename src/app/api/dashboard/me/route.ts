@@ -7,9 +7,10 @@ export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get('userId')
   if (!userId) return NextResponse.json({ error: 'missing userId' }, { status: 400 })
 
-  const rows = await getSheetData('providers!A:E')
-  // headers: id, name, category, description, lineUserId
-  const match = rows.slice(1).find(r => r[4] === userId)
+  // 欄位: id(0), name(1), category(2), description(3), lineUserId(4)
+  // 註：Supabase cutover 後 getSheetData 只回資料列、無 header，故不再 slice(1)
+  const rows = await getSheetData('providers!A2:E')
+  const match = rows.find(r => r[4] === userId)
 
   if (!match) return NextResponse.json({ found: false }, { status: 200 })
 
