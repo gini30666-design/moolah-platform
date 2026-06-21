@@ -170,3 +170,16 @@ create table if not exists feedback (
   ua        text,
   created_at timestamptz default now()
 );
+
+-- 12) customer_history（客戶作品歷史 / Karte）— 每位客人每次服務的照片+備註
+create table if not exists customer_history (
+  id                    bigint generated always as identity primary key,
+  provider_id           text not null references providers(id) on delete cascade,
+  customer_line_user_id text not null,
+  image_url             text,
+  note                  text,
+  service_name          text,
+  created_at            timestamptz default now()
+);
+create index if not exists idx_customer_history on customer_history(provider_id, customer_line_user_id);
+alter table customer_history enable row level security;  -- 僅 service role（API 經 verifyOwner）存取

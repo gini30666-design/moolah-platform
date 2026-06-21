@@ -69,6 +69,12 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   const [noteSaved, setNoteSaved] = useState(false)
   const [tags, setTags] = useState<string[]>([])
 
+  // 作品歷史（Karte）：每次服務的照片 + 備註
+  type KarteEntry = { id: number; imageUrl: string; note: string; serviceName: string; createdAt: string }
+  const [karte, setKarte] = useState<KarteEntry[]>([])
+  const [karteNote, setKarteNote] = useState('')
+  const [karteUploading, setKarteUploading] = useState(false)
+
   const noShowCount = history.filter(b => b.status === 'no_show').length
 
   useEffect(() => {
@@ -77,7 +83,45 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
       .then(r => r.json())
       .then(d => { setNoteText(d.note ?? ''); setTags(d.tags ?? []) })
       .catch(() => {})
+    fetch(`/api/admin/customer-history?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`, { headers: authHeader() })
+      .then(r => r.json())
+      .then(d => setKarte(d.entries ?? []))
+      .catch(() => {})
   }, [booking.customerLineUserId, providerId, isManual])
+
+  async function addKarte(file: File | null, input: HTMLInputElement) {
+    if (!file) return
+    if (file.size > 4 * 1024 * 1024) { alert('圖片大小不可超過 4MB'); input.value = ''; return }
+    setKarteUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('providerId', providerId)
+      const up = await fetch('/api/admin/upload', { method: 'POST', headers: authHeader(), body: fd })
+      const upData = await up.json()
+      if (!up.ok) { alert(upData.error ?? '上傳失敗'); return }
+      const res = await fetch('/api/admin/customer-history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, imageUrl: upData.url, note: karteNote, serviceName: booking.serviceName }),
+      })
+      const data = await res.json()
+      if (res.ok && data.entry) { setKarte(prev => [data.entry, ...prev]); setKarteNote('') }
+      else alert(data.error ?? '儲存失敗')
+    } finally {
+      setKarteUploading(false)
+      input.value = ''
+    }
+  }
+
+  async function deleteKarte(id: number) {
+    setKarte(prev => prev.filter(k => k.id !== id))
+    await fetch('/api/admin/customer-history', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ providerId, id }),
+    }).catch(() => {})
+  }
 
   async function saveNote() {
     setNoteSaving(true)
@@ -188,6 +232,48 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             >
               {noteSaved ? '已儲存 ✓' : noteSaving ? '儲存中…' : '儲存筆記'}
             </button>
+          </div>
+        )}
+
+        {!isManual && (
+          <div style={{ marginBottom: '18px' }}>
+            <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>作品歷史</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: karte.length ? '12px' : '0' }}>
+              <input
+                value={karteNote}
+                onChange={e => setKarteNote(e.target.value)}
+                placeholder="這次做的（如：8 度霧棕、法式手繪）"
+                style={{ flex: 1, background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '12px', padding: '9px 12px', fontSize: '12px', color: charcoal, outline: 'none', boxSizing: 'border-box' }}
+              />
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap',
+                padding: '0 14px', fontSize: '12px', fontWeight: 600,
+                background: karteUploading ? 'rgba(166,137,102,0.3)' : oak, color: '#fff',
+                borderRadius: '12px', cursor: karteUploading ? 'default' : 'pointer',
+              }}>
+                {karteUploading ? '上傳中…' : '＋ 照片'}
+                <input type="file" accept="image/*" disabled={karteUploading}
+                  onChange={e => addKarte(e.currentTarget.files?.[0] ?? null, e.currentTarget)}
+                  style={{ display: 'none' }} />
+              </label>
+            </div>
+            {karte.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
+                {karte.map(k => (
+                  <div key={k.id} style={{ position: 'relative', width: '96px', flexShrink: 0 }}>
+                    {k.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={k.imageUrl} alt="" style={{ width: '96px', height: '96px', objectFit: 'cover', borderRadius: '12px', display: 'block' }} />
+                    ) : (
+                      <div style={{ width: '96px', height: '96px', borderRadius: '12px', background: 'rgba(166,137,102,0.08)' }} />
+                    )}
+                    <button onClick={() => deleteKarte(k.id)} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(44,40,37,0.6)', color: '#fff', border: 'none', fontSize: '12px', lineHeight: '20px', cursor: 'pointer', padding: 0 }}>×</button>
+                    {k.note && <p style={{ fontSize: '10px', color: '#6b5f56', marginTop: '4px', lineHeight: 1.3 }}>{k.note}</p>}
+                    <p style={{ fontSize: '9px', color: oak, marginTop: '2px' }}>{(k.createdAt || '').slice(0, 10)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
