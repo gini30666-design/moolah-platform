@@ -70,12 +70,11 @@ export async function GET(req: NextRequest) {
     const displayName = storeName || providerName
 
     try {
-      await pushFlexMessage(lineUserId, `${ym} 月度對帳單`, monthlyStatementFlex({
+      await pushFlexMessage(lineUserId, `${ym} 月度成績單`, monthlyStatementFlex({
         displayName,
         ym,
         deals: valid.length,
         revenue,
-        fee: 699,
         statementUrl,
       }))
       sent++

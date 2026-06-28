@@ -262,26 +262,24 @@ export function weeklyReportFlex(p: { displayName: string; weekRange: string; de
   }
 }
 
-// 設計師：月度對帳單卡
-export function monthlyStatementFlex(p: { displayName: string; ym: string; deals: number; revenue: number; fee: number; statementUrl: string }): object {
+// 設計師：月度成績單卡（僅營運摘要；月費催帳由業務個別處理，不放卡片）
+export function monthlyStatementFlex(p: { displayName: string; ym: string; deals: number; revenue: number; statementUrl: string }): object {
   return {
     type: 'bubble',
     body: {
       type: 'box', layout: 'vertical', spacing: 'md',
       contents: [
-        { type: 'text', text: `📊 ${p.ym} 月度對帳單`, weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: `📊 ${p.ym} 月度成績單`, weight: 'bold', size: 'xl', color: _CHARCOAL },
         { type: 'text', text: p.displayName, size: 'sm', color: _OAK, weight: 'bold' },
         { type: 'separator', margin: 'md' },
         { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
           _infoRow('成交', `${p.deals} 筆`),
           _infoRow('營收', `NT$ ${p.revenue.toLocaleString()}`),
-          _infoRow('應付月費', `NT$ ${p.fee.toLocaleString()}`),
         ] },
-        { type: 'text', text: '請於收到後 5 個工作日內完成匯款 🙏', size: 'xs', color: '#888888', margin: 'md', wrap: true },
       ],
     },
     footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
-      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '完整對帳單', uri: p.statementUrl } },
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看完整月報', uri: p.statementUrl } },
     ] },
   }
 }
