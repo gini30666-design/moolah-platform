@@ -18,6 +18,7 @@ import {
   CUSTOMER_QUICK_REPLY,
   PROVIDER_QUICK_REPLY,
 } from '@/lib/line'
+import { answerProviderQuery } from '@/lib/aiAssistant'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
@@ -759,7 +760,19 @@ export async function POST(req: NextRequest) {
         continue
       }
 
-      // 預設
+      // 預設兜底：設計師 → AI 自然語言資料查詢（push）；消費者 → 預設卡
+      if (provider) {
+        try {
+          const answer = await answerProviderQuery(provider.providerId, provider.name, userText)
+          await pushMessage(userId, answer)
+        } catch (err) {
+          console.error('[webhook AI fallback error]', err)
+          await replyMessage(replyToken, [
+            { type: 'flex', altText: '有什麼可以幫您？', contents: buildDefaultFlex() },
+          ])
+        }
+        continue
+      }
       await replyMessage(replyToken, [
         { type: 'flex', altText: '有什麼可以幫您？', contents: buildDefaultFlex() },
       ])
