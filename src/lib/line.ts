@@ -235,6 +235,57 @@ export function cancelNoticeFlex(p: { providerName: string; serviceName: string;
   }
 }
 
+// 設計師：每週成績單卡
+export function weeklyReportFlex(p: { displayName: string; weekRange: string; deals: number; revenue: number; noShows: number; nextWeekCount: number; tip: string; adminUrl: string }): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: '📊 本週成績單', weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: p.weekRange, size: 'sm', color: '#888888' },
+        { type: 'text', text: p.displayName, size: 'sm', color: _OAK, weight: 'bold' },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('成交', `${p.deals} 筆`),
+          _infoRow('營收', `NT$ ${p.revenue.toLocaleString()}`),
+          ...(p.noShows > 0 ? [_infoRow('No-show', `${p.noShows} 筆`)] : []),
+          _infoRow('下週已預約', `${p.nextWeekCount} 筆`),
+        ] },
+        { type: 'box', layout: 'vertical', margin: 'md', paddingAll: '12px', backgroundColor: '#faf7f2', cornerRadius: '8px',
+          contents: [{ type: 'text', text: `💡 ${p.tip}`, size: 'sm', color: '#555555', wrap: true }] },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看後台', uri: p.adminUrl } },
+    ] },
+  }
+}
+
+// 設計師：月度對帳單卡
+export function monthlyStatementFlex(p: { displayName: string; ym: string; deals: number; revenue: number; fee: number; statementUrl: string }): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: `📊 ${p.ym} 月度對帳單`, weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: p.displayName, size: 'sm', color: _OAK, weight: 'bold' },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('成交', `${p.deals} 筆`),
+          _infoRow('營收', `NT$ ${p.revenue.toLocaleString()}`),
+          _infoRow('應付月費', `NT$ ${p.fee.toLocaleString()}`),
+        ] },
+        { type: 'text', text: '請於收到後 5 個工作日內完成匯款 🙏', size: 'xs', color: '#888888', margin: 'md', wrap: true },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '完整對帳單', uri: p.statementUrl } },
+    ] },
+  }
+}
+
 export async function replyMessage(replyToken: string, messages: object[]) {
   const res = await fetch(`${LINE_API}/reply`, {
     method: 'POST',

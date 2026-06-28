@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
-import { pushMessage } from '@/lib/line'
+import { pushFlexMessage, monthlyStatementFlex } from '@/lib/line'
 
 // 每月 1 號 09:00 (UTC+8 = 01:00 UTC) 由 Vercel Cron 觸發
 // vercel.json: { "path": "/api/cron/monthly-statement", "schedule": "0 1 1 * *" }
@@ -69,17 +69,15 @@ export async function GET(req: NextRequest) {
     const statementUrl = `${BASE_URL}/statement/${providerId}/${ym}`
     const displayName = storeName || providerName
 
-    const text =
-      `📊 ${ym} 月度對帳單已產生\n\n` +
-      `${displayName}\n` +
-      `成交：${valid.length} 筆\n` +
-      `營收：NT$ ${revenue.toLocaleString()}\n` +
-      `應付月費：NT$ 699\n\n` +
-      `👉 完整對帳單：\n${statementUrl}\n\n` +
-      `（請於收到後 5 個工作日內完成匯款）`
-
     try {
-      await pushMessage(lineUserId, text)
+      await pushFlexMessage(lineUserId, `${ym} 月度對帳單`, monthlyStatementFlex({
+        displayName,
+        ym,
+        deals: valid.length,
+        revenue,
+        fee: 699,
+        statementUrl,
+      }))
       sent++
     } catch (err) {
       errors.push(`${providerId}: ${(err as Error).message}`)

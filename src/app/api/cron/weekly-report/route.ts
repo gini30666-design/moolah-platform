@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
-import { pushMessage } from '@/lib/line'
+import { pushFlexMessage, weeklyReportFlex, liffUrl } from '@/lib/line'
 
 // 每週日 20:00 (UTC+8 = 12:00 UTC) 推播本週成績 + 下週展望給合作設計師
 // vercel.json: { "path": "/api/cron/weekly-report", "schedule": "0 12 * * 0" }
@@ -76,18 +76,17 @@ export async function GET(req: NextRequest) {
       ? '本週超忙碌，記得照顧自己 💪'
       : '節奏穩定，繼續加油！'
 
-    const text =
-      `📊 本週成績單（${weekStart.slice(5)} – ${weekEnd.slice(5)}）\n\n` +
-      `${displayName}\n` +
-      `成交：${thisWeekValid.length} 筆\n` +
-      `營收：NT$ ${revenue.toLocaleString()}\n` +
-      (noShows > 0 ? `No-show：${noShows} 筆\n` : '') +
-      `\n📅 下週展望\n` +
-      `已預約：${nextWeek.length} 筆\n\n` +
-      `💡 ${tip}`
-
     try {
-      await pushMessage(lineUserId, text)
+      await pushFlexMessage(lineUserId, '📊 本週成績單', weeklyReportFlex({
+        displayName,
+        weekRange: `${weekStart.slice(5)} – ${weekEnd.slice(5)}`,
+        deals: thisWeekValid.length,
+        revenue,
+        noShows,
+        nextWeekCount: nextWeek.length,
+        tip,
+        adminUrl: liffUrl(`/${providerId}/admin`),
+      }))
       sent++
     } catch (err) {
       errors.push(`${providerId}: ${(err as Error).message}`)
