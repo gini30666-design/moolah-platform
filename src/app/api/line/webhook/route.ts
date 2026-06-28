@@ -22,6 +22,9 @@ import { answerProviderQuery } from '@/lib/aiAssistant'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
+// #2 AI 兜底會呼叫 Anthropic（~2–3s）+ Supabase 讀取；放寬函式上限避免逾時、降低 LINE 重送機率
+export const maxDuration = 30
+
 // ── FAQ 條目（關鍵字 → 答覆）─────────────────────────────────────────────
 // 順序：先比對的優先；複合關鍵字寫在前面避免被單字搶走
 type FaqEntry = {
@@ -663,6 +666,23 @@ export async function POST(req: NextRequest) {
             continue
           }
         }
+
+        // #1 設計師端兜底：精確指令未命中時，保留少數通用入口走卡片，其餘自然語言交 AI 資料查詢
+        // （避免廣義關鍵字「預約/取消」在 AI 之前攔截掉設計師的自然語言問句）
+        const keepAsCard = ['客服', '聯絡', '人工', '客訴', '不滿意', '後台', '管理', 'dashboard', 'admin', '我的id', 'my id', 'lineid', '你好', 'hi', 'hello', '哈囉']
+        if (!keepAsCard.some(k => lower.includes(k))) {
+          try {
+            const answer = await answerProviderQuery(provider.providerId, provider.name, userText, userId)
+            await pushMessage(userId, answer)
+          } catch (err) {
+            console.error('[webhook AI provider fallback]', err)
+            await replyMessage(replyToken, [
+              { type: 'flex', altText: '有什麼可以幫您？', contents: buildDefaultFlex() },
+            ])
+          }
+          continue
+        }
+        // 否則 fall through 到顧客關鍵字段（客服 FAQ / 後台卡 / 我的id / 歡迎卡）
       }
 
       // ── 顧客端關鍵字 ────────────────────────────────────────────────────
@@ -763,7 +783,7 @@ export async function POST(req: NextRequest) {
       // 預設兜底：設計師 → AI 自然語言資料查詢（push）；消費者 → 預設卡
       if (provider) {
         try {
-          const answer = await answerProviderQuery(provider.providerId, provider.name, userText)
+          const answer = await answerProviderQuery(provider.providerId, provider.name, userText, userId)
           await pushMessage(userId, answer)
         } catch (err) {
           console.error('[webhook AI fallback error]', err)
