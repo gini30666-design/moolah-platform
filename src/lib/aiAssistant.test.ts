@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildDataBundleText, type ProviderData } from './aiAssistant'
+import { buildDataBundleText, type ProviderData } from './aiBundle'
 
 const sample: ProviderData = {
   today: '2026-06-29',
