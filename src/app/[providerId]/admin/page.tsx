@@ -306,8 +306,8 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 }
 
 // ─── Booking Card ─────────────────────────────────────────────────────────────
-function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
-  booking: Booking; onCancel: (id: string) => void; onViewCustomer: (b: Booking) => void; compact?: boolean
+function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
+  booking: Booking; onCancel: (id: string) => void; onViewCustomer: (b: Booking) => void; compact?: boolean; isNext?: boolean
 }) {
   const [cancelling, setCancelling] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -343,7 +343,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
   return (
     <div style={{
       background: isNoShow ? 'rgba(200,60,60,0.04)' : 'white',
-      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : 'rgba(166,137,102,0.28)'}`,
+      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : isNext ? 'rgba(166,137,102,0.6)' : 'rgba(166,137,102,0.28)'}`,
       borderRadius: compact ? '12px' : '16px',
       padding: compact ? '12px 16px' : '18px 20px',
       boxShadow: compact ? '0 1px 8px rgba(26,23,20,0.05)' : '0 2px 16px rgba(26,23,20,0.08)',
@@ -360,6 +360,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact }: {
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
+          {isNext && !isNoShow && <span style={{ fontSize: '10px', color: cream, background: oak, padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位</span>}
           {isNoShow && <span style={{ fontSize: '10px', color: '#b03030', background: 'rgba(200,60,60,0.12)', padding: '2px 8px', borderRadius: '20px' }}>爽約</span>}
           {isManual && !isNoShow && <span style={{ fontSize: '10px', color: oak, background: 'rgba(166,137,102,0.1)', padding: '2px 8px', borderRadius: '20px' }}>私下預約</span>}
         </div>
@@ -803,13 +804,49 @@ function ServiceItem({ service, providerId, onRefresh }: {
 }
 
 // ─── Admin Page ───────────────────────────────────────────────────────────────
+// 空狀態 → 招客 CTA（不留白；把空白變成分享預約連結的入口）
+function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: string }) {
+  const [copied, setCopied] = useState(false)
+  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}/book` : ''
+  const title = tab === 'today' ? '今天還沒有預約 🌿' : tab === 'upcoming' ? '目前沒有待服務的預約 🌿' : '沒有過去記錄'
+  const showCta = tab !== 'past'
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(bookUrl); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+  }
+  const shareLine = () => {
+    const url = `https://line.me/R/msg/text/?${encodeURIComponent(`幫我線上預約 → ${bookUrl}`)}`
+    try { liff.openWindow({ url, external: true }) } catch { window.open(url, '_blank') }
+  }
+  return (
+    <div style={{ textAlign: 'center', padding: '40px 24px' }}>
+      <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '17px', color: charcoal }}>{title}</p>
+      {showCta && (
+        <>
+          <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.5)', marginTop: '10px', lineHeight: 1.7 }}>
+            把你的預約連結分享出去，<br />讓客人自己線上預約 ✨
+          </p>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '18px', flexWrap: 'wrap' }}>
+            <button onClick={copy} style={{ padding: '9px 16px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: copied ? oak : 'transparent', color: copied ? cream : oak, border: `1px solid ${oak}`, transition: 'all 0.18s' }}>
+              {copied ? '✓ 已複製' : '📋 複製預約連結'}
+            </button>
+            <button onClick={shareLine} style={{ padding: '9px 16px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: '#06C755', color: '#fff', border: '1px solid #06C755' }}>
+              分享到 LINE
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const { providerId } = useParams<{ providerId: string }>()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState<boolean | null>(null)
-  const [tab, setTab] = useState<BookingTab>('timeline')
+  const [loadError, setLoadError] = useState(false)  // 區分「載入失敗(可重試)」與「無權限」
+  const [tab, setTab] = useState<BookingTab>('upcoming')  // 預設「即將到來」：開後台第一眼看接下來的預約，而非可能空白的時段視圖
   const [mainView, setMainView] = useState<MainView>('bookings')
   const [providerName, setProviderName] = useState('')
   const [plan, setPlan] = useState('')               // trial | active | expired | ''(舊資料=正式)
@@ -847,9 +884,12 @@ export default function AdminPage() {
           return
         }
         // 擁有權判斷改由伺服器端（token 認證）決定，不再從公開 API 取得 lineUserId
-        const [provRes, accessRes] = await Promise.all([
+        // 一次並行發 4 支（不再瀑布等 access 回來才抓 bookings/waitlist）→ 大幅縮短後台開啟時間
+        const [provRes, accessRes, bookingsRes, waitlistRes] = await Promise.all([
           fetch(`/api/provider/${providerId}`),
           fetch(`/api/admin/access?providerId=${providerId}`, { headers: authHeader() }),
+          fetch(`/api/admin/bookings?providerId=${providerId}`, { headers: authHeader() }),
+          fetch(`/api/admin/waitlist?providerId=${providerId}`, { headers: authHeader() }),
         ])
         const data = await provRes.json()
         setProviderName(data.provider?.name ?? '')
@@ -860,7 +900,9 @@ export default function AdminPage() {
         const access = await accessRes.json()
         if (access.status === 'owner') {
           setAuthorized(true)
-          await Promise.all([fetchBookings(), fetchWaitlist()])
+          const [bookingsData, waitlistData] = await Promise.all([bookingsRes.json(), waitlistRes.json()])
+          setBookings(bookingsData.bookings ?? [])
+          setWaitlist(waitlistData.entries ?? [])
         } else if (access.status === 'unclaimed') {
           // 尚未認領 — 一律導去合約認領流程（/claim），不在此自動認領
           window.location.href = `/claim/${providerId}`
@@ -870,8 +912,8 @@ export default function AdminPage() {
         }
         setLoading(false)
       })
-      .catch(() => { setAuthorized(false); setLoading(false) })
-  }, [providerId, fetchBookings])
+      .catch(() => { setLoadError(true); setLoading(false) })  // 網路/初始化失敗 → 顯示可重試畫面（非「無權限」）
+  }, [providerId])
 
   function handleCancel(id: string) {
     setBookings(prev => prev.filter(b => b.id !== id))
@@ -922,19 +964,37 @@ export default function AdminPage() {
   const avgInterval = intervals.length === 0 ? 0 : Math.round(intervals.reduce((a, b) => a + b, 0) / intervals.length)
 
   const bookingTabs: { key: BookingTab; label: string }[] = [
-    { key: 'timeline', label: '時段視圖' },
-    { key: 'today', label: '今日' },
     { key: 'upcoming', label: '即將到來' },
+    { key: 'today', label: '今日' },
+    { key: 'timeline', label: '時段視圖' },
     { key: 'past', label: '過去' },
   ]
-  const filteredBookings = bookings.filter(b => {
-    if (tab === 'today') return b.date === today
-    if (tab === 'upcoming') return b.date > today
-    return b.date < today
-  })
+  const filteredBookings = bookings
+    .filter(b => {
+      if (tab === 'today') return b.date === today
+      if (tab === 'upcoming') return b.date > today
+      return b.date < today
+    })
+    // 即將到來/今日：最近的在最前（時間升冪）；過去：最新的在前（降冪）
+    .sort((a, b) => {
+      const cmp = (a.date + a.time).localeCompare(b.date + b.time)
+      return tab === 'past' ? -cmp : cmp
+    })
+  const nextBookingId = (tab === 'upcoming' || tab === 'today') ? filteredBookings[0]?.id : undefined
 
   // ── Loading ──
   if (loading) return <MoolahLoader label="載入後台中…" />
+
+  // ── Load error (網路/初始化失敗，可重試) ──
+  if (loadError) return (
+    <div style={{ display: 'flex', height: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '32px', background: cream, textAlign: 'center' }}>
+      <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', color: charcoal }}>後台載入失敗</p>
+      <p style={{ fontSize: '13px', color: '#8a7e76', lineHeight: 1.6 }}>請確認網路連線後再試一次</p>
+      <button onClick={() => window.location.reload()} style={{ marginTop: '8px', padding: '11px 28px', borderRadius: '99px', background: oak, color: cream, border: 'none', fontSize: '14px', cursor: 'pointer' }}>
+        重試
+      </button>
+    </div>
+  )
 
   // ── Unauthorized ──
   if (authorized === false) return (
@@ -1181,11 +1241,7 @@ export default function AdminPage() {
           {tab !== 'timeline' && (
             <div style={{ padding: '14px 16px 8px' }}>
               {filteredBookings.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                  <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '16px', color: '#c8c0b8' }}>
-                    {tab === 'today' ? '今日尚無預約' : tab === 'upcoming' ? '目前無待服務預約' : '無過去記錄'}
-                  </p>
-                </div>
+                <EmptyBookings tab={tab} providerId={providerId} />
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {tab !== 'past'
@@ -1201,7 +1257,7 @@ export default function AdminPage() {
                           </p>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             {dayBookings.map(b => (
-                              <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} />
+                              <BookingCard key={b.id} booking={b} onCancel={handleCancel} onViewCustomer={setCustomerSheet} isNext={b.id === nextBookingId} />
                             ))}
                           </div>
                         </div>
