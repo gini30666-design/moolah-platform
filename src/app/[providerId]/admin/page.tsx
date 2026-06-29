@@ -67,6 +67,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   const [noteText, setNoteText] = useState('')
   const [noteSaving, setNoteSaving] = useState(false)
   const [noteSaved, setNoteSaved] = useState(false)
+  const [sheetError, setSheetError] = useState('')  // 內嵌錯誤提示（取代 alert / 靜默）
   const [tags, setTags] = useState<string[]>([])
 
   // 作品歷史（Karte）：每次服務的照片 + 備註
@@ -91,7 +92,8 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
   async function addKarte(file: File | null, input: HTMLInputElement) {
     if (!file) return
-    if (file.size > 4 * 1024 * 1024) { alert('圖片大小不可超過 4MB'); input.value = ''; return }
+    setSheetError('')
+    if (file.size > 4 * 1024 * 1024) { setSheetError('圖片大小不可超過 4MB'); input.value = ''; return }
     setKarteUploading(true)
     try {
       const fd = new FormData()
@@ -99,7 +101,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
       fd.append('providerId', providerId)
       const up = await fetch('/api/admin/upload', { method: 'POST', headers: authHeader(), body: fd })
       const upData = await up.json()
-      if (!up.ok) { alert(upData.error ?? '上傳失敗'); return }
+      if (!up.ok) { setSheetError(upData.error ?? '上傳失敗'); return }
       const res = await fetch('/api/admin/customer-history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeader() },
@@ -107,7 +109,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
       })
       const data = await res.json()
       if (res.ok && data.entry) { setKarte(prev => [data.entry, ...prev]); setKarteNote('') }
-      else alert(data.error ?? '儲存失敗')
+      else setSheetError(data.error ?? '儲存失敗')
     } finally {
       setKarteUploading(false)
       input.value = ''
@@ -124,15 +126,21 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   }
 
   async function saveNote() {
-    setNoteSaving(true)
-    await fetch('/api/admin/customer-note', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText, tags }),
-    })
-    setNoteSaving(false)
-    setNoteSaved(true)
-    setTimeout(() => setNoteSaved(false), 2000)
+    setNoteSaving(true); setSheetError('')
+    try {
+      const res = await fetch('/api/admin/customer-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText, tags }),
+      })
+      if (!res.ok) throw new Error()
+      setNoteSaved(true)
+      setTimeout(() => setNoteSaved(false), 2000)
+    } catch {
+      setSheetError('筆記儲存失敗，請重試')   // 不再「失敗也顯示已儲存」
+    } finally {
+      setNoteSaving(false)
+    }
   }
 
   async function toggleTag(label: string) {
@@ -155,6 +163,11 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
         onClick={e => e.stopPropagation()}
       >
         <div style={{ width: '40px', height: '4px', background: 'rgba(166,137,102,0.25)', borderRadius: '2px', margin: '0 auto 20px' }} />
+        {sheetError && (
+          <div onClick={() => setSheetError('')} style={{ background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: '12px', padding: '10px 14px', borderRadius: '12px', marginBottom: '14px', textAlign: 'center', cursor: 'pointer' }}>
+            {sheetError}　（點此關閉）
+          </div>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', fontWeight: 600, color: charcoal }}>
@@ -313,31 +326,50 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
   const [showConfirm, setShowConfirm] = useState(false)
   const [markingNoShow, setMarkingNoShow] = useState(false)
   const [showNoShowConfirm, setShowNoShowConfirm] = useState(false)
+  const [actionError, setActionError] = useState('')  // 動作失敗提示（取代靜默/誤移除）
   const isManual = booking.customerLineUserId === 'MANUAL'
   const isNoShow = booking.status === 'no_show'
+  const nextCountdown = (() => {
+    if (!isNext) return ''
+    const diff = Math.round((new Date(`${booking.date}T${booking.time}:00+08:00`).getTime() - Date.now()) / 60000)
+    if (diff <= 0 || diff > 720) return ''  // 只在 12 小時內顯示倒數
+    return diff >= 60 ? `還有 ${Math.floor(diff / 60)} 時 ${diff % 60} 分` : `還有 ${diff} 分`
+  })()
 
   async function handleCancel() {
-    setCancelling(true)
-    await fetch('/api/admin/booking', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ bookingId: booking.id, status: 'cancelled' }),
-    })
-    onCancel(booking.id)
-    setCancelling(false)
-    setShowConfirm(false)
+    setCancelling(true); setActionError('')
+    try {
+      const res = await fetch('/api/admin/booking', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ bookingId: booking.id, status: 'cancelled' }),
+      })
+      if (!res.ok) throw new Error()
+      onCancel(booking.id)   // 只在成功才從畫面移除
+      setShowConfirm(false)
+    } catch {
+      setActionError('取消失敗，請檢查網路後再試一次')
+    } finally {
+      setCancelling(false)
+    }
   }
 
   async function handleNoShow() {
-    setMarkingNoShow(true)
-    await fetch('/api/admin/booking', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ bookingId: booking.id, status: 'no_show' }),
-    })
-    onCancel(booking.id)
-    setMarkingNoShow(false)
-    setShowNoShowConfirm(false)
+    setMarkingNoShow(true); setActionError('')
+    try {
+      const res = await fetch('/api/admin/booking', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ bookingId: booking.id, status: 'no_show' }),
+      })
+      if (!res.ok) throw new Error()
+      onCancel(booking.id)
+      setShowNoShowConfirm(false)
+    } catch {
+      setActionError('標記失敗，請檢查網路後再試一次')
+    } finally {
+      setMarkingNoShow(false)
+    }
   }
 
   return (
@@ -360,7 +392,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
-          {isNext && !isNoShow && <span style={{ fontSize: '10px', color: cream, background: oak, padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位</span>}
+          {isNext && !isNoShow && <span style={{ fontSize: '10px', color: cream, background: oak, padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位{nextCountdown ? ` · ${nextCountdown}` : ''}</span>}
           {isNoShow && <span style={{ fontSize: '10px', color: '#b03030', background: 'rgba(200,60,60,0.12)', padding: '2px 8px', borderRadius: '20px' }}>爽約</span>}
           {isManual && !isNoShow && <span style={{ fontSize: '10px', color: oak, background: 'rgba(166,137,102,0.1)', padding: '2px 8px', borderRadius: '20px' }}>私下預約</span>}
         </div>
@@ -415,6 +447,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
           </div>
         </div>
       )}
+      {actionError && <p style={{ fontSize: '11px', color: '#b04040', textAlign: 'center', marginTop: '10px' }}>{actionError}</p>}
     </div>
   )
 }
@@ -804,6 +837,36 @@ function ServiceItem({ service, providerId, onRefresh }: {
 }
 
 // ─── Admin Page ───────────────────────────────────────────────────────────────
+// 首次使用引導：偵測到還沒設定服務時顯示，3 步驟帶新設計師上手
+function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { providerId: string; onGoServices: () => void; onGoSchedule: () => void }) {
+  const [copied, setCopied] = useState(false)
+  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}/book` : ''
+  const share = async () => {
+    try { await navigator.clipboard.writeText(bookUrl); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+  }
+  const steps = [
+    { n: 1, title: '設定你的服務與價格', desc: '客人才能選擇要預約的項目', action: onGoServices, label: '去設定' },
+    { n: 2, title: '設定營業時間與休假', desc: '決定哪些時段可以被預約', action: onGoSchedule, label: '去設定' },
+    { n: 3, title: '分享你的預約連結', desc: '貼到 IG / LINE，客人自己線上約', action: share, label: copied ? '✓ 已複製' : '複製連結' },
+  ]
+  return (
+    <div data-animate style={{ margin: '16px 16px 0', padding: '18px 18px 10px', background: 'linear-gradient(135deg, rgba(166,137,102,0.12), rgba(166,137,102,0.03))', border: '1px solid rgba(166,137,102,0.3)', borderRadius: '18px' }}>
+      <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '19px', color: charcoal }}>歡迎使用 MooLah ✨</p>
+      <p style={{ fontSize: '11.5px', color: 'rgba(44,40,37,0.55)', marginTop: '2px', marginBottom: '6px', lineHeight: 1.5 }}>3 步驟開始線上接單：</p>
+      {steps.map(s => (
+        <div key={s.n} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '11px 0', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
+          <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: oak, color: cream, fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: '13px', color: charcoal, fontWeight: 600 }}>{s.title}</p>
+            <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.5)', marginTop: '2px', lineHeight: 1.5 }}>{s.desc}</p>
+          </div>
+          <button onClick={s.action} style={{ fontSize: '11.5px', color: oak, background: 'rgba(166,137,102,0.12)', border: `1px solid ${oak}`, borderRadius: '14px', padding: '8px 13px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{s.label}</button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // 空狀態 → 招客 CTA（不留白；把空白變成分享預約連結的入口）
 function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: string }) {
   const [copied, setCopied] = useState(false)
@@ -846,6 +909,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState<boolean | null>(null)
   const [loadError, setLoadError] = useState(false)  // 區分「載入失敗(可重試)」與「無權限」
+  const [showAnalytics, setShowAnalytics] = useState(false)  // 數據/對帳預設收合，讓操作內容上提
+  const [refreshing, setRefreshing] = useState(false)
   const [tab, setTab] = useState<BookingTab>('upcoming')  // 預設「即將到來」：開後台第一眼看接下來的預約，而非可能空白的時段視圖
   const [mainView, setMainView] = useState<MainView>('bookings')
   const [providerName, setProviderName] = useState('')
@@ -873,6 +938,12 @@ export default function AdminPage() {
     const data = await res.json()
     setWaitlist(data.entries ?? [])
   }, [providerId])
+
+  // 手動刷新（不整頁 reload）— 重抓預約與候補
+  const refreshAll = useCallback(async () => {
+    setRefreshing(true)
+    try { await Promise.all([fetchBookings(), fetchWaitlist()]) } finally { setRefreshing(false) }
+  }, [fetchBookings, fetchWaitlist])
 
   useEffect(() => {
     liff
@@ -1019,23 +1090,18 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
-        {/* 預覽我的預約頁（客人掃碼看到的頁面）*/}
-        <button
-          onClick={() => {
-            const url = `${window.location.origin}/${providerId}/book`
-            try { liff.openWindow({ url, external: false }) }
-            catch { window.open(url, '_blank') }
-          }}
-          style={{
-            position: 'absolute', top: '20px', right: '18px', zIndex: 3,
-            display: 'inline-flex', alignItems: 'center', gap: '6px',
-            background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)',
-            color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em',
-            padding: '7px 13px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)',
-          }}
-        >
-          <span style={{ fontSize: '13px' }}>👁</span> 預覽預約頁
-        </button>
+        {/* 右上：刷新（不整頁 reload）+ 預覽預約頁 */}
+        <style>{`@keyframes adminSpin { to { transform: rotate(360deg) } }`}</style>
+        <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 3, display: 'flex', gap: '8px' }}>
+          <button onClick={refreshAll} disabled={refreshing}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', padding: '7px 12px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)', opacity: refreshing ? 0.6 : 1 }}>
+            <span style={{ display: 'inline-block', animation: refreshing ? 'adminSpin 0.8s linear infinite' : 'none' }}>↻</span>{refreshing ? '更新中' : '刷新'}
+          </button>
+          <button onClick={() => { const url = `${window.location.origin}/${providerId}/book`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em', padding: '7px 13px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
+            <span style={{ fontSize: '13px' }}>👁</span> 預覽
+          </button>
+        </div>
         <p style={{ fontSize: '9px', color: 'var(--oak)', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.8 }}>管理後台</p>
         <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: cream, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
         <div style={{ width: '28px', height: '1px', background: oak, marginTop: '14px', opacity: 0.5 }} />
@@ -1100,6 +1166,23 @@ export default function AdminPage() {
         })}
       </div>
 
+      {/* 首次使用引導（還沒設定服務 = 新設計師）*/}
+      {services.length === 0 && (
+        <FirstRunChecklist
+          providerId={providerId}
+          onGoServices={() => setMainView('services')}
+          onGoSchedule={() => setMainView('schedule')}
+        />
+      )}
+
+      {/* 數據與對帳：預設收合，把操作內容（預約）往上提 */}
+      <button data-animate data-delay="55" onClick={() => setShowAnalytics(v => !v)} style={{ display: 'flex', width: 'calc(100% - 32px)', margin: '14px 16px 0', alignItems: 'center', justifyContent: 'space-between', padding: '13px 16px', background: cardBg, border: `1px solid ${border}`, borderRadius: '14px', cursor: 'pointer' }}>
+        <span style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>
+          📊 數據與對帳{isTrial && !isExpired ? ` · 試用剩 ${trialDaysLeft} 天` : ''}
+        </span>
+        <span style={{ fontSize: '12px', color: oak }}>{showAnalytics ? '收合 ▲' : '展開 ▼'}</span>
+      </button>
+      {showAnalytics && (<>
       {/* ── 本月對帳透明化 panel ── */}
       <div data-animate data-delay="60" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'linear-gradient(135deg, rgba(166,137,102,0.10), rgba(166,137,102,0.04))', border: '1px solid rgba(166,137,102,0.24)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
@@ -1191,6 +1274,7 @@ export default function AdminPage() {
           </>
         )}
       </div>
+      </>)}
 
       {/* ── Sand content panel ── */}
       <div style={{ position: 'relative', marginTop: '14px', background: 'var(--sand)', borderTop: '1px solid rgba(166,137,102,0.16)', borderRadius: '22px 22px 0 0', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5)', paddingBottom: '8px' }}>
