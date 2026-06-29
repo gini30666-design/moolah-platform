@@ -415,10 +415,10 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
 
       {!isNoShow && !showConfirm && !showNoShowConfirm && (
         <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
-          <button onClick={() => setShowNoShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#a04030', border: '1px solid rgba(200,60,60,0.2)', borderRadius: '12px', padding: '9px', background: 'rgba(200,60,60,0.04)', cursor: 'pointer' }}>
+          <button onClick={() => setShowNoShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#a04030', border: '1px solid rgba(200,60,60,0.2)', borderRadius: '12px', padding: '13px', background: 'rgba(200,60,60,0.04)', cursor: 'pointer' }}>
             標記爽約
           </button>
-          <button onClick={() => setShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '12px', padding: '9px', background: 'transparent', cursor: 'pointer' }}>
+          <button onClick={() => setShowConfirm(true)} style={{ flex: 1, fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '12px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>
             取消預約
           </button>
         </div>
@@ -427,8 +427,8 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
         <div style={{ marginTop: '14px', background: 'rgba(200,60,60,0.06)', border: '1px solid rgba(200,60,60,0.15)', borderRadius: '12px', padding: '14px' }}>
           <p style={{ fontSize: '12px', color: '#b04040', textAlign: 'center', marginBottom: '12px' }}>確認標記為爽約？此紀錄將保留在顧客歷史中。</p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setShowNoShowConfirm(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>返回</button>
-            <button onClick={handleNoShow} disabled={markingNoShow} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '10px', border: 'none', cursor: 'pointer', opacity: markingNoShow ? 0.6 : 1 }}>
+            <button onClick={() => setShowNoShowConfirm(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
+            <button onClick={handleNoShow} disabled={markingNoShow} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '13px', border: 'none', cursor: 'pointer', opacity: markingNoShow ? 0.6 : 1 }}>
               {markingNoShow ? '處理中...' : '確認爽約'}
             </button>
           </div>
@@ -440,8 +440,8 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
             確定取消？{!isManual && '系統將自動通知客戶。'}
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setShowConfirm(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '10px', background: 'transparent', cursor: 'pointer' }}>返回</button>
-            <button onClick={handleCancel} disabled={cancelling} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '10px', border: 'none', cursor: 'pointer', opacity: cancelling ? 0.6 : 1 }}>
+            <button onClick={() => setShowConfirm(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
+            <button onClick={handleCancel} disabled={cancelling} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '13px', border: 'none', cursor: 'pointer', opacity: cancelling ? 0.6 : 1 }}>
               {cancelling ? '取消中...' : '確認取消'}
             </button>
           </div>
@@ -860,7 +860,7 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
             <p style={{ fontSize: '13px', color: charcoal, fontWeight: 600 }}>{s.title}</p>
             <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.5)', marginTop: '2px', lineHeight: 1.5 }}>{s.desc}</p>
           </div>
-          <button onClick={s.action} style={{ fontSize: '11.5px', color: oak, background: 'rgba(166,137,102,0.12)', border: `1px solid ${oak}`, borderRadius: '14px', padding: '8px 13px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{s.label}</button>
+          <button onClick={s.action} style={{ fontSize: '11.5px', color: oak, background: 'rgba(166,137,102,0.12)', border: `1px solid ${oak}`, borderRadius: '14px', padding: '11px 15px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{s.label}</button>
         </div>
       ))}
     </div>
@@ -889,10 +889,10 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
             把你的預約連結分享出去，<br />讓客人自己線上預約 ✨
           </p>
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '18px', flexWrap: 'wrap' }}>
-            <button onClick={copy} style={{ padding: '9px 16px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: copied ? oak : 'transparent', color: copied ? cream : oak, border: `1px solid ${oak}`, transition: 'all 0.18s' }}>
+            <button onClick={copy} style={{ padding: '12px 18px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: copied ? oak : 'transparent', color: copied ? cream : oak, border: `1px solid ${oak}`, transition: 'all 0.18s' }}>
               {copied ? '✓ 已複製' : '📋 複製預約連結'}
             </button>
-            <button onClick={shareLine} style={{ padding: '9px 16px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: '#06C755', color: '#fff', border: '1px solid #06C755' }}>
+            <button onClick={shareLine} style={{ padding: '12px 18px', borderRadius: '20px', fontSize: '12.5px', cursor: 'pointer', background: '#06C755', color: '#fff', border: '1px solid #06C755' }}>
               分享到 LINE
             </button>
           </div>
@@ -1305,7 +1305,7 @@ export default function AdminPage() {
             <div style={{ display: 'flex', gap: '6px', minWidth: 'max-content' }}>
               {bookingTabs.map(t => (
                 <button key={t.key} onClick={() => setTab(t.key)} style={{
-                  padding: '8px 16px', borderRadius: '20px', fontSize: '12px',
+                  padding: '11px 18px', borderRadius: '20px', fontSize: '12px',
                   fontWeight: tab === t.key ? 600 : 400, cursor: 'pointer',
                   background: tab === t.key ? oak : 'transparent',
                   border: tab === t.key ? `1px solid ${oak}` : '1px solid rgba(166,137,102,0.35)',
