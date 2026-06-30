@@ -635,6 +635,17 @@ export default function BookPage() {
     />
   }
 
+  // provider 載入完成但沒有任何服務 → 不要無限骨架，給友善訊息
+  if (provider && allServices.length === 0) {
+    return (
+      <div style={{ display: 'flex', minHeight: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '14px', padding: '32px', background: '#f5efe6', textAlign: 'center' }}>
+        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', color: 'var(--charcoal)' }}>尚未開放線上預約</p>
+        <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.55)', lineHeight: 1.7 }}>{provider.storeName || provider.name} 尚未設定服務項目，<br />請直接聯絡店家，或晚點再來看看 🌿</p>
+        <a href="/discover" style={{ marginTop: '8px', padding: '11px 24px', borderRadius: '99px', background: 'var(--oak)', color: 'var(--cream)', fontSize: '13px', textDecoration: 'none' }}>探索其他職人</a>
+      </div>
+    )
+  }
+
   if (!provider || !service) {
     return (
       <div className="max-w-[480px] mx-auto" style={{ background: '#f5efe6', minHeight: '100vh', overflow: 'hidden' }}>
@@ -665,9 +676,17 @@ export default function BookPage() {
   const hasCustomerInfo = forOthers
     ? recipientName.trim().length > 0
     : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
-  const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && !submitting
+  // 寬鬆電話驗證：去掉非數字後 ≥ 8 碼才算有效（擋 typo，不誤擋市話/含符號格式）
+  const phoneValid = forOthers || customerPhone.replace(/\D/g, '').length >= 8
+  const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && phoneValid && !submitting
 
   const fmtDate = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : ''
+  // 選定時段的結束時間（讓客人知道大約做到幾點）
+  const endTime = (time && service) ? (() => {
+    const [h, m] = time.split(':').map(Number)
+    const e = new Date(2000, 0, 1, h, m + (service.duration || 60))
+    return `${String(e.getHours()).padStart(2, '0')}:${String(e.getMinutes()).padStart(2, '0')}`
+  })() : ''
 
   // Time slot grouped renderer
   function renderSlots() {
@@ -681,7 +700,10 @@ export default function BookPage() {
     }
 
     if (!slots.length) return (
-      <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.45)', padding: '12px 0' }}>此日期暫無可用時段</p>
+      <div style={{ padding: '14px 16px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '12px' }}>
+        <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.6)', lineHeight: 1.6 }}>這天已約滿或公休 🌙</p>
+        <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.45)', marginTop: '4px', lineHeight: 1.5 }}>請改選其他日期{nextAvailable ? '，或點上方「最快可預約」一鍵跳到最近時段' : ''}</p>
+      </div>
     )
 
     const periods: [string, (s: Slot) => boolean][] = [
@@ -725,7 +747,7 @@ export default function BookPage() {
               {slot.time}
               {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)', textDecoration: 'none' }}>候補</span>}
               {isHot && !isSelected && !isBooked && (
-                <span style={{ position: 'absolute', top: '-8px', right: '-6px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
+                <span style={{ position: 'absolute', top: '-6px', right: '-3px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
               )}
             </button>
           )
@@ -738,7 +760,7 @@ export default function BookPage() {
         {hotCount > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(196,132,90,0.08)', border: '1px solid rgba(196,132,90,0.22)', borderRadius: '10px' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c4845a', flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: '#c4845a' }}>橘色時段為熱門推薦，幫設計師填補空檔</span>
+            <span style={{ fontSize: '12px', color: '#c4845a' }}>橘色為設計師較有空的時段，預約這些服務更從容</span>
           </div>
         )}
         {periods.map(([label, fn]) => {
@@ -758,8 +780,8 @@ export default function BookPage() {
         {time && (
           <div style={{ padding: '11px 18px', background: 'var(--charcoal-deep)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', animation: 'fadeUp 0.25s ease' }}>
             <span style={{ fontSize: '8px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
-            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1 }}>{time}</span>
-            <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.35)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}</span>
+            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1 }}>{time}{endTime && <span style={{ fontSize: '1rem', color: 'rgba(251,249,244,0.55)' }}> – {endTime}</span>}</span>
+            <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}{service ? ` · 約 ${service.duration} 分` : ''}</span>
           </div>
         )}
         {waitlistSlot && !waitlistDone && (
@@ -830,10 +852,10 @@ export default function BookPage() {
           <div style={{ width: '48px' }} />
         </div>
         {(() => {
-          const step2Done = !!gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo
-          const step3Done = !!date && !!time
-          const currentStep = !step2Done ? 2 : !step3Done ? 3 : 4
-          const steps = [{ label: '服務', done: true }, { label: '資料', done: step2Done }, { label: '日期', done: step3Done }, { label: '送出', done: false }]
+          const stepTimeDone = !!date && !!time
+          const stepInfoDone = !!gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo
+          const currentStep = !stepTimeDone ? 2 : !stepInfoDone ? 3 : 4
+          const steps = [{ label: '服務', done: true }, { label: '時段', done: stepTimeDone }, { label: '資料', done: stepInfoDone }, { label: '送出', done: false }]
           return (
             <div className="max-w-lg mx-auto px-8 pb-3 flex items-center">
               {steps.map((s, i) => {
@@ -958,11 +980,11 @@ export default function BookPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
 
-          {/* ════════════ Chapter 01 — 關於你 ════════════ */}
-          <div style={{ margin: '14px 0' }}>
-            <ChapterHeader no="01" eyebrow="About you" title="關於你" />
+          {/* ════════════ Chapter 01 — 關於你（CSS order=2：視覺上排在「選擇時間」之後）════════════ */}
+          <div style={{ margin: '14px 0', order: 2 }}>
+            <ChapterHeader no="02" eyebrow="About you" title="關於你" />
 
             {/* 稱呼 + 電話：一律必填（給設計師的聯絡資訊），不論是否抓到 LINE */}
             {liffReady && (
@@ -978,6 +1000,7 @@ export default function BookPage() {
                   <input type="tel" placeholder="09xx-xxx-xxx" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)}
                     onFocus={() => setPhoneInputFocus(true)} onBlur={() => setPhoneInputFocus(false)} required
                     style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', fontFamily: 'inherit', background: '#fff', border: `1.5px solid ${phoneInputFocus ? 'var(--oak)' : customerPhone ? 'rgba(166,137,102,0.4)' : 'rgba(166,137,102,0.22)'}`, boxShadow: phoneInputFocus ? '0 0 0 3px rgba(166,137,102,0.12)' : 'none', transition: 'border-color 0.2s, box-shadow 0.2s' }} />
+                  {customerPhone && !phoneValid && <p style={{ fontSize: '10.5px', color: '#b04040', marginTop: '5px' }}>請輸入有效的電話號碼（至少 8 碼）</p>}
                 </div>
               </div>
             )}
@@ -1028,9 +1051,9 @@ export default function BookPage() {
             )}
           </div>
 
-          {/* ════════════ Chapter 02 — 選擇時間 ════════════ */}
-          <div className="ch-panel">
-            <ChapterHeader no="02" eyebrow="Pick a time" title="選擇時間" />
+          {/* ════════════ Chapter 02 — 選擇時間（CSS order=1：先選時段，再填資料）════════════ */}
+          <div className="ch-panel" style={{ order: 1 }}>
+            <ChapterHeader no="01" eyebrow="Pick a time" title="選擇時間" />
 
             {/* Date section */}
             <div style={{ marginBottom: '22px' }}>
@@ -1067,8 +1090,8 @@ export default function BookPage() {
             </div>
           </div>
 
-          {/* ════════════ Chapter 03 — 給設計師的話 ════════════ */}
-          <div style={{ margin: '14px 0' }}>
+          {/* ════════════ Chapter 03 — 給設計師的話（order=3）════════════ */}
+          <div style={{ margin: '14px 0', order: 3 }}>
             <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
 
             <FieldLabel hint="選填">快速標籤</FieldLabel>
@@ -1111,7 +1134,7 @@ export default function BookPage() {
           )}
           <button onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>} disabled={!canSubmit}
             style={{ width: '100%', padding: '17px', borderRadius: '15px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: 'var(--cream)', fontSize: '15px', fontWeight: 600, letterSpacing: '0.04em', boxShadow: canSubmit ? '0 12px 30px rgba(26,23,20,0.28)' : 'none', transition: 'all .3s cubic-bezier(0.16,1,0.3,1)' }}>
-            {submitting ? '預約中…' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : !hasCustomerInfo ? '請填寫稱呼與電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : '請選擇時段'}
+            {submitting ? '預約中…' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : !date ? '請選擇日期' : !time ? '請選擇時段' : !hasCustomerInfo ? '請填寫稱呼與電話' : !phoneValid ? '請輸入有效電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : '請完成必填'}
           </button>
         </div>
       </div>
