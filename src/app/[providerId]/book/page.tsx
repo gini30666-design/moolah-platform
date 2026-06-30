@@ -83,7 +83,7 @@ function DateQuickChips({ value, onChange }: { value: string; onChange: (d: stri
         const sel = value === c.d
         return (
           <button key={c.label} type="button" onClick={() => onChange(c.d)} style={{
-            padding: '8px 15px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
+            padding: '11px 16px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
             border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.25)',
             background: sel ? 'var(--charcoal)' : 'rgba(255,255,255,0.7)',
             color: sel ? 'var(--cream)' : 'var(--charcoal)',
@@ -169,7 +169,7 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
         const selected = value === opt
         return (
           <button key={opt} type="button" onClick={() => onChange(opt)} style={{
-            padding: '9px 20px', borderRadius: '99px', fontSize: '13px',
+            padding: '12px 20px', borderRadius: '99px', fontSize: '13px',
             border: selected ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.28)',
             background: selected ? 'var(--charcoal)' : 'rgba(255,255,255,0.75)',
             color: selected ? 'var(--cream)' : 'var(--charcoal)',
@@ -276,7 +276,7 @@ function InlineCalendar({ providerId, value, onChange }: {
               style={{
                 position: 'relative', overflow: 'hidden',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-                padding: '7px 2px', borderRadius: '8px', border: 'none',
+                padding: '11px 2px', borderRadius: '8px', border: 'none',
                 cursor: isDisabled ? 'default' : 'pointer',
                 background: isSelected ? 'var(--charcoal)' : isToday ? 'rgba(166,137,102,0.15)' : 'transparent',
                 opacity: isPast ? 0.22 : 1, transition: 'background 0.15s',
@@ -317,10 +317,10 @@ function InlineCalendar({ providerId, value, onChange }: {
 }
 
 // ── CompletionScreen ──────────────────────────────────────────────────
-function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, providerAddress }: {
+function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, servicePrice, providerAddress }: {
   providerName: string; serviceName: string; date: string; time: string
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
-  serviceDuration: number; providerAddress: string
+  serviceDuration: number; servicePrice: number; providerAddress: string
 }) {
   function handleAddToCalendar() {
     const start = new Date(`${date}T${time}:00+08:00`)
@@ -338,6 +338,9 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
   // 「我的預約」需 LINE 身分 → 走 LIFF 連結經已註冊的 /dashboard 轉址（直接 /my-bookings 不在 LINE Login 白名單會報錯）
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID || ''
   const myBookingsUrl = `https://liff.line.me/${liffId}?to=${encodeURIComponent('/my-bookings')}`
+  // web 訪客（無 LINE 身分）在「我的預約」追蹤不到自己的預約 → 改引導加好友（才收得到提醒）
+  const trackHref = isLineUser ? myBookingsUrl : 'https://line.me/R/ti/p/@881zhkla'
+  const trackLabel = isLineUser ? '我的預約' : '加好友追蹤'
 
   const mapUrl = providerAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(providerAddress)}`
@@ -387,6 +390,11 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--oak)', opacity: 0.6 }} />
             <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)' }}>{providerName} · {serviceName}</span>
           </div>
+          {servicePrice > 0 && (
+            <p style={{ textAlign: 'center', marginTop: '10px', fontSize: '13px', color: 'var(--oak)', fontWeight: 600, letterSpacing: '0.02em' }}>
+              到店付款 · NT$ {servicePrice.toLocaleString()}
+            </p>
+          )}
         </div>
         <div style={{ width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.7s both' }}>
           {consumerNotified ? (
@@ -426,19 +434,19 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
               查看地圖
             </a>
           ) : (
-            <a href={myBookingsUrl}
+            <a href={trackHref}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'rgba(166,137,102,0.14)', color: 'var(--oak)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(166,137,102,0.25)', letterSpacing: '0.02em' }}>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
-              我的預約
+              {trackLabel}
             </a>
           )}
         </div>
 
         {/* Secondary actions */}
         <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.9s both' }}>
-          <a href={myBookingsUrl} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
+          <a href={trackHref} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
-            我的預約
+            {trackLabel}
           </a>
           <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)', fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500 }}>
@@ -485,6 +493,7 @@ export default function BookPage() {
   const [slots, setSlots] = useState<Slot[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')  // 送出失敗內嵌提示（取代 alert）
   const [done, setDone] = useState(false)
   const [consumerNotified, setConsumerNotified] = useState(false)
   const [isHairCategory, setIsHairCategory] = useState(false)
@@ -576,23 +585,40 @@ export default function BookPage() {
     const combinedNote = [tagStr, inspirationStr, note.trim()].filter(Boolean).join(' / ')
     const finalNote = forOthers && bookerName ? `[代訂人：${bookerName}]${combinedNote ? ' ' + combinedNote : ''}` : combinedNote
     if (!date || !time || !gender || !name || (!forOthers && !phone)) return
-    setSubmitting(true)
-    const res = await fetch('/api/booking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        providerId, serviceId: service?.id,
-        customerName: name, customerLineUserId: forOthers ? '' : (lineUserId || ''),
-        customerPhone: phone, date, time, note: finalNote, gender,
-        hairLength: isHairCategory ? hairLength : '',
-      }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      setConsumerNotified(data.consumerNotified ?? false)
-      setDone(true)
-    } else alert('預約失敗，請稍後再試')
-    setSubmitting(false)
+    setSubmitting(true); setSubmitError('')
+    try {
+      const res = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          providerId, serviceId: service?.id,
+          customerName: name, customerLineUserId: forOthers ? '' : (lineUserId || ''),
+          customerPhone: phone, date, time, note: finalNote, gender,
+          hairLength: isHairCategory ? hairLength : '',
+        }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setConsumerNotified(data.consumerNotified ?? false)
+        setDone(true)
+      } else {
+        // 針對「時段剛被搶走 (409)」給明確訊息並重新整理可選時段，而非叫他重來
+        let msg = '預約失敗，請稍後再試'
+        const err = await res.json().catch(() => ({} as { message?: string }))
+        if (res.status === 409) {
+          msg = err.message || '這個時段剛被預約，請改選其他時段'
+          setTime('')
+          fetchSlots(date)
+        } else if (err.message) {
+          msg = err.message
+        }
+        setSubmitError(msg)
+      }
+    } catch {
+      setSubmitError('網路連線不穩，請稍後再試一次')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (done && provider && service) {
@@ -604,6 +630,7 @@ export default function BookPage() {
       isLineUser={!!lineUserId}
       consumerNotified={consumerNotified}
       serviceDuration={service.duration}
+      servicePrice={service.price}
       providerAddress={provider.address ?? ''}
     />
   }
@@ -1077,6 +1104,11 @@ export default function BookPage() {
       {/* ── Fixed bottom CTA ─── */}
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, background: 'linear-gradient(to top, var(--cream) 62%, transparent)', padding: '20px 20px 28px' }}>
         <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+          {submitError && (
+            <div onClick={() => setSubmitError('')} style={{ marginBottom: '10px', padding: '11px 14px', borderRadius: '12px', background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: '12.5px', textAlign: 'center', lineHeight: 1.5, cursor: 'pointer' }}>
+              {submitError}
+            </div>
+          )}
           <button onClick={handleSubmit as unknown as React.MouseEventHandler<HTMLButtonElement>} disabled={!canSubmit}
             style={{ width: '100%', padding: '17px', borderRadius: '15px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: 'var(--cream)', fontSize: '15px', fontWeight: 600, letterSpacing: '0.04em', boxShadow: canSubmit ? '0 12px 30px rgba(26,23,20,0.28)' : 'none', transition: 'all .3s cubic-bezier(0.16,1,0.3,1)' }}>
             {submitting ? '預約中…' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : !hasCustomerInfo ? '請填寫稱呼與電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : !date ? '請選擇日期' : '請選擇時段'}
