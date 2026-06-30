@@ -317,25 +317,6 @@ function InlineCalendar({ providerId, value, onChange }: {
 }
 
 // ── CompletionScreen ──────────────────────────────────────────────────
-function buildICS({ title, location, startISO, endISO, description }: {
-  title: string; location: string; startISO: string; endISO: string; description: string
-}) {
-  const fmt = (iso: string) => iso.replace(/[-:]/g, '').replace(/\.\d{3}/, '')
-  const lines = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//MooLah//Booking//ZH-TW', 'CALSCALE:GREGORIAN',
-    'BEGIN:VEVENT',
-    `UID:${Date.now()}@moolah`,
-    `DTSTAMP:${fmt(new Date().toISOString())}`,
-    `DTSTART:${fmt(startISO)}`,
-    `DTEND:${fmt(endISO)}`,
-    `SUMMARY:${title}`,
-    `LOCATION:${location}`,
-    `DESCRIPTION:${description}`,
-    'END:VEVENT', 'END:VCALENDAR',
-  ]
-  return lines.join('\r\n')
-}
-
 function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, providerAddress }: {
   providerName: string; serviceName: string; date: string; time: string
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
@@ -344,23 +325,19 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
   function handleAddToCalendar() {
     const start = new Date(`${date}T${time}:00+08:00`)
     const end = new Date(start.getTime() + (serviceDuration || 60) * 60000)
-    const ics = buildICS({
-      title: `${providerName} · ${serviceName}`,
-      location: providerAddress || '',
-      startISO: start.toISOString(),
-      endISO: end.toISOString(),
-      description: `MooLah 預約 - ${serviceName}`,
-    })
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `moolah-${date}-${time.replace(':', '')}.ics`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+    // Google 日曆「新增活動」連結——手機 / LINE webview 都能開（取代 .ics blob 下載，webview 不支援）
+    const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + `&text=${encodeURIComponent(`${providerName} · ${serviceName}`)}`
+      + `&dates=${fmt(start)}/${fmt(end)}`
+      + `&details=${encodeURIComponent(`MooLah 預約 - ${serviceName}`)}`
+      + `&location=${encodeURIComponent(providerAddress || '')}`
+    try { liff.openWindow({ url: gcal, external: true }) } catch { window.open(gcal, '_blank') }
   }
+
+  // 「我的預約」需 LINE 身分 → 走 LIFF 連結經已註冊的 /dashboard 轉址（直接 /my-bookings 不在 LINE Login 白名單會報錯）
+  const liffId = process.env.NEXT_PUBLIC_LIFF_ID || ''
+  const myBookingsUrl = `https://liff.line.me/${liffId}?to=${encodeURIComponent('/my-bookings')}`
 
   const mapUrl = providerAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(providerAddress)}`
@@ -449,7 +426,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
               查看地圖
             </a>
           ) : (
-            <a href="/my-bookings"
+            <a href={myBookingsUrl}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'rgba(166,137,102,0.14)', color: 'var(--oak)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(166,137,102,0.25)', letterSpacing: '0.02em' }}>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
               我的預約
@@ -459,7 +436,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
 
         {/* Secondary actions */}
         <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.9s both' }}>
-          <a href="/my-bookings" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
+          <a href={myBookingsUrl} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
             我的預約
           </a>
