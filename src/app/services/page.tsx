@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
   title: '合作方案與定價 — 美業預約管理平台',

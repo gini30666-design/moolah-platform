@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
 
     const shortCode = providerBookingLinks.get(providerId)
     const bookingUrl = shortCode
-      ? `https://moolah-platform.vercel.app/go/${shortCode}`
-      : `https://moolah-platform.vercel.app/${providerId}`
+      ? `https://moolah.studio/go/${shortCode}`
+      : `https://moolah.studio/${providerId}`
 
     try {
       await pushMessage(

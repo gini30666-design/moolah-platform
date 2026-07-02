@@ -32,7 +32,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 const ORG_SCHEMA = {
   '@context': 'https://schema.org',

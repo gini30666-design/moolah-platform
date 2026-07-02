@@ -7,7 +7,7 @@ import TestimonialWall from '@/components/TestimonialWall'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
   title: 'MooLah — 台灣美業智慧預約平台 | 髮型設計師、寵物美容、美甲線上預約',

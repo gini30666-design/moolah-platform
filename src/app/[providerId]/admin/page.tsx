@@ -1492,7 +1492,7 @@ export default function AdminPage() {
         <div style={{ marginTop: '12px', fontSize: '11px', color: 'rgba(44,40,37,0.7)', lineHeight: 1.7 }}>
           <p style={{ marginBottom: '10px' }}>把以下程式碼貼到你的網站，客人可直接看到最近可預約時段：</p>
           <pre style={{ background: '#2C2825', color: '#A68966', padding: '12px', borderRadius: '8px', fontSize: '10.5px', overflowX: 'auto', fontFamily: 'ui-monospace, Menlo, monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
-{`<iframe src="https://moolah-platform.vercel.app/embed/${providerId}" width="360" height="540" frameborder="0" style="border:0;border-radius:14px;"></iframe>`}
+{`<iframe src="https://moolah.studio/embed/${providerId}" width="360" height="540" frameborder="0" style="border:0;border-radius:14px;"></iframe>`}
           </pre>
           <p style={{ marginTop: '8px', fontSize: '10px', color: 'rgba(44,40,37,0.5)' }}>
             或直接分享連結：

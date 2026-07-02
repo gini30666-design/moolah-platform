@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import JoinForm from '@/components/JoinForm'
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
   title: '加入合作 — 美業職人申請加入',

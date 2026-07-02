@@ -85,8 +85,8 @@ export async function PATCH(req: NextRequest) {
           const providerRow = providerRows.find(p => p[0] === providerId)
           const shortCode = providerRow?.[12] ?? ''
           const bookingUrl = shortCode
-            ? `https://moolah-platform.vercel.app/go/${shortCode}`
-            : `https://moolah-platform.vercel.app/${providerId}`
+            ? `https://moolah.studio/go/${shortCode}`
+            : `https://moolah.studio/${providerId}`
 
           if (waitlistUserId) {
             await pushMessage(

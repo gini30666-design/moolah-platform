@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getSheetData } from '@/lib/sheets'
 
-const base = 'https://moolah-platform.vercel.app'
+const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 const staticPages: MetadataRoute.Sitemap = [
   { url: base,                             lastModified: new Date('2026-05-18'), changeFrequency: 'weekly',  priority: 1.0 },

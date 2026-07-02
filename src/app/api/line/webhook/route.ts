@@ -17,6 +17,7 @@ import {
   buildMapFlex,
   CUSTOMER_QUICK_REPLY,
   PROVIDER_QUICK_REPLY,
+  liffUrl,
 } from '@/lib/line'
 import { answerProviderQuery } from '@/lib/aiAssistant'
 
@@ -45,7 +46,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
         '② 重新選擇新的時段下單',
         '※ 若距離原預約 < 2 小時，請直接聯絡設計師',
       ],
-      primaryAction: { label: '進入我的預約', uri: `${BASE_URL}/my-bookings` },
+      primaryAction: { label: '進入我的預約', uri: liffUrl('/my-bookings') },
       secondaryAction: { label: '聯絡 MooLah 客服', text: '聯絡客服' },
     }),
   },
@@ -60,7 +61,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
         '所有服務費用「到店後」由設計師直接收取（現金 / LINE Pay / 設計師接受的方式）。',
         '價格在預約頁與「我的預約」均可查看。',
       ],
-      primaryAction: { label: '我的預約', uri: `${BASE_URL}/my-bookings` },
+      primaryAction: { label: '我的預約', uri: liffUrl('/my-bookings') },
     }),
   },
   // 找設計師 / 怎麼找
@@ -113,7 +114,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
         '點下方按鈕，系統會自動以您的 LINE 帳號識別並跳轉到您的後台。',
         '若顯示「尚未綁定」，請先完成 /claim 認領流程。',
       ],
-      primaryAction: { label: '進入後台', uri: `${BASE_URL}/dashboard` },
+      primaryAction: { label: '進入後台', uri: liffUrl('/dashboard') },
     }),
   },
   // 會員 / 注冊

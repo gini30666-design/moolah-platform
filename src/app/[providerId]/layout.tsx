@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getSheetData } from '@/lib/sheets'
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export async function generateMetadata({
   params,

@@ -5,10 +5,10 @@ export const metadata: Metadata = {
   title: '使用條款',
   description: 'MooLah 美業預約平台使用條款 — 使用本服務前請詳閱本條款',
   alternates: {
-    canonical: 'https://moolah-platform.vercel.app/terms',
+    canonical: 'https://moolah.studio/terms',
     languages: {
-      'zh-Hant-TW': 'https://moolah-platform.vercel.app/terms',
-      'x-default': 'https://moolah-platform.vercel.app/terms',
+      'zh-Hant-TW': 'https://moolah.studio/terms',
+      'x-default': 'https://moolah.studio/terms',
     },
   },
 }

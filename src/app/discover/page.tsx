@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import DiscoverClient from './DiscoverClient'
 
-const BASE_URL = 'https://moolah-platform.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
   title: '探索美業職人 — 髮型、寵物美容、美甲線上預約',

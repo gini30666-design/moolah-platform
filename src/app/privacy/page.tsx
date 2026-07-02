@@ -5,10 +5,10 @@ export const metadata: Metadata = {
   title: '隱私政策',
   description: 'MooLah 美業預約平台隱私政策 — 說明我們如何蒐集、使用及保護您的個人資料',
   alternates: {
-    canonical: 'https://moolah-platform.vercel.app/privacy',
+    canonical: 'https://moolah.studio/privacy',
     languages: {
-      'zh-Hant-TW': 'https://moolah-platform.vercel.app/privacy',
-      'x-default': 'https://moolah-platform.vercel.app/privacy',
+      'zh-Hant-TW': 'https://moolah.studio/privacy',
+      'x-default': 'https://moolah.studio/privacy',
     },
   },
 }
