@@ -44,7 +44,7 @@ function Footer() {
           <Link href="/join" className="hover:text-[var(--oak)] transition-colors">加入合作</Link>
           <Link href="/privacy" className="hover:text-[var(--oak)] transition-colors">隱私政策</Link>
           <Link href="/terms" className="hover:text-[var(--oak)] transition-colors">使用條款</Link>
-          <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
+          <a href="mailto:service@moolah.studio" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>
     </footer>
@@ -103,7 +103,7 @@ const SECTIONS = [
     content: `如您對本隱私政策有任何疑問，或需要行使個人資料相關權利，請聯絡：
 
 公司名稱：永翔數位有限公司
-Email：moolah118@gmail.com
+Email：service@moolah.studio
 LINE 官方帳號：@881zhkla
 
 我們將於 5 個工作日內回覆。`,
@@ -160,8 +160,8 @@ export default function PrivacyPage() {
             <div className="mt-10 pt-8 border-t" style={{ borderColor: 'rgba(166,137,102,0.2)' }}>
               <p className="text-xs text-center" style={{ color: 'rgba(44,40,37,0.35)' }}>
                 如有疑問，請透過{' '}
-                <a href="mailto:moolah118@gmail.com" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: 'var(--oak)' }}>
-                  moolah118@gmail.com
+                <a href="mailto:service@moolah.studio" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: 'var(--oak)' }}>
+                  service@moolah.studio
                 </a>
                 {' '}聯絡我們
               </p>

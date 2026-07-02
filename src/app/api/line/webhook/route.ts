@@ -97,7 +97,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
       eyebrow: 'SUPPORT',
       title: '聯絡 MooLah',
       bodyLines: [
-        '✉️  moolah118@gmail.com',
+        '✉️  service@moolah.studio',
         '🕐 客服時間：每日 09:00 – 21:00',
         '若是「預約 / 設計師相關問題」，請先點下方按鈕加入合作 LINE 客服。',
       ],

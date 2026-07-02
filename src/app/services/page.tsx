@@ -121,7 +121,7 @@ const PLANS = [
       '專屬客服經理',
     ],
     cta: '聯繫我們',
-    href: 'mailto:moolah118@gmail.com',
+    href: 'mailto:service@moolah.studio',
     highlight: false,
   },
 ]
@@ -177,7 +177,7 @@ function Footer() {
           <Link href="/join" className="hover:text-[var(--oak)] transition-colors">加入合作</Link>
           <Link href="/privacy" className="hover:text-[var(--oak)] transition-colors">隱私政策</Link>
           <Link href="/terms" className="hover:text-[var(--oak)] transition-colors">使用條款</Link>
-          <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
+          <a href="mailto:service@moolah.studio" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>
     </footer>

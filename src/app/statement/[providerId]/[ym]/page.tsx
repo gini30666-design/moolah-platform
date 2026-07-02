@@ -146,14 +146,14 @@ export default async function StatementPage({ params }: { params: Promise<{ prov
           <p style={{ fontSize: '15px', color: '#2C2825', marginBottom: '6px' }}>本月應付 MooLah 平台月費：<strong>NT$ {MONTHLY_FEE.toLocaleString()}</strong></p>
           <p style={{ fontSize: '12px', color: '#7a6f65', lineHeight: 1.6 }}>
             付款方式：銀行轉帳月結，請於收到對帳單後 5 個工作日內完成匯款。<br/>
-            匯款資訊請參考合作合約，或聯絡 moolah118@gmail.com。
+            匯款資訊請參考合作合約，或聯絡 service@moolah.studio。
           </p>
         </div>
 
         {/* Footer */}
         <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e8dfd3', fontSize: '11px', color: '#9a8e83', textAlign: 'center', lineHeight: 1.7 }}>
           <p>本對帳單由 MooLah 平台自動生成 · 生成時間 {new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', dateStyle: 'short', timeStyle: 'short' }).format(new Date())}</p>
-          <p style={{ marginTop: '6px' }}>MooLah · 永翔數位有限公司 · moolah118@gmail.com</p>
+          <p style={{ marginTop: '6px' }}>MooLah · 永翔數位有限公司 · service@moolah.studio</p>
         </div>
 
         <PrintButton />

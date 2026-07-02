@@ -73,7 +73,7 @@ export default async function ContractPage({ params }: { params: Promise<{ provi
 
         {/* Footer */}
         <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e8dfd3', fontSize: '11px', color: '#9a8e83', textAlign: 'center', lineHeight: 1.7 }}>
-          <p>如有疑問請聯絡：moolah118@gmail.com · LINE OA @881zhkla</p>
+          <p>如有疑問請聯絡：service@moolah.studio · LINE OA @881zhkla</p>
           <p style={{ marginTop: '6px' }}>本合約由 MooLah 平台自動生成，乙方於上述時間點擊「我已閱讀並同意合作條款」即視為簽署</p>
         </div>
 

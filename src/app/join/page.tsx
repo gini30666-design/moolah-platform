@@ -40,7 +40,7 @@ const SCHEMA = {
           '@type': 'HowToStep',
           position: 1,
           name: '填寫申請表單',
-          text: '提供姓名、服務項目、聯絡方式，發送 Email 至 moolah118@gmail.com 或加入 LINE OA @492ejbwx。',
+          text: '提供姓名、服務項目、聯絡方式，發送 Email 至 service@moolah.studio 或加入 LINE OA @492ejbwx。',
         },
         {
           '@type': 'HowToStep',
@@ -126,7 +126,7 @@ function Footer() {
           <Link href="/services" className="hover:text-[var(--oak)] transition-colors">合作方案</Link>
           <Link href="/privacy" className="hover:text-[var(--oak)] transition-colors">隱私政策</Link>
           <Link href="/terms" className="hover:text-[var(--oak)] transition-colors">使用條款</Link>
-          <a href="mailto:moolah118@gmail.com" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
+          <a href="mailto:service@moolah.studio" className="hover:text-[var(--oak)] transition-colors">聯絡我們</a>
         </div>
       </div>
     </footer>

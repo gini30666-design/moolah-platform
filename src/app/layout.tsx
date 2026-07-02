@@ -50,7 +50,7 @@ const ORG_SCHEMA = {
       },
       contactPoint: {
         '@type': 'ContactPoint',
-        email: 'moolah118@gmail.com',
+        email: 'service@moolah.studio',
         contactType: 'customer service',
         areaServed: 'TW',
         availableLanguage: 'zh-TW',

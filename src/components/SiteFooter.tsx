@@ -32,7 +32,7 @@ export default function SiteFooter() {
         <div data-animate data-delay="200">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>平台</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['顧客 · 怎麼用', '/how-it-works'], ['設計師 · 功能介紹', '/for-providers'], ['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:moolah118@gmail.com']].map(([l, h]) => (
+            {[['顧客 · 怎麼用', '/how-it-works'], ['設計師 · 功能介紹', '/for-providers'], ['合作方案', '/services'], ['加入合作', '/join'], ['常見問題', '/services#faq'], ['隱私政策', '/privacy'], ['使用條款', '/terms'], ['聯絡我們', 'mailto:service@moolah.studio']].map(([l, h]) => (
               <li key={l}><Link href={h} className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</Link></li>
             ))}
           </ul>
@@ -40,7 +40,7 @@ export default function SiteFooter() {
         <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['moolah118@gmail.com', 'mailto:moolah118@gmail.com'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
+            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>
