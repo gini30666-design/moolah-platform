@@ -17,7 +17,7 @@ const STEPS = [
   {
     no: '01',
     title: '掃描 QR Code 或點擊連結',
-    desc: '設計師分享個人專屬短連結（如 moolah-platform.vercel.app/go/chloe），客人透過 LINE 訊息、IG 簡介或名片掃描進入。',
+    desc: '設計師分享個人專屬短連結（如 moolah.studio/go/chloe），客人透過 LINE 訊息、IG 簡介或名片掃描進入。',
     detail: '無需下載 App，有 LINE 就能用',
   },
   {
