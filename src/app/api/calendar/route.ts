@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
 
   const [bookingRows, availRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
-    getSheetData('availability!A2:F'),
+    getSheetData('bookings!A2:M', { provider_id: providerId }),
+    getSheetData('availability!A2:F', { provider_id: providerId }),
   ])
 
   const providerAvail = availRows.filter(r => r[0] === providerId)

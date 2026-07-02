@@ -4,19 +4,10 @@
 //  讓 ~30 個只讀的路由免改；底層改成 PostgreSQL（型別正確、over-booking 約束）。
 //  getSheetData 回傳 string[][]（與 Sheets 相同語意：值一律字串、null→''）。
 // ============================================================
-import { google } from 'googleapis'
 import { sb } from './supabase'
 
-// 舊 Google client（僅保留給已退役的 opsAgent dead code；live 路徑不再使用）
-const auth = new google.auth.GoogleAuth({
-  credentials: {
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  },
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-})
-export const sheets = google.sheets({ version: 'v4', auth })
-export const SHEET_ID = process.env.GOOGLE_SHEETS_ID!
+// （2026-07 清理）googleapis client 已移除：資料層全走 Supabase；
+// 舊 Google Sheets client 只剩已退役的 opsAgent/drive 孤兒引用，不再於 live bundle 內。
 
 // 每張表的「欄位順序」＝ 舊試算表 A,B,C… 的對應，routes 用 r[0],r[12] 索引取值
 const TABLE_COLS: Record<string, string[]> = {
@@ -50,11 +41,22 @@ function fmt(v: unknown): string {
   return String(v)
 }
 
-export async function getSheetData(range: string): Promise<string[][]> {
+// filters（選填）：{ 欄位名: 值 } → 推去 Supabase 的 .eq()，避免「讀整表再 JS filter」的全表掃描。
+// 只接受該表已知欄位（防注入/打錯欄名靜默無效）；值由 Supabase 參數化。
+export async function getSheetData(
+  range: string,
+  filters?: Record<string, string>,
+): Promise<string[][]> {
   const { table, startIdx, endIdx } = parseRange(range)
   const cols = TABLE_COLS[table]
   if (!cols) return []
-  const { data, error } = await sb.from(table).select(cols.join(',')).order(cols[0], { ascending: true })
+  let query = sb.from(table).select(cols.join(',')).order(cols[0], { ascending: true })
+  if (filters) {
+    for (const [k, v] of Object.entries(filters)) {
+      if (cols.includes(k)) query = query.eq(k, v)
+    }
+  }
+  const { data, error } = await query
   if (error) { console.error('[getSheetData]', table, error.message); return [] }
   const rows = (data ?? []) as unknown as Record<string, unknown>[]
   return rows.map(row => {

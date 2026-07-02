@@ -14,9 +14,9 @@ export async function GET(req: NextRequest) {
   }
 
   const [bookingRows, serviceRows, availRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
-    getSheetData('services!A2:F'),
-    getSheetData('availability!A2:F'),
+    getSheetData('bookings!A2:M', { provider_id: providerId }),
+    getSheetData('services!A2:F', { provider_id: providerId }),
+    getSheetData('availability!A2:F', { provider_id: providerId }),
   ])
 
   const slots = computeAvailability({ providerId, date, serviceId, bookingRows, serviceRows, availRows })

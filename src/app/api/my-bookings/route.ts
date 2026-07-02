@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
 
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
+    getSheetData('bookings!A2:M', { customer_line_user_id: userId }),
     getSheetData('services!A2:F'),
     getSheetData('providers!A2:B'),
   ])
@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'bookingId and userId required' }, { status: 400 })
   }
 
-  const rows = await getSheetData('bookings!A2:M')
+  const rows = await getSheetData('bookings!A2:M', { booking_id: bookingId })
   const row = rows.find(r => r[0] === bookingId)
 
   if (!row) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })

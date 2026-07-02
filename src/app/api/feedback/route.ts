@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { appendRow, ensureSheet } from '@/lib/sheets'
+import { rateLimit, clientIp } from '@/lib/rateLimit'
 
 const HEADERS = ['時間', '頁面/區域', '嚴重度', '問題描述', '回報者', 'User-Agent']
 
 // 問題回報：寫進 Google Sheets 的 feedback 分頁（封測用，之後也可當客服意見箱）
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`feedback:${clientIp(req)}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
+  }
   let body: { area?: string; severity?: string; message?: string; reporter?: string }
   try { body = await req.json() } catch { return NextResponse.json({ error: 'bad_json' }, { status: 400 }) }
 

@@ -43,8 +43,9 @@ export async function POST(req: NextRequest) {
   const token = process.env.IG_GRAPH_TOKEN
   if (!igUser || !token) return NextResponse.json({ error: 'not_configured' }, { status: 503 })
 
+  // fail-closed：secret 未設定 → 一律拒絕（避免環境變數遺失時端點對外全開）
   const secret = process.env.OPS_PUBLISH_SECRET
-  if (secret && req.headers.get('x-ops-secret') !== secret) {
+  if (!secret || req.headers.get('x-ops-secret') !== secret) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 

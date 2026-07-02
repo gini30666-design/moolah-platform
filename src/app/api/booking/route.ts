@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { isSlotBookable } from '@/lib/slots'
 import { pushFlexMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
+import { rateLimit, clientIp } from '@/lib/rateLimit'
 
 function generateId() {
   return `BK${Date.now()}`
 }
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`booking:${clientIp(req)}`, 8, 60_000)) {
+    return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
+  }
   const body = await req.json()
   const { providerId, serviceId, customerName, customerLineUserId, customerPhone, date, time, note, gender, hairLength } = body
 
@@ -37,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (isExpired) {
       return NextResponse.json({ error: 'unavailable', message: '此設計師暫不開放線上預約，請稍後再試或直接聯繫店家。' }, { status: 403 })
     }
-    const allBookings = await getSheetData('bookings!A2:M')
+    const allBookings = await getSheetData('bookings!A2:M', { provider_id: providerId })
     const used = allBookings.filter(r => r[1] === providerId && r[12] !== 'cancelled').length
     if (used >= TRIAL_BOOKING_LIMIT) {
       return NextResponse.json({ error: 'unavailable', message: '此設計師暫不開放線上預約，請稍後再試或直接聯繫店家。' }, { status: 403 })
@@ -67,8 +71,8 @@ export async function POST(req: NextRequest) {
   // DB 唯一約束仍為最後防線；重驗自身出錯則放行不誤擋。
   try {
     const [availRows, dayBookingRows] = await Promise.all([
-      getSheetData('availability!A2:F'),
-      getSheetData('bookings!A2:M'),
+      getSheetData('availability!A2:F', { provider_id: providerId }),
+      getSheetData('bookings!A2:M', { provider_id: providerId }),
     ])
     const bookable = isSlotBookable(
       { providerId, date, serviceId, bookingRows: dayBookingRows, serviceRows, availRows },
@@ -87,21 +91,34 @@ export async function POST(req: NextRequest) {
   const bookingId = generateId()
   const createdAt = new Date().toISOString()
 
-  await appendRow('bookings!A:M', [
-    bookingId,
-    providerId,
-    serviceId,
-    customerName,
-    customerLineUserId ?? '',
-    date,
-    time,
-    note ?? '',
-    createdAt,
-    gender ?? '',
-    hairLength ?? '',
-    customerPhone ?? '',
-    'confirmed',
-  ], 'RAW') // RAW：避免 Sheets 把 "09:00" 解析成時間而改成 "9:00"（會害 availability 找不到時段）
+  try {
+    await appendRow('bookings!A:M', [
+      bookingId,
+      providerId,
+      serviceId,
+      customerName,
+      customerLineUserId ?? '',
+      date,
+      time,
+      note ?? '',
+      createdAt,
+      gender ?? '',
+      hairLength ?? '',
+      customerPhone ?? '',
+      'confirmed',
+    ], 'RAW') // RAW：避免 Sheets 把 "09:00" 解析成時間而改成 "9:00"（會害 availability 找不到時段）
+  } catch (e) {
+    // over-booking 最後防線：DB 唯一約束（uniq_active_booking）擋下同時段第二筆。
+    // 轉成友善 409（原本會直接 throw → 使用者收 500）。
+    const msg = e instanceof Error ? e.message : String(e)
+    if (/duplicate key|uniq_active_booking|23505/i.test(msg)) {
+      return NextResponse.json(
+        { error: 'slot_unavailable', message: '此時段剛被預約，請改選其他時段。' },
+        { status: 409 },
+      )
+    }
+    throw e
+  }
 
   const providerName = providerRow[1]
   const providerLineUserId = providerRow[4]

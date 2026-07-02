@@ -160,7 +160,7 @@ async function getUpcomingBookings(lineUserId: string) {
   const today = new Date().toISOString().split('T')[0]
 
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
+    getSheetData('bookings!A2:M', { customer_line_user_id: lineUserId }),
     getSheetData('services!A2:F'),
     getSheetData('providers!A2:B'),
   ])
@@ -203,8 +203,8 @@ async function findProviderByLineUserId(userId: string) {
 
 async function getProviderBookingsForRange(providerId: string, fromDate: string, toDate: string) {
   const [bookingRows, serviceRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
-    getSheetData('services!A2:F'),
+    getSheetData('bookings!A2:M', { provider_id: providerId }),
+    getSheetData('services!A2:F', { provider_id: providerId }),
   ])
 
   return bookingRows
@@ -227,7 +227,7 @@ async function findBlacklistEntry(providerId: string, customerName: string) {
   const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
   const needle = norm(customerName)
   try {
-    const rows = await getSheetData('blacklist!A2:E')
+    const rows = await getSheetData('blacklist!A2:E', { provider_id: providerId })
     return rows.findIndex(r => r[0] === providerId && norm(r[2] as string).includes(needle))
   } catch {
     return -1
@@ -236,7 +236,7 @@ async function findBlacklistEntry(providerId: string, customerName: string) {
 
 async function getCustomerLineUserId(providerId: string, customerName: string): Promise<string> {
   // 從歷史預約找出該客人的 lineUserId（最近一筆）
-  const rows = await getSheetData('bookings!A2:M')
+  const rows = await getSheetData('bookings!A2:M', { provider_id: providerId })
   const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
   const needle = norm(customerName)
   const found = rows
@@ -304,7 +304,7 @@ async function blockDatesForProvider(providerId: string, dates: string[]) {
 
 async function findAffectedBookings(providerId: string, dates: string[]) {
   const dateSet = new Set(dates)
-  const rows = await getSheetData('bookings!A2:M')
+  const rows = await getSheetData('bookings!A2:M', { provider_id: providerId })
   return rows
     .filter(r => r[1] === providerId && dateSet.has(r[5] as string) && (r[12] ?? '') !== 'cancelled')
     .map(r => ({
@@ -339,7 +339,7 @@ async function findRecentBookingForNoShow(providerId: string, customerName: stri
   const today = todayTW()
   const threeDaysAgo = addDays(today, -3)
 
-  const rows = await getSheetData('bookings!A2:M')
+  const rows = await getSheetData('bookings!A2:M', { provider_id: providerId })
   const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
   const needle = norm(customerName)
 
@@ -367,7 +367,7 @@ async function findRecentBookingForNoShow(providerId: string, customerName: stri
 async function getNextBookingWithAddress(lineUserId: string) {
   const today = todayTW()
   const [bookingRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
+    getSheetData('bookings!A2:M', { customer_line_user_id: lineUserId }),
     getSheetData('providers!A2:H'),  // need address (H) and storeName (G)
   ])
 
@@ -395,7 +395,7 @@ async function getNextBookingWithAddress(lineUserId: string) {
 
 async function getLastBookingForCustomer(lineUserId: string) {
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
+    getSheetData('bookings!A2:M', { customer_line_user_id: lineUserId }),
     getSheetData('services!A2:F'),
     getSheetData('providers!A2:H'),  // need storeName at index 6
   ])
@@ -427,8 +427,8 @@ async function getLastBookingForCustomer(lineUserId: string) {
 
 async function getCustomerHistory(providerId: string, customerName: string) {
   const [bookingRows, serviceRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
-    getSheetData('services!A2:F'),
+    getSheetData('bookings!A2:M', { provider_id: providerId }),
+    getSheetData('services!A2:F', { provider_id: providerId }),
   ])
 
   const norm = (s: string) => s.replace(/\s+/g, '').toLowerCase()
@@ -467,7 +467,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
-  const body = JSON.parse(rawBody)
+  let body
+  try { body = JSON.parse(rawBody) } catch { return NextResponse.json({ ok: true }) }
   const events = body.events ?? []
 
   for (const event of events) {
@@ -576,7 +577,7 @@ export async function POST(req: NextRequest) {
           const customerName = removeMatch[1].trim()
           const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
           const needle = norm(customerName)
-          const blRows = await getSheetData('blacklist!A2:E')
+          const blRows = await getSheetData('blacklist!A2:E', { provider_id: provider.providerId })
           const match = blRows.find(r => r[0] === provider.providerId && norm(r[2] as string).includes(needle))
           if (!match) {
             await replyMessage(replyToken, [{ type: 'text', text: `「${customerName}」不在黑名單中` }])
@@ -637,7 +638,7 @@ export async function POST(req: NextRequest) {
               }])
               // 觸發自動拉黑檢查（達 3 次 no-show 會自動進黑名單 + push 通知）
               try {
-                const bRows = await getSheetData('bookings!A2:M')
+                const bRows = await getSheetData('bookings!A2:M', { booking_id: booking.bookingId })
                 const bRow = bRows.find(r => r[0] === booking.bookingId)
                 const customerLineUserId = ((bRow?.[4] as string) ?? '').trim()
                 await autoBlacklistIfThresholdReached({
@@ -669,8 +670,10 @@ export async function POST(req: NextRequest) {
 
         // #1 設計師端兜底：精確指令未命中時，保留少數通用入口走卡片，其餘自然語言交 AI 資料查詢
         // （避免廣義關鍵字「預約/取消」在 AI 之前攔截掉設計師的自然語言問句）
+        // ⚠️ 只有在 ANTHROPIC_API_KEY 有設定時才走 AI；否則 fall through 回關鍵字處理，
+        //    讓「我的預約 / 取消 / 地圖」等通用流程對設計師也正常（AI 未開時不會被吃成預設卡）。
         const keepAsCard = ['客服', '聯絡', '人工', '客訴', '不滿意', '後台', '管理', 'dashboard', 'admin', '我的id', 'my id', 'lineid', '你好', 'hi', 'hello', '哈囉']
-        if (!keepAsCard.some(k => lower.includes(k))) {
+        if (process.env.ANTHROPIC_API_KEY && !keepAsCard.some(k => lower.includes(k))) {
           try {
             const answer = await answerProviderQuery(provider.providerId, provider.name, userText, userId)
             await pushMessage(userId, answer)
@@ -682,7 +685,7 @@ export async function POST(req: NextRequest) {
           }
           continue
         }
-        // 否則 fall through 到顧客關鍵字段（客服 FAQ / 後台卡 / 我的id / 歡迎卡）
+        // 否則 fall through 到顧客關鍵字段（我的預約 / 取消 / 地圖 / 客服 FAQ / 後台卡 / 歡迎卡）
       }
 
       // ── 顧客端關鍵字 ────────────────────────────────────────────────────
@@ -780,8 +783,8 @@ export async function POST(req: NextRequest) {
         continue
       }
 
-      // 預設兜底：設計師 → AI 自然語言資料查詢（push）；消費者 → 預設卡
-      if (provider) {
+      // 預設兜底：設計師 + AI 已啟用 → 自然語言資料查詢（push）；否則 → 預設卡
+      if (provider && process.env.ANTHROPIC_API_KEY) {
         try {
           const answer = await answerProviderQuery(provider.providerId, provider.name, userText, userId)
           await pushMessage(userId, answer)

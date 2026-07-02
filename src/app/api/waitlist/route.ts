@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
+import { rateLimit, clientIp } from '@/lib/rateLimit'
 
 // waitlist sheet: A=id, B=providerId, C=serviceId, D=date, E=time,
 //                 F=customerName, G=customerLineUserId, H=customerPhone, I=addedAt, J=status
@@ -21,6 +22,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`waitlist:${clientIp(req)}`, 8, 60_000)) {
+    return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
+  }
   const { providerId, serviceId, date, time, customerName, customerLineUserId, customerPhone } = await req.json()
   if (!providerId || !date || !time || !customerName) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })

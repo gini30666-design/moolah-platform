@@ -7,7 +7,7 @@ import { buildReviewFlex, pushFlexMessage } from '@/lib/line'
 // vercel.json: { "path": "/api/cron/review-request", "schedule": "0 13 * * *" }
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

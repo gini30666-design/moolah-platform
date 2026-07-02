@@ -6,7 +6,7 @@ import { pushFlexMessage, customerReminderFlex, providerReminderFlex, liffUrl } 
 // vercel.json: { "path": "/api/cron/reminder", "schedule": "0 10 * * *" }
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
