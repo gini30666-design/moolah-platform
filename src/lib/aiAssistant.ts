@@ -22,8 +22,8 @@ const RECENT_CUSTOMER_LIMIT = 12
 
 export async function gatherProviderData(providerId: string): Promise<ProviderData> {
   const [bookingRows, serviceRows] = await Promise.all([
-    getSheetData('bookings!A2:M'),
-    getSheetData('services!A2:F'),
+    getSheetData('bookings!A2:M', { provider_id: providerId }),
+    getSheetData('services!A2:F', { provider_id: providerId }),
   ])
   const mine = bookingRows.filter(r => r[1] === providerId)
 

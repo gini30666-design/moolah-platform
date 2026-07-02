@@ -14,7 +14,7 @@ export async function countNoShows(
   customerLineUserId: string,
   customerName: string,
 ): Promise<number> {
-  const rows = await getSheetData('bookings!A2:M')
+  const rows = await getSheetData('bookings!A2:M', { provider_id: providerId })
   const needle = norm(customerName)
 
   return rows.filter(r => {
@@ -35,7 +35,7 @@ async function isAlreadyBlacklisted(
   customerName: string,
 ): Promise<boolean> {
   try {
-    const rows = await getSheetData('blacklist!A2:E')
+    const rows = await getSheetData('blacklist!A2:E', { provider_id: providerId })
     const needle = norm(customerName)
     return rows.some(r => {
       if (r[0] !== providerId) return false

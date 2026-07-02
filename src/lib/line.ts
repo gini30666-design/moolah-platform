@@ -88,7 +88,7 @@ export async function pushFlexMessage(to: string, altText: string, contents: obj
   })
   if (!res.ok) {
     const err = await res.text()
-    console.error('[LINE pushFlexMessage error]', res.status, err, { to })
+    console.error('[LINE pushFlexMessage error]', res.status, err, { to: to.slice(0, 8) + '...' })
     return false
   }
   return true
@@ -300,12 +300,14 @@ export async function replyMessage(replyToken: string, messages: object[]) {
 }
 
 export function verifySignature(body: string, signature: string): boolean {
-  const secret = process.env.LINE_MESSAGING_CHANNEL_SECRET!
-  const hash = crypto
-    .createHmac('SHA256', secret)
-    .update(body)
-    .digest('base64')
-  return hash === signature
+  const secret = process.env.LINE_MESSAGING_CHANNEL_SECRET
+  if (!secret || !signature) return false // fail-closed：缺 secret/簽章一律拒
+  const hash = crypto.createHmac('sha256', secret).update(body).digest('base64')
+  // 用 timingSafeEqual（固定時間比對）；長度不等時它會 throw → 先擋（長度不等本就是非法簽章）
+  const a = Buffer.from(hash)
+  const b = Buffer.from(signature)
+  if (a.length !== b.length) return false
+  return crypto.timingSafeEqual(a, b)
 }
 
 // 歡迎訊息 Flex Message（加好友時發送）
