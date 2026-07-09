@@ -15,6 +15,13 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: `${base}/services/auto-detailing`,lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/nail`,          lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/join`,                   lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
+  // 城市×品類在地 SEO 頁（2026-07-09）
+  { url: `${base}/local/kaohsiung/nails`,         lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
+  { url: `${base}/local/kaohsiung/hair`,          lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
+  { url: `${base}/local/kaohsiung/pet-grooming`,  lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
+  { url: `${base}/local/kaohsiung/car-detailing`, lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
+  { url: `${base}/local/pingtung/nails`,          lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
+  { url: `${base}/local/pingtung/hair`,           lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
   { url: `${base}/features/booking`,       lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/scheduling`,    lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/notification`,  lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
