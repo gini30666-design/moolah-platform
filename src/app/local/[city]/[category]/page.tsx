@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { city, category } = await params
   const c = CITIES[city]; const k = CATEGORIES[category]
   if (!c || !k) return {}
-  const title = `${c.name}${k.short}推薦・LINE 線上預約 | MooLah`
+  const title = `${c.name}${k.short}推薦・LINE 線上預約`
   const description = `${c.name}${k.name}線上預約平台。${k.services}，精選${c.name}在地職人，LINE 一鍵預約免下載 App，自動行前提醒不怕忘記。到店付款、免訂金。`
   const url = `${BASE_URL}/local/${city}/${category}`
   return {
