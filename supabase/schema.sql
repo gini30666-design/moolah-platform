@@ -183,3 +183,20 @@ create table if not exists customer_history (
 );
 create index if not exists idx_customer_history on customer_history(provider_id, customer_line_user_id);
 alter table customer_history enable row level security;  -- 僅 service role（API 經 verifyOwner）存取
+
+-- 12) payments（月費付款追蹤，2026-07-05）— Phase1 手動(scripts/payment.mjs)；Phase2 第三方支付 API 寫入
+create table if not exists payments (
+  id           bigint generated always as identity primary key,
+  provider_id  text not null references providers(id) on delete cascade,
+  period       text not null,                       -- 'YYYY-MM'
+  amount_due   int not null default 699,
+  amount_paid  int not null default 0,
+  status       text not null default 'unpaid',      -- unpaid | paid | waived | trial
+  method       text,                                -- transfer | ecpay | newebpay | ...
+  paid_at      timestamptz,
+  note         text,
+  created_at   timestamptz not null default now(),
+  unique (provider_id, period)
+);
+create index if not exists idx_payments_period on payments(period);
+alter table payments enable row level security;  -- 僅 service role

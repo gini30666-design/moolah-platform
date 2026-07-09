@@ -25,4 +25,7 @@ export const ga = {
 
   clickLineOA: (source: string) =>
     trackEvent('click_line_oa', { source }),
+
+  submitLead: (category: string, plan: string) =>
+    trackEvent('generate_lead', { category, plan }),
 }

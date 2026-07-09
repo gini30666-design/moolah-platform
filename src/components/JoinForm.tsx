@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { trackLead } from '@/components/MetaPixel'
+import { ga } from '@/lib/gtag'
 
 const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師', '刺青師']
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
@@ -32,6 +33,7 @@ export default function JoinForm() {
       if (!res.ok) throw new Error()
       setStatus('success')
       trackLead()
+      ga.submitLead(form.category, form.plan)
     } catch {
       setStatus('error'); setError('送出失敗，請稍後再試或直接加入 LINE')
     }

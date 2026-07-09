@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
+import { ga } from '@/lib/gtag'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
 type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string }
@@ -600,6 +601,7 @@ export default function BookPage() {
       if (res.ok) {
         const data = await res.json()
         setConsumerNotified(data.consumerNotified ?? false)
+        ga.completeBooking(providerId, service?.id || '', service?.price || 0)
         setDone(true)
       } else {
         // 針對「時段剛被搶走 (409)」給明確訊息並重新整理可選時段，而非叫他重來
