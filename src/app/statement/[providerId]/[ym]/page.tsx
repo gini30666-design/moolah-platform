@@ -103,7 +103,7 @@ export default async function StatementPage({ params }: { params: Promise<{ prov
         </div>
 
         {/* 詳細統計表 */}
-        <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#2C2825', marginBottom: '12px', borderLeft: '3px solid #A68966', paddingLeft: '12px' }}>本月狀態統計</h2>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#2C2825', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0d2bf' }}>本月狀態統計</h2>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px', fontSize: '13px' }}>
           <tbody>
             <tr><td style={{ padding: '10px 14px', borderBottom: '1px solid #e8dfd3', color: '#555' }}>已完成 / 確認</td><td style={{ padding: '10px 14px', borderBottom: '1px solid #e8dfd3', textAlign: 'right', fontWeight: 600 }}>{confirmedOrCompleted.length} 筆</td></tr>
@@ -116,7 +116,7 @@ export default async function StatementPage({ params }: { params: Promise<{ prov
         {/* 服務分項 */}
         {Object.keys(serviceBreakdown).length > 0 && (
           <>
-            <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#2C2825', marginBottom: '12px', borderLeft: '3px solid #A68966', paddingLeft: '12px' }}>服務項目分析</h2>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#2C2825', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0d2bf' }}>服務項目分析</h2>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px', fontSize: '13px' }}>
               <thead>
                 <tr>
@@ -141,7 +141,7 @@ export default async function StatementPage({ params }: { params: Promise<{ prov
         )}
 
         {/* 對帳訊息 */}
-        <div style={{ marginTop: '30px', padding: '18px 22px', background: '#faf7f2', borderRadius: '8px', borderLeft: '4px solid #A68966' }}>
+        <div style={{ marginTop: '30px', padding: '18px 22px', background: '#faf7f2', borderRadius: '8px', border: '1px solid #e0d2bf' }}>
           <p style={{ fontSize: '12px', fontWeight: 600, color: '#A68966', letterSpacing: '0.12em', marginBottom: '8px' }}>應付對帳</p>
           <p style={{ fontSize: '15px', color: '#2C2825', marginBottom: '6px' }}>本月應付 MooLah 平台月費：<strong>NT$ {MONTHLY_FEE.toLocaleString()}</strong></p>
           <p style={{ fontSize: '12px', color: '#7a6f65', lineHeight: 1.6 }}>

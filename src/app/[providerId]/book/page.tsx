@@ -48,7 +48,7 @@ function Segmented({ options, value, onChange }: { options: string[]; value: str
           width: `calc((100% - 8px) / ${n})`,
           background: 'var(--charcoal)', borderRadius: '99px',
           boxShadow: '0 3px 10px rgba(44,40,37,0.25)',
-          transition: 'left 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transition: 'left 0.38s var(--ease-expo)',
         }} />
       )}
       {options.map(o => {
@@ -744,7 +744,7 @@ export default function BookPage() {
                 fontWeight: isSelected ? 600 : 400,
                 fontFamily: isSelected ? '"Cormorant Garamond", serif' : 'inherit',
                 textDecoration: isBooked ? 'line-through' : 'none',
-                transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+                transition: 'all 0.2s var(--ease-expo)',
               }}>
               {slot.time}
               {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)', textDecoration: 'none' }}>候補</span>}
@@ -1015,8 +1015,8 @@ export default function BookPage() {
                   <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>幫親友代訂，輸入對方資訊</p>
                 </div>
                 <button type="button" onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
-                  style={{ width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0, background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)', position: 'relative', transition: 'background 0.2s', padding: 0 }}>
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: forOthers ? '21px' : '3px', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
+                  style={{ width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0, background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)', position: 'relative', padding: 0, transition: 'background 0.2s' }}>
+                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: '3px', transform: forOthers ? 'translateX(18px)' : 'translateX(0)', transition: 'transform 0.2s var(--ease-expo)', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
                 </button>
               </div>
               {forOthers && (

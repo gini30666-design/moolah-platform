@@ -194,7 +194,7 @@ export default function HowItWorksPage() {
         {/* Promises (dark editorial section) */}
         <section className="py-16 md:py-24 px-5 lg:px-16" style={{ background: charcoalDeep }}>
           <div className="max-w-[1080px] mx-auto">
-            <div className="pl-5 md:pl-12 py-4 border-l-4 mb-10" style={{ borderColor: oak }}>
+            <div className="py-4 mb-10">
               <p className="text-xs tracking-[0.22em] uppercase mb-3" style={{ color: oak }}>Our promise</p>
               <h2 className="font-display" style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', color: cream, fontWeight: 300, letterSpacing: '0.01em', lineHeight: 1.25 }}>
                 三個承諾

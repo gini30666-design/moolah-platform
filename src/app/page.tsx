@@ -307,7 +307,7 @@ function PartnerCTA() {
     <section id="apply" className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)' }}>
       <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         {/* Left: pitch */}
-        <div className="lg:col-span-7 pl-5 md:pl-12 py-4 border-l-4" style={{ borderColor: 'var(--oak)' }}>
+        <div className="lg:col-span-7 py-4">
           <span data-animate className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
           <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
             <TextReveal as="span" delay={80} stagger={52} className="block">成為 MooLah</TextReveal>
