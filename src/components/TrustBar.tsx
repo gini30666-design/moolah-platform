@@ -1,36 +1,18 @@
-'use client'
-import { useEffect, useState } from 'react'
-
-type Stats = { customers: number; providers: number; portfolio: number; bookings: number }
+// 價值主張列（取代早期即時統計：小數字自曝其短且違反「不像剛起步公司」定位；改用不會過期的真實承諾）
+const ITEMS = [
+  { title: '一鍵預約', caption: 'LINE 原生・免下載' },
+  { title: '雙向提醒', caption: '預約與變動即時通知' },
+  { title: '嚴選職人', caption: '專業審核後合作' },
+]
 
 export default function TrustBar() {
-  const [stats, setStats] = useState<Stats | null>(null)
-
-  useEffect(() => {
-    fetch('/api/stats')
-      .then(r => r.json())
-      .then((d: Stats) => setStats(d))
-      .catch(() => {})
-  }, [])
-
-  // 早期數字偏少時不要難看 — 設保底值
-  const customers = Math.max(stats?.customers ?? 0, 0)
-  const providers = Math.max(stats?.providers ?? 0, 0)
-  const portfolio = Math.max(stats?.portfolio ?? 0, 0)
-
-  const items = [
-    { value: customers, label: '已服務客人', suffix: '+' },
-    { value: providers, label: '合作職人', suffix: '+' },
-    { value: portfolio, label: '精選作品', suffix: '+' },
-  ]
-
   return (
     <div
       style={{
         background: 'rgba(166,137,102,0.08)',
         borderTop: '1px solid rgba(166,137,102,0.18)',
         borderBottom: '1px solid rgba(166,137,102,0.18)',
-        padding: '14px 20px',
+        padding: '16px 20px',
       }}
     >
       <div
@@ -43,30 +25,29 @@ export default function TrustBar() {
           textAlign: 'center',
         }}
       >
-        {items.map(it => (
-          <div key={it.label}>
+        {ITEMS.map(it => (
+          <div key={it.title}>
             <p
               className="font-display"
               style={{
-                fontSize: 'clamp(1.4rem,3vw,1.9rem)',
-                color: 'var(--oak)',
+                fontSize: 'clamp(1.15rem,2.4vw,1.5rem)',
+                color: '#8a6d48',
                 fontWeight: 400,
-                lineHeight: 1,
-                letterSpacing: '-0.01em',
+                lineHeight: 1.2,
+                letterSpacing: '0.04em',
                 marginBottom: '4px',
               }}
             >
-              {stats === null ? '—' : `${it.value}${it.value > 0 ? it.suffix : ''}`}
+              {it.title}
             </p>
             <p
               style={{
-                fontSize: '10.5px',
-                color: 'var(--oak-dim)',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
+                fontSize: '11px',
+                color: '#6f6659',
+                letterSpacing: '0.12em',
               }}
             >
-              {it.label}
+              {it.caption}
             </p>
           </div>
         ))}

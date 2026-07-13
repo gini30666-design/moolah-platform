@@ -27,6 +27,12 @@ export function ScrollReveal() {
       } else {
         el.classList.add('will-animate')
         intersectionObs.observe(el)
+        // 保險絲：IO 事件被吞（背景分頁預載等）時，寧可不播動畫也不能讓內容卡在隱藏
+        setTimeout(() => {
+          if (!el.classList.contains('in-view') && el.getBoundingClientRect().top < window.innerHeight) {
+            el.classList.add('in-view')
+          }
+        }, 2500)
       }
     }
 

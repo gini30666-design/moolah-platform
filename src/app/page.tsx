@@ -98,9 +98,9 @@ function Hero() {
           {/* Stats row */}
           <div className="anim-fade-up-4 grid grid-cols-3 gap-4 pt-6 mt-2 border-t" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
             {[
-              { num: '200+', label: '合作職人' },
-              { num: '98%', label: '到場率' },
-              { num: '4.9', label: '用戶評分' },
+              { num: '0%', label: '訂單抽成' },
+              { num: '4類', label: '嚴選職人服務' },
+              { num: 'LINE', label: '一鍵預約・雙向提醒' },
             ].map((s) => (
               <div key={s.label} style={{ paddingLeft: '0' }}>
                 <p className="font-display" style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', color: 'var(--oak)', fontWeight: 300, lineHeight: 1 }}>{s.num}</p>
@@ -150,7 +150,7 @@ function Services() {
       <div className="max-w-[1440px] mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 lg:mb-14 pb-6 border-b" style={{ borderColor: 'rgba(166,137,102,.25)' }}>
           <div>
-            <span data-animate className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>OUR SERVICES</span>
+            <span data-animate className="text-xs tracking-[.2em] uppercase block mb-3" style={{ color: 'var(--oak-light)' }}>OUR SERVICES</span>
             <TextReveal as="h2" delay={80} className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>四大服務類別</TextReveal>
           </div>
           <Link data-animate data-delay="200" href="/services" className="text-xs tracking-widest uppercase pb-1 border-b hover:opacity-70 transition-opacity self-start sm:self-auto" style={{ color: 'var(--oak-dim)', borderColor: 'var(--oak-dim)' }}>查看全部 →</Link>
@@ -173,11 +173,10 @@ function Services() {
               <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--charcoal-deep) 30%, transparent 70%)', borderRadius: '12px' }} />
               <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: 'inset 0 0 0 1px rgba(166,137,102,0.6)', borderRadius: '12px' }} />
               <div className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8">
-                <span className="text-[10px] md:text-xs tracking-[.2em] uppercase block mb-1 md:mb-2" style={{ color: 'var(--oak)' }}>{card.no}</span>
                 <h3 className="font-display text-base md:text-2xl mb-1 md:mb-2" style={{ color: 'var(--cream)', fontWeight: 300 }}>{card.label}</h3>
                 <p className="text-xs md:text-sm leading-relaxed mb-2 md:mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block" style={{ color: 'var(--oak-dim)' }}>{card.desc}</p>
                 <span className="text-[10px] md:text-xs tracking-widest uppercase flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-1" style={{ color: 'var(--oak)' }}>
-                  {card.no === '01' ? '立即預約' : '了解更多'} →
+                  {card.label === '髮型設計師' ? '立即預約' : '了解更多'} →
                 </span>
               </div>
             </Link>
@@ -273,7 +272,7 @@ function Pillars() {
     <section className="py-16 lg:py-28 px-5 lg:px-16" style={{ background: 'var(--charcoal-deep)', borderTop: '1px solid rgba(166,137,102,0.14)' }}>
       <div className="max-w-[1440px] mx-auto">
         <div className="text-center mb-12 lg:mb-16">
-          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak)' }}>PLATFORM FEATURES</span>
+          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-3" style={{ color: 'var(--oak-light)' }}>PLATFORM FEATURES</span>
           <TextReveal as="h2" delay={80} className="font-display text-3xl md:text-4xl" style={{ color: 'var(--cream)', fontWeight: 300, letterSpacing: '.03em' }}>平台核心功能</TextReveal>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -308,7 +307,7 @@ function PartnerCTA() {
       <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         {/* Left: pitch */}
         <div className="lg:col-span-7 py-4">
-          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak)' }}>JOIN MOOLAH</span>
+          <span data-animate className="text-xs tracking-[.22em] uppercase block mb-4" style={{ color: 'var(--oak-light)' }}>JOIN MOOLAH</span>
           <h2 className="font-display mb-6" style={{ fontSize: 'clamp(2rem,5vw,4rem)', color: 'var(--cream)', fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.2 }}>
             <TextReveal as="span" delay={80} stagger={52} className="block">成為 MooLah</TextReveal>
             <TextReveal as="span" delay={320} stagger={52} className="block">合作設計師</TextReveal>
