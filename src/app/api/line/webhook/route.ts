@@ -90,6 +90,21 @@ const FAQ_ENTRIES: FaqEntry[] = [
       secondaryAction: { label: '聯絡 MooLah 客服', text: '聯絡客服' },
     }),
   },
+  // 合作洽詢（職人誤入營運 OA 的安全網 → 轉介合作 OA @492ejbwx）
+  {
+    keywords: ['合作', '試用', '想加入', '怎麼加入', '我是職人', '我是設計師', '免費試用', '加盟'],
+    build: () => buildFaqFlex({
+      eyebrow: 'PARTNER',
+      title: '美業職人 14 天免費試用',
+      bodyLines: [
+        '你專心做手藝，預約、提醒、時段管理交給 MooLah。',
+        '14 天免費試用・NT$699/月・0 抽佣・不綁約，客製立牌免費含。',
+        '點下方加入合作 LINE，回「試用」即可由專人為你開通專屬預約頁。',
+      ],
+      primaryAction: { label: '加入合作 LINE 開通試用', uri: 'https://line.me/R/ti/p/@492ejbwx' },
+      secondaryAction: { label: '看方案介紹', uri: `${BASE_URL}/for-providers` },
+    }),
+  },
   // 客服 / 聯絡
   {
     keywords: ['客服', '聯絡客服', '聯絡', '人工', '客訴', '不滿意'],
