@@ -2,77 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getSheetData } from '@/lib/sheets'
+import { CITIES, CATEGORIES, COMBOS } from '@/lib/localSeo'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const revalidate = 3600
-
-// ── 城市與品類定義 ─────────────────────────────────────────────
-const CITIES: Record<string, { name: string; intro: string }> = {
-  kaohsiung: {
-    name: '高雄',
-    intro: '從左營、鼓山到鳳山、三民，高雄的美業能量正在快速成長。MooLah 精選高雄在地職人，開放 LINE 線上預約——不用下載 App、不用來回私訊喬時間。',
-  },
-  pingtung: {
-    name: '屏東',
-    intro: '屏東的好手藝不輸都會區。MooLah 把屏東在地職人的時間表搬上線，LINE 點一點就完成預約，還會自動提醒你別忘了赴約。',
-  },
-}
-
-const CATEGORIES: Record<string, {
-  name: string; short: string; services: string; faq: { q: string; a: string }[]
-}> = {
-  nails: {
-    name: '美甲師',
-    short: '美甲',
-    services: '光療凝膠、手繪款式、卸甲保養、指緣護理',
-    faq: [
-      { q: '凝膠美甲大約多久要卸甲或補甲一次？', a: '一般凝膠美甲的美觀期約 3–4 週，之後因指甲生長會出現後移縫隙，建議 3–4 週回店卸甲或補甲，避免翹邊藏污。透過 MooLah 預約完成後，系統會在回訪時間自動提醒你。' },
-      { q: '線上預約美甲需要先付訂金嗎？', a: '透過 MooLah 預約採「到店付款」，線上不需先付款。預約成功後你會在 LINE 收到確認通知與行前提醒。' },
-      { q: '第一次做美甲要怎麼選款式？', a: '可以先逛職人的作品集頁面，預約時直接勾選喜歡的作品當靈感參考，職人到店前就能理解你想要的風格。' },
-    ],
-  },
-  hair: {
-    name: '髮型設計師',
-    short: '剪髮・染燙',
-    services: '剪髮、染髮、燙髮、頭皮護理、造型設計',
-    faq: [
-      { q: '染燙前需要先跟設計師溝通嗎？', a: '建議預約時在備註欄寫下想要的風格或附上參考圖，設計師會提前評估髮況與所需時間，到店溝通會更有效率。' },
-      { q: '線上預約剪髮會比較貴嗎？', a: '不會。MooLah 線上預約價格與現場一致、到店付款，還能避開現場排隊等待。' },
-      { q: '臨時有事要改時間怎麼辦？', a: '在 LINE 的「我的預約」即可取消，再重新選擇新時段，異動會即時通知設計師。' },
-    ],
-  },
-  'pet-grooming': {
-    name: '寵物美容師',
-    short: '寵物美容',
-    services: '洗澡基礎護理、剃毛造型、SPA、指甲耳朵清潔',
-    faq: [
-      { q: '狗狗多久洗一次澡、做一次美容比較好？', a: '一般建議 2–4 週洗澡一次、6–8 週整理一次造型，依毛量與生活環境調整。預約完成後 MooLah 會在建議回訪時間透過 LINE 提醒你。' },
-      { q: '第一次帶毛孩去新的美容店要注意什麼？', a: '預約時在備註寫下毛孩的品種、體重與特殊狀況（怕吹風機、皮膚敏感等），美容師能提前安排合適的流程與時段。' },
-      { q: '寵物美容需要幾點前到店？', a: '建議提早 5–10 分鐘到店讓毛孩熟悉環境。透過 MooLah 預約後，行前提醒會自動發到你的 LINE。' },
-    ],
-  },
-  'car-detailing': {
-    name: '汽車美容師',
-    short: '汽車美容',
-    services: '鍍膜、打蠟、車體美容、內裝深層清潔',
-    faq: [
-      { q: '鍍膜跟打蠟差在哪？該怎麼選？', a: '打蠟成本低、光澤維持約 1–2 個月；鍍膜硬度與撥水性更好、可維持一年以上但價格較高。可先透過職人頁面的服務說明與價格比較，再線上預約諮詢。' },
-      { q: '汽車美容一次大概要多久？', a: '基礎美容約 1–2 小時，鍍膜依車況約半天至一天。MooLah 預約時會顯示每項服務的預估時長，方便你安排接送時間。' },
-      { q: '需要先把車開過去估價嗎？', a: '多數項目可直接線上預約；特殊車況可在預約備註說明或附註聯絡方式，職人會先與你確認再施工。' },
-    ],
-  },
-}
-
-// 首波開放的城市×品類組合
-const COMBOS: [string, string][] = [
-  ['kaohsiung', 'nails'],
-  ['kaohsiung', 'hair'],
-  ['kaohsiung', 'pet-grooming'],
-  ['kaohsiung', 'car-detailing'],
-  ['pingtung', 'nails'],
-  ['pingtung', 'hair'],
-]
 
 export const dynamicParams = false
 
@@ -152,7 +86,10 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
     ],
   }
 
-  const otherCombos = COMBOS.filter(([ct, cat]) => !(ct === city && cat === category))
+  // 內鏈：同城其他品類 + 同品類其他城市（相關性優先，避免 27 顆鏈接農場）
+  const otherCombos = COMBOS.filter(([ct, cat]) =>
+    (ct === city && cat !== category) || (cat === category && ct !== city)
+  )
 
   return (
     <div style={{ background: 'var(--charcoal-deep)', minHeight: '100vh', color: 'var(--cream)' }}>

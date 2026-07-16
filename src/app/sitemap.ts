@@ -1,7 +1,16 @@
 import { MetadataRoute } from 'next'
 import { getSheetData } from '@/lib/sheets'
+import { COMBOS } from '@/lib/localSeo'
 
 const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
+
+// 城市×品類在地 SEO 頁（自動跟隨 localSeo.ts；2026-07-16 全台覆蓋）
+const localPages: MetadataRoute.Sitemap = COMBOS.map(([city, category]) => ({
+  url: `${base}/local/${city}/${category}`,
+  lastModified: new Date('2026-07-16'),
+  changeFrequency: 'weekly' as const,
+  priority: 0.85,
+}))
 
 const staticPages: MetadataRoute.Sitemap = [
   { url: base,                             lastModified: new Date('2026-05-18'), changeFrequency: 'weekly',  priority: 1.0 },
@@ -15,13 +24,6 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: `${base}/services/auto-detailing`,lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/nail`,          lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/join`,                   lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
-  // 城市×品類在地 SEO 頁（2026-07-09）
-  { url: `${base}/local/kaohsiung/nails`,         lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
-  { url: `${base}/local/kaohsiung/hair`,          lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
-  { url: `${base}/local/kaohsiung/pet-grooming`,  lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
-  { url: `${base}/local/kaohsiung/car-detailing`, lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
-  { url: `${base}/local/pingtung/nails`,          lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
-  { url: `${base}/local/pingtung/hair`,           lastModified: new Date('2026-07-09'), changeFrequency: 'weekly', priority: 0.85 },
   { url: `${base}/features/booking`,       lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/scheduling`,    lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/notification`,  lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
@@ -46,5 +48,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Sheets unavailable at build time — skip provider entries
   }
 
-  return [...staticPages, ...providerEntries]
+  return [...staticPages, ...localPages, ...providerEntries]
 }
