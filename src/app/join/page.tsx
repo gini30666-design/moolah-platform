@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import JoinForm from '@/components/JoinForm'
+import StickyTrialCTA from '@/components/StickyTrialCTA'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
@@ -172,17 +173,17 @@ export default function JoinPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
-                style={{ background: 'var(--oak)', color: 'var(--cream)' }}
+                style={{ background: '#06C755', color: 'white', fontWeight: 700 }}
               >
-                立即申請
+                加 LINE 開通 14 天免費試用
               </a>
-              <Link
-                href="/services"
+              <a
+                href="#apply"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border text-sm tracking-widest uppercase hover:border-[var(--oak)] transition-colors"
                 style={{ color: 'rgba(251,249,244,0.65)', borderColor: 'rgba(251,249,244,0.20)' }}
               >
-                查看方案
-              </Link>
+                留下資料，我們聯絡你
+              </a>
             </div>
           </div>
         </section>
@@ -267,7 +268,7 @@ export default function JoinPage() {
         </section>
 
         {/* Apply Form */}
-        <section className="relative overflow-hidden py-16 md:py-24 px-5 md:px-6" style={{ background: 'white' }}>
+        <section id="apply" className="relative overflow-hidden py-16 md:py-24 px-5 md:px-6" style={{ background: 'white' }}>
           <div className="absolute left-0 bottom-0 font-display leading-none pointer-events-none select-none" style={{ fontSize: 'clamp(5rem,20vw,16rem)', color: 'rgba(166,137,102,0.04)', lineHeight: 0.9 }}>Join</div>
           <div className="relative max-w-2xl mx-auto">
             <div data-animate className="text-center mb-10">
@@ -287,7 +288,7 @@ export default function JoinPage() {
             <div className="mt-10 pt-8 border-t text-center" style={{ borderColor: 'rgba(166,137,102,0.20)' }}>
               <p className="text-sm mb-3" style={{ color: 'rgba(44,40,37,0.50)' }}>想先體驗預約流程？</p>
               <Link
-                href="/go/chloe"
+                href="/go/linmu"
                 className="text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
                 style={{ color: 'var(--oak)' }}
               >
@@ -299,6 +300,7 @@ export default function JoinPage() {
 
       </main>
       <Footer />
+      <StickyTrialCTA />
     </>
   )
 }

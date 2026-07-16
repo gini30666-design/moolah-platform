@@ -195,12 +195,20 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
         <section className="rounded-2xl p-6 text-center" style={{ background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.25)' }}>
           <p className="font-display text-lg mb-2" style={{ color: 'var(--cream)' }}>你是{c.name}的{k.name}嗎？</p>
           <p className="text-sm mb-4" style={{ color: 'rgba(251,249,244,0.65)' }}>
-            加入 MooLah，讓客人在 LINE 直接預約你的時段。14 天免費試用、免綁約。
+            加入 MooLah，讓客人在 LINE 直接預約你的時段。14 天免費試用、0 抽佣、不綁約。
           </p>
-          <Link href="/join" className="inline-block rounded-full px-6 py-2.5 text-sm"
-            style={{ background: 'var(--oak)', color: 'var(--charcoal-deep)' }}>
-            了解合作方案
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold"
+              style={{ background: '#06C755', color: 'white' }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '15px', height: '15px' }}><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+              加 LINE 開通 14 天免費試用
+            </a>
+            <Link href="/for-providers" className="inline-block rounded-full px-5 py-2.5 text-sm"
+              style={{ border: '1px solid rgba(166,137,102,0.4)', color: 'rgba(251,249,244,0.75)' }}>
+              看方案介紹
+            </Link>
+          </div>
         </section>
       </main>
     </div>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import JoinForm from '@/components/JoinForm'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import StickyTrialCTA from '@/components/StickyTrialCTA'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
@@ -133,7 +134,7 @@ export default function ForProvidersPage() {
             讓系統替你接單、排程、催客人、收評價
           </p>
           <div style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px' }}>
-            <a href="#apply" style={{ background: oak, color: cream, padding: '14px 32px', fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 600 }}>立即申請 →</a>
+            <a href="#apply" style={{ background: oak, color: cream, padding: '14px 32px', fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 600 }}>開通 14 天免費試用 →</a>
             <a href="#features" style={{ border: `1px solid ${oak}66`, color: cream, padding: '14px 32px', fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', textDecoration: 'none' }}>看功能介紹</a>
           </div>
 
@@ -232,32 +233,34 @@ export default function ForProvidersPage() {
         <section id="apply" style={{ padding: '70px 24px', background: sand }}>
           <div style={{ maxWidth: '1080px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
             <div>
-              <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', marginBottom: '14px' }}>APPLY NOW</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', marginBottom: '14px' }}>FREE TRIAL</p>
               <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: charcoal, marginBottom: '16px', fontWeight: 400, lineHeight: 1.25 }}>
-                準備好開始了嗎？
+                加 LINE 回「試用」<br/>30 秒開通免費試用
               </h2>
-              <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.8, marginBottom: '32px' }}>
-                填寫下方表單，我們在 24 小時內聯絡你，協助完成上線設定。<br/>
-                或直接掃 QR 加 LINE，跟 MooLah 團隊聊聊。
+              <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.8, marginBottom: '24px' }}>
+                14 天全功能免費體驗，你的專屬預約頁、作品集、自動提醒一次備好。<br/>
+                不用會技術、真人一對一協助上線。
               </p>
 
-              <div style={{ background: 'white', padding: '24px', borderRadius: '14px', border: `1px solid ${oak}33`, display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: 'white', padding: '17px 24px', fontSize: '15px', fontWeight: 700, borderRadius: '12px', textDecoration: 'none', marginBottom: '16px', boxShadow: '0 4px 14px rgba(6,199,85,0.35)' }}>
+                <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '20px', height: '20px' }}><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+                加 LINE 開通 14 天免費試用
+              </a>
+
+              <div style={{ background: 'white', padding: '18px 20px', borderRadius: '14px', border: `1px solid ${oak}33`, display: 'flex', alignItems: 'center', gap: '18px' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/line_oa_partner_qr.png" alt="MooLah 招商 LINE QR" width={120} height={120} style={{ display: 'block', borderRadius: '8px' }} />
+                <img src="/line_oa_partner_qr.png" alt="MooLah 招商 LINE QR" width={92} height={92} style={{ display: 'block', borderRadius: '8px' }} />
                 <div>
-                  <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '6px' }}>LINE OA</p>
-                  <p style={{ fontSize: '20px', fontWeight: 700, color: charcoal, marginBottom: '10px' }}>@492ejbwx</p>
-                  <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'inline-block', background: '#06C755', color: 'white', padding: '8px 18px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', textDecoration: 'none' }}>
-                    加好友 →
-                  </a>
+                  <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '4px' }}>電腦瀏覽？掃 QR 加 LINE</p>
+                  <p style={{ fontSize: '18px', fontWeight: 700, color: charcoal }}>@492ejbwx</p>
                 </div>
               </div>
             </div>
 
             <div style={{ background: 'white', padding: '32px 28px', borderRadius: '16px', border: `1px solid ${oak}22` }}>
-              <p style={{ fontSize: '12px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '8px' }}>申請表單</p>
-              <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.55)', marginBottom: '24px' }}>填完 24 小時內專人聯絡</p>
+              <p style={{ fontSize: '12px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '8px' }}>不想聊？留下資料</p>
+              <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.55)', marginBottom: '24px' }}>我們 24 小時內主動聯絡你，幫你開通試用</p>
               <JoinForm />
             </div>
           </div>
@@ -282,6 +285,7 @@ export default function ForProvidersPage() {
 
       </main>
       <SiteFooter />
+      <StickyTrialCTA />
     </>
   )
 }
