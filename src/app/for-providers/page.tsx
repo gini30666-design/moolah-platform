@@ -14,12 +14,12 @@ const cream = '#fbf9f4'
 const sand = '#f5efe6'
 
 export const metadata: Metadata = {
-  title: '設計師加入 MooLah | 美業職人專屬預約管理平台',
-  description: 'MooLah 為髮型設計師、美甲師、美容師、採耳師、按摩舒壓、寵物美容、汽車美容職人打造的智慧預約管理平台。14 天免費試用、0 抽佣、不綁約。LINE 一鍵預約，自動排程，雙向通知。',
+  title: '美業預約系統 MooLah | 14 天免費試用・LINE 線上預約系統',
+  description: 'MooLah 美業預約系統——為髮型設計師、美甲師、美容師、採耳師、按摩舒壓、寵物美容、汽車美容職人打造的 LINE 線上預約系統。14 天免費試用、0 抽佣、不綁約，自動排程、雙向通知、減少爽約。',
   alternates: { canonical: `${BASE_URL}/for-providers` },
   openGraph: {
-    title: '設計師加入 MooLah',
-    description: '14 天免費試用 · NT$699 月費 · 0 抽佣 · 不綁約。LINE 一鍵預約管理平台',
+    title: '美業預約系統 MooLah — 14 天免費試用',
+    description: '14 天免費試用 · 0 抽佣 · 不綁約。LINE 線上預約系統，客人自己約、你專心做手藝。',
     url: `${BASE_URL}/for-providers`,
   },
 }
