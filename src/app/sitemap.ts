@@ -23,6 +23,10 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: `${base}/services/pet-grooming`,  lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/auto-detailing`,lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/nail`,          lastModified: new Date('2026-06-03'), changeFrequency: 'weekly',  priority: 0.85 },
+  // 全台級新品類頁（2026-07-17 藍海擴編：吃不帶城市的大字「採耳/做臉/按摩」）
+  { url: `${base}/services/ear-cleaning`,  lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/facial`,        lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/massage`,       lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/join`,                   lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
   { url: `${base}/features/booking`,       lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/scheduling`,    lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
