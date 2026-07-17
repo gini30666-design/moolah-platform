@@ -15,7 +15,7 @@ const sand = '#f5efe6'
 
 export const metadata: Metadata = {
   title: '設計師加入 MooLah | 美業職人專屬預約管理平台',
-  description: 'MooLah 為髮型設計師、寵物美容師、汽車美容師、美甲師打造的智慧預約管理平台。NT$699 月費、14 天免費試用、0 抽佣、不綁約。LINE 一鍵預約，自動排程，雙向通知。',
+  description: 'MooLah 為髮型設計師、美甲師、美容師、採耳師、按摩舒壓、寵物美容、汽車美容職人打造的智慧預約管理平台。14 天免費試用、0 抽佣、不綁約。LINE 一鍵預約，自動排程，雙向通知。',
   alternates: { canonical: `${BASE_URL}/for-providers` },
   openGraph: {
     title: '設計師加入 MooLah',

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { trackLead } from '@/components/MetaPixel'
 import { ga } from '@/lib/gtag'
 
-const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師', '刺青師']
+const CATEGORIES = ['髮型設計師', '美甲師', '美容師（做臉）', '採耳師', '按摩舒壓師', '寵物美容師', '汽車美容師', '刺青師']
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
 const METHODS    = ['口頭或電話確認', 'LINE 個人帳號', '無系統（自行記錄）', '已有其他軟體']
 const PLANS      = [
