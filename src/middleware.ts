@@ -18,6 +18,8 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || ''
   if (host === OLD_HOST) {
     const { pathname, search } = request.nextUrl
+    // GSC 擁有權驗證檔不轉址（vercel.app 資源驗證用 → Removals 從搜尋移除舊網址）
+    if (/^\/google[0-9a-f]+\.html$/.test(pathname)) return NextResponse.next()
     return NextResponse.redirect(`${NEW_ORIGIN}${pathname}${search}`, 301)
   }
   return NextResponse.next()
