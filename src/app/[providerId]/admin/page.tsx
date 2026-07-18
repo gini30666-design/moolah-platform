@@ -49,8 +49,8 @@ const inputStyle: React.CSSProperties = {
   outline: 'none', boxSizing: 'border-box',
 }
 const labelStyle: React.CSSProperties = {
-  fontSize: '10px', color: oak, letterSpacing: '0.1em',
-  textTransform: 'uppercase', display: 'block', marginBottom: '8px',
+  fontSize: '12px', fontWeight: 600, color: 'rgba(44,40,37,0.72)',
+  display: 'block', marginBottom: '8px',
 }
 
 // ─── Customer History Sheet ───────────────────────────────────────────────────
@@ -198,7 +198,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             </div>
             {/* Tags */}
             <div style={{ marginBottom: '16px' }}>
-              <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>顧客標籤</p>
+              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.72)', fontWeight: 600, marginBottom: '8px' }}>顧客標籤</p>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {TAGS.map(tag => {
                   const active = tags.includes(tag.label)
@@ -218,7 +218,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
-            <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>設計師筆記</p>
+            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.72)', fontWeight: 600, marginBottom: '8px' }}>設計師筆記</p>
             <textarea
               value={noteText}
               onChange={e => setNoteText(e.target.value)}
@@ -250,7 +250,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
-            <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>作品歷史</p>
+            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.72)', fontWeight: 600, marginBottom: '8px' }}>作品歷史</p>
             <div style={{ display: 'flex', gap: '8px', marginBottom: karte.length ? '12px' : '0' }}>
               <input
                 value={karteNote}
@@ -290,7 +290,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
           </div>
         )}
 
-        <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>消費紀錄</p>
+        <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.72)', fontWeight: 600, marginBottom: '12px' }}>消費紀錄</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '35vh', overflowY: 'auto' }}>
           {history.map(b => (
             <div key={b.id} style={{
@@ -381,8 +381,6 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
       boxShadow: compact ? '0 1px 8px rgba(26,23,20,0.05)' : '0 2px 16px rgba(26,23,20,0.08)',
       position: 'relative', overflow: 'hidden',
     }}>
-      {/* left oak accent bar */}
-      {!isNoShow && <div style={{ position: 'absolute', left: 0, top: '14px', bottom: '14px', width: '2px', background: 'linear-gradient(to bottom, var(--oak), transparent)', borderRadius: '1px' }} />}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: compact ? '1.6rem' : '2rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
@@ -411,7 +409,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
       </button>
 
       {booking.note && <p style={{ fontSize: '11px', color: '#6b5f56', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
-      <p style={{ fontSize: '10px', color: '#c8c0b8', marginTop: '8px' }}>#{booking.id}</p>
+      <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)', marginTop: '8px' }}>#{booking.id}</p>
 
       {!isNoShow && !showConfirm && !showNoShowConfirm && (
         <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
@@ -1102,50 +1100,28 @@ export default function AdminPage() {
             <span style={{ fontSize: '13px' }}>👁</span> 預覽
           </button>
         </div>
-        <p style={{ fontSize: '9px', color: 'var(--oak)', letterSpacing: '0.26em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.8 }}>管理後台</p>
+        <p style={{ fontSize: '12px', color: 'var(--oak)', marginBottom: '10px', letterSpacing: '0.04em' }}>管理後台</p>
         <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: cream, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
         <div style={{ width: '28px', height: '1px', background: oak, marginTop: '14px', opacity: 0.5 }} />
-      </div>
-
-      {/* ── Admin Marquee bar ── */}
-      <div style={{ background: oak, overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <style>{`@keyframes marqueeAdmin { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
-        <div style={{ display: 'inline-flex', animation: 'marqueeAdmin 20s linear infinite', paddingTop: '7px', paddingBottom: '7px' }}>
-          {[0,1].map(i => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)' }}>
-              <span>今日預約 {todayBookings.length} 件</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>待服務 {upcomingBookings.filter(b => b.date === today).length + todayBookings.length} 人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>本月累計 NT$ {monthRevenue > 0 ? monthRevenue.toLocaleString() : '—'}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              {waitlist.length > 0 && <><span>候補名單 {waitlist.length} 人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
-              <span>MooLah 後台管理</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-            </span>
-          ))}
-        </div>
       </div>
 
       {/* ── Stats 2×2 ── */}
       <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
         {[
-          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'dark' as const },
-          { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'oak' as const },
+          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'light' as const },
+          { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
           { label: '本月預約', value: `${monthBookings.length}`, unit: '筆', shade: 'light' as const },
           { label: '本月營收', value: monthRevenue === 0 ? '—' : monthRevenue.toLocaleString(), unit: monthRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
         ].map(item => {
-          const isDark = item.shade === 'dark'
-          const isOak  = item.shade === 'oak'
-          const bg     = isDark ? 'var(--charcoal-deep)' : isOak ? 'rgba(166,137,102,0.08)' : cardBg
-          const bdr    = isDark ? '1px solid rgba(166,137,102,0.25)' : isOak ? '1px solid rgba(166,137,102,0.22)' : `1px solid ${border}`
-          const numClr = isDark ? cream : oak
-          const lblClr = isDark ? 'rgba(251,249,244,0.55)' : 'rgba(44,40,37,0.52)'
-          const ntClr  = isDark ? 'rgba(166,137,102,0.7)' : 'rgba(166,137,102,0.65)'
+          const numClr = oak
+          const lblClr = 'rgba(44,40,37,0.62)'
+          const ntClr  = 'rgba(166,137,102,0.65)'
           return (
           <div key={item.label} style={{
-            background: bg, border: bdr,
+            background: cardBg, border: `1px solid ${border}`,
             borderRadius: '16px', padding: '18px 16px 14px', textAlign: 'center',
             position: 'relative', overflow: 'hidden',
           }}>
-            {isDark && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
-            {isOak  && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, rgba(166,137,102,0.5), transparent)' }} />}
             {item.unit === 'NT$' && (
               <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: ntClr, marginBottom: '4px' }}>NT$</p>
             )}
@@ -1177,8 +1153,8 @@ export default function AdminPage() {
 
       {/* 數據與對帳：預設收合，把操作內容（預約）往上提 */}
       <button data-animate data-delay="55" onClick={() => setShowAnalytics(v => !v)} style={{ display: 'flex', width: 'calc(100% - 32px)', margin: '14px 16px 0', alignItems: 'center', justifyContent: 'space-between', padding: '13px 16px', background: cardBg, border: `1px solid ${border}`, borderRadius: '14px', cursor: 'pointer' }}>
-        <span style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>
-          📊 數據與對帳{isTrial && !isExpired ? ` · 試用剩 ${trialDaysLeft} 天` : ''}
+        <span style={{ fontSize: '13px', color: charcoal, fontWeight: 600 }}>
+          數據與對帳{isTrial && !isExpired ? ` · 試用剩 ${trialDaysLeft} 天` : ''}
         </span>
         <span style={{ fontSize: '12px', color: oak }}>{showAnalytics ? '收合 ▲' : '展開 ▼'}</span>
       </button>
@@ -1187,7 +1163,7 @@ export default function AdminPage() {
       <div data-animate data-delay="60" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'linear-gradient(135deg, rgba(166,137,102,0.10), rgba(166,137,102,0.04))', border: '1px solid rgba(166,137,102,0.24)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>本月對帳</p>
+          <p style={{ fontSize: '13px', color: charcoal, fontWeight: 700 }}>本月對帳</p>
           <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.42)', letterSpacing: '0.06em' }}>{today.slice(0, 7).replace('-', ' / ')}</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0', alignItems: 'stretch' }}>
@@ -1237,7 +1213,7 @@ export default function AdminPage() {
       <div data-animate data-delay="70" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'var(--charcoal-deep)', border: '1px solid rgba(166,137,102,0.25)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: oak, fontWeight: 600 }}>回購分析 · 近 90 天</p>
+          <p style={{ fontSize: '13px', color: cream, fontWeight: 700 }}>回購分析 · 近 90 天</p>
           <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.42)', letterSpacing: '0.06em' }}>{past90Bookings.length} 筆預約</span>
         </div>
         {customerKeys.length === 0 ? (
@@ -1288,7 +1264,7 @@ export default function AdminPage() {
             padding: '10px 16px 12px', fontSize: '12px',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
             background: 'transparent',
-            color: mainView === v ? charcoal : 'rgba(44,40,37,0.45)',
+            color: mainView === v ? charcoal : 'rgba(44,40,37,0.58)',
             borderBottom: mainView === v ? `2px solid ${oak}` : '2px solid transparent',
             transition: 'all 0.18s', whiteSpace: 'nowrap',
             letterSpacing: '0.02em',
@@ -1358,7 +1334,7 @@ export default function AdminPage() {
           {/* Manual booking */}
           {tab !== 'timeline' && services.length > 0 && (
             <div style={{ padding: '8px 16px 32px' }}>
-              <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px', paddingLeft: '4px' }}>私下預約管理</p>
+              <p style={{ fontSize: '13px', color: charcoal, fontWeight: 700, marginBottom: '12px', paddingLeft: '4px' }}>私下預約管理</p>
               <ManualBookingForm providerId={providerId} services={services} onSuccess={fetchBookings} />
             </div>
           )}
@@ -1369,7 +1345,7 @@ export default function AdminPage() {
       {mainView === 'services' && (
         <div style={{ padding: '16px 16px 40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <p style={{ fontSize: '13px', color: charcoal, fontWeight: 700 }}>
               服務項目 ({services.length})
             </p>
             {!addingService && (
@@ -1461,27 +1437,8 @@ export default function AdminPage() {
       {/* ── Dark footer ── */}
       <div style={{ background: 'var(--charcoal-deep)', padding: '34px 24px 44px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
-        {/* Diamond ornament */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '16px', position: 'relative' }}>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(166,137,102,0.38))' }} />
-          <span style={{ fontSize: '14px', color: oak, letterSpacing: '0.08em' }}>◆</span>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(166,137,102,0.38))' }} />
-        </div>
-        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.45rem', fontWeight: 300, color: cream, marginBottom: '20px', position: 'relative' }}>{providerName}</p>
-        {/* 3-col mini stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px', marginBottom: '22px', position: 'relative' }}>
-          {([
-            { label: '今日預約', value: `${todayBookings.length}` },
-            { label: '本月預約', value: `${monthBookings.length}` },
-            { label: '本月營收', value: monthRevenue > 0 ? `NT$${monthRevenue.toLocaleString()}` : '—' },
-          ] as { label: string; value: string }[]).map(s => (
-            <div key={s.label} style={{ padding: '10px 4px' }}>
-              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', fontWeight: 300, color: cream, lineHeight: 1 }}>{s.value}</p>
-              <p style={{ fontSize: '9px', color: 'rgba(251,249,244,0.32)', letterSpacing: '0.08em', marginTop: '5px' }}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.25)', letterSpacing: '0.14em', textTransform: 'uppercase', position: 'relative' }}>MooLah · 合作夥伴後台</p>
+        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 300, color: cream, marginBottom: '10px', position: 'relative' }}>{providerName}</p>
+        <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.4)', position: 'relative' }}>MooLah · 合作夥伴後台</p>
       </div>
 
       {/* ── 嵌入到 IG/網站 widget snippet (#30) ── */}

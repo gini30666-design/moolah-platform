@@ -17,16 +17,12 @@ const HAIR_CATEGORIES = ['髮型設計師']
 const NOTE_TAGS = ['第一次來', '想換個風格', '特殊場合', '有指定參考', '預算有限', '會晚一點到']
 
 // ── ChapterHeader ─────────────────────────────────────────────────────
-function ChapterHeader({ no, eyebrow, title }: { no: string; eyebrow: string; title: string }) {
+// 去典禮化：不用編號/英文 eyebrow/菱形裝飾，直接一個清楚的群組標題（product register）
+function ChapterHeader({ title }: { no?: string; eyebrow?: string; title: string }) {
   return (
-    <div style={{ textAlign: 'center', padding: '6px 0 22px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
-        <span style={{ width: '28px', height: '1px', background: 'linear-gradient(to right, transparent, var(--oak))' }} />
-        <span style={{ width: '5px', height: '5px', background: 'var(--oak)', transform: 'rotate(45deg)', flexShrink: 0 }} />
-        <span style={{ width: '28px', height: '1px', background: 'linear-gradient(to left, transparent, var(--oak))' }} />
-      </div>
-      <p style={{ fontSize: '10px', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '6px' }}>{eyebrow}</p>
-      <p className="font-display" style={{ fontSize: '1.55rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.1 }}>{title}</p>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0 18px' }}>
+      <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--charcoal)', lineHeight: 1.2, letterSpacing: '0.01em' }}>{title}</p>
+      <span style={{ flex: 1, height: '1px', background: 'rgba(166,137,102,0.22)' }} />
     </div>
   )
 }
@@ -368,19 +364,19 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             <circle cx="48" cy="48" r="44" fill="rgba(166,137,102,0.07)" stroke="rgba(166,137,102,0.18)" strokeWidth="1" />
             <circle cx="48" cy="48" r="44" fill="none" stroke="var(--oak)" strokeWidth="2"
               strokeDasharray="276" strokeDashoffset="276" strokeLinecap="round"
-              style={{ animation: 'drawCircle 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards' }} />
+              style={{ animation: 'drawCircle 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s forwards' }} />
             <polyline points="28,50 42,64 68,36" fill="none" stroke="#fbf9f4" strokeWidth="2.5"
               strokeLinecap="round" strokeLinejoin="round" strokeDasharray="60" strokeDashoffset="60"
-              style={{ animation: 'drawCheck 0.5s ease 1s forwards' }} />
+              style={{ animation: 'drawCheck 0.35s ease 0.45s forwards' }} />
           </svg>
         </div>
-        <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '10px', animation: 'fadeSlideUp 0.5s ease 1.2s both' }}>Booking Confirmed</p>
-        <h1 className="font-display" style={{ fontSize: 'clamp(2.4rem,8vw,3.5rem)', fontWeight: 300, letterSpacing: '-0.01em', color: '#fbf9f4', lineHeight: 1.1, textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.35s both' }}>預約完成</h1>
-        <div style={{ width: '36px', height: '1px', background: 'var(--oak)', margin: '16px 0', opacity: 0.5, animation: 'fadeSlideUp 0.5s ease 1.4s both' }} />
-        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.5s ease 1.5s both' }}>{providerName} &nbsp;·&nbsp; {serviceName}</p>
+        <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '10px', animation: 'fadeSlideUp 0.4s ease 0.5s both' }}>Booking Confirmed</p>
+        <h1 className="font-display" style={{ fontSize: 'clamp(2.4rem,8vw,3.5rem)', fontWeight: 300, letterSpacing: '-0.01em', color: '#fbf9f4', lineHeight: 1.1, textAlign: 'center', animation: 'fadeSlideUp 0.4s ease 0.55s both' }}>預約完成</h1>
+        <div style={{ width: '36px', height: '1px', background: 'var(--oak)', margin: '16px 0', opacity: 0.5, animation: 'fadeSlideUp 0.4s ease 0.6s both' }} />
+        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.4s ease 0.65s both' }}>{providerName} &nbsp;·&nbsp; {serviceName}</p>
       </div>
       <div style={{ background: '#f5efe6', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 24px 40px', position: 'relative' }}>
-        <div style={{ marginTop: '-28px', width: '100%', maxWidth: '320px', background: 'white', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '20px 24px', boxShadow: '0 8px 32px rgba(26,23,20,0.12)', animation: 'fadeSlideUp 0.5s ease 1.55s both', marginBottom: '24px' }}>
+        <div style={{ marginTop: '-28px', width: '100%', maxWidth: '320px', background: 'white', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '20px 24px', boxShadow: '0 8px 32px rgba(26,23,20,0.12)', animation: 'fadeSlideUp 0.4s ease 0.7s both', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
             <span className="font-display" style={{ fontSize: '28px', fontWeight: 300, color: 'var(--oak)' }}>{date}</span>
             <span style={{ width: '1px', height: '20px', background: 'rgba(166,137,102,0.3)', display: 'inline-block', alignSelf: 'center' }} />
@@ -397,7 +393,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             </p>
           )}
         </div>
-        <div style={{ width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.7s both' }}>
+        <div style={{ width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.4s ease 0.75s both' }}>
           {consumerNotified ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', background: 'rgba(6,199,85,0.08)', border: '1px solid rgba(6,199,85,0.2)', marginBottom: '20px' }}>
               <svg viewBox="0 0 20 20" fill="none" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
@@ -419,7 +415,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
           )}
         </div>
         {/* Reassurance action grid: calendar + map */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.8s both', marginBottom: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.4s ease 0.8s both', marginBottom: '10px' }}>
           <button onClick={handleAddToCalendar} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'var(--charcoal)', color: 'var(--cream)', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', letterSpacing: '0.02em' }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '14px', height: '14px' }}>
               <rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 1.5v3M11 1.5v3M2 7h12"/>
@@ -444,7 +440,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
         </div>
 
         {/* Secondary actions */}
-        <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.5s ease 1.9s both' }}>
+        <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.4s ease 0.85s both' }}>
           <a href={trackHref} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(44,40,37,0.07)', border: '1px solid rgba(44,40,37,0.1)', fontSize: '12px', color: 'rgba(44,40,37,0.65)', textDecoration: 'none', fontWeight: 500 }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
             {trackLabel}
@@ -455,7 +451,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             LINE 聯繫
           </a>
         </div>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.35)', paddingBottom: '2px', borderBottom: '1px solid rgba(44,40,37,0.15)', marginTop: '18px', animation: 'fadeSlideUp 0.5s ease 2s both' }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.35)', paddingBottom: '2px', borderBottom: '1px solid rgba(44,40,37,0.15)', marginTop: '18px', animation: 'fadeSlideUp 0.4s ease 0.9s both' }}>
           返回設計師頁面
         </button>
       </div>
@@ -733,18 +729,16 @@ export default function BookPage() {
                 }
               }}
               style={{
-                position: 'relative', padding: isSelected ? '13px 4px' : '10px 4px',
-                borderRadius: isSelected ? '12px' : '10px', fontSize: isSelected ? '17px' : '13px',
-                cursor: 'pointer',
+                position: 'relative', padding: '11px 4px',
+                borderRadius: '10px', fontSize: '14px',
+                cursor: 'pointer', fontVariantNumeric: 'tabular-nums',
                 border: isSelected ? '1.5px solid var(--charcoal)' : isWaitlistTarget ? '1.5px solid rgba(180,120,40,0.6)' : isBooked ? '1.5px dashed rgba(180,120,40,0.28)' : isHot ? '1.5px solid rgba(196,132,90,0.50)' : '1.5px solid rgba(166,137,102,0.18)',
                 background: isSelected ? 'var(--charcoal-deep)' : isWaitlistTarget ? 'rgba(180,120,40,0.12)' : isBooked ? 'rgba(180,120,40,0.04)' : isHot ? 'rgba(196,132,90,0.10)' : 'rgba(255,255,255,0.82)',
-                color: isSelected ? 'var(--cream)' : isBooked ? 'rgba(160,100,30,0.7)' : isHot ? '#c4845a' : 'var(--charcoal)',
-                boxShadow: isSelected ? '0 6px 20px rgba(26,23,20,0.22)' : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
-                transform: isSelected ? 'translateY(-3px) scale(1.06)' : 'none',
+                color: isSelected ? 'var(--cream)' : isBooked ? 'rgba(150,92,26,0.85)' : isHot ? '#b26f45' : 'var(--charcoal)',
+                boxShadow: isSelected ? '0 3px 12px rgba(26,23,20,0.18)' : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
                 fontWeight: isSelected ? 600 : 400,
-                fontFamily: isSelected ? '"Cormorant Garamond", serif' : 'inherit',
                 textDecoration: isBooked ? 'line-through' : 'none',
-                transition: 'all 0.2s var(--ease-expo)',
+                transition: 'background 0.15s, border-color 0.15s, color 0.15s',
               }}>
               {slot.time}
               {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)', textDecoration: 'none' }}>候補</span>}
@@ -781,7 +775,7 @@ export default function BookPage() {
         })}
         {time && (
           <div style={{ padding: '11px 18px', background: 'var(--charcoal-deep)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', animation: 'fadeUp 0.25s ease' }}>
-            <span style={{ fontSize: '8px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
+            <span style={{ fontSize: '11px', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
             <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1 }}>{time}{endTime && <span style={{ fontSize: '1rem', color: 'rgba(251,249,244,0.55)' }}> – {endTime}</span>}</span>
             <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}{service ? ` · 約 ${service.duration} 分` : ''}</span>
           </div>
@@ -881,22 +875,6 @@ export default function BookPage() {
         })()}
       </div>
 
-      {/* ── Oak marquee ─── */}
-      <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <div style={{ display: 'inline-flex', animation: 'marqueeBook 22s linear infinite', paddingTop: '8px', paddingBottom: '8px' }}>
-          {[0, 1].map(i => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.88)' }}>
-              {provider.rating && <><span style={{ color: 'rgba(251,249,244,0.7)' }}>★&nbsp;</span><span>{provider.rating}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span></>}
-              <span>{service.name}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>{service.duration} 分鐘</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>NT$ {service.price.toLocaleString()}</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>認證職人</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-              <span>即時 LINE 通知</span><span style={{ margin: '0 18px', opacity: 0.4 }}>·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="max-w-lg mx-auto px-5 py-6" style={{ paddingBottom: '120px' }}>
 
         {/* ── LINE OA join card ─── */}
@@ -930,7 +908,7 @@ export default function BookPage() {
           <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', padding: service.imageUrl ? '18px 22px 0' : '0' }}>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: '9px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px' }}>預約服務</p>
+              <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--oak)', marginBottom: '8px', letterSpacing: '0.02em' }}>預約服務</p>
               <p className="font-display" style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--cream)', lineHeight: 1.15, marginBottom: '4px' }}>{service.name}</p>
               <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.38)', letterSpacing: '0.06em' }}>{service.duration} 分鐘</p>
               {provider.rating && (
@@ -942,9 +920,9 @@ export default function BookPage() {
               )}
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '14px' }}>
-              <p style={{ fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(166,137,102,0.75)', marginBottom: '3px' }}>NT$</p>
+              <p style={{ fontSize: '11px', color: 'rgba(166,137,102,0.85)', marginBottom: '3px' }}>NT$</p>
               <p className="font-display" style={{ fontSize: '2.2rem', color: 'var(--oak)', fontWeight: 300, lineHeight: 1, marginBottom: '10px', whiteSpace: 'nowrap' }}>{service.price.toLocaleString()}</p>
-              <span style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', background: 'rgba(166,137,102,0.18)', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.3)' }}>已選擇</span>
+              <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '99px', background: 'rgba(166,137,102,0.18)', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.3)' }}>已選擇</span>
             </div>
           </div>
         </div>
@@ -1105,7 +1083,7 @@ export default function BookPage() {
 
             {/* Summary recap */}
             <div style={{ background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '14px', padding: '16px 18px' }}>
-              <p style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px' }}>預約摘要</p>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '12px' }}>預約摘要</p>
               {[
                 ['服務', service.name],
                 ['時長', `${service.duration} 分鐘`],
@@ -1116,7 +1094,7 @@ export default function BookPage() {
                 ...(selectedTags.length ? [['備註標籤', selectedTags.join('、')]] : []),
               ].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
-                  <span style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>{k}</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.62)' }}>{k}</span>
                   <span style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{v}</span>
                 </div>
               ))}
