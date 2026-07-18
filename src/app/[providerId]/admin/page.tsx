@@ -374,20 +374,21 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
 
   return (
     <div style={{
-      background: isNoShow ? 'rgba(200,60,60,0.04)' : 'white',
-      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : isNext ? 'rgba(166,137,102,0.6)' : 'rgba(166,137,102,0.28)'}`,
+      background: isNoShow ? 'rgba(200,60,60,0.04)' : isNext ? 'var(--charcoal-deep)' : 'white',
+      border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : isNext ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.28)'}`,
       borderRadius: compact ? '12px' : '16px',
       padding: compact ? '12px 16px' : '18px 20px',
-      boxShadow: compact ? '0 1px 8px rgba(26,23,20,0.05)' : '0 2px 16px rgba(26,23,20,0.08)',
+      boxShadow: isNext ? '0 10px 30px rgba(26,23,20,0.28)' : compact ? '0 1px 8px rgba(26,23,20,0.05)' : '0 2px 16px rgba(26,23,20,0.08)',
       position: 'relative', overflow: 'hidden',
     }}>
+      {isNext && !isNoShow && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: compact ? '1.6rem' : '2rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: compact ? '1.6rem' : '2rem', fontWeight: 300, color: isNext && !isNoShow ? cream : charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{booking.time}</p>
           <p style={{ fontSize: compact ? '11px' : '12px', color: oak, marginTop: '4px', letterSpacing: '0.04em', fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif" }}>{booking.serviceName}</p>
         </div>
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: isNext && !isNoShow ? cream : charcoal, fontWeight: 300 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
           {isNext && !isNoShow && <span style={{ fontSize: '10px', color: cream, background: oak, padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位{nextCountdown ? ` · ${nextCountdown}` : ''}</span>}
@@ -396,20 +397,20 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
         </div>
       </div>
 
-      <div style={{ height: '1px', background: 'rgba(166,137,102,0.12)', margin: '12px 0' }} />
+      <div style={{ height: '1px', background: isNext && !isNoShow ? 'rgba(166,137,102,0.3)' : 'rgba(166,137,102,0.12)', margin: '12px 0' }} />
 
       <button
         onClick={() => onViewCustomer(booking)}
         style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', background: 'none', border: 'none', padding: '0', cursor: 'pointer', width: '100%', textAlign: 'left' }}
       >
-        <span style={{ fontSize: '12px', color: '#4a3f3a' }}>{booking.customerName || '匿名客戶'}</span>
+        <span style={{ fontSize: '12px', color: isNext && !isNoShow ? 'rgba(251,249,244,0.85)' : '#4a3f3a' }}>{booking.customerName || '匿名客戶'}</span>
         {booking.gender && <span style={{ fontSize: '11px', color: oak, background: 'rgba(166,137,102,0.08)', padding: '2px 8px', borderRadius: '20px' }}>{booking.gender}</span>}
         {booking.hairLength && <span style={{ fontSize: '11px', color: oak, background: 'rgba(166,137,102,0.08)', padding: '2px 8px', borderRadius: '20px' }}>{booking.hairLength}</span>}
         <span style={{ fontSize: '10px', color: 'var(--oak)', marginLeft: 'auto' }}>顧客紀錄 →</span>
       </button>
 
-      {booking.note && <p style={{ fontSize: '11px', color: '#6b5f56', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
-      <p style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)', marginTop: '8px' }}>#{booking.id}</p>
+      {booking.note && <p style={{ fontSize: '11px', color: isNext && !isNoShow ? 'rgba(251,249,244,0.6)' : '#6b5f56', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
+      <p style={{ fontSize: '10px', color: isNext && !isNoShow ? 'rgba(251,249,244,0.35)' : 'rgba(44,40,37,0.4)', marginTop: '8px' }}>#{booking.id}</p>
 
       {!isNoShow && !showConfirm && !showNoShowConfirm && (
         <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
@@ -1108,20 +1109,24 @@ export default function AdminPage() {
       {/* ── Stats 2×2 ── */}
       <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '20px 16px 0' }}>
         {[
-          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'light' as const },
+          { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'primary' as const },
           { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
           { label: '本月預約', value: `${monthBookings.length}`, unit: '筆', shade: 'light' as const },
           { label: '本月營收', value: monthRevenue === 0 ? '—' : monthRevenue.toLocaleString(), unit: monthRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
         ].map(item => {
-          const numClr = oak
-          const lblClr = 'rgba(44,40,37,0.62)'
-          const ntClr  = 'rgba(166,137,102,0.65)'
+          const isPrimary = item.shade === 'primary'
+          const numClr = isPrimary ? cream : oak
+          const lblClr = isPrimary ? 'rgba(251,249,244,0.65)' : 'rgba(44,40,37,0.62)'
+          const ntClr  = isPrimary ? 'rgba(166,137,102,0.8)' : 'rgba(166,137,102,0.65)'
           return (
           <div key={item.label} style={{
-            background: cardBg, border: `1px solid ${border}`,
+            background: isPrimary ? 'var(--charcoal-deep)' : cardBg,
+            border: isPrimary ? '1px solid rgba(166,137,102,0.4)' : `1px solid ${border}`,
             borderRadius: '16px', padding: '18px 16px 14px', textAlign: 'center',
             position: 'relative', overflow: 'hidden',
+            boxShadow: isPrimary ? '0 8px 24px rgba(26,23,20,0.22)' : 'none',
           }}>
+            {isPrimary && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)' }} />}
             {item.unit === 'NT$' && (
               <p style={{ fontSize: '9px', letterSpacing: '0.16em', color: ntClr, marginBottom: '4px' }}>NT$</p>
             )}
@@ -1160,7 +1165,7 @@ export default function AdminPage() {
       </button>
       {showAnalytics && (<>
       {/* ── 本月對帳透明化 panel ── */}
-      <div data-animate data-delay="60" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'linear-gradient(135deg, rgba(166,137,102,0.10), rgba(166,137,102,0.04))', border: '1px solid rgba(166,137,102,0.24)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
+      <div data-animate data-delay="60" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'var(--sand-deep)', border: '1px solid rgba(166,137,102,0.3)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <p style={{ fontSize: '13px', color: charcoal, fontWeight: 700 }}>本月對帳</p>

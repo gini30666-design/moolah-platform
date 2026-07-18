@@ -18,11 +18,11 @@ const NOTE_TAGS = ['第一次來', '想換個風格', '特殊場合', '有指定
 
 // ── ChapterHeader ─────────────────────────────────────────────────────
 // 去典禮化：不用編號/英文 eyebrow/菱形裝飾，直接一個清楚的群組標題（product register）
-function ChapterHeader({ title }: { no?: string; eyebrow?: string; title: string }) {
+function ChapterHeader({ title, dark }: { no?: string; eyebrow?: string; title: string; dark?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0 18px' }}>
-      <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--charcoal)', lineHeight: 1.2, letterSpacing: '0.01em' }}>{title}</p>
-      <span style={{ flex: 1, height: '1px', background: 'rgba(166,137,102,0.22)' }} />
+      <p style={{ fontSize: '16px', fontWeight: 700, color: dark ? 'var(--cream)' : 'var(--charcoal)', lineHeight: 1.2, letterSpacing: '0.01em' }}>{title}</p>
+      <span style={{ flex: 1, height: '1px', background: dark ? 'rgba(166,137,102,0.4)' : 'rgba(166,137,102,0.22)' }} />
     </div>
   )
 }
@@ -81,9 +81,9 @@ function DateQuickChips({ value, onChange }: { value: string; onChange: (d: stri
         return (
           <button key={c.label} type="button" onClick={() => onChange(c.d)} style={{
             padding: '11px 16px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
-            border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.25)',
-            background: sel ? 'var(--charcoal)' : 'rgba(255,255,255,0.7)',
-            color: sel ? 'var(--cream)' : 'var(--charcoal)',
+            border: sel ? '1.5px solid #c4845a' : '1.5px solid rgba(251,249,244,0.22)',
+            background: sel ? '#c4845a' : 'rgba(251,249,244,0.07)',
+            color: sel ? '#fff' : 'rgba(251,249,244,0.88)',
             fontWeight: sel ? 600 : 400, transition: 'all 0.18s ease',
           }}>{c.label}</button>
         )
@@ -181,11 +181,11 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
 }
 
 // ── FieldLabel ────────────────────────────────────────────────────────
-function FieldLabel({ children, hint }: { children: React.ReactNode; hint?: string }) {
+function FieldLabel({ children, hint, dark }: { children: React.ReactNode; hint?: string; dark?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '12px' }}>
-      <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.04em', color: 'var(--charcoal)' }}>{children}</span>
-      {hint && <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)' }}>{hint}</span>}
+      <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.04em', color: dark ? 'rgba(251,249,244,0.92)' : 'var(--charcoal)' }}>{children}</span>
+      {hint && <span style={{ fontSize: '10px', color: dark ? 'rgba(251,249,244,0.45)' : 'rgba(44,40,37,0.4)' }}>{hint}</span>}
     </div>
   )
 }
@@ -236,8 +236,8 @@ function InlineCalendar({ providerId, value, onChange }: {
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.85)', border: '1.5px solid rgba(166,137,102,0.2)',
-      borderRadius: '16px', padding: '14px 12px', boxShadow: '0 2px 12px rgba(26,23,20,0.06)',
+      background: '#fffdf9', border: '1.5px solid rgba(166,137,102,0.25)',
+      borderRadius: '16px', padding: '14px 12px', boxShadow: '0 10px 32px rgba(0,0,0,0.28)',
     }}>
       <style>{`@keyframes cal-ripple { to { transform: scale(8); opacity: 0 } }`}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', padding: '0 4px' }}>
@@ -692,15 +692,15 @@ export default function BookPage() {
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 0' }}>
           <div className="w-5 h-5 rounded-full border-2 border-[rgba(166,137,102,0.20)] border-t-[#A68966] animate-spin" />
-          <span style={{ fontSize: '13px', color: 'rgba(44,40,37,0.65)' }}>查詢可用時段中</span>
+          <span style={{ fontSize: '13px', color: 'rgba(251,249,244,0.7)' }}>查詢可用時段中</span>
         </div>
       )
     }
 
     if (!slots.length) return (
-      <div style={{ padding: '14px 16px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '12px' }}>
-        <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.6)', lineHeight: 1.6 }}>這天已約滿或公休 🌙</p>
-        <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.45)', marginTop: '4px', lineHeight: 1.5 }}>請改選其他日期{nextAvailable ? '，或點上方「最快可預約」一鍵跳到最近時段' : ''}</p>
+      <div style={{ padding: '14px 16px', background: 'rgba(251,249,244,0.06)', border: '1px solid rgba(251,249,244,0.16)', borderRadius: '12px' }}>
+        <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.8)', lineHeight: 1.6 }}>這天已約滿或公休 🌙</p>
+        <p style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', marginTop: '4px', lineHeight: 1.5 }}>請改選其他日期{nextAvailable ? '，或點上方「最快可預約」一鍵跳到最近時段' : ''}</p>
       </div>
     )
 
@@ -732,16 +732,16 @@ export default function BookPage() {
                 position: 'relative', padding: '11px 4px',
                 borderRadius: '10px', fontSize: '14px',
                 cursor: 'pointer', fontVariantNumeric: 'tabular-nums',
-                border: isSelected ? '1.5px solid var(--charcoal)' : isWaitlistTarget ? '1.5px solid rgba(180,120,40,0.6)' : isBooked ? '1.5px dashed rgba(180,120,40,0.28)' : isHot ? '1.5px solid rgba(196,132,90,0.50)' : '1.5px solid rgba(166,137,102,0.18)',
-                background: isSelected ? 'var(--charcoal-deep)' : isWaitlistTarget ? 'rgba(180,120,40,0.12)' : isBooked ? 'rgba(180,120,40,0.04)' : isHot ? 'rgba(196,132,90,0.10)' : 'rgba(255,255,255,0.82)',
-                color: isSelected ? 'var(--cream)' : isBooked ? 'rgba(150,92,26,0.85)' : isHot ? '#b26f45' : 'var(--charcoal)',
-                boxShadow: isSelected ? '0 3px 12px rgba(26,23,20,0.18)' : isBooked ? 'none' : '0 1px 3px rgba(166,137,102,0.08)',
+                border: isSelected ? '1.5px solid var(--cream)' : isWaitlistTarget ? '1.5px solid rgba(217,154,110,0.7)' : isBooked ? '1.5px dashed rgba(217,154,110,0.3)' : isHot ? '1.5px solid rgba(217,154,110,0.55)' : '1.5px solid rgba(251,249,244,0.16)',
+                background: isSelected ? 'var(--cream)' : isWaitlistTarget ? 'rgba(196,132,90,0.2)' : isBooked ? 'rgba(251,249,244,0.03)' : isHot ? 'rgba(196,132,90,0.14)' : 'rgba(251,249,244,0.07)',
+                color: isSelected ? 'var(--charcoal-deep)' : isBooked ? 'rgba(251,249,244,0.38)' : isHot ? '#d99a6e' : 'rgba(251,249,244,0.9)',
+                boxShadow: isSelected ? '0 4px 16px rgba(0,0,0,0.3)' : 'none',
                 fontWeight: isSelected ? 600 : 400,
                 textDecoration: isBooked ? 'line-through' : 'none',
                 transition: 'background 0.15s, border-color 0.15s, color 0.15s',
               }}>
               {slot.time}
-              {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(160,100,30,0.65)', textDecoration: 'none' }}>候補</span>}
+              {isBooked && <span style={{ display: 'block', fontSize: '10px', marginTop: '2px', color: 'rgba(217,154,110,0.75)', textDecoration: 'none' }}>候補</span>}
               {isHot && !isSelected && !isBooked && (
                 <span style={{ position: 'absolute', top: '-6px', right: '-3px', background: '#c4845a', color: 'white', fontSize: '8px', padding: '2px 5px', borderRadius: '99px' }}>推薦</span>
               )}
@@ -754,9 +754,9 @@ export default function BookPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {hotCount > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(196,132,90,0.08)', border: '1px solid rgba(196,132,90,0.22)', borderRadius: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(196,132,90,0.13)', border: '1px solid rgba(196,132,90,0.32)', borderRadius: '10px' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c4845a', flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: '#c4845a' }}>橘色為設計師較有空的時段，預約這些服務更從容</span>
+            <span style={{ fontSize: '12px', color: '#d99a6e' }}>橘色為設計師較有空的時段，預約這些服務更從容</span>
           </div>
         )}
         {periods.map(([label, fn]) => {
@@ -766,23 +766,23 @@ export default function BookPage() {
             <div key={label}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--oak)' }}>{label}</span>
-                <span style={{ flex: 1, height: '1px', background: 'rgba(166,137,102,0.18)' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.35)' }}>{list.filter(s => s.status !== 'booked').length} 個可選</span>
+                <span style={{ flex: 1, height: '1px', background: 'rgba(251,249,244,0.14)' }} />
+                <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.45)' }}>{list.filter(s => s.status !== 'booked').length} 個可選</span>
               </div>
               {slotGrid(list)}
             </div>
           )
         })}
         {time && (
-          <div style={{ padding: '11px 18px', background: 'var(--charcoal-deep)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', animation: 'fadeUp 0.25s ease' }}>
-            <span style={{ fontSize: '11px', color: 'var(--oak)', flexShrink: 0 }}>已選擇</span>
-            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--cream)', fontWeight: 300, lineHeight: 1 }}>{time}{endTime && <span style={{ fontSize: '1rem', color: 'rgba(251,249,244,0.55)' }}> – {endTime}</span>}</span>
-            <span style={{ fontSize: '9px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.06em', flexShrink: 0 }}>{date}{service ? ` · 約 ${service.duration} 分` : ''}</span>
+          <div style={{ padding: '11px 18px', background: 'var(--oak)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', animation: 'fadeUp 0.25s ease' }}>
+            <span style={{ fontSize: '11px', color: 'rgba(26,23,20,0.75)', fontWeight: 600, flexShrink: 0 }}>已選擇</span>
+            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.9rem', color: 'var(--charcoal-deep)', fontWeight: 400, lineHeight: 1 }}>{time}{endTime && <span style={{ fontSize: '1rem', color: 'rgba(26,23,20,0.6)' }}> – {endTime}</span>}</span>
+            <span style={{ fontSize: '10px', color: 'rgba(26,23,20,0.65)', letterSpacing: '0.04em', flexShrink: 0 }}>{date}{service ? ` · 約 ${service.duration} 分` : ''}</span>
           </div>
         )}
         {waitlistSlot && !waitlistDone && (
-          <div style={{ padding: '14px 16px', background: 'rgba(180,120,40,0.07)', border: '1px solid rgba(180,120,40,0.2)', borderRadius: '12px' }}>
-            <p style={{ fontSize: '12px', color: '#8a5c20', marginBottom: '10px', lineHeight: 1.5 }}>加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。</p>
+          <div style={{ padding: '14px 16px', background: 'rgba(196,132,90,0.14)', border: '1px solid rgba(196,132,90,0.35)', borderRadius: '12px' }}>
+            <p style={{ fontSize: '12px', color: '#e8b48e', marginBottom: '10px', lineHeight: 1.5 }}>加入 <strong>{waitlistSlot}</strong> 候補名單？有人取消時將第一時間通知您。</p>
             <button type="button" disabled={waitlistSubmitting || !customerNameInput.trim()}
               onClick={async () => {
                 const wlName = customerNameInput.trim()
@@ -794,15 +794,15 @@ export default function BookPage() {
                   setWaitlistDone(true)
                 } finally { setWaitlistSubmitting(false) }
               }}
-              style={{ padding: '8px 20px', background: '#8a5c20', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+              style={{ padding: '8px 20px', background: '#c4845a', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
               {waitlistSubmitting ? '處理中…' : '確認加入候補'}
             </button>
-            <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(44,40,37,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
+            <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(251,249,244,0.5)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
           </div>
         )}
         {waitlistDone && (
-          <div style={{ padding: '12px 16px', background: 'rgba(34,180,100,0.08)', border: '1px solid rgba(34,180,100,0.2)', borderRadius: '12px', textAlign: 'center' }}>
-            <p style={{ fontSize: '12px', color: '#22b464', fontWeight: 500 }}>✓ 已加入候補名單，有空位時將立即通知您</p>
+          <div style={{ padding: '12px 16px', background: 'rgba(34,180,100,0.14)', border: '1px solid rgba(34,180,100,0.35)', borderRadius: '12px', textAlign: 'center' }}>
+            <p style={{ fontSize: '12px', color: '#4ade80', fontWeight: 500 }}>✓ 已加入候補名單，有空位時將立即通知您</p>
           </div>
         )}
       </div>
@@ -837,7 +837,7 @@ export default function BookPage() {
       <style>{`
         @keyframes marqueeBook { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-        .ch-panel { background: var(--sand-deep); border: 1px solid rgba(166,137,102,0.18); border-radius: 22px; padding: 26px 18px 28px; margin: 14px 0; }
+        .ch-panel { background: var(--charcoal-deep); border: 1px solid rgba(166,137,102,0.35); border-radius: 22px; padding: 26px 18px 28px; margin: 14px 0; box-shadow: 0 12px 36px rgba(26,23,20,0.18); }
       `}</style>
 
       {/* ── Sticky header + progress ─── */}
@@ -1033,12 +1033,12 @@ export default function BookPage() {
 
           {/* ════════════ Chapter 02 — 選擇時間（CSS order=1：先選時段，再填資料）════════════ */}
           <div className="ch-panel" style={{ order: 1 }}>
-            <ChapterHeader no="01" eyebrow="Pick a time" title="選擇時間" />
+            <ChapterHeader title="選擇時間" dark />
 
             {/* Date section */}
             <div style={{ marginBottom: '22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <FieldLabel>日期</FieldLabel>
+                <FieldLabel dark>日期</FieldLabel>
                 {nextAvailable && (
                   <button type="button"
                     onClick={() => {
@@ -1046,7 +1046,7 @@ export default function BookPage() {
                       setTime(nextAvailable.time)
                       setTimeout(() => timeRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }), 700)
                     }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.3)', fontSize: '11px', fontWeight: 600, color: 'var(--oak)', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(196,132,90,0.16)', border: '1px solid rgba(196,132,90,0.55)', fontSize: '11px', fontWeight: 600, color: '#d99a6e', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     <svg viewBox="0 0 12 12" fill="currentColor" style={{ width: '10px', height: '10px' }}><path d="M6 1l1.2 2.4L10 4l-2 1.95.47 2.75L6 7.4l-2.47 1.3.47-2.75L2 4l2.8-.6z"/></svg>
                     最快 {nextAvailable.label} {nextAvailable.time}
                   </button>
@@ -1059,13 +1059,13 @@ export default function BookPage() {
             {/* Time slots */}
             <div ref={timeRef}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <FieldLabel>時段</FieldLabel>
+                <FieldLabel dark>時段</FieldLabel>
                 {date && !loadingSlots && slots.length > 0 && (
                   <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.4)' }}>{slots.filter(s => s.status !== 'booked').length} 個可選</span>
                 )}
               </div>
               {!date ? (
-                <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)', padding: '8px 0' }}>請先選擇日期</p>
+                <p style={{ fontSize: '12px', color: 'rgba(251,249,244,0.5)', padding: '8px 0' }}>請先選擇日期</p>
               ) : renderSlots()}
             </div>
           </div>
@@ -1082,7 +1082,7 @@ export default function BookPage() {
               style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid rgba(166,137,102,0.22)', background: 'rgba(255,255,255,0.78)', fontSize: '14px', color: 'var(--charcoal)', outline: 'none', resize: 'none', fontFamily: 'inherit', lineHeight: 1.6, marginBottom: '20px' }} />
 
             {/* Summary recap */}
-            <div style={{ background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '14px', padding: '16px 18px' }}>
+            <div style={{ background: 'var(--sand-deep)', border: '1px solid rgba(166,137,102,0.28)', borderRadius: '14px', padding: '16px 18px' }}>
               <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '12px' }}>預約摘要</p>
               {[
                 ['服務', service.name],
