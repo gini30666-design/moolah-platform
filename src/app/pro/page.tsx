@@ -73,55 +73,85 @@ export default function ProLandingPage() {
           </div>
         </section>
 
-        {/* ══════ 痛點 → 解法（精選 4，不倒 9 個功能）══════ */}
-        <section style={{ padding: '56px 22px 40px', maxWidth: '620px', margin: '0 auto' }}>
-          <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.7rem, 6vw, 2.3rem)', fontWeight: 400, color: charcoal, textAlign: 'center', marginBottom: '32px', lineHeight: 1.3 }}>
-            你每天煩的事，<br />它都幫你接住了
+        {/* ══════ 痛點 → 解法（緊湊掃讀、有圖示、破單調白卡）══════ */}
+        <section style={{ padding: '48px 22px 42px', maxWidth: '600px', margin: '0 auto' }}>
+          <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem, 5.5vw, 2.1rem)', fontWeight: 400, color: charcoal, textAlign: 'center', marginBottom: '8px', lineHeight: 1.3 }}>
+            你每天煩的事，它都接住了
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.5)', textAlign: 'center', marginBottom: '26px' }}>左邊是現在，右邊是用了之後</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {[
-              ['做到一半 LINE 一直跳、常常漏單', '客人自己線上約，時段自動排好、不再漏接'],
-              ['客人放鳥（no-show）白等一場', '系統前一天自動 LINE 提醒，準時赴約'],
-              ['IG 接案要客人一直私訊喬時間', '專屬預約頁貼 IG bio，客人點一下就約'],
-              ['不會用電腦、不想學新軟體', 'LINE 一句話操作，零學習門檻'],
-            ].map(([pain, sol], i) => (
-              <div key={i} style={{ background: 'white', borderRadius: '16px', padding: '18px 20px', border: `1px solid ${oak}22`, boxShadow: '0 1px 8px rgba(26,23,20,0.04)' }}>
-                <p style={{ fontSize: '13px', color: '#b4533a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  <span style={{ flexShrink: 0 }}>✕</span>{pain}
-                </p>
-                <p style={{ fontSize: '15px', color: charcoal, fontWeight: 600, lineHeight: 1.6, display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: oak, flexShrink: 0 }}>→</span>{sol}
-                </p>
+              ['📱', 'LINE 訊息淹沒、常漏單', '客人自己約，時段自動排好'],
+              ['🕐', '客人放鳥、白等一場', '前一天自動提醒，準時赴約'],
+              ['🔗', 'IG 接案一直私訊喬時間', '預約頁貼 bio，點一下就約'],
+              ['✨', '不會電腦、不想學軟體', 'LINE 一句話操作，零門檻'],
+            ].map(([icon, pain, sol], i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'stretch', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${oak}22` }}>
+                {/* 左：痛（淡紅底、劃掉感）*/}
+                <div style={{ flex: 1, background: 'rgba(180,83,58,0.06)', padding: '15px 14px', display: 'flex', alignItems: 'center', gap: '8px', borderRight: `1px solid ${oak}18` }}>
+                  <span style={{ fontSize: '17px', flexShrink: 0, filter: 'grayscale(0.3)', opacity: 0.85 }}>{icon}</span>
+                  <span style={{ fontSize: '12.5px', color: 'rgba(120,60,48,0.85)', lineHeight: 1.45, textDecoration: 'line-through', textDecorationColor: 'rgba(180,83,58,0.4)' }}>{pain}</span>
+                </div>
+                {/* 右：解（橡木金強調）*/}
+                <div style={{ flex: 1.05, background: 'white', padding: '15px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ color: oak, fontSize: '15px', flexShrink: 0, fontWeight: 700 }}>→</span>
+                  <span style={{ fontSize: '13px', color: charcoal, fontWeight: 600, lineHeight: 1.45 }}>{sol}</span>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ══════ 產品證明：看它真的長怎樣 ══════ */}
-        <section style={{ padding: '20px 22px 48px', maxWidth: '620px', margin: '0 auto' }}>
-          <div style={{ background: charcoalDeep, borderRadius: '22px', padding: '30px 26px', textAlign: 'center', color: cream, position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.6rem', fontWeight: 300, marginBottom: '10px' }}>不用想像，直接看</p>
-            <p style={{ fontSize: '13.5px', color: 'rgba(251,249,244,0.6)', lineHeight: 1.75, marginBottom: '22px' }}>
-              這是一位合作職人的真實預約頁——<br />作品集、服務價格、可約時段，客人在 LINE 裡就能完成預約。
+        {/* ══════ 產品證明：主動秀真實截圖（不只給連結）══════ */}
+        <section style={{ padding: '30px 0 48px', background: charcoalDeep, color: cream, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
+          <div style={{ textAlign: 'center', padding: '10px 24px 22px', maxWidth: '600px', margin: '0 auto' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem, 6vw, 2.1rem)', fontWeight: 300, marginBottom: '8px' }}>你的客人，會看到這個</p>
+            <p style={{ fontSize: '13.5px', color: 'rgba(251,249,244,0.6)', lineHeight: 1.7 }}>
+              選服務、挑時段、送出——全程在 LINE 裡完成，不用下載 App。
             </p>
+          </div>
+          {/* 兩張真實手機截圖橫向排 */}
+          <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', padding: '4px 24px 6px', scrollSnapType: 'x proximity', WebkitOverflowScrolling: 'touch' }}>
+            {[
+              { src: '/pro-screen-1.jpg', cap: '選服務・看價格' },
+              { src: '/pro-screen-2.jpg', cap: '挑喜歡的時段' },
+            ].map(s => (
+              <figure key={s.src} style={{ flex: '0 0 auto', width: '210px', scrollSnapAlign: 'center', margin: 0 }}>
+                <div style={{ borderRadius: '20px', overflow: 'hidden', border: `1px solid rgba(166,137,102,0.35)`, boxShadow: '0 12px 34px rgba(0,0,0,0.4)' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.src} alt={s.cap} style={{ width: '100%', display: 'block' }} />
+                </div>
+                <figcaption style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', textAlign: 'center', marginTop: '10px' }}>{s.cap}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <a href={DEMO_URL} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: oak, color: charcoalDeep, padding: '13px 26px', borderRadius: '12px', fontSize: '14px', fontWeight: 700, textDecoration: 'none' }}>
-              看真實範例頁 →
+              親手體驗真實範例頁 →
             </a>
           </div>
         </section>
 
-        {/* ══════ 定價（誠實・無假數據）══════ */}
+        {/* ══════ 定價：免費試用為主角、699 為次要（降低衝動客的價格戒心）══════ */}
         <section style={{ padding: '20px 22px 52px', maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ background: sand, borderRadius: '22px', padding: '36px 28px', border: `1px solid ${oak}30` }}>
-            <p style={{ fontSize: '13px', color: oak, fontWeight: 600, marginBottom: '14px' }}>標準方案・先免費試用</p>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(2.8rem, 12vw, 4rem)', fontWeight: 300, color: charcoal, lineHeight: 1, marginBottom: '8px' }}>
-              NT$ 699<span style={{ fontSize: '0.35em', color: 'rgba(44,40,37,0.5)' }}> / 月</span>
+          <div style={{ background: charcoalDeep, color: cream, borderRadius: '22px', padding: '38px 28px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
+            {/* 主角：免費試用 */}
+            <span style={{ display: 'inline-block', fontSize: '12px', fontWeight: 700, color: charcoalDeep, background: oak, padding: '6px 16px', borderRadius: '99px', marginBottom: '18px', letterSpacing: '0.04em' }}>限時開放</span>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(2.6rem, 11vw, 3.8rem)', fontWeight: 300, color: cream, lineHeight: 1.05, marginBottom: '10px' }}>
+              先<span style={{ color: oak, fontStyle: 'italic' }}>免費</span>試用<br />全部功能
             </p>
-            <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.55)', marginBottom: '24px' }}>先免費試用全功能，喜歡再留下</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', textAlign: 'left' }}>
-              {['✓ 0% 抽佣，永不抽成', '✓ 不綁約、無解約金', '✓ 免費客製立牌', '✓ 24 小時內上線'].map(t => (
-                <p key={t} style={{ fontSize: '13px', color: charcoal, padding: '10px 12px', background: 'rgba(166,137,102,0.1)', borderRadius: '10px', lineHeight: 1.5 }}>{t}</p>
+            <p style={{ fontSize: '13.5px', color: 'rgba(251,249,244,0.6)', marginBottom: '22px', lineHeight: 1.7 }}>
+              專屬預約頁、自動提醒、後台管理，<br />先用起來，喜歡再留下。
+            </p>
+            {/* 次要：699 一行帶過 */}
+            <p style={{ fontSize: '12.5px', color: 'rgba(251,249,244,0.42)', marginBottom: '26px' }}>
+              試用後 NT$699／月・0 抽佣・不綁約・隨時可停
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', textAlign: 'left' }}>
+              {['✓ 0% 抽佣', '✓ 不綁約無解約金', '✓ 免費客製立牌', '✓ 24h 上線'].map(t => (
+                <p key={t} style={{ fontSize: '12.5px', color: 'rgba(251,249,244,0.82)', padding: '10px 12px', background: 'rgba(166,137,102,0.14)', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.22)' }}>{t}</p>
               ))}
             </div>
           </div>
