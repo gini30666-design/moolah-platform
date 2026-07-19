@@ -62,7 +62,7 @@ const ORG_SCHEMA = {
       '@id': `${BASE_URL}/#website`,
       url: BASE_URL,
       name: 'MooLah',
-      description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。',
+      description: '為台灣個人工作室與美業職人打造的預約系統。採耳、做臉、按摩、美甲、美髮，透過 LINE 輕鬆預約。',
       publisher: { '@id': `${BASE_URL}/#organization` },
       inLanguage: 'zh-Hant-TW',
       potentialAction: {
@@ -80,8 +80,8 @@ const ORG_SCHEMA = {
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: { default: 'MooLah — 質感生活 從容預約', template: '%s | MooLah' },
-  description: '台灣美業智慧預約平台。髮型設計師、寵物美容、汽車美容、美甲師，透過 LINE 輕鬆預約，雙向即時通知。',
-  keywords: ['預約', '髮型設計師', '寵物美容', '汽車美容', '美甲', 'LINE 預約', '台灣', '高雄', 'MooLah'],
+  description: '為台灣個人工作室打造的預約系統。採耳、做臉、按摩、美甲、美髮，透過 LINE 輕鬆預約，雙向即時通知。',
+  keywords: ['個人工作室預約', '採耳預約', '做臉預約', '按摩預約', '美甲預約', '美業預約系統', 'LINE 預約', '台灣', 'MooLah'],
   authors: [{ name: 'MooLah', url: BASE_URL }],
   manifest: '/manifest.json',
   appleWebApp: {
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'MooLah — 質感生活 從容預約',
-    description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。',
+    description: '為台灣個人工作室打造的預約系統。採耳、做臉、按摩、美甲、美髮，透過 LINE 一鍵預約。',
     siteName: 'MooLah',
     url: BASE_URL,
     type: 'website',

@@ -10,16 +10,16 @@ import SiteFooter from '@/components/SiteFooter'
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export const metadata: Metadata = {
-  title: 'MooLah — 台灣美業智慧預約平台 | 髮型設計師、寵物美容、美甲線上預約',
-  description: '台灣美業智慧預約平台，高雄、台南、台中、台北均有合作職人。髮型設計師、寵物美容師、汽車美容師、美甲師，透過 LINE 一鍵預約，雙向即時通知，零 App 安裝。',
-  keywords: ['台灣美業預約', '髮型設計師預約', '寵物美容預約', '汽車美容預約', '美甲預約', 'LINE 預約', '高雄美容預約', '美業平台'],
+  title: 'MooLah — 台灣個人工作室預約系統 | 採耳、做臉、按摩、美甲線上預約',
+  description: '為台灣個人工作室與美業職人打造的智慧預約系統。採耳、做臉清粉刺、按摩舒壓、美甲、美髮，透過 LINE 一鍵預約，雙向即時通知、零 App 安裝。全台合作職人。',
+  keywords: ['個人工作室預約', '採耳預約', '做臉預約', '按摩預約', '美甲預約', '美業預約系統', 'LINE 預約', '工作室接單', '美業平台'],
   alternates: {
     canonical: BASE_URL,
     languages: { 'zh-Hant-TW': BASE_URL, 'x-default': BASE_URL },
   },
   openGraph: {
     title: 'MooLah — 質感生活，從容預約',
-    description: '台灣美業智慧預約平台，透過 LINE 輕鬆預約髮型設計師、寵物美容、汽車美容、美甲師。高雄、台南、台中、台北均有合作職人。',
+    description: '為台灣個人工作室打造的預約系統。採耳、做臉、按摩、美甲、美髮，透過 LINE 一鍵預約。全台合作職人。',
     url: BASE_URL,
   },
 }
