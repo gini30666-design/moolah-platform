@@ -963,7 +963,7 @@ export default function BookPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
 
           {/* ════════════ Chapter 01 — 關於你（CSS order=2：視覺上排在「選擇時間」之後）════════════ */}
-          <div style={{ margin: '14px 0', order: 2 }}>
+          <div data-animate style={{ margin: '14px 0', order: 2 }}>
             <ChapterHeader no="02" eyebrow="About you" title="關於你" />
 
             {/* 稱呼 + 電話：一律必填（給設計師的聯絡資訊），不論是否抓到 LINE */}
@@ -1071,7 +1071,7 @@ export default function BookPage() {
           </div>
 
           {/* ════════════ Chapter 03 — 給設計師的話（order=3）════════════ */}
-          <div style={{ margin: '14px 0', order: 3 }}>
+          <div data-animate style={{ margin: '14px 0', order: 3 }}>
             <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
 
             <FieldLabel hint="選填">快速標籤</FieldLabel>

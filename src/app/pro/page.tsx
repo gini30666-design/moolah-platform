@@ -74,7 +74,7 @@ export default function ProLandingPage() {
         </section>
 
         {/* ══════ 痛點 → 解法（緊湊掃讀、有圖示、破單調白卡）══════ */}
-        <section style={{ padding: '48px 22px 42px', maxWidth: '600px', margin: '0 auto' }}>
+        <section data-animate style={{ padding: '48px 22px 42px', maxWidth: '600px', margin: '0 auto' }}>
           <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem, 5.5vw, 2.1rem)', fontWeight: 400, color: charcoal, textAlign: 'center', marginBottom: '8px', lineHeight: 1.3 }}>
             你每天煩的事，它都接住了
           </h2>
@@ -86,7 +86,7 @@ export default function ProLandingPage() {
               ['🔗', 'IG 接案一直私訊喬時間', '預約頁貼 bio，點一下就約'],
               ['✨', '不會電腦、不想學軟體', 'LINE 一句話操作，零門檻'],
             ].map(([icon, pain, sol], i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'stretch', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${oak}22` }}>
+              <div key={i} data-animate data-delay={String(i * 100)} style={{ display: 'flex', alignItems: 'stretch', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${oak}22` }}>
                 {/* 左：痛（淡紅底、劃掉感）*/}
                 <div style={{ flex: 1, background: 'rgba(180,83,58,0.06)', padding: '15px 14px', display: 'flex', alignItems: 'center', gap: '8px', borderRight: `1px solid ${oak}18` }}>
                   <span style={{ fontSize: '17px', flexShrink: 0, filter: 'grayscale(0.3)', opacity: 0.85 }}>{icon}</span>
@@ -103,7 +103,7 @@ export default function ProLandingPage() {
         </section>
 
         {/* ══════ 產品證明：主動秀真實截圖（不只給連結）══════ */}
-        <section style={{ padding: '30px 0 48px', background: charcoalDeep, color: cream, position: 'relative', overflow: 'hidden' }}>
+        <section data-animate style={{ padding: '30px 0 48px', background: charcoalDeep, color: cream, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
           <div style={{ textAlign: 'center', padding: '10px 24px 22px', maxWidth: '600px', margin: '0 auto' }}>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem, 6vw, 2.1rem)', fontWeight: 300, marginBottom: '8px' }}>你的客人，會看到這個</p>
@@ -134,7 +134,7 @@ export default function ProLandingPage() {
         </section>
 
         {/* ══════ 定價：免費試用為主角、699 為次要（降低衝動客的價格戒心）══════ */}
-        <section style={{ padding: '20px 22px 52px', maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
+        <section data-animate data-dir="scale" style={{ padding: '20px 22px 52px', maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{ background: charcoalDeep, color: cream, borderRadius: '22px', padding: '38px 28px', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
             {/* 主角：免費試用 */}
@@ -158,7 +158,7 @@ export default function ProLandingPage() {
         </section>
 
         {/* ══════ 最終 CTA：LINE 主 + 表單次 ══════ */}
-        <section id="apply" style={{ padding: '10px 22px 60px', maxWidth: '620px', margin: '0 auto' }}>
+        <section id="apply" data-animate style={{ padding: '10px 22px 60px', maxWidth: '620px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.7rem, 6vw, 2.3rem)', fontWeight: 400, color: charcoal, lineHeight: 1.3, marginBottom: '10px' }}>
               30 秒開通，今天就能接單
@@ -181,7 +181,7 @@ export default function ProLandingPage() {
         </section>
 
         {/* ══════ 你的專屬窗口：實體名片質感 + 一句承諾（一人公司的信任武器）══════ */}
-        <section style={{ padding: '8px 22px 64px', maxWidth: '520px', margin: '0 auto' }}>
+        <section data-animate data-dir="scale" style={{ padding: '8px 22px 64px', maxWidth: '520px', margin: '0 auto' }}>
           <p style={{ fontSize: '13.5px', color: 'rgba(44,40,37,0.6)', textAlign: 'center', lineHeight: 1.8, marginBottom: '22px' }}>
             你不是面對一套冷冰冰的系統。<br />
             <span style={{ color: charcoal, fontWeight: 600 }}>合作後，我就是你的專屬窗口——有任何問題，直接敲我。</span>

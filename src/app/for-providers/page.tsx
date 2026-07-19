@@ -151,7 +151,7 @@ export default function ForProvidersPage() {
         </section>
 
         {/* Pain Points → Solutions */}
-        <section style={{ padding: '70px 24px 40px', maxWidth: '980px', margin: '0 auto' }}>
+        <section data-animate style={{ padding: '70px 24px 40px', maxWidth: '980px', margin: '0 auto' }}>
           <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', textAlign: 'center', marginBottom: '16px' }}>YOUR PAIN, OUR SOLUTION</p>
           <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: charcoal, textAlign: 'center', marginBottom: '40px', fontWeight: 400 }}>
             你每天遇到的事，我們已經幫你想好了
@@ -172,7 +172,7 @@ export default function ForProvidersPage() {
         </section>
 
         {/* Features */}
-        <section id="features" style={{ padding: '60px 24px', background: sand }}>
+        <section id="features" data-animate style={{ padding: '60px 24px', background: sand }}>
           <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
             <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', textAlign: 'center', marginBottom: '16px' }}>FEATURES</p>
             <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: charcoal, textAlign: 'center', marginBottom: '12px', fontWeight: 400 }}>
@@ -204,7 +204,7 @@ export default function ForProvidersPage() {
         </section>
 
         {/* Pricing */}
-        <section style={{ padding: '60px 24px', background: cream }}>
+        <section data-animate style={{ padding: '60px 24px', background: cream }}>
           <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
             <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', marginBottom: '14px' }}>PRICING</p>
             <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: charcoal, marginBottom: '32px', fontWeight: 400 }}>
@@ -230,7 +230,7 @@ export default function ForProvidersPage() {
         </section>
 
         {/* Apply Form + LINE QR */}
-        <section id="apply" style={{ padding: '70px 24px', background: sand }}>
+        <section id="apply" data-animate style={{ padding: '70px 24px', background: sand }}>
           <div style={{ maxWidth: '1080px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
             <div>
               <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', marginBottom: '14px' }}>FREE TRIAL</p>
@@ -267,7 +267,7 @@ export default function ForProvidersPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ padding: '60px 24px 80px', maxWidth: '760px', margin: '0 auto' }}>
+        <section data-animate style={{ padding: '60px 24px 80px', maxWidth: '760px', margin: '0 auto' }}>
           <p style={{ fontSize: '11px', letterSpacing: '0.28em', color: oak, textTransform: 'uppercase', textAlign: 'center', marginBottom: '14px' }}>FAQ</p>
           <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.8rem,4vw,2.6rem)', color: charcoal, textAlign: 'center', marginBottom: '32px', fontWeight: 400 }}>
             常見問題

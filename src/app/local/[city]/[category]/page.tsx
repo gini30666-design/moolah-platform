@@ -124,8 +124,8 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
           </h2>
           {providers.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {providers.map(p => (
-                <Link key={p.id} href={`/${p.id}`}
+              {providers.map((p, i) => (
+                <Link key={p.id} href={`/${p.id}`} data-animate data-delay={String(Math.min(i, 5) * 80)}
                   className="block rounded-2xl p-5 transition-transform hover:-translate-y-0.5"
                   style={{ background: 'rgba(251,249,244,0.04)', border: '1px solid rgba(166,137,102,0.22)' }}>
                   <div className="flex items-center justify-between mb-1">
@@ -154,7 +154,7 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
         </section>
 
         {/* Why MooLah */}
-        <section className="mb-12">
+        <section data-animate className="mb-12">
           <h2 className="font-display text-xl mb-5" style={{ color: 'var(--cream)' }}>為什麼用 MooLah 預約？</h2>
           <ul className="flex flex-col gap-3 text-sm" style={{ color: 'rgba(251,249,244,0.7)' }}>
             <li>✓ <strong style={{ color: 'var(--cream)' }}>LINE 直接預約</strong>——不用下載 App、不用註冊帳號</li>
@@ -165,7 +165,7 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
         </section>
 
         {/* FAQ */}
-        <section className="mb-12">
+        <section data-animate className="mb-12">
           <h2 className="font-display text-xl mb-5" style={{ color: 'var(--cream)' }}>{c.name}{k.short}常見問題</h2>
           <div className="flex flex-col gap-5">
             {k.faq.map((f, i) => (
@@ -178,7 +178,7 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
         </section>
 
         {/* Cross links */}
-        <section className="mb-12">
+        <section data-animate className="mb-12">
           <h2 className="text-xs tracking-[.2em] uppercase mb-4" style={{ color: 'rgba(251,249,244,0.4)' }}>其他地區與服務</h2>
           <div className="flex flex-wrap gap-2">
             {otherCombos.map(([ct, cat]) => (
@@ -192,7 +192,7 @@ export default async function LocalCategoryPage({ params }: { params: Promise<Pa
         </section>
 
         {/* Provider CTA */}
-        <section className="rounded-2xl p-6 text-center" style={{ background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.25)' }}>
+        <section data-animate data-dir="scale" className="rounded-2xl p-6 text-center" style={{ background: 'rgba(166,137,102,0.1)', border: '1px solid rgba(166,137,102,0.25)' }}>
           <p className="font-display text-lg mb-2" style={{ color: 'var(--cream)' }}>你是{c.name}的{k.name}嗎？</p>
           <p className="text-sm mb-4" style={{ color: 'rgba(251,249,244,0.65)' }}>
             加入 MooLah，讓客人在 LINE 直接預約你的時段。14 天免費試用、0 抽佣、不綁約。
