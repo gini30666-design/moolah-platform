@@ -20,8 +20,8 @@ export default function JoinForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.name.trim() || !form.category || !form.district || !form.contact.trim()) {
-      setError('請填寫所有必填欄位'); return
+    if (!form.name.trim() || !form.contact.trim()) {
+      setError('請留下稱呼與聯絡方式，我們就能聯絡你'); return
     }
     setStatus('loading'); setError('')
     try {
@@ -106,9 +106,21 @@ export default function JoinForm() {
         />
       </div>
 
+      {/* Contact */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={labelStyle}>LINE ID 或電話 *</label>
+        <input
+          type="text" placeholder="LINE ID 或 09xx-xxx-xxx"
+          value={form.contact} onChange={e => set('contact', e.target.value)}
+          style={inputStyle}
+          onFocus={e => (e.target.style.borderColor = 'var(--oak)')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(166,137,102,0.25)')}
+        />
+      </div>
+
       {/* Category */}
       <div style={{ marginBottom: '20px' }}>
-        <label style={labelStyle}>服務類別 *</label>
+        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.45)' }}>服務類別（選填）</label>
         <div style={pillGroupStyle}>
           {CATEGORIES.map(c => (
             <button key={c} type="button" onClick={() => set('category', c)} style={{
@@ -124,7 +136,7 @@ export default function JoinForm() {
 
       {/* District */}
       <div style={{ marginBottom: '20px' }}>
-        <label style={labelStyle}>所在地區 *</label>
+        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.45)' }}>所在地區（選填）</label>
         <div style={pillGroupStyle}>
           {DISTRICTS.map(d => (
             <button key={d} type="button" onClick={() => set('district', d)} style={{
@@ -136,18 +148,6 @@ export default function JoinForm() {
             }}>{d}</button>
           ))}
         </div>
-      </div>
-
-      {/* Contact */}
-      <div style={{ marginBottom: '20px' }}>
-        <label style={labelStyle}>LINE ID 或電話 *</label>
-        <input
-          type="text" placeholder="LINE ID 或 09xx-xxx-xxx"
-          value={form.contact} onChange={e => set('contact', e.target.value)}
-          style={inputStyle}
-          onFocus={e => (e.target.style.borderColor = 'var(--oak)')}
-          onBlur={e => (e.target.style.borderColor = 'rgba(166,137,102,0.25)')}
-        />
       </div>
 
       {/* Current method */}
