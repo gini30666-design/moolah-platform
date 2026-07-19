@@ -180,6 +180,51 @@ export default function ProLandingPage() {
           </div>
         </section>
 
+        {/* ══════ 你的專屬窗口：實體名片質感 + 一句承諾（一人公司的信任武器）══════ */}
+        <section style={{ padding: '8px 22px 64px', maxWidth: '520px', margin: '0 auto' }}>
+          <p style={{ fontSize: '13.5px', color: 'rgba(44,40,37,0.6)', textAlign: 'center', lineHeight: 1.8, marginBottom: '22px' }}>
+            你不是面對一套冷冰冰的系統。<br />
+            <span style={{ color: charcoal, fontWeight: 600 }}>合作後，我就是你的專屬窗口——有任何問題，直接敲我。</span>
+          </p>
+
+          {/* 名片 */}
+          <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 18px 44px rgba(26,23,20,0.22)', border: `1px solid ${oak}30` }}>
+            {/* 深炭品牌面 */}
+            <div style={{ position: 'relative', background: charcoalDeep, padding: '26px 24px 22px', textAlign: 'center' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />
+              <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '26px', fontWeight: 500, letterSpacing: '0.5em', textIndent: '0.5em', color: 'rgba(251,249,244,0.9)' }}>MOOLAH</div>
+              <div style={{ fontSize: '9.5px', fontWeight: 300, letterSpacing: '0.35em', textIndent: '0.35em', textTransform: 'uppercase', color: 'rgba(166,137,102,0.7)', marginTop: '7px' }}>Booking Service</div>
+            </div>
+            {/* 米白聯絡面 */}
+            <div style={{ background: cream, padding: '24px 24px 22px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '16px' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '34px', fontWeight: 500, color: charcoal, lineHeight: 1 }}>Gini</div>
+                <div style={{ fontSize: '11px', color: oak, letterSpacing: '0.06em', marginTop: '8px', marginBottom: '16px' }}>MooLah・專屬合作窗口</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                  <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.3)', letterSpacing: '0.05em' }}>LINE</span>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: charcoal }}>@492ejbwx</span>
+                </div>
+              </div>
+              {/* QR → 接待 OA */}
+              <div style={{ flexShrink: 0, textAlign: 'center' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fline.me%2FR%2Fti%2Fp%2F%40492ejbwx&bgcolor=fbf9f4&color=2C2825&margin=0"
+                  alt="加 LINE @492ejbwx"
+                  style={{ width: '76px', height: '76px', display: 'block', borderRadius: '6px', border: `1px solid ${oak}30`, padding: '4px', background: '#fff' }}
+                />
+                <div style={{ fontSize: '9px', color: 'rgba(44,40,37,0.35)', letterSpacing: '0.14em', textTransform: 'uppercase', marginTop: '6px' }}>Add LINE</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 名片下方 LINE 綠鈕（一鍵加，不用掃）*/}
+          <a href={LINE_URL} target="_blank" rel="noopener noreferrer"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '9px', background: '#06C755', color: '#fff', padding: '15px 24px', borderRadius: '13px', fontSize: '15px', fontWeight: 700, textDecoration: 'none', marginTop: '18px', boxShadow: '0 8px 24px rgba(6,199,85,0.3)' }}>
+            <LineIcon size={18} /> 直接加 Gini 的 LINE
+          </a>
+        </section>
+
       </main>
       <SiteFooter />
       <StickyTrialCTA />
