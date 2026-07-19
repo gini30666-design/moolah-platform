@@ -1089,14 +1089,14 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
-        {/* 右上：刷新（不整頁 reload）+ 預覽預約頁 */}
+        {/* 右上：刷新（不整頁 reload）+ 預覽（消費者視角＝職人首頁起點）*/}
         <style>{`@keyframes adminSpin { to { transform: rotate(360deg) } }`}</style>
         <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 3, display: 'flex', gap: '8px' }}>
           <button onClick={refreshAll} disabled={refreshing}
             style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', padding: '7px 12px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)', opacity: refreshing ? 0.6 : 1 }}>
             <span style={{ display: 'inline-block', animation: refreshing ? 'adminSpin 0.8s linear infinite' : 'none' }}>↻</span>{refreshing ? '更新中' : '刷新'}
           </button>
-          <button onClick={() => { const url = `${window.location.origin}/${providerId}/book`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
+          <button onClick={() => { const url = `${window.location.origin}/${providerId}`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em', padding: '7px 13px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
             <span style={{ fontSize: '13px' }}>👁</span> 預覽
           </button>

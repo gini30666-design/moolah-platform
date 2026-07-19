@@ -117,7 +117,7 @@ if __name__ == "__main__":
     if a.url:
         url = a.url
     elif a.provider:
-        url = f"https://liff.line.me/{a.liff}?to=/{a.provider}/book"
+        url = f"https://liff.line.me/{a.liff}?to=/{a.provider}"  # 掃碼先到職人首頁（2026-07-19 流程定案）
     elif a.short:
         url = BASE_URL + a.short
     else:

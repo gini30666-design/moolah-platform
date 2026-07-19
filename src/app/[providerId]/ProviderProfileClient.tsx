@@ -467,6 +467,20 @@ export default function ProviderPage() {
           </div>
 
           <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.32)', marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
+
+          {/* 頁內預約 CTA（不只靠底部浮動鈕，內容流裡也給明確入口）*/}
+          <button onClick={handleBook} style={{
+            marginTop: '20px', width: '100%', maxWidth: '320px', padding: '16px',
+            borderRadius: '14px', border: 'none', cursor: 'pointer',
+            background: 'var(--oak)', color: 'var(--charcoal-deep)',
+            fontSize: '15px', fontWeight: 700, letterSpacing: '0.02em',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            boxShadow: '0 6px 22px rgba(166,137,102,0.35)',
+          }}>
+            開始預約
+            {fromPrice > 0 && <span style={{ fontSize: '12px', fontWeight: 500, opacity: 0.75 }}>NT$ {fromPrice.toLocaleString()} 起</span>}
+            <span style={{ fontSize: '16px' }}>→</span>
+          </button>
         </div>
       </div>
 

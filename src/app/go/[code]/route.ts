@@ -17,7 +17,8 @@ export async function GET(
   }
 
   const providerId = match[0]
-  const path = `/${providerId}/book`
+  // 消費者旅程：掃碼先到職人首頁（作品集+介紹）→ 再點「開始預約」進 book（Gini 2026-07-19 定案）
+  const path = `/${providerId}`
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID
   const webUrl = new URL(path, req.url).toString()
   // Endpoint URL 是 /dashboard，靠 ?to= 由 dashboard 轉址（消費者會被導到目標頁）
