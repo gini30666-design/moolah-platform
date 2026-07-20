@@ -127,7 +127,7 @@ export default function ForProvidersPage() {
           <p style={{ fontSize: '11px', letterSpacing: '0.3em', color: oak, textTransform: 'uppercase', marginBottom: '16px' }}>FOR BEAUTY PROFESSIONALS</p>
           <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(2.4rem,7vw,4.5rem)', fontWeight: 300, lineHeight: 1.15, marginBottom: '20px', letterSpacing: '-0.01em' }}>
             為台灣美業職人<br/>
-            <span style={{ fontStyle: 'italic', color: oak }}>量身打造</span>的智慧預約平台
+            <span style={{ fontStyle: 'italic', color: oak }}>量身打造</span>的智慧預約系統
           </h1>
           <p style={{ fontSize: 'clamp(15px,2.2vw,18px)', color: 'rgba(251,249,244,0.65)', maxWidth: '640px', margin: '0 auto 32px', lineHeight: 1.8 }}>
             告別 LINE 個人帳號的亂、紙本排程的累<br/>
