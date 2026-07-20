@@ -108,7 +108,7 @@ export default function ProLandingPage() {
           <div style={{ textAlign: 'center', padding: '10px 24px 22px', maxWidth: '600px', margin: '0 auto' }}>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem, 6vw, 2.1rem)', fontWeight: 300, marginBottom: '8px' }}>你的客人，會看到這個</p>
             <p style={{ fontSize: '13.5px', color: 'rgba(251,249,244,0.6)', lineHeight: 1.7 }}>
-              選服務、挑時段、送出——全程在 LINE 裡完成，不用下載 App。
+              你的專屬 LINE 預約系統——客人選服務、挑時段、送出，<br />全程在 LINE 裡完成，不用下載 App。
             </p>
           </div>
           {/* 兩張真實手機截圖橫向排 */}
@@ -143,7 +143,7 @@ export default function ProLandingPage() {
               先<span style={{ color: oak, fontStyle: 'italic' }}>免費</span>試用<br />全部功能
             </p>
             <p style={{ fontSize: '13.5px', color: 'rgba(251,249,244,0.6)', marginBottom: '22px', lineHeight: 1.7 }}>
-              專屬預約頁、自動提醒、後台管理，<br />先用起來，喜歡再留下。
+              專屬 LINE 預約系統、自動提醒、後台管理，<br />先用起來，喜歡再留下。
             </p>
             {/* 次要：699 一行帶過 */}
             <p style={{ fontSize: '12.5px', color: 'rgba(251,249,244,0.42)', marginBottom: '26px' }}>
@@ -164,7 +164,7 @@ export default function ProLandingPage() {
               30 秒開通，今天就能接單
             </h2>
             <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.6)', lineHeight: 1.7 }}>
-              加 LINE 回「試用」，真人一對一幫你把專屬預約頁設好。
+              加 LINE 回「試用」，真人一對一幫你把專屬 LINE 預約系統設好。
             </p>
           </div>
 
