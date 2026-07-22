@@ -839,7 +839,8 @@ function ServiceItem({ service, providerId, onRefresh }: {
 // 首次使用引導：偵測到還沒設定服務時顯示，3 步驟帶新設計師上手
 function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { providerId: string; onGoServices: () => void; onGoSchedule: () => void }) {
   const [copied, setCopied] = useState(false)
-  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}/book` : ''
+  // 消費者旅程：分享/複製的連結一律指向職人首頁（作品集+介紹）→ 客人再點「開始預約」進 book（Gini 2026-07-19 定案）
+  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}` : ''
   const share = async () => {
     try { await navigator.clipboard.writeText(bookUrl); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
   }
@@ -869,7 +870,8 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
 // 空狀態 → 招客 CTA（不留白；把空白變成分享預約連結的入口）
 function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: string }) {
   const [copied, setCopied] = useState(false)
-  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}/book` : ''
+  // 消費者旅程：分享/複製的連結一律指向職人首頁（作品集+介紹）→ 客人再點「開始預約」進 book（Gini 2026-07-19 定案）
+  const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}` : ''
   const title = tab === 'today' ? '今天還沒有預約 🌿' : tab === 'upcoming' ? '目前沒有待服務的預約 🌿' : '沒有過去記錄'
   const showCta = tab !== 'past'
   const copy = async () => {
