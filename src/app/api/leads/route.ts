@@ -8,7 +8,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
     }
     const { name, category, district, contact, currentMethod, plan } = await req.json()
-    if (!name?.trim() || !category || !district || !contact?.trim()) {
+    // 前端 JoinForm 只把「姓名＋聯絡方式」設為必填（服務類別/地區為選填，Day 53 降門檻）
+    // → 後端驗證需對齊，否則職人只填姓名+電話會被擋成 400「送出失敗」＝招商漏斗破洞
+    if (!name?.trim() || !contact?.trim()) {
       return NextResponse.json({ error: 'missing fields' }, { status: 400 })
     }
 
@@ -17,7 +19,7 @@ export async function POST(req: Request) {
     // plan：trial=14 天免費試用（預設）／direct=直接正式加入（免試用）
     const planChoice = plan === 'direct' ? 'direct' : 'trial'
 
-    await appendRow('leads!A:I', [id, name.trim(), category, district, contact.trim(), currentMethod || '', createdAt, 'new', planChoice])
+    await appendRow('leads!A:I', [id, name.trim(), category || '', district || '', contact.trim(), currentMethod || '', createdAt, 'new', planChoice])
 
     return NextResponse.json({ ok: true })
   } catch (e) {
