@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getSheetData } from '@/lib/sheets'
 import { COMBOS } from '@/lib/localSeo'
+import { POSTS } from '@/lib/blog'
 
 const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
@@ -33,7 +34,16 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: `${base}/features/notification`,  lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/privacy`,                lastModified: new Date('2026-05-15'), changeFrequency: 'yearly',  priority: 0.3 },
   { url: `${base}/terms`,                  lastModified: new Date('2026-05-15'), changeFrequency: 'yearly',  priority: 0.3 },
+  { url: `${base}/blog`,                   lastModified: new Date('2026-07-24'), changeFrequency: 'weekly',  priority: 0.8 },
 ]
+
+// 內容 SEO 部落格文章（自動跟隨 blog.ts）
+const blogPages: MetadataRoute.Sitemap = POSTS.map((p) => ({
+  url: `${base}/blog/${p.slug}`,
+  lastModified: new Date(p.updated),
+  changeFrequency: 'monthly' as const,
+  priority: 0.7,
+}))
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let providerEntries: MetadataRoute.Sitemap = []
@@ -52,5 +62,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Sheets unavailable at build time — skip provider entries
   }
 
-  return [...staticPages, ...localPages, ...providerEntries]
+  return [...staticPages, ...localPages, ...blogPages, ...providerEntries]
 }
