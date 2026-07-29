@@ -36,3 +36,10 @@ export function trackLead() {
     ;(window as Window & { fbq?: Function }).fbq!('track', 'Lead')
   }
 }
+
+// Call this when someone taps a LINE 加好友/聯絡 button (主動線轉換)
+export function trackContact() {
+  if (typeof window !== 'undefined' && (window as Window & { fbq?: Function }).fbq) {
+    ;(window as Window & { fbq?: Function }).fbq!('track', 'Contact')
+  }
+}
