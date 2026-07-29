@@ -108,17 +108,99 @@ const FAQ = [
   },
   {
     q: 'MooLah 跟其他平台差在哪？',
-    a: '三件事：① 客人不用下載 App（LINE 直接預約）② 0% 抽佣（永不抽成）③ 月費比競品低 60–80%。',
+    a: '三件事：① 客人不用下載 App，在 LINE 裡直接完成預約 ② 0% 抽佣，客人付你多少全部是你的 ③ 單一費率 NT$699/月，不分方案、不綁約。',
   },
   {
     q: '我的客戶資料安全嗎？',
     a: '預約資料儲存在你個人後台，MooLah 僅作為平台工具。合約終止後 7 個工作日內移除所有資料。',
   },
+  {
+    q: 'MooLah 支援哪些行業？',
+    a: '髮型設計、美甲美睫、採耳、做臉美容、按摩舒壓、寵物美容、汽車美容，以及各類個人工作室。系統以「服務項目 + 時長 + 價格」為單位，任何需要預約時段的服務業都適用。',
+  },
+  {
+    q: '沒有實體店面可以用嗎？',
+    a: '可以。個人工作室、在家接案、到府服務都適用，系統不需要你有店面或櫃檯人員。',
+  },
+  {
+    q: 'MooLah 的月費是多少？',
+    a: 'NT$699／月，先 14 天免費試用（全功能、上限 20 筆預約、不需信用卡）。工作室或多人團隊可另外洽詢報價。',
+  },
+  {
+    q: 'MooLah 是誰開發的？',
+    a: 'MooLah 由台灣的永翔數位有限公司（統一編號 62130226）開發與營運，公司登記於屏東縣，服務台灣各縣市的美業與服務業職人。',
+  },
 ]
+
+/**
+ * AEO / 結構化資料：讓 Google 與 AI 引擎（AI Overviews、ChatGPT、Perplexity）
+ * 讀得懂 MooLah 是什麼產品、多少錢、解決什麼問題，並可直接引用 FAQ 答案。
+ */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${BASE_URL}/for-providers#software`,
+      name: 'MooLah 美業預約系統',
+      alternateName: ['MooLah', 'MooLah 線上預約系統'],
+      applicationCategory: 'BusinessApplication',
+      applicationSubCategory: '預約管理系統',
+      operatingSystem: 'Web, LINE LIFF（免下載 App）',
+      url: `${BASE_URL}/for-providers`,
+      inLanguage: 'zh-TW',
+      description:
+        'MooLah 是為台灣美業與服務業職人打造的 LINE 線上預約系統。消費者不需下載 App，在 LINE 內即可完成預約；職人透過後台管理服務項目、時段排班、作品集與客戶紀錄，系統自動發送預約確認與到店提醒。',
+      featureList: [
+        'LINE 一鍵預約（消費者免下載 App、免註冊）',
+        '依服務時長自動鎖定時段，避免重複預約',
+        '雙向 LINE 自動通知（預約成功、前一日提醒、取消通知）',
+        '專屬職人預約頁與作品集',
+        '排班、公休與休假日設定',
+        '客戶備註、標籤與服務歷史照片紀錄',
+        '候補名單與爽約標記',
+        '每週與每月營運成績單推播',
+        '免費客製實體立牌（QR 掃碼預約）',
+      ],
+      offers: {
+        '@type': 'Offer',
+        '@id': `${BASE_URL}/for-providers#offer`,
+        price: '699',
+        priceCurrency: 'TWD',
+        availability: 'https://schema.org/InStock',
+        url: `${BASE_URL}/for-providers`,
+        description: 'NT$699／月，0% 抽佣、不綁約，提供 14 天免費試用（全功能，上限 20 筆預約）。',
+        eligibleRegion: { '@type': 'Country', name: 'Taiwan' },
+      },
+      provider: {
+        '@type': 'Organization',
+        name: '永翔數位有限公司',
+        taxID: '62130226',
+        url: BASE_URL,
+        email: 'service@moolah.studio',
+      },
+      audience: {
+        '@type': 'BusinessAudience',
+        name: '美業與服務業職人',
+        audienceType: '髮型設計師、美甲師、美睫師、採耳師、美容師、按摩舒壓師、寵物美容師、汽車美容師、個人工作室',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${BASE_URL}/for-providers#faq`,
+      mainEntity: FAQ.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+}
 
 export default function ForProvidersPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteNav />
       <main style={{ minHeight: '100vh', background: cream }} className="pt-16 md:pt-20">
         {/* Hero */}

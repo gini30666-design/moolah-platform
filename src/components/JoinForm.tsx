@@ -53,7 +53,7 @@ export default function JoinForm() {
           </svg>
         </div>
         <p style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.8rem', color: 'var(--charcoal)', fontWeight: 300, marginBottom: '8px' }}>申請已送出</p>
-        <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.55)', lineHeight: 1.7, marginBottom: '28px' }}>
+        <p style={{ fontSize: '14px', color: 'rgba(44,40,37,0.74)', lineHeight: 1.7, marginBottom: '28px' }}>
           我們會在 24 小時內透過你提供的方式聯絡你。<br/>
           如有急事，也可直接加入 LINE 聯絡 Gini。
         </p>
@@ -86,7 +86,7 @@ export default function JoinForm() {
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '11px', letterSpacing: '0.15em',
-    textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px', fontWeight: 500,
+    textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '8px', fontWeight: 700,
   }
   const pillGroupStyle: React.CSSProperties = {
     display: 'flex', flexWrap: 'wrap', gap: '8px',
@@ -120,14 +120,14 @@ export default function JoinForm() {
 
       {/* Category */}
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.45)' }}>服務類別（選填）</label>
+        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.72)' }}>服務類別（選填）</label>
         <div style={pillGroupStyle}>
           {CATEGORIES.map(c => (
             <button key={c} type="button" onClick={() => set('category', c)} style={{
               padding: '8px 16px', borderRadius: '999px', fontSize: '13px', cursor: 'pointer',
               border: `1px solid ${form.category === c ? 'var(--oak)' : 'rgba(166,137,102,0.25)'}`,
               background: form.category === c ? 'var(--charcoal)' : 'white',
-              color: form.category === c ? 'var(--cream)' : 'rgba(44,40,37,0.7)',
+              color: form.category === c ? 'var(--cream)' : 'rgba(44,40,37,0.86)',
               transition: 'all 0.15s',
             }}>{c}</button>
           ))}
@@ -136,14 +136,14 @@ export default function JoinForm() {
 
       {/* District */}
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.45)' }}>所在地區（選填）</label>
+        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.72)' }}>所在地區（選填）</label>
         <div style={pillGroupStyle}>
           {DISTRICTS.map(d => (
             <button key={d} type="button" onClick={() => set('district', d)} style={{
               padding: '8px 16px', borderRadius: '999px', fontSize: '13px', cursor: 'pointer',
               border: `1px solid ${form.district === d ? 'var(--oak)' : 'rgba(166,137,102,0.25)'}`,
               background: form.district === d ? 'var(--charcoal)' : 'white',
-              color: form.district === d ? 'var(--cream)' : 'rgba(44,40,37,0.7)',
+              color: form.district === d ? 'var(--cream)' : 'rgba(44,40,37,0.86)',
               transition: 'all 0.15s',
             }}>{d}</button>
           ))}
@@ -152,14 +152,14 @@ export default function JoinForm() {
 
       {/* Current method */}
       <div style={{ marginBottom: '28px' }}>
-        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.45)' }}>目前如何接預約？（選填）</label>
+        <label style={{ ...labelStyle, color: 'rgba(44,40,37,0.72)' }}>目前如何接預約？（選填）</label>
         <div style={pillGroupStyle}>
           {METHODS.map(m => (
             <button key={m} type="button" onClick={() => set('currentMethod', form.currentMethod === m ? '' : m)} style={{
               padding: '7px 14px', borderRadius: '999px', fontSize: '12px', cursor: 'pointer',
               border: `1px solid ${form.currentMethod === m ? 'rgba(166,137,102,0.5)' : 'rgba(166,137,102,0.18)'}`,
               background: form.currentMethod === m ? 'rgba(166,137,102,0.08)' : 'white',
-              color: form.currentMethod === m ? 'var(--oak)' : 'rgba(44,40,37,0.5)',
+              color: form.currentMethod === m ? 'var(--oak)' : 'rgba(44,40,37,0.74)',
               transition: 'all 0.15s',
             }}>{m}</button>
           ))}
@@ -182,7 +182,7 @@ export default function JoinForm() {
                 <span style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: active ? 'var(--oak)' : 'var(--charcoal)', marginBottom: '3px' }}>
                   {active ? '◉ ' : '○ '}{p.title}
                 </span>
-                <span style={{ display: 'block', fontSize: '12px', color: 'rgba(44,40,37,0.55)' }}>{p.desc}</span>
+                <span style={{ display: 'block', fontSize: '12px', color: 'rgba(44,40,37,0.74)' }}>{p.desc}</span>
               </button>
             )
           })}
