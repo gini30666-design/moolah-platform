@@ -21,7 +21,8 @@ const STEPS = [
 
 export default function SetupPage() {
   return (
-    <main style={{ background: cream, color: charcoal, minHeight: '100vh', overflowX: 'hidden' }}>
+    // overflow-x 用 clip：hidden 會讓 overflow-y 變 auto，產生第二條滾軸
+    <main style={{ background: cream, color: charcoal, minHeight: '100vh', overflowX: 'clip' }}>
       {/* Hero */}
       <section style={{ position: 'relative', background: charcoalDeep, color: cream, padding: '30px 24px 40px', textAlign: 'center' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${oak}, transparent)` }} />

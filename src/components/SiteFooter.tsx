@@ -40,7 +40,7 @@ export default function SiteFooter() {
         <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
+            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>

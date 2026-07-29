@@ -16,6 +16,8 @@ const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 const PF_TONES  = [['#efe6da','#e2d4c2'],['#dccab6','#cdb59b'],['#c8ac86','#bb9d74']]
 // Preset masonry ratios cycling per portfolio index
 const PF_RATIOS = [0.78, 1.0, 1.32, 0.85, 1.18, 0.92, 1.1, 0.80]
+// 示範帳號（廣告/招商展示用）— 頁面會標示，作品集為情境示意圖
+const DEMO_PROVIDER_IDS = ['designer-003']
 
 /* ── Lightbox ──────────────────────────────────────────────────────────────── */
 function Lightbox({ items, startIdx, onClose }: { items: PortfolioItem[]; startIdx: number; onClose: () => void }) {
@@ -237,6 +239,8 @@ export default function ProviderPage() {
   const displayName = provider.storeName || provider.name
   const handle     = provider.instagram ? `@${provider.instagram.replace(/^@/, '')}` : ''
   const location   = provider.district  || ''
+  // 示範帳號：供廣告/招商展示用，作品集為情境示意圖而非真實客戶作品
+  const isDemo     = DEMO_PROVIDER_IDS.includes(provider.id)
   // tagline = short header phrase (R column); bio = longer intro text (D column)
   const headerTagline = provider.tagline || ''
   const bioQuote      = provider.description || ''
@@ -273,7 +277,9 @@ export default function ProviderPage() {
             <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
           </button>
           <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none' }}>MooLah</a>
-          {location
+          {isDemo
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
+            : location
             ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(44,40,37,0.42)' }}>{location}</span>
             : <span style={{ width: '40px' }} />
           }
@@ -398,6 +404,11 @@ export default function ProviderPage() {
           <div>
             <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>Selected Work</p>
             <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>作品集</p>
+            {isDemo && (
+              <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.42)', marginTop: '6px', lineHeight: 1.5 }}>
+                本頁為系統示範，作品為情境示意圖
+              </p>
+            )}
           </div>
           {portfolio.length > 0 && (
             <span style={{ fontSize: '11px', color: 'var(--oak)', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{portfolio.length} 件 · 點擊放大</span>

@@ -1,53 +1,81 @@
 # MooLah
 
-> 台灣美業智慧預約平台 — Taiwan Beauty Industry Smart Booking Platform
+> 台灣美業預約系統 — 為美業與服務業職人打造的 LINE 線上預約系統。消費者免下載 App，在 LINE 內完成預約；職人用後台管理時段、作品集與客戶。
 
-MooLah 是一個專為台灣美業職人設計的線上預約管理系統，透過 LINE 深度整合，讓消費者無需下載 App 即可完成預約，設計師透過後台輕鬆管理行程。
+MooLah 由**永翔數位有限公司**（統一編號 62130226，台灣屏東縣）開發與營運。
+官方網站：https://moolah.studio
+
+## 一句話說明
+
+MooLah 讓美業職人不必再手動回覆預約訊息：客人透過 LINE 自行選服務、挑時段、送出預約，系統自動鎖定時段並在前一天發送到店提醒。
 
 ## 服務對象
 
-- 髮型設計師（Hair Designers）
+- 髮型設計師（Hair Stylists）
+- 美甲師・美睫師（Nail & Lash Artists）
+- 採耳師（Ear Cleaning Specialists）
+- 美容師／做臉・臉部保養（Facial & Skincare Therapists）
+- 按摩・舒壓・整復（Massage & Bodywork）
 - 寵物美容師（Pet Groomers）
 - 汽車美容師（Auto Detailing Specialists）
-- 美甲師（Nail Artists）
+- 各類個人工作室與到府服務
 
 ## 核心功能
 
-- LINE 一鍵預約（不需下載 App）
-- 智慧時段管理（Duration-aware 自動排程）
-- 雙向即時通知（預約確認、提醒、取消）
-- 設計師後台管理（預約、服務、作品集）
-- 個人專屬預約頁面
+- **LINE 一鍵預約**：客人免下載 App、免註冊、免加入會員
+- **時長感知排程**：每個服務各自設定時長，系統自動鎖住整段時間，資料庫層防止同時段重複預約
+- **雙向自動通知**：預約成功、前一日到店提醒、取消通知，皆以 LINE Flex 卡片發送給客人與職人
+- **專屬預約頁與作品集**：可自行編輯的職人頁面，含服務項目、價格、作品集，並可被 Google 搜尋索引
+- **排班管理**：營業時段、每週公休、臨時休假日
+- **客戶管理**：客戶備註、自訂標籤、服務歷史照片紀錄（如染髮配方、指甲款式、膚況變化）
+- **候補名單**：時段額滿可登記候補，有人取消時自動通知
+- **爽約標記與黑名單管理**
+- **營運報表**：每週、每月營運成績單自動推播至職人 LINE
+- **免費客製實體立牌**：木底座壓克力夾，印有店名與專屬 QR，供店內掃碼預約
+
+## 收費方式
+
+- **月費 NT$699／月**（單一費率，不分方案）
+- **0% 抽佣** — 客人支付的服務費用全數歸職人所有，系統不抽成
+- **不綁約** — 無解約金，隨時可停用，資料保留 30 天
+- **14 天免費試用** — 全功能開放、上限 20 筆預約、不需信用卡
+- 工作室或多人團隊：另行洽詢報價
+
+## 與其他系統的差異
+
+1. 消費者端完全不需要下載 App（透過 LINE LIFF 完成），降低客人使用門檻
+2. 0% 抽佣，只收固定月費
+3. 提供實體客製立牌，串連線下掃碼與線上預約
+4. 專注於個人職人與小型工作室，而非大型連鎖店家的全功能營運系統
+5. 由專屬窗口一對一協助設定，非純自助式軟體
 
 ## 主要頁面
 
-- 首頁：https://moolah-platform.vercel.app/
-- 探索職人：https://moolah-platform.vercel.app/discover
-- 合作方案：https://moolah-platform.vercel.app/services
-- 加入合作：https://moolah-platform.vercel.app/join
-- 預約功能介紹：https://moolah-platform.vercel.app/features/booking
-- 排程功能介紹：https://moolah-platform.vercel.app/features/scheduling
-- 通知機制介紹：https://moolah-platform.vercel.app/features/notification
-
-## 聯絡資訊
-
-- Email：moolah118@gmail.com
-- LINE OA：@881zhkla
-- 官方網站：https://moolah-platform.vercel.app
+- 首頁：https://moolah.studio/
+- 職人合作方案與功能介紹：https://moolah.studio/for-providers
+- 服務類別總覽：https://moolah.studio/services
+- 探索合作職人：https://moolah.studio/discover
+- 申請合作：https://moolah.studio/join
+- 預約功能說明：https://moolah.studio/features/booking
+- 排程功能說明：https://moolah.studio/features/scheduling
+- 通知機制說明：https://moolah.studio/features/notification
+- 系統示範頁（作品為情境示意圖）：https://moolah.studio/designer-003
 
 ## 服務地區
 
-台灣全島，重點服務高雄市、台南市、台中市、台北市、新北市
+台灣全島。在地服務頁涵蓋台北市、新北市、桃園市、台中市、台南市、高雄市、屏東縣，
+各縣市依服務類別另有專屬頁面，例如 https://moolah.studio/local/kaohsiung/ear-cleaning
 
-## 合作方案
+## 聯絡資訊
 
-- 基礎入門：NT$600/月
-- 專業職人：NT$1,200/月
-- 工作室方案：客製化報價
+- 服務信箱：service@moolah.studio
+- 合作洽詢 LINE：@492ejbwx
+- 消費者預約 LINE 官方帳號：@881zhkla
+- 回覆時間：每日 10:00–21:00
 
 ## 技術資訊
 
-- 前端：Next.js 15 App Router
-- 通訊整合：LINE Messaging API、LINE LIFF
-- 資料儲存：Google Sheets
+- 前端框架：Next.js（App Router）
+- 通訊整合：LINE Messaging API、LINE LIFF、LINE Login
+- 資料庫：PostgreSQL（Supabase，東京機房），資料庫層設有唯一約束防止重複預約
 - 部署：Vercel

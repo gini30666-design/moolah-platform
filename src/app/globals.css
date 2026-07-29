@@ -85,19 +85,32 @@ body::after {
 .anim-fade-up-4 { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
 .anim-fade-in   { animation: fadeIn 1.2s ease 0.2s both; }
 
-/* ── Scroll Reveal System ─────────────────────────────────────────────────── */
+/* ── Scroll Reveal System ─────────────────────────────────────────────────────
+   參數取捨（2026-07-28 對標 ezpretty 後調校）：
+   ・位移 32px —— 對手用 animate.css 的 translate3d(±100%)，等於元素自身寬度，
+     眼睛要追一大段才停，這是捲動動畫「看久了會暈」的頭號原因。
+     捲動觸發的位移落在 16–48px 最舒服，超過就開始有追焦負擔。
+   ・0.62s —— 原本 0.85s 偏慢，滑下去了東西還在飛，會有頁面卡頓的錯覺。
+   ・方向一律「由下往上」為預設 —— 對手用了 13 個 fadeInDown（由上往下掉），
+     跟使用者往下滑的方向相反，逆向運動最容易造成不適。
+   ────────────────────────────────────────────────────────────────────────── */
 .will-animate {
   opacity: 0;
-  transform: translateY(48px);
-  transition: opacity 0.85s var(--ease-expo), transform 0.85s var(--ease-expo);
+  transform: translateY(32px);
+  transition: opacity 0.62s var(--ease-expo), transform 0.62s var(--ease-expo);
 }
 
-.will-animate[data-dir="left"]  { transform: translateX(-52px); }
-.will-animate[data-dir="right"] { transform: translateX(52px); }
-.will-animate[data-dir="scale"] { transform: scale(0.94) translateY(20px); }
-.will-animate[data-dir="up"]    { transform: translateY(48px); }
+.will-animate[data-dir="left"]  { transform: translateX(-36px); }
+.will-animate[data-dir="right"] { transform: translateX(36px); }
+.will-animate[data-dir="scale"] { transform: scale(0.96) translateY(16px); }
+.will-animate[data-dir="up"]    { transform: translateY(32px); }
 
-/* Stagger delays */
+/* Stagger delays — 每階 60–90ms，總延遲不超過 300ms。
+   對手最長 delay 到 1300ms，那時使用者早就滑過去了，東西才姍姍出現。 */
+[data-delay="70"]  { transition-delay: 70ms; }
+[data-delay="140"] { transition-delay: 140ms; }
+[data-delay="210"] { transition-delay: 210ms; }
+[data-delay="280"] { transition-delay: 280ms; }
 [data-delay="50"]  { transition-delay: 50ms; }
 [data-delay="100"] { transition-delay: 100ms; }
 [data-delay="150"] { transition-delay: 150ms; }
