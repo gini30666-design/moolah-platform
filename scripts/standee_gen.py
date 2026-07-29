@@ -6,7 +6,7 @@ MooLah 立牌內卡產生器
 
 用法：
   python3 standee_gen.py --store "沐光髮藝" --designer "設計師 林沐" --short linmu
-  python3 standee_gen.py --store "Studio Lumi" --designer "Emily" --url https://moolah-platform.vercel.app/go/emily --size A5
+  python3 standee_gen.py --store "Studio Lumi" --designer "Emily" --url https://moolah.studio/go/emily --size A5
 """
 import argparse, os
 import qrcode
@@ -25,7 +25,8 @@ IDX  = {"regular": 1, "medium": 4, "semibold": 7}  # PingFang TC
 # A 系列直式像素（300 DPI，無出血，夾入式不需出血）
 SIZES = {"A6": (1240, 1748), "A5": (1748, 2480), "A4": (2480, 3508)}
 
-BASE_URL = "https://moolah-platform.vercel.app/go/"
+# ⚠️ 立牌是印刷品，網址一旦印出去就改不了 —— 一律用自有網域，別留舊的 vercel.app
+BASE_URL = "https://moolah.studio/go/"
 LIFF_ID = "2009980332-eM2b6gtT"  # MooLah Booking LIFF
 
 
