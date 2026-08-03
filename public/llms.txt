@@ -70,7 +70,6 @@ MooLah 讓美業職人不必再手動回覆預約訊息：客人透過 LINE 自�
 
 - 服務信箱：service@moolah.studio
 - 合作洽詢 LINE：@492ejbwx
-- 消費者預約 LINE 官方帳號：@881zhkla
 - 回覆時間：每日 10:00–21:00
 
 ## 技術資訊

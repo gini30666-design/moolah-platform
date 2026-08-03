@@ -15,6 +15,7 @@ type Booking = {
   servicePrice: number
   customerName: string
   customerLineUserId: string
+  customerPhone?: string
   date: string
   time: string
   note: string
@@ -80,7 +81,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
   useEffect(() => {
     if (isManual) return
-    fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId}`, { headers: authHeader() })
+    fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId}&customerPhone=${encodeURIComponent(booking.customerPhone ?? '')}`, { headers: authHeader() })
       .then(r => r.json())
       .then(d => { setNoteText(d.note ?? ''); setTags(d.tags ?? []) })
       .catch(() => {})
@@ -131,7 +132,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
       const res = await fetch('/api/admin/customer-note', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeader() },
-        body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, note: noteText, tags }),
+        body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId, customerPhone: booking.customerPhone ?? '', note: noteText, tags }),
       })
       if (!res.ok) throw new Error()
       setNoteSaved(true)
@@ -149,7 +150,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
     await fetch('/api/admin/customer-note', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId, tags: next }),
+      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId, customerPhone: booking.customerPhone ?? '', tags: next }),
     }).catch(() => {})
   }
 

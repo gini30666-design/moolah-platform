@@ -21,7 +21,7 @@ function Nav() {
         <div className="flex items-center gap-4 md:gap-6 text-sm text-[var(--charcoal)]/60">
           <Link href="/services" className="hidden sm:inline hover:text-[var(--oak)] transition-colors">合作方案</Link>
           <Link
-            href="/discover"
+            href="/"
             className="px-4 py-2 bg-[var(--charcoal)] text-[var(--cream)] text-xs tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors"
           >
             立即預約
@@ -143,7 +143,7 @@ MooLah 為媒合平台，不對職人提供之服務品質負責，但將協助�
 
 公司名稱：永翔數位有限公司
 Email：service@moolah.studio
-LINE 官方帳號：@881zhkla
+Email：service@moolah.studio
 
 我們將於 5 個工作日內回覆。
 

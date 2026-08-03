@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 拋棄式 DB 查詢腳本（診斷用，不進版控）
+_q_*.mjs
+_hc_*.mjs
+diag_*.mjs

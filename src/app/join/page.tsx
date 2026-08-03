@@ -104,7 +104,7 @@ function Nav() {
         <div className="flex items-center gap-4 md:gap-6 text-sm text-[var(--charcoal)]/60">
           <Link href="/services" className="hidden sm:inline hover:text-[var(--oak)] transition-colors">合作方案</Link>
           <Link
-            href="/discover"
+            href="/"
             className="px-4 py-2 bg-[var(--charcoal)] text-[var(--cream)] text-xs tracking-widest uppercase rounded-full hover:bg-[var(--oak)] transition-colors"
           >
             探索職人

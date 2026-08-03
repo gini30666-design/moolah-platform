@@ -56,10 +56,13 @@ const cream = '#fbf9f4'
 const sand = '#f5efe6'
 
 const STEPS: Step[] = [
-  { no: '01', icon: STEP_ICONS.add,  title: '加 MooLah 為好友', desc: '用 LINE 搜尋 @881zhkla 加好友。不需要下載 App，不需要註冊帳號。' },
-  { no: '02', icon: STEP_ICONS.menu, title: '點圖文選單探索職人', desc: '加好友後，點下方圖文選單「探索職人」，選類別（髮型 / 寵物 / 汽車 / 美甲）→ 選縣市。' },
-  { no: '03', icon: STEP_ICONS.book, title: '挑職人 + 選時段預約', desc: '看作品集、評價、價格，挑一位職人 → 選喜歡的時段 → 確認資料 → 送出。整個流程不超過 60 秒。' },
-  { no: '04', icon: STEP_ICONS.bell, title: '收 LINE 確認與提醒', desc: '預約成功立刻收到 LINE 確認訊息，前一天系統自動提醒，再也不會忘記預約。' },
+  // ⚠️ 這裡描述的是「真實動線」：客人不是先加 MooLah 官方帳號再逛，
+  //    而是從自己的設計師拿到連結（立牌 QR／LINE 訊息／IG）直接進預約頁。
+  //    舊版第 1 步教人「搜尋 @881zhkla」——消費者 OA 已轉內部，不再對外招攬。
+  { no: '01', icon: STEP_ICONS.add,  title: '從你的設計師拿到連結', desc: '掃店裡的立牌 QR，或點設計師傳給你的預約連結、IG 個人檔案上的連結。不需要下載 App，不需要註冊帳號。' },
+  { no: '02', icon: STEP_ICONS.menu, title: '看作品集、挑服務', desc: '進到設計師的專屬頁面，看作品集與服務項目價格，挑一個你要的服務。' },
+  { no: '03', icon: STEP_ICONS.book, title: '選時段送出預約', desc: '看得到哪些時段還空著，挑一個 → 留下稱呼與電話 → 送出。整個流程不超過 60 秒。' },
+  { no: '04', icon: STEP_ICONS.bell, title: '加好友收確認與提醒', desc: '預約完成後加設計師的 MooLah 帳號，立刻收到 LINE 確認訊息，前一天再自動提醒你一次。' },
 ]
 
 const FEATURES = [
@@ -99,8 +102,8 @@ export default function HowItWorksPage() {
               不需要下載 App、不需要註冊帳號、不收任何手續費。
             </p>
             <div className="flex flex-wrap items-center gap-3 mt-8">
-              <Link href="/discover" style={{ background: oak, color: cream }} className="px-7 md:px-9 py-4 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
-                探索職人
+              <Link href="/designer-003" style={{ background: oak, color: cream }} className="px-7 md:px-9 py-4 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
+                看實際畫面
               </Link>
               <Link href="/" style={{ borderColor: 'rgba(251,249,244,.22)', color: cream }} className="px-7 md:px-9 py-4 text-xs md:text-sm tracking-widest uppercase border hover:border-[var(--oak)] transition-colors">
                 回首頁
@@ -223,10 +226,10 @@ export default function HowItWorksPage() {
               準備好開始了嗎？
             </p>
             <p className="text-sm mb-7" style={{ color: 'rgba(251,249,244,0.7)' }}>
-              台灣高雄、台中、台北均有合作職人
+              想讓你的客人也這樣預約？
             </p>
-            <Link href="/discover" style={{ background: charcoal, color: cream }} className="inline-block px-9 py-4 text-sm tracking-widest uppercase font-semibold hover:opacity-90 transition-opacity">
-              探索職人 →
+            <Link href="/pro" style={{ background: charcoal, color: cream }} className="inline-block px-9 py-4 text-sm tracking-widest uppercase font-semibold hover:opacity-90 transition-opacity">
+              我是職人，想了解 →
             </Link>
           </div>
         </section>

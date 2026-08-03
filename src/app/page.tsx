@@ -85,7 +85,7 @@ function Hero() {
 
           {/* CTAs — 雙入口：消費者 vs 設計師 */}
           <div className="anim-fade-up-4 flex flex-wrap items-center gap-3">
-            <Link href="/discover" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+            <Link href="/pro" className="flex items-center gap-2 px-7 md:px-9 py-4 md:py-4.5 text-xs md:text-sm tracking-widest uppercase hover:opacity-90 transition-opacity" style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
               <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clipRule="evenodd"/></svg>
               探索職人
             </Link>
@@ -136,10 +136,10 @@ function Marquee() {
 
 // ── Services ──────────────────────────────────────────────────────────────────
 const SERVICE_CARDS = [
-  { no: '01', label: '髮型設計師', desc: '剪髮、染髮、燙髮，一站搞定預約', img: '/images/hair_stylist.png',    href: '/discover?category=髮型設計師' },
-  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: '/images/pet_grooming.png',   href: '/discover?category=寵物美容師' },
-  { no: '03', label: '汽車美容師', desc: '鍍膜、打蠟、清潔，輕鬆預約到府', img: '/images/auto_detailing.png', href: '/discover?category=汽車美容師' },
-  { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/discover?category=美甲師' },
+  { no: '01', label: '髮型設計師', desc: '剪髮、染髮、燙髮，一站搞定預約', img: '/images/hair_stylist.png',    href: '/pro' },
+  { no: '02', label: '寵物美容師', desc: '毛孩的質感日常，從這裡出發',      img: '/images/pet_grooming.png',   href: '/pro' },
+  { no: '03', label: '汽車美容師', desc: '鍍膜、打蠟、清潔，輕鬆預約到府', img: '/images/auto_detailing.png', href: '/pro' },
+  { no: '04', label: '美甲師',     desc: '手繪、凝膠、光療，精緻指尖藝術', img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop', href: '/pro' },
 ]
 
 const CARD_DELAYS = ['0', '100', '200', '300']
