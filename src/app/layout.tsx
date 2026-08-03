@@ -55,7 +55,9 @@ const ORG_SCHEMA = {
         areaServed: 'TW',
         availableLanguage: 'zh-TW',
       },
-      sameAs: ['https://line.me/R/ti/p/@881zhkla'],
+      // ⚠️ 消費者 OA(@881zhkla) 刻意不列入 sameAs：它已轉為內部帳號，
+      // 只給「拿到設計師連結／下過預約單」的客人加，不對外招攬。
+      sameAs: ['https://instagram.com/moolah.tw'],
     },
     {
       '@type': 'WebSite',

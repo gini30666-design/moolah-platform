@@ -4,6 +4,7 @@
 // 長頁滾動中隨時可行動，避免職人被說服後找不到按鈕而流失
 import { ga } from '@/lib/gtag'
 import { trackContact } from '@/components/MetaPixel'
+import { LINE_B2B_URL } from '@/lib/lineOA'
 
 export default function StickyTrialCTA() {
   return (
@@ -33,7 +34,7 @@ export default function StickyTrialCTA() {
         <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.55)' }}>0 抽佣・不綁約・30 秒開通</p>
       </div>
       <a
-        href="https://line.me/R/ti/p/@492ejbwx"
+        href={LINE_B2B_URL}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => { ga.clickLineOA('sticky_cta'); trackContact() }}

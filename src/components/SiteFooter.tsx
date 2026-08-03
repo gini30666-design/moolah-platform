@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { OA_CONSUMER, OA_B2B, LINE_B2B_URL } from '@/lib/lineOA'
 
 function LineIcon({ size = 18 }: { size?: number }) {
   return (
@@ -8,18 +9,34 @@ function LineIcon({ size = 18 }: { size?: number }) {
   )
 }
 
-export default function SiteFooter() {
+/** ⚠️ B2B 頁面（/pro、/for-providers 等招商動線）必須傳 b2b，
+ *  否則職人點頁尾會進到消費者 bot，看到「探索職人/我的預約」選單，接不到招商。
+ *  OA 常數與預填連結的來源見 `@/lib/lineOA`。 */
+export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
+  const oa = b2b ? OA_B2B : OA_CONSUMER
+  const oaHref = b2b ? LINE_B2B_URL : `https://line.me/R/ti/p/${OA_CONSUMER}`
   return (
     <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }}>
       <div className="max-w-[1440px] mx-auto px-5 md:px-16 py-10 md:py-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
         <div data-animate className="col-span-2 md:col-span-1">
           <h3 className="font-display text-2xl tracking-widest uppercase mb-4" style={{ color: 'var(--cream)' }}>MooLah</h3>
           <p className="text-xs leading-relaxed mb-6" style={{ color: 'var(--oak-dim)' }}>重新定義台灣美業預約體驗。<br />REDEFINING BEAUTY APPOINTMENTS.</p>
-          <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs text-white tracking-widest uppercase"
-            style={{ background: 'var(--line-green)' }}>
-            <LineIcon size={14} />加入 LINE OA
-          </a>
+          {/* ⚠️ 消費者版頁尾刻意「不放」LINE 入口。
+              消費者 OA(@881zhkla) 已轉為內部帳號——只給拿到設計師連結／下過預約單的客人加；
+              招商 OA 放在消費者頁又不對題。所以這裡改成給職人的入口。 */}
+          {b2b ? (
+            <a href={oaHref} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs text-white tracking-widest uppercase"
+              style={{ background: 'var(--line-green)' }}>
+              <LineIcon size={14} />洽詢合作
+            </a>
+          ) : (
+            <Link href="/pro"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-widest uppercase"
+              style={{ background: 'var(--oak)', color: 'var(--cream)' }}>
+              我是職人 · 了解合作
+            </Link>
+          )}
         </div>
         <div data-animate data-delay="100">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>服務</h4>
@@ -40,7 +57,8 @@ export default function SiteFooter() {
         <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw'], ['LINE @881zhkla', 'https://line.me/R/ti/p/@881zhkla']].map(([l, h]) => (
+            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw'],
+              ...(b2b ? [[`LINE ${oa}`, oaHref]] : [])].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>

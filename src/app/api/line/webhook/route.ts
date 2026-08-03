@@ -13,6 +13,7 @@ import {
   buildProviderScheduleFlex,
   buildCustomerHistoryFlex,
   buildRebookFlex,
+  buildMyStylistFlex,
   buildFaqFlex,
   buildMapFlex,
   CUSTOMER_QUICK_REPLY,
@@ -724,12 +725,21 @@ export async function POST(req: NextRequest) {
       if (
         lower.includes('再約') ||
         lower.includes('再次預約') ||
+        lower.includes('再預約') ||   // ← 圖文選單第 1 格「再預約一次」（不含「再約」連續字，需獨立列）
         lower.includes('上次') ||
         lower.includes('rebook') ||
         lower === '再一次'
       ) {
         const lastBooking = await getLastBookingForCustomer(userId)
         await pushFlexMessage(userId, '再次預約', buildRebookFlex(lastBooking))
+        continue
+      }
+
+      // 我的設計師（圖文選單第 4 格）— 回頭客最常用的入口：找回自己的設計師
+      // ⚠️ 必須排在「我的預約」之前比對，否則不會有影響，但語意上兩者獨立
+      if (lower.includes('我的設計師') || lower.includes('我的職人')) {
+        const last = await getLastBookingForCustomer(userId)
+        await pushFlexMessage(userId, '我的設計師', buildMyStylistFlex(last), CUSTOMER_QUICK_REPLY)
         continue
       }
 

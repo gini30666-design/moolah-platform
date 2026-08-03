@@ -914,6 +914,64 @@ export function buildFaqFlex(params: {
 }
 
 // ── 顧客：快速再預約 Flex ──────────────────────────────────────────────────
+/**
+ * 「我的設計師」卡片（圖文選單第 4 格）。
+ * 與 buildRebookFlex 的差別：那張是「帶著上次的服務直接下單」，
+ * 這張是「回到設計師的頁面看作品集與其他服務」——同一個人，不同意圖。
+ * 消費者 OA 轉內部後，客人多半是回頭客，這兩個入口才是他們真正會用的。
+ */
+export function buildMyStylistFlex(params: {
+  hasLast: boolean
+  providerId?: string
+  providerName?: string
+  storeName?: string
+  lastDate?: string
+}): object {
+  const { hasLast, providerId, providerName, storeName, lastDate } = params
+  if (!hasLast) {
+    return {
+      type: 'bubble',
+      body: {
+        type: 'box', layout: 'vertical', paddingAll: '20px',
+        contents: [
+          { type: 'text', text: '還沒有設計師紀錄', weight: 'bold', size: 'lg', color: '#2C2825' },
+          { type: 'text', text: '在 MooLah 預約過一次之後，這裡就會出現你的設計師，方便你隨時找到他。', size: 'sm', color: '#888888', margin: 'md', wrap: true },
+        ],
+      },
+    }
+  }
+  const display = storeName || providerName
+  return {
+    type: 'bubble',
+    header: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', backgroundColor: '#2C2825',
+      contents: [
+        { type: 'text', text: 'YOUR STYLIST', size: 'xs', color: '#A68966', weight: 'bold' as const },
+        { type: 'text', text: display ?? '你的設計師', weight: 'bold' as const, size: 'xl', color: '#fbf9f4', margin: 'sm', wrap: true },
+      ],
+    },
+    body: {
+      type: 'box', layout: 'vertical', paddingAll: '20px', spacing: 'sm',
+      contents: [
+        ...(providerName && storeName
+          ? [{ type: 'text', text: `設計師 ${providerName}`, size: 'sm', color: '#2C2825' }]
+          : []),
+        ...(lastDate
+          ? [{ type: 'text', text: `上次來的日期：${lastDate}`, size: 'sm', color: '#888888' }]
+          : []),
+        { type: 'text', text: '看作品集、服務項目與價格，或直接挑時段預約。', size: 'sm', color: '#888888', wrap: true, margin: 'md' },
+      ],
+    },
+    footer: {
+      type: 'box', layout: 'vertical', paddingAll: '16px', spacing: 'sm',
+      contents: [
+        { type: 'button', action: { type: 'uri', label: '看作品集', uri: liffUrl(`/${providerId}`) }, style: 'primary', color: '#A68966', height: 'sm' },
+        { type: 'button', action: { type: 'uri', label: '直接預約', uri: liffUrl(`/${providerId}/book`) }, style: 'secondary', height: 'sm' },
+      ],
+    },
+  }
+}
+
 export function buildRebookFlex(params: {
   hasLast: boolean
   providerId?: string
@@ -932,14 +990,8 @@ export function buildRebookFlex(params: {
       body: {
         type: 'box', layout: 'vertical', paddingAll: '20px',
         contents: [
-          { type: 'text', text: '還沒有上次的紀錄', weight: 'bold', size: 'lg', color: '#2C2825' },
-          { type: 'text', text: '你還沒在 MooLah 預約過 — 來探索一下吧！', size: 'sm', color: '#888888', margin: 'md', wrap: true },
-        ],
-      },
-      footer: {
-        type: 'box', layout: 'vertical', paddingAll: '16px',
-        contents: [
-          { type: 'button', action: { type: 'uri', label: '探索職人', uri: `${BASE_URL}/discover` }, style: 'primary', color: '#A68966', height: 'sm' },
+          { type: 'text', text: '還沒有預約紀錄', weight: 'bold', size: 'lg', color: '#2C2825' },
+          { type: 'text', text: '跟你的設計師拿預約連結，或掃店裡的立牌 QR，就可以開始預約囉。', size: 'sm', color: '#888888', margin: 'md', wrap: true },
         ],
       },
     }
