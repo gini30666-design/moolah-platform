@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isSameCustomer } from '@/lib/customerIdentity'
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { isSlotBookable } from '@/lib/slots'
 import { pushFlexMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [providerRows, serviceRows] = await Promise.all([
-    getSheetData('providers!A2:X'),
+    getSheetData('providers!A2:Y'),
     getSheetData('services!A2:F'),
   ])
 
@@ -29,6 +30,18 @@ export async function POST(req: NextRequest) {
 
   if (!providerRow || !serviceRow) {
     return NextResponse.json({ error: 'Provider or service not found' }, { status: 404 })
+  }
+
+  // ── 示範帳號 ──────────────────────────────────────────────
+  // designer-003 是公開 demo（/pro 的「自己先看看」指向它），任何人都進得來。
+  // 2026-07-31~08-01 連續有陌生訪客以假名假電話下真單，佔用時段。
+  // 這裡在寫入前攔下：讓對方完整走完流程、看到成功畫面，但不寫進資料庫。
+  // 比直接擋掉更好——demo 的目的就是展示，順手把體驗完的人導向招商頁。
+  if (String(providerRow[24] ?? '').toLowerCase() === 'true') {
+    return NextResponse.json({
+      demo: true,
+      message: '這是 MooLah 的示範帳號，你剛剛完整體驗了客人預約的流程。實際使用時，這筆預約會直接進到設計師的後台，並自動發送 LINE 確認與提醒。',
+    })
   }
 
   // 方案限制：trial=14 天 + 20 筆上限；expired=已暫停。active / 舊資料(空)=不限。
@@ -48,15 +61,31 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 黑名單檢查（#19）— 比對 LINE userId 或姓名
+  // ── 一律要求 LINE 身分 ─────────────────────────────────────
+  // 2026-08-01 起關閉「不加 LINE 也能預約」。三個理由：
+  //  1) 產品面：cron/reminder 對沒有 lineUserId 的預約直接 continue——
+  //     「前一天自動提醒」是賣點，沒有 LINE ID 等於賣了卻交付不了。
+  //  2) 營運面：無法識別、無法封鎖、無法留客戶備註（見 lib/customerIdentity）。
+  //  3) 安全面：7/31–8/1 連續出現陌生人以假名假電話下單，OA 好友數卻沒增加。
+  // ⚠️ 例外：demo 帳號在上面已先回傳；設計師手動建單走 /api/admin/manual-booking，不經過這裡。
+  if (!customerLineUserId) {
+    return NextResponse.json({
+      error: 'line_required',
+      message: '請用 LINE 開啟預約頁，才能收到預約確認與提醒。',
+    }, { status: 403 })
+  }
+
+  // 黑名單檢查（#19）— LINE userId ／【電話】／姓名
+  // ⚠️ 電話是 2026-08-01 補上的：web 訪客沒有 LINE ID，原本只能靠姓名比對，
+  //    改個名字就能繞過（實例：「開看看 / 0985555555」）。電話才是可靠的識別碼。
   try {
-    const blacklistRows = await getSheetData('blacklist!A2:E')
-    const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
+    const blacklistRows = await getSheetData('blacklist!A2:G')
     const isBlocked = blacklistRows.some(r => {
       if (r[0] !== providerId) return false
-      const matchById = customerLineUserId && r[1] && r[1] === customerLineUserId
-      const matchByName = customerName && r[2] && norm(r[2] as string) === norm(customerName)
-      return matchById || matchByName
+      return isSameCustomer(
+        { lineUserId: customerLineUserId, name: customerName, phone: customerPhone },
+        { lineUserId: r[1] as string, name: r[2] as string, phone: r[6] as string },
+      )
     })
     if (isBlocked) {
       return NextResponse.json({ error: 'Booking not allowed', message: '此設計師目前無法接受您的預約，請改選其他設計師。' }, { status: 403 })

@@ -8,7 +8,7 @@ export async function GET(
   const { id } = await params
 
   const [providerRows, serviceRows, portfolioRows] = await Promise.all([
-    getSheetData('providers!A2:X'),
+    getSheetData('providers!A2:Y'),
     getSheetData('services!A2:G'),  // G = imageUrl (#11)
     getSheetData('portfolio!A2:D'),
   ])
@@ -38,6 +38,7 @@ export async function GET(
     role:        r[19] ?? '',
     plan:        (r[21] ?? '').toString().trim(),   // V: trial | active | expired | ''(舊資料視為正式)
     trialEndsAt: r[23] ?? '',                        // X: 試用到期 ISO
+    isDemo:      String(r[24] ?? '').toLowerCase() === 'true',  // 示範帳號：可完整體驗流程，但不產生真實預約
   }
 
   const services = serviceRows

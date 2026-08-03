@@ -5,6 +5,7 @@ import MoolahLoader from '@/components/MoolahLoader'
 
 type Provider = {
   id: string; name: string; category: string; description: string
+  isDemo?: boolean
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
   rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string; role?: string
@@ -17,7 +18,9 @@ const PF_TONES  = [['#efe6da','#e2d4c2'],['#dccab6','#cdb59b'],['#c8ac86','#bb9d
 // Preset masonry ratios cycling per portfolio index
 const PF_RATIOS = [0.78, 1.0, 1.32, 0.85, 1.18, 0.92, 1.1, 0.80]
 // 示範帳號（廣告/招商展示用）— 頁面會標示，作品集為情境示意圖
-const DEMO_PROVIDER_IDS = ['designer-003']
+// 示範帳號改由資料庫 providers.is_demo 決定（API 回 provider.isDemo）。
+// 原本這裡是硬編清單 ['designer-003']，與 DB 欄位形成兩個真相來源，
+// 之後換示範帳號時容易漏改其中一邊，故統一。
 
 /* ── Lightbox ──────────────────────────────────────────────────────────────── */
 function Lightbox({ items, startIdx, onClose }: { items: PortfolioItem[]; startIdx: number; onClose: () => void }) {
@@ -226,7 +229,18 @@ export default function ProviderPage() {
   }, [providerId])
 
   function handleBook() {
-    router.push(`/${providerId}/book${selectedServiceId ? `?service=${selectedServiceId}` : ''}`)
+    const path = `/${providerId}/book${selectedServiceId ? `?service=${selectedServiceId}` : ''}`
+    // 2026-08-01：預約一律需要 LINE 身分（提醒才發得出去）。
+    // 若不在 LINE 內建瀏覽器，直接走 LIFF，不要先進 book 頁才被擋——少一次跳轉。
+    // ⚠️ 必須是「使用者點擊」觸發才喚得起 App；頁面載入時自動跳轉無效（Day 32 的教訓）。
+    // 示範帳號例外：/pro 的「自己先看看」要能在電腦上跑完整流程。
+    const inLineApp = typeof navigator !== 'undefined' && /Line\//i.test(navigator.userAgent)
+    const liffId = process.env.NEXT_PUBLIC_LIFF_ID
+    if (!inLineApp && !isDemo && liffId) {
+      window.location.href = `https://liff.line.me/${liffId}?to=${encodeURIComponent(path)}`
+      return
+    }
+    router.push(path)
   }
 
   // 資料未到前顯示 M 進場動畫（短網址首入 / 探索頁跳轉皆適用）；
@@ -240,7 +254,7 @@ export default function ProviderPage() {
   const handle     = provider.instagram ? `@${provider.instagram.replace(/^@/, '')}` : ''
   const location   = provider.district  || ''
   // 示範帳號：供廣告/招商展示用，作品集為情境示意圖而非真實客戶作品
-  const isDemo     = DEMO_PROVIDER_IDS.includes(provider.id)
+  const isDemo     = provider.isDemo === true
   // tagline = short header phrase (R column); bio = longer intro text (D column)
   const headerTagline = provider.tagline || ''
   const bioQuote      = provider.description || ''

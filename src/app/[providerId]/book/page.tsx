@@ -5,7 +5,7 @@ import liff from '@line/liff'
 import { ga } from '@/lib/gtag'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
-type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -313,6 +313,105 @@ function InlineCalendar({ providerId, value, onChange }: {
   )
 }
 
+// ── LineRequiredScreen ────────────────────────────────────────────────
+// 在一般瀏覽器開預約頁時顯示。不讓人填完整張表才被 API 擋下——
+// 那是最糟的體驗。這裡在流程開始前就說明「為什麼要用 LINE」，並給一鍵入口。
+function LineRequiredScreen({ providerId, providerName }: { providerId: string; providerName: string }) {
+  const oak = '#A68966', charcoal = '#2C2825', cream = '#FBF9F4'
+  const liffId = process.env.NEXT_PUBLIC_LIFF_ID
+  const liffHref = liffId
+    ? `https://liff.line.me/${liffId}?to=${encodeURIComponent(`/${providerId}/book`)}`
+    : `/${providerId}`
+  return (
+    <div style={{ minHeight: '100dvh', background: cream, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', padding: '32px 22px' }}>
+      <div style={{ width: '100%', maxWidth: '420px', textAlign: 'center' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '.2em', color: oak, fontWeight: 700, marginBottom: '18px' }}>
+          MOOLAH
+        </div>
+        <h1 style={{ fontSize: '24px', fontWeight: 700, color: charcoal, lineHeight: 1.5, marginBottom: '14px' }}>
+          用 LINE 開啟<br />才能完成預約
+        </h1>
+        <p style={{ fontSize: '14.5px', lineHeight: 1.85, color: 'rgba(44,40,37,.72)', marginBottom: '28px' }}>
+          預約成功後，{providerName}會透過 LINE 傳確認訊息給你，
+          前一天也會自動提醒一次。<br />
+          <span style={{ color: 'rgba(44,40,37,.5)', fontSize: '13.5px' }}>
+            用瀏覽器預約收不到這些通知，所以我們改用 LINE。
+          </span>
+        </p>
+        <a href={liffHref} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+          background: '#06C755', color: '#fff', padding: '17px 24px', borderRadius: '13px',
+          fontSize: '16px', fontWeight: 700, textDecoration: 'none', marginBottom: '12px' }}>
+          用 LINE 開啟預約
+        </a>
+        <a href={`/${providerId}`} style={{ display: 'block', fontSize: '13.5px',
+          color: 'rgba(44,40,37,.55)', textDecoration: 'none', paddingTop: '4px' }}>
+          先看看作品集 →
+        </a>
+      </div>
+    </div>
+  )
+}
+
+// ── DemoCompletionScreen ──────────────────────────────────────────────
+// 示範帳號專用的完成畫面。刻意不說「預約成功」——那會誤導，
+// 而是把剛剛體驗到的流程翻譯成「你的客人會經歷什麼、你會收到什麼」，
+// 順勢把體驗完的人導向招商頁。demo 的價值不只是擋單，是轉換。
+function DemoCompletionScreen({ providerName, serviceName, date, time }: {
+  providerName: string; serviceName: string; date: string; time: string
+}) {
+  const oak = '#A68966', charcoal = '#2C2825', cream = '#FBF9F4'
+  return (
+    <div style={{ minHeight: '100dvh', background: cream, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', padding: '32px 22px' }}>
+      <div style={{ width: '100%', maxWidth: '460px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '6px 12px',
+          borderRadius: '99px', background: `${oak}18`, border: `1px solid ${oak}45`, marginBottom: '22px' }}>
+          <span style={{ fontSize: '11px', letterSpacing: '.14em', color: oak, fontWeight: 700 }}>示範模式</span>
+        </div>
+
+        <h1 style={{ fontSize: '27px', fontWeight: 700, color: charcoal, lineHeight: 1.45, marginBottom: '14px' }}>
+          你剛剛走完了<br />客人預約的完整流程
+        </h1>
+        <p style={{ fontSize: '15px', lineHeight: 1.85, color: 'rgba(44,40,37,.72)', marginBottom: '26px' }}>
+          這是 MooLah 的示範帳號，所以<strong style={{ color: charcoal }}>不會產生真實預約</strong>，
+          你剛才填的資料也沒有被儲存。
+        </p>
+
+        <div style={{ background: '#fff', borderRadius: '16px', padding: '20px 22px',
+          border: `1px solid ${oak}30`, marginBottom: '26px' }}>
+          <p style={{ fontSize: '12.5px', letterSpacing: '.1em', color: oak, fontWeight: 700, marginBottom: '14px' }}>
+            實際使用時，接下來會發生
+          </p>
+          {[
+            ['客人這邊', '立刻收到 LINE 確認訊息，前一天再自動提醒一次'],
+            ['你這邊', '後台跳出新預約，同時收到 LINE 通知，可直接撥號聯絡'],
+            ['時段', `${date} ${time} 會自動鎖起來，其他人約不到`],
+          ].map(([k, v]) => (
+            <div key={k} style={{ display: 'flex', gap: '12px', marginBottom: '11px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: charcoal, flexShrink: 0, width: '58px' }}>{k}</span>
+              <span style={{ fontSize: '13.5px', lineHeight: 1.7, color: 'rgba(44,40,37,.72)' }}>{v}</span>
+            </div>
+          ))}
+          <div style={{ borderTop: `1px solid ${oak}22`, marginTop: '14px', paddingTop: '12px',
+            fontSize: '12.5px', color: 'rgba(44,40,37,.55)' }}>
+            剛才示範的是「{providerName}」的「{serviceName}」
+          </div>
+        </div>
+
+        <a href="/pro" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: charcoal, color: cream, padding: '17px 24px', borderRadius: '13px',
+          fontSize: '15.5px', fontWeight: 700, textDecoration: 'none', marginBottom: '10px' }}>
+          我也想要這樣的預約頁
+        </a>
+        <p style={{ fontSize: '12.5px', color: 'rgba(44,40,37,.5)', textAlign: 'center', lineHeight: 1.7 }}>
+          14 天免費試用・不用留信用卡・0 抽佣不綁約
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // ── CompletionScreen ──────────────────────────────────────────────────
 function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, servicePrice, providerAddress }: {
   providerName: string; serviceName: string; date: string; time: string
@@ -493,6 +592,7 @@ export default function BookPage() {
   const [submitError, setSubmitError] = useState('')  // 送出失敗內嵌提示（取代 alert）
   const [done, setDone] = useState(false)
   const [consumerNotified, setConsumerNotified] = useState(false)
+  const [isDemoDone, setIsDemoDone] = useState(false)
   const [isHairCategory, setIsHairCategory] = useState(false)
   const [waitlistSlot, setWaitlistSlot] = useState<string | null>(null)
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
@@ -589,16 +689,23 @@ export default function BookPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           providerId, serviceId: service?.id,
-          customerName: name, customerLineUserId: forOthers ? '' : (lineUserId || ''),
+          customerName: name, customerLineUserId: lineUserId || '',   // 幫別人約也要帶訂位者 ID，提醒才發得出去
           customerPhone: phone, date, time, note: finalNote, gender,
           hairLength: isHairCategory ? hairLength : '',
         }),
       })
       if (res.ok) {
         const data = await res.json()
-        setConsumerNotified(data.consumerNotified ?? false)
-        ga.completeBooking(providerId, service?.id || '', service?.price || 0)
-        setDone(true)
+        // 示範帳號：後端在寫入前就攔下，回 { demo:true }。這裡不上報轉換事件，
+        // 否則 GA4/Ads 會把「看 demo」誤算成真實預約，汙染成效數據。
+        if (data.demo) {
+          setIsDemoDone(true)
+          setDone(true)
+        } else {
+          setConsumerNotified(data.consumerNotified ?? false)
+          ga.completeBooking(providerId, service?.id || '', service?.price || 0)
+          setDone(true)
+        }
       } else {
         // 針對「時段剛被搶走 (409)」給明確訊息並重新整理可選時段，而非叫他重來
         let msg = '預約失敗，請稍後再試'
@@ -617,6 +724,19 @@ export default function BookPage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  // ⚠️ 示範帳號刻意放行：/pro 的「自己先看看」要讓職人在電腦上就能體驗完整流程。
+  if (liffReady && !lineUserId && provider && !provider.isDemo) {
+    return <LineRequiredScreen providerId={providerId} providerName={provider.storeName || provider.name} />
+  }
+
+  if (done && provider && service && isDemoDone) {
+    return <DemoCompletionScreen
+      providerName={provider.storeName || provider.name}
+      serviceName={service.name}
+      date={date} time={time}
+    />
   }
 
   if (done && provider && service) {
@@ -841,6 +961,14 @@ export default function BookPage() {
       `}</style>
 
       {/* ── Sticky header + progress ─── */}
+      {/* 示範帳號提示：一定要在流程「開始前」就講清楚，
+          不能讓人填完資料才發現不是真的預約——那是欺騙體驗。 */}
+      {provider.isDemo && (
+        <div style={{ background: 'var(--oak)', color: '#fff', textAlign: 'center',
+          padding: '9px 16px', fontSize: '12.5px', lineHeight: 1.6, fontWeight: 600 }}>
+          示範帳號 · 你可以完整體驗預約流程，送出後不會產生真實預約
+        </div>
+      )}
       <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
           <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em' }}>← 作品集</button>

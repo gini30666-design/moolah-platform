@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sb } from '@/lib/supabase'
 import { verifyOwner } from '@/lib/auth'
+import { customerKey, normalizePhone } from '@/lib/customerIdentity'
 
 // customer_notes: (provider_id, customer_line_user_id) 複合主鍵；tags 為 jsonb
 
@@ -19,8 +20,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { providerId, customerLineUserId, note, tags } = await req.json()
-  if (!providerId || !customerLineUserId) {
+  const { providerId, customerLineUserId, customerPhone, note, tags } = await req.json()
+  const key = customerKey({ lineUserId: customerLineUserId, phone: customerPhone })
+  if (!providerId || !key) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
@@ -29,13 +31,14 @@ export async function POST(req: NextRequest) {
 
   // 部分更新：未提供的欄位沿用既有值
   const { data: existing } = await sb.from('customer_notes')
-    .select('note, tags').eq('provider_id', providerId).eq('customer_line_user_id', customerLineUserId).maybeSingle()
+    .select('note, tags').eq('provider_id', providerId).eq('customer_line_user_id', key).maybeSingle()
 
   const finalNote = note !== undefined ? note : (existing?.note ?? '')
   const finalTags = tags !== undefined ? tags : (Array.isArray(existing?.tags) ? existing!.tags : [])
 
   const { error } = await sb.from('customer_notes').upsert({
-    provider_id: providerId, customer_line_user_id: customerLineUserId,
+    provider_id: providerId, customer_line_user_id: key,
+    customer_phone: normalizePhone(customerPhone) || null,
     note: finalNote, updated_at: new Date().toISOString(), tags: finalTags,
   }, { onConflict: 'provider_id,customer_line_user_id' })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

@@ -32,6 +32,7 @@ export async function PATCH(req: NextRequest) {
         const providerId = row[1] as string
         const customerName = row[3] as string
         const customerLineUserId = (row[4] as string) ?? ''
+        const customerPhone = (row[11] as string) ?? ''   // ← 讓 web 訪客的 no-show 也累計得到
 
         const providers = await getSheetData('providers!A2:E')
         const provider = providers.find(p => p[0] === providerId)
@@ -40,7 +41,7 @@ export async function PATCH(req: NextRequest) {
 
         await autoBlacklistIfThresholdReached({
           providerId, providerLineUserId, providerName,
-          customerLineUserId, customerName,
+          customerLineUserId, customerName, customerPhone,
         })
       }
     } catch (err) {

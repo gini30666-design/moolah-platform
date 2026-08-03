@@ -11,7 +11,7 @@ import { sb } from './supabase'
 
 // 每張表的「欄位順序」＝ 舊試算表 A,B,C… 的對應，routes 用 r[0],r[12] 索引取值
 const TABLE_COLS: Record<string, string[]> = {
-  providers: ['id','name','category','description','line_user_id','avatar_url','store_name','address','district','business_hours','phone','instagram','short_code','cover_url','rating','review_count','years','tagline','specialties','role','agreed_at','plan','trial_start_at','trial_ends_at'],
+  providers: ['id','name','category','description','line_user_id','avatar_url','store_name','address','district','business_hours','phone','instagram','short_code','cover_url','rating','review_count','years','tagline','specialties','role','agreed_at','plan','trial_start_at','trial_ends_at','is_demo'],
   services: ['provider_id','service_id','name','price','duration','description','image_url'],
   portfolio: ['provider_id','portfolio_id','image_url','caption','sort_order','created_at'],
   bookings: ['booking_id','provider_id','service_id','customer_name','customer_line_user_id','date','time','note','created_at','gender','hair_length','customer_phone','status'],
@@ -19,7 +19,7 @@ const TABLE_COLS: Record<string, string[]> = {
   waitlist: ['id','provider_id','service_id','date','time','customer_name','customer_line_user_id','customer_phone','created_at','status'],
   reviews: ['booking_id','provider_id','customer_name','rating','comment','status','created_at'],
   customer_notes: ['provider_id','customer_line_user_id','note','updated_at','tags'],
-  blacklist: ['provider_id','customer_line_user_id','customer_name','reason','created_at','source'],
+  blacklist: ['provider_id','customer_line_user_id','customer_name','reason','created_at','source','customer_phone'],
   leads: ['id','name','category','district','contact','current_method','created_at','status','plan'],
   feedback: ['ts','area','severity','message','reporter','ua'],
 }

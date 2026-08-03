@@ -42,7 +42,7 @@ padding:15px 34px;border-radius:99px;text-decoration:none;font-size:16px}
 <div class="brand">MooLah</div>
 <div class="t">點下方按鈕用 <b style="color:var(--oak)">LINE</b> 開啟<br>即可一鍵預約並收到提醒 <span class="dot"></span></div>
 <a class="btn" href="${liffUrl}">用 LINE 開啟預約 →</a>
-<a class="sub" href="${webUrl}">沒有 LINE？用瀏覽器繼續</a>
+<div class="sub" style="border:none">預約需透過 LINE，才能收到確認與提醒</div>
 </body></html>`
 
   return new NextResponse(html, {

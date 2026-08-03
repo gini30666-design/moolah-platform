@@ -1,9 +1,8 @@
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
+import { isSameCustomer, normalizePhone } from '@/lib/customerIdentity'
 
 const NO_SHOW_THRESHOLD = 3
-
-const norm = (s: string) => (s ?? '').replace(/\s+/g, '').toLowerCase()
 
 /**
  * 計算某客人對某設計師的 no_show 次數
@@ -13,16 +12,16 @@ export async function countNoShows(
   providerId: string,
   customerLineUserId: string,
   customerName: string,
+  customerPhone?: string,
 ): Promise<number> {
+  // bookings 欄位：3=姓名 4=lineUserId 11=電話 12=status
   const rows = await getSheetData('bookings!A2:M', { provider_id: providerId })
-  const needle = norm(customerName)
+  const me = { lineUserId: customerLineUserId, name: customerName, phone: customerPhone }
 
   return rows.filter(r => {
     if (r[1] !== providerId) return false
     if ((r[12] as string) !== 'no_show') return false
-    const matchById = customerLineUserId && r[4] && r[4] === customerLineUserId
-    const matchByName = customerName && r[3] && norm(r[3] as string) === needle
-    return matchById || matchByName
+    return isSameCustomer(me, { lineUserId: r[4] as string, name: r[3] as string, phone: r[11] as string })
   }).length
 }
 
@@ -33,15 +32,14 @@ async function isAlreadyBlacklisted(
   providerId: string,
   customerLineUserId: string,
   customerName: string,
+  customerPhone?: string,
 ): Promise<boolean> {
   try {
-    const rows = await getSheetData('blacklist!A2:E', { provider_id: providerId })
-    const needle = norm(customerName)
+    const rows = await getSheetData('blacklist!A2:G', { provider_id: providerId })
+    const me = { lineUserId: customerLineUserId, name: customerName, phone: customerPhone }
     return rows.some(r => {
       if (r[0] !== providerId) return false
-      const matchById = customerLineUserId && r[1] && r[1] === customerLineUserId
-      const matchByName = customerName && r[2] && norm(r[2] as string) === needle
-      return matchById || matchByName
+      return isSameCustomer(me, { lineUserId: r[1] as string, name: r[2] as string, phone: r[6] as string })
     })
   } catch {
     return false
@@ -58,24 +56,26 @@ export async function autoBlacklistIfThresholdReached(params: {
   providerName?: string
   customerLineUserId: string
   customerName: string
+  customerPhone?: string
 }): Promise<{ triggered: boolean; reason?: string }> {
-  const { providerId, providerLineUserId, providerName, customerLineUserId, customerName } = params
+  const { providerId, providerLineUserId, providerName, customerLineUserId, customerName, customerPhone } = params
 
   try {
-    const count = await countNoShows(providerId, customerLineUserId, customerName)
+    const count = await countNoShows(providerId, customerLineUserId, customerName, customerPhone)
     if (count < NO_SHOW_THRESHOLD) return { triggered: false }
 
-    const already = await isAlreadyBlacklisted(providerId, customerLineUserId, customerName)
+    const already = await isAlreadyBlacklisted(providerId, customerLineUserId, customerName, customerPhone)
     if (already) return { triggered: false, reason: 'already-blacklisted' }
 
     const reason = `系統自動加入：no-show 累計 ${count} 次`
-    await appendRow('blacklist!A:F', [
+    await appendRow('blacklist!A:G', [
       providerId,
       customerLineUserId ?? '',
       customerName ?? '',
       reason,
       new Date().toISOString(),
       'auto',
+      normalizePhone(customerPhone),   // ← 真正擋得住 web 訪客的那一欄
     ])
 
     if (providerLineUserId) {
