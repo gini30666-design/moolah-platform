@@ -3,6 +3,8 @@ import JoinForm from '@/components/JoinForm'
 import SiteFooter from '@/components/SiteFooter'
 import StickyTrialCTA from '@/components/StickyTrialCTA'
 import TrackedLineLink from '@/components/TrackedLineLink'
+import ScrollDepthTracker from '@/components/ScrollDepthTracker'
+import { LINE_B2B_URL } from '@/lib/lineOA'
 import IndustryPicker from './IndustryPicker'
 import StepPhones from './StepPhones'
 import {
@@ -18,13 +20,16 @@ const oak = '#A68966'
 const charcoal = '#2C2825'
 const charcoalDeep = '#1a1714'
 const cream = '#fbf9f4'
-const LINE_URL = 'https://line.me/R/ti/p/@492ejbwx'
+const LINE_URL = LINE_B2B_URL
 const DEMO_URL = '/designer-003'
 
 // ⚠️ 廣告專用落地頁 — noindex（不進 Google 索引，避免與 /for-providers SEO 頁重複內容互打）
 export const metadata: Metadata = {
-  title: '美業職人的 AI 接單助理 | MooLah 14 天免費試用',
-  description: '24 小時幫你接單、提醒客人、記住每位客人的細節。你只要專心做手藝。0 抽佣、不綁約、14 天免費試用。',
+  // ⚠️ 標題必須含「預約系統」字面：Google Ads 的「到達網頁體驗」是拿搜尋字詞跟頁面主題比對，
+  //    2026-08-02 診斷出全帳戶 24 個關鍵字皆 BELOW_AVERAGE，根因就是這頁通篇只講「AI 接單助理」，
+  //    Google 讀不出它是「預約系統」→ QS 掉到 3 → CPC 衝到 NT$44。定位不變，只是把字面補回來。
+  title: '美業預約系統 × AI 接單助理 | MooLah 14 天免費試用',
+  description: '專為美業職人打造的 LINE 線上預約系統。會用 LINE 就會用，不必學新軟體，客人免下載 App。24 小時自動接單、提醒客人、記住每位客人的細節。0 抽佣、不綁約、14 天免費試用。',
   robots: { index: false, follow: false },
   alternates: { canonical: `${BASE_URL}/pro` },
 }
@@ -35,7 +40,9 @@ const FAQ: { q: string; a: string }[] = [
   { q: '會抽成嗎？', a: '不抽成。MooLah 只收月費 NT$699，客人付你多少，全部都是你的，系統不從中抽任何一毛。' },
   { q: '要綁約嗎？想停可以嗎？', a: '不綁約、沒有解約金，隨時可以停用。停用後資料還會保留 30 天，之後想回來也接得上。' },
   { q: '免費試用有什麼限制？', a: '14 天內全功能開放，預約筆數上限 20 筆。試用期間不需要提供信用卡，也不會自動扣款。' },
-  { q: '我不太會用電腦或軟體，可以嗎？', a: '可以。加 LINE 之後由專人一對一帶你設定，服務項目、時段、作品集都幫你弄好，通常 30 分鐘內就能開始接單。' },
+  { q: 'MooLah 是預約系統嗎？', a: '是。MooLah 是專為美業職人設計的線上預約系統，跑在 LINE 上面：客人在 LINE 裡選服務、挑時段、送出預約，系統自動鎖時段、自動發提醒，你在後台就能看到所有預約。' },
+  { q: '我不太會用電腦或軟體，可以嗎？', a: '可以。你只要會用 LINE 就會用 MooLah——所有操作都在 LINE 裡，沒有另外的軟體要安裝、沒有新介面要背。加 LINE 之後由專人一對一帶你設定，服務項目、時段、作品集都幫你弄好，通常 30 分鐘內就能開始接單。' },
+  { q: '我本來就用 LINE 官方帳號接預約，要重新來過嗎？', a: '不用。你原本的接單習慣完全不變，只是把「客人傳訊息問、你一則一則回」換成「客人自己點開選時段」。現有客人不需要重新加好友或重新輸入資料，也不必下載任何 App——等於零成本、零風險轉換，不合用隨時停掉就好。' },
   { q: '我要怎麼讓現有客人開始線上預約？', a: '開通後你會拿到一個專屬預約連結，貼在 IG 個人簡介或 LINE 訊息裡就能用。另外會免費附一張客製立牌，放店裡讓客人掃碼。' },
   { q: '沒有實體店面也能用嗎？', a: '可以。個人工作室、在家接案、到府服務都適用，系統不需要你有店面或櫃檯。' },
   { q: '資料安全嗎？', a: '客戶資料存放在雲端資料庫（東京機房），只有你本人透過 LINE 身分登入後台才看得到。系統本身也會擋掉同一時段的重複預約。' },
@@ -239,6 +246,7 @@ const SCENE_CSS = `
 export default function ProLandingPage() {
   return (
     <>
+      <ScrollDepthTracker label="pro" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: SCENE_CSS }} />
       {/*
@@ -259,7 +267,7 @@ export default function ProLandingPage() {
         <Scene photo="/pro-hero.jpg" photoMobile="/pro-hero-m.jpg" overlay={0.18} minHeight="96svh" sideScrim>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px' }}>
             <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', letterSpacing: '0.18em', color: cream }}>MOOLAH</span>
-            <span style={{ fontSize: '11px', color: 'rgba(251,249,244,0.6)' }}>美業職人的 AI 接單助理</span>
+            <span style={{ fontSize: '11px', color: 'rgba(251,249,244,0.6)' }}>獨立美業職人的 AI 接單助理</span>
           </div>
 
           <div className="hero-wrap">
@@ -268,7 +276,11 @@ export default function ProLandingPage() {
                 你在服務客人時<br />誰幫你接單
               </h1>
               <p style={{ fontSize: 'clamp(15px, 4.2vw, 17px)', lineHeight: 1.8, color: 'rgba(251,249,244,0.85)', marginBottom: '26px' }}>
-MooLah 是一個 24 小時待命的 AI 接單助理——<br />
+{/* ⚠️ 定位鐵律（2026-08-03 Gini 拍板）：人眼讀到的第一句**不放「預約系統」**。
+    那是既有品類名，用了就被歸進客立樂/folio/夯客的抽屜 → 進功能比較戰 → 必輸。
+    Google 的到達網頁體驗看的是整頁文本，metadata title + FAQ + 下方段落有就夠了。 */}
+MooLah 是專為獨立美業職人打造的<br />
+                <strong style={{ color: cream, fontWeight: 700 }}>AI 接單助理</strong>——<br />
                 幫你收預約、提醒客人、記住每個人的細節。<br />
                 <span style={{ color: oak, fontWeight: 700 }}>你只要專心做手藝。</span>
               </p>
@@ -293,7 +305,7 @@ MooLah 是一個 24 小時待命的 AI 接單助理——<br />
               </div>
 
               <div className="hero-chips">
-                {['AI 自動接單', '14 天免費試用', '0 抽佣', '不綁約', '免下載 App'].map(t => (
+                {['會用 LINE 就會用', '14 天免費試用', '0 抽佣', '不綁約', '免下載 App'].map(t => (
                   <span key={t} style={{ fontSize: '12px', color: 'rgba(251,249,244,0.88)', padding: '7px 14px', borderRadius: '99px', border: '1px solid rgba(166,137,102,0.45)', background: 'rgba(166,137,102,0.12)' }}>{t}</span>
                 ))}
               </div>
@@ -498,6 +510,45 @@ MooLah 是一個 24 小時待命的 AI 接單助理——<br />
           <CtaBar source="pro_scene5" pad="26px 22px 46px" />
         </section>
 
+        {/* ══════════ 零學習成本 / 無痛轉換 ══════════
+            Gini 2026-08-02：職人拒絕新工具的第一名理由是「怕學不會」，排在價格前面。
+            「你本來就在 LINE 接單」這個切角，把 MooLah 從「要學的新系統」變成
+            「原本習慣的升級版」，風險感直接歸零 → 值得獨立一屏，不能只塞在 FAQ。 */}
+        <section data-animate style={{ background: charcoalDeep, color: cream, padding: '52px 22px 56px' }}>
+          <div style={{ maxWidth: '620px', margin: '0 auto' }}>
+            <p style={{ fontSize: '12px', color: oak, fontWeight: 700, marginBottom: '12px' }}>零學習成本</p>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(2rem, 7.4vw, 2.8rem)', fontWeight: 400, lineHeight: 1.24, marginBottom: '14px' }}>
+              你會用 LINE，<br />就會用 <span style={{ color: oak }}>MooLah</span>
+            </h2>
+            <p style={{ fontSize: '14.5px', lineHeight: 1.85, color: 'rgba(251,249,244,0.78)', marginBottom: '30px' }}>
+              沒有新軟體要安裝，沒有新介面要背。你原本怎麼在 LINE 上接單，
+              現在還是在 LINE 上——只是客人自己點時段，不再需要你一則一則回。
+              說穿了，它就是一套長在 LINE 裡的線上預約系統，只是你和客人都不必為它改變習慣。
+            </p>
+
+            <div style={{ display: 'grid', gap: '10px', marginBottom: '28px' }}>
+              {[
+                { n: '01', t: '你不用改習慣', d: '後台就在 LINE 裡打開，預約進來直接跳通知。不必開電腦、不必記帳號密碼。' },
+                { n: '02', t: '客人不用改習慣', d: '免下載 App、免註冊、免加入會員。客人點開連結就能選服務和時段。' },
+                { n: '03', t: '現有客人直接搬過來', d: '原本 LINE 上的客人不必重新加好友，把預約連結傳給他們就開始用。' },
+              ].map(x => (
+                <div key={x.n} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '18px 18px', background: 'rgba(166,137,102,0.10)', border: '1px solid rgba(166,137,102,0.24)', borderRadius: '14px' }}>
+                  <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', color: oak, lineHeight: 1.2, flexShrink: 0 }}>{x.n}</span>
+                  <div>
+                    <p style={{ fontSize: '15px', fontWeight: 700, marginBottom: '5px' }}>{x.t}</p>
+                    <p style={{ fontSize: '13.5px', lineHeight: 1.75, color: 'rgba(251,249,244,0.72)' }}>{x.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p style={{ fontSize: '13.5px', lineHeight: 1.8, color: 'rgba(251,249,244,0.66)', paddingLeft: '14px', borderLeft: `2px solid ${oak}` }}>
+              不合用就停掉，你原本的 LINE 客人一個都不會少。<br />
+              <strong style={{ color: cream, fontWeight: 700 }}>零成本、零風險。</strong>
+            </p>
+          </div>
+        </section>
+
         {/* ══════════ 差異化四條：配圖卡（暖色漸層背景，與前後深色段拉開）══════════ */}
         <section data-animate style={{ background: 'linear-gradient(to bottom, #f7f1e7 0%, #fbf9f4 55%, #fbf9f4 100%)', padding: '10px 0 12px' }}>
           <div className="sc">
@@ -623,6 +674,27 @@ MooLah 是一個 24 小時待命的 AI 接單助理——<br />
             </a>
           </div>
 
+          {/*
+            桌機專用 QR。
+            ────────────────────────────────
+            2026-07-31 漏斗實測：「點加 LINE」→「真的加好友」流失 75%。
+            最可能的成因是桌機點擊——桌機點 line.me 連結會跳網頁版或要求開 App，多數人直接放棄。
+            手機不需要這塊（點按鈕就會開 App），所以只在 ≥md 顯示。
+            ⚠️ display 一律交給 Tailwind class，行內 style 絕不可寫 display，
+               否則會蓋掉 `hidden`（Day 59 sticky CTA 桌機誤顯示就是這樣來的）。
+          */}
+          <div className="hidden md:flex" style={{ alignItems: 'center', gap: '16px', background: 'white', padding: '16px 20px', borderRadius: '14px', border: `1px solid ${oak}22`, marginBottom: '20px' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/qr-line-oa.png" alt="用手機掃碼加 LINE @492ejbwx" loading="lazy"
+              style={{ width: '96px', height: '96px', flexShrink: 0, borderRadius: '8px', border: `1px solid ${oak}30`, padding: '5px', background: '#fff' }} />
+            <div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: charcoal, marginBottom: '4px' }}>用電腦看的話，掃這個</p>
+              <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.72)', lineHeight: 1.7 }}>
+                手機相機掃一下就能加我 LINE，<br />不用在電腦上找 LINE 登入。
+              </p>
+            </div>
+          </div>
+
           <div style={{ background: 'white', padding: '26px 22px', borderRadius: '18px', border: `1px solid ${oak}22` }}>
             <p style={{ fontSize: '14px', fontWeight: 700, color: charcoal, marginBottom: '4px' }}>不方便聊？留下資料</p>
             <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.8)', marginBottom: '22px' }}>我們 24 小時內主動聯絡你，幫你開通試用</p>
@@ -697,7 +769,7 @@ MooLah 是一個 24 小時待命的 AI 接單助理——<br />
         </section>
 
       </main>
-      <SiteFooter />
+      <SiteFooter b2b />
       <StickyTrialCTA />
     </>
   )

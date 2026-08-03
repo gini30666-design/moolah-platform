@@ -366,7 +366,7 @@ export default function ForProvidersPage() {
         </section>
 
       </main>
-      <SiteFooter />
+      <SiteFooter b2b />
       <StickyTrialCTA />
     </>
   )
