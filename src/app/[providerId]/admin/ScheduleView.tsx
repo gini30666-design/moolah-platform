@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react'
 import { authHeader } from '@/lib/clientAuth'
 
-type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean }
+// breakStart/breakEnd 皆為空字串＝該日不休息
+type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean; breakStart: string; breakEnd: string }
 
 const DAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
 const oak = '#A68966'
@@ -21,6 +22,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
   const [newBlockDate, setNewBlockDate] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -37,8 +39,17 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
     setSchedule(prev => prev.map(s => s.day === day ? { ...s, isOpen: !s.isOpen } : s))
   }
 
-  function updateTime(day: number, field: 'startTime' | 'endTime', value: string) {
+  function updateTime(day: number, field: 'startTime' | 'endTime' | 'breakStart' | 'breakEnd', value: string) {
     setSchedule(prev => prev.map(s => s.day === day ? { ...s, [field]: value } : s))
+  }
+
+  // 休息時間開關：關掉＝兩欄清空（後端視為不休）；打開＝帶入常見的 12:00–13:00
+  function toggleBreak(day: number) {
+    setSchedule(prev => prev.map(s => {
+      if (s.day !== day) return s
+      const on = !!s.breakStart && !!s.breakEnd
+      return on ? { ...s, breakStart: '', breakEnd: '' } : { ...s, breakStart: '12:00', breakEnd: '13:00' }
+    }))
   }
 
   function addBlockedDate() {
@@ -53,14 +64,21 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
 
   async function handleSave() {
     setSaving(true)
-    await fetch('/api/admin/schedule', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ providerId, schedule, blockedDates }),
-    })
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setSaveError('')
+    try {
+      const res = await fetch('/api/admin/schedule', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, schedule, blockedDates }),
+      })
+      if (!res.ok) throw new Error('save failed')
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      setSaveError('儲存失敗，請確認網路後再試一次')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (loading) return (
@@ -77,12 +95,12 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
         {schedule.map(s => (
           <div key={s.day} style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
             background: s.isOpen ? 'rgba(251,249,244,0.9)' : 'rgba(166,137,102,0.04)',
             border: `1px solid ${s.isOpen ? 'rgba(166,137,102,0.2)' : 'rgba(166,137,102,0.08)'}`,
             borderRadius: '14px', padding: '12px 16px',
             transition: 'all 0.2s',
           }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '13px', color: s.isOpen ? charcoal : '#b0a89e', width: '36px', flexShrink: 0 }}>
               {DAY_LABELS[s.day]}
             </span>
@@ -112,6 +130,34 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
               </div>
             ) : (
               <span style={{ fontSize: '11px', color: '#c8c0b8', marginLeft: 'auto' }}>休息日</span>
+            )}
+            </div>
+
+            {/* 午休（每日可各自設定；關閉＝整天連續接客） */}
+            {s.isOpen && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap',
+                marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(166,137,102,0.18)',
+              }}>
+                <button
+                  onClick={() => toggleBreak(s.day)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+                    fontSize: '12px', color: s.breakStart && s.breakEnd ? oak : '#b0a89e',
+                  }}
+                >
+                  {s.breakStart && s.breakEnd ? '☑' : '☐'} 中間休息
+                </button>
+                {s.breakStart && s.breakEnd ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
+                    <input type="time" value={s.breakStart} onChange={e => updateTime(s.day, 'breakStart', e.target.value)} style={inputStyle} />
+                    <span style={{ fontSize: '11px', color: '#b0a89e' }}>至</span>
+                    <input type="time" value={s.breakEnd} onChange={e => updateTime(s.day, 'breakEnd', e.target.value)} style={inputStyle} />
+                  </div>
+                ) : (
+                  <span style={{ fontSize: '11px', color: '#c8c0b8', marginLeft: 'auto' }}>不休息・整天可預約</span>
+                )}
+              </div>
             )}
           </div>
         ))}
@@ -153,6 +199,9 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       )}
 
       {/* Save */}
+      {saveError && (
+        <p style={{ fontSize: '12px', color: '#b45c5c', marginBottom: '10px', textAlign: 'center' }}>{saveError}</p>
+      )}
       <button
         onClick={handleSave}
         disabled={saving}

@@ -315,7 +315,7 @@ function parseHolidayDates(text: string): string[] {
 
 async function blockDatesForProvider(providerId: string, dates: string[]) {
   for (const d of dates) {
-    await appendRow('availability!A:F', [providerId, 'block', d, '', '', ''])
+    await appendRow('availability!A:H', [providerId, 'block', d, '', '', ''])
   }
 }
 

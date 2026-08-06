@@ -716,23 +716,32 @@ function ServiceForm({ service, providerId, onSuccess, onClose }: {
   const [description, setDescription] = useState(service?.description ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name || !price || !duration) return
     setSubmitting(true)
-    await fetch('/api/admin/service', {
-      method: isNew ? 'POST' : 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({
-        providerId,
-        ...(isNew ? {} : { serviceId: service!.id }),
-        name, price: Number(price), duration: Number(duration), description,
-      }),
-    })
-    setSubmitting(false)
-    setDone(true)
-    setTimeout(() => { onSuccess(); onClose() }, 1200)
+    setSaveError('')
+    try {
+      // 必須檢查 res.ok：否則儲存失敗仍會顯示「完成」，職人以為改好了但價格沒進 DB
+      const res = await fetch('/api/admin/service', {
+        method: isNew ? 'POST' : 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({
+          providerId,
+          ...(isNew ? {} : { serviceId: service!.id }),
+          name, price: Number(price), duration: Number(duration), description,
+        }),
+      })
+      if (!res.ok) throw new Error('save failed')
+      setDone(true)
+      setTimeout(() => { onSuccess(); onClose() }, 1200)
+    } catch {
+      setSaveError('儲存失敗，請確認網路後再試一次')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -766,6 +775,9 @@ function ServiceForm({ service, providerId, onSuccess, onClose }: {
             <label style={labelStyle}>說明（選填）</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="服務說明..." rows={2} style={{ ...inputStyle, resize: 'none' }} />
           </div>
+          {saveError && (
+            <p style={{ fontSize: '12px', color: '#c88f8f', marginBottom: '10px', textAlign: 'center' }}>{saveError}</p>
+          )}
           <button type="submit" disabled={!name || !price || !duration || submitting} style={{
             background: !name || !price || !duration || submitting ? 'rgba(166,137,102,0.4)' : oak,
             color: cream, borderRadius: '50px', padding: '14px',

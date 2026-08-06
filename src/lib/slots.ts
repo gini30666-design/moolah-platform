@@ -7,11 +7,13 @@
 export type SlotStatus = 'available' | 'booked' | 'hot'
 export type Slot = { time: string; status: SlotStatus }
 
-// 與全站一致的時段表（含 12:00–12:30 午休斷點）
+// 與全站一致的時段表。
+// 2026-08-06 起 12:00/12:30 回歸：午休不再全站寫死，改由每位職人在排班自訂
+// （availability schedule 列的 break_start / break_end），留空＝整天不休。
 export const TIME_SLOTS = [
   '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
+  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+  '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
 ]
 export const DOW_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const SLOT_MINUTES = 30
@@ -35,7 +37,7 @@ export type AvailabilityInput = {
   serviceId?: string | null    // 指定服務 → 依時長判斷能否塞下
   bookingRows: Row[]           // getSheetData('bookings!A2:M')
   serviceRows: Row[]           // getSheetData('services!A2:F')
-  availRows: Row[]             // getSheetData('availability!A2:F')
+  availRows: Row[]             // getSheetData('availability!A2:H')
 }
 
 // 某服務需要幾個 30 分格（找不到服務 → 1 格）
@@ -82,18 +84,28 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   const startMin = timeToMinutes(daySchedule ? (daySchedule[3] || '09:00') : '09:00')
   const endMin = timeToMinutes(daySchedule ? (daySchedule[4] || '19:00') : '19:00')
 
+  // 午休（每位職人自訂；兩欄都有值且成立才生效，留空＝不休）
+  const rawBreakStart = daySchedule?.[6] ?? ''
+  const rawBreakEnd = daySchedule?.[7] ?? ''
+  const hasBreak = !!rawBreakStart && !!rawBreakEnd
+  const breakStartMin = hasBreak ? timeToMinutes(rawBreakStart) : 0
+  const breakEndMin = hasBreak ? timeToMinutes(rawBreakEnd) : 0
+  const breakValid = hasBreak && breakEndMin > breakStartMin
+  const inBreak = (min: number) => breakValid && min >= breakStartMin && min < breakEndMin
+
   const occupied = computeOccupiedSlots(bookingRows, serviceRows, providerId, date)
   const serviceSlots = slotsForService(serviceRows, providerId, serviceId)
 
   return TIME_SLOTS.map((time, idx) => {
     const slotMin = timeToMinutes(time)
 
-    // 營業時段外
+    // 營業時段外 / 午休中
     if (slotMin < startMin || slotMin >= endMin) return { time, status: 'booked' as SlotStatus }
+    if (inBreak(slotMin)) return { time, status: 'booked' as SlotStatus }
 
-    // 服務能否從此格起連續塞下（且不撞已佔用、不超出時段表）
+    // 服務能否從此格起連續塞下（不撞已佔用、不超出時段表、不跨進午休）
     const fits = Array.from({ length: serviceSlots }, (_, i) => TIME_SLOTS[idx + i])
-      .every(t => t !== undefined && !occupied.has(t))
+      .every(t => t !== undefined && !occupied.has(t) && !inBreak(timeToMinutes(t)))
     if (!fits) return { time, status: 'booked' as SlotStatus }
 
     // 緊鄰既有預約 → hot（鼓勵集中）

@@ -5,7 +5,7 @@ import liff from '@line/liff'
 import { ga } from '@/lib/gtag'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
-type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -15,6 +15,8 @@ const GENDER_OPTIONS = ['女性', '男性', '不透露']
 const HAIR_LENGTH_OPTIONS = ['超短髮', '短髮', '中長髮', '長髮', '超長髮']
 const HAIR_CATEGORIES = ['髮型設計師']
 const NOTE_TAGS = ['第一次來', '想換個風格', '特殊場合', '有指定參考', '預算有限', '會晚一點到']
+// space 模式（除毛/採耳/按摩等無「作品」可挑的品類）：拿掉與「挑款式」有關的標籤
+const NOTE_TAGS_SPACE = ['第一次來', '有特殊需求', '會晚一點到', '容易緊張', '想先諮詢']
 
 // ── ChapterHeader ─────────────────────────────────────────────────────
 // 去典禮化：不用編號/英文 eyebrow/菱形裝飾，直接一個清楚的群組標題（product register）
@@ -346,7 +348,7 @@ function LineRequiredScreen({ providerId, providerName }: { providerId: string; 
         </a>
         <a href={`/${providerId}`} style={{ display: 'block', fontSize: '13.5px',
           color: 'rgba(44,40,37,.55)', textDecoration: 'none', paddingTop: '4px' }}>
-          先看看作品集 →
+          先看看介紹 →
         </a>
       </div>
     </div>
@@ -796,6 +798,8 @@ export default function BookPage() {
     : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
   // 寬鬆電話驗證：去掉非數字後 ≥ 8 碼才算有效（擋 typo，不誤擋市話/含符號格式）
   const phoneValid = forOthers || customerPhone.replace(/\D/g, '').length >= 8
+  // space 模式：職人的照片是環境/設備而非可挑選的作品 → 收起「靈感參考」、換掉挑款式類的備註標籤
+  const isSpaceMode = provider?.portfolioMode === 'space'
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && phoneValid && !submitting
 
   const fmtDate = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : ''
@@ -971,7 +975,7 @@ export default function BookPage() {
       )}
       <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
-          <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em' }}>← 作品集</button>
+          <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em' }}>{isSpaceMode ? '← 返回' : '← 作品集'}</button>
           <span className="font-display text-base tracking-[0.12em]" style={{ color: 'var(--cream)' }}>{provider.name}</span>
           <div style={{ width: '48px' }} />
         </div>
@@ -1151,7 +1155,7 @@ export default function BookPage() {
             )}
 
             {/* Inspiration picker */}
-            {portfolio.length > 0 && (
+            {portfolio.length > 0 && !isSpaceMode && (
               <div>
                 <FieldLabel hint="最多 2 張">靈感參考 — 從作品集挑選</FieldLabel>
                 <InspirationPicker items={portfolio} selected={selectedInspirations} onToggle={toggleInspiration} max={2} />
@@ -1203,7 +1207,7 @@ export default function BookPage() {
             <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
 
             <FieldLabel hint="選填">快速標籤</FieldLabel>
-            <QuickTags tags={NOTE_TAGS} selected={selectedTags} onToggle={toggleTag} />
+            <QuickTags tags={isSpaceMode ? NOTE_TAGS_SPACE : NOTE_TAGS} selected={selectedTags} onToggle={toggleTag} />
 
             <textarea value={note} onChange={e => setNote(e.target.value)}
               placeholder="想嘗試的方向、需要注意的事項…（選填）" rows={3}

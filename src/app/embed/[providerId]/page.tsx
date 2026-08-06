@@ -25,7 +25,7 @@ function addDays(s: string, n: number) {
 async function getAvailableSlots(providerId: string, limit = 6) {
   const [bookingRows, availRows] = await Promise.all([
     getSheetData('bookings!A2:M'),
-    getSheetData('availability!A2:F'),
+    getSheetData('availability!A2:H'),
   ])
 
   const provAvail = availRows.filter(r => r[0] === providerId)

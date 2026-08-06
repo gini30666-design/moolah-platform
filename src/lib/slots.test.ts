@@ -15,6 +15,9 @@ const service = (id: string, duration: number): Row => [PID, id, id, '600', Stri
 const block = (date: string): Row => [PID, 'block', date, '', '', 'true']
 const schedule = (dow: string, start: string, end: string, active = 'true'): Row =>
   [PID, 'schedule', dow, start, end, active]
+// 帶午休的排班（6 break_start, 7 break_end）；只給一邊＝設定不完整，應視為不休息
+const scheduleWithBreak = (dow: string, start: string, end: string, bStart: string, bEnd: string): Row =>
+  [PID, 'schedule', dow, start, end, 'true', bStart, bEnd]
 
 const SERVICES = [service('svc30', 30), service('svc60', 60), service('svc90', 90)]
 const D = '2026-06-22' // 用 dowOf(D) 動態取得星期，測試不受實際星期影響
@@ -113,5 +116,56 @@ describe('isSlotBookable — 下單守門（與顯示端一致）', () => {
   })
   it('傳 "9:00"（去前導零）也能正確比對', () => {
     expect(isSlotBookable(base(), '9:00')).toBe(true)
+  })
+})
+
+// ── 午休（2026-08-06：從全站寫死 12:00–13:00 改為每位職人自訂）──────────
+describe('午休 break_start / break_end', () => {
+  const statusAt = (rows: Row[], time: string, serviceId: string | null = null) =>
+    computeAvailability(base({ availRows: rows, serviceId }))!.find(s => s.time === time)!.status
+
+  it('沒設午休 → 中午 12:00 / 12:30 可預約（舊版全站寫死已解除）', () => {
+    const rows = [schedule(dowOf(D), '09:00', '18:00')]
+    expect(statusAt(rows, '12:00')).not.toBe('booked')
+    expect(statusAt(rows, '12:30')).not.toBe('booked')
+  })
+
+  it('設 12:00–13:00 → 該區間鎖住，前後緊鄰時段仍可約', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '12:00', '13:00')]
+    expect(statusAt(rows, '11:30')).not.toBe('booked')
+    expect(statusAt(rows, '12:00')).toBe('booked')
+    expect(statusAt(rows, '12:30')).toBe('booked')
+    expect(statusAt(rows, '13:00')).not.toBe('booked')
+  })
+
+  it('午休時段可自訂在任何時間（14:00–15:00）', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '14:00', '15:00')]
+    expect(statusAt(rows, '12:00')).not.toBe('booked')
+    expect(statusAt(rows, '14:00')).toBe('booked')
+    expect(statusAt(rows, '14:30')).toBe('booked')
+    expect(statusAt(rows, '15:00')).not.toBe('booked')
+  })
+
+  it('服務時長會跨進午休 → 該起始格擋下（60 分服務不能從 11:30 起）', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '12:00', '13:00')]
+    expect(statusAt(rows, '11:30', 'svc60')).toBe('booked')
+    expect(statusAt(rows, '11:00', 'svc60')).not.toBe('booked')  // 11:00+11:30 未觸及午休
+  })
+
+  it('只填一邊（半套設定）→ 視為不休息，不會誤鎖整天', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '12:00', '')]
+    expect(statusAt(rows, '12:00')).not.toBe('booked')
+  })
+
+  it('起訖顛倒（13:00–12:00）→ 不成立，不鎖任何時段', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '13:00', '12:00')]
+    expect(statusAt(rows, '12:00')).not.toBe('booked')
+    expect(statusAt(rows, '12:30')).not.toBe('booked')
+  })
+
+  it('下單守門與畫面一致：午休時段 isSlotBookable = false', () => {
+    const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '12:00', '13:00')]
+    expect(isSlotBookable(base({ availRows: rows }), '12:00')).toBe(false)
+    expect(isSlotBookable(base({ availRows: rows }), '13:00')).toBe(true)
   })
 })

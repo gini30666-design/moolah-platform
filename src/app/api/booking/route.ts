@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [providerRows, serviceRows] = await Promise.all([
-    getSheetData('providers!A2:Y'),
+    getSheetData('providers!A2:Z'),
     getSheetData('services!A2:F'),
   ])
 
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
   // DB 唯一約束仍為最後防線；重驗自身出錯則放行不誤擋。
   try {
     const [availRows, dayBookingRows] = await Promise.all([
-      getSheetData('availability!A2:F', { provider_id: providerId }),
+      getSheetData('availability!A2:H', { provider_id: providerId }),
       getSheetData('bookings!A2:M', { provider_id: providerId }),
     ])
     const bookable = isSlotBookable(

@@ -6,6 +6,7 @@ import MoolahLoader from '@/components/MoolahLoader'
 type Provider = {
   id: string; name: string; category: string; description: string
   isDemo?: boolean
+  portfolioMode?: 'works' | 'space'
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
   rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string; role?: string
@@ -141,7 +142,7 @@ function ProviderReveal({ name, avatar, startReveal, onDone }: {
   }, [startReveal, onDone])
 
   // 資料未到 / 最短時間未到 → 維持 M 動畫（與 MoolahLoader 視覺一致，銜接無縫）
-  if (!startReveal) return <MoolahLoader label="正在開啟作品集…" />
+  if (!startReveal) return <MoolahLoader label="正在為你開啟…" />
 
   return (
     <div
@@ -246,7 +247,7 @@ export default function ProviderPage() {
   // 資料未到前顯示 M 進場動畫（短網址首入 / 探索頁跳轉皆適用）；
   // 資料到齊後，下方 ProviderReveal 接手做「頭像→名字」銜接與 crossfade。
   if (!provider) {
-    return <MoolahLoader label="正在開啟作品集…" />
+    return <MoolahLoader label="正在為你開啟…" />
   }
 
   const fromPrice = services.length ? Math.min(...services.map(s => s.price)) : 0
@@ -255,6 +256,8 @@ export default function ProviderPage() {
   const location   = provider.district  || ''
   // 示範帳號：供廣告/招商展示用，作品集為情境示意圖而非真實客戶作品
   const isDemo     = provider.isDemo === true
+  // space 模式：除毛/採耳/按摩等拍不到「作品」的品類，這一區改成環境與設備照
+  const isSpaceMode = provider.portfolioMode === 'space'
   // tagline = short header phrase (R column); bio = longer intro text (D column)
   const headerTagline = provider.tagline || ''
   const bioQuote      = provider.description || ''
@@ -416,8 +419,8 @@ export default function ProviderPage() {
       <div data-animate data-dir="up" style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
-            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>Selected Work</p>
-            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>作品集</p>
+            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>{isSpaceMode ? 'The Space' : 'Selected Work'}</p>
+            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>{isSpaceMode ? '環境・設備' : '作品集'}</p>
             {isDemo && (
               <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.42)', marginTop: '6px', lineHeight: 1.5 }}>
                 本頁為系統示範，作品為情境示意圖
@@ -425,7 +428,7 @@ export default function ProviderPage() {
             )}
           </div>
           {portfolio.length > 0 && (
-            <span style={{ fontSize: '11px', color: 'var(--oak)', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{portfolio.length} 件 · 點擊放大</span>
+            <span style={{ fontSize: '11px', color: 'var(--oak)', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{portfolio.length} 張 · 點擊放大</span>
           )}
         </div>
 
@@ -439,7 +442,7 @@ export default function ProviderPage() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed rgba(166,137,102,0.3)', borderRadius: '14px' }}>
-            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>作品集即將更新</p>
+            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>{isSpaceMode ? '環境照即將更新' : '作品集即將更新'}</p>
           </div>
         )}
       </div>
