@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   // ⚠️ 認領的職責是「綁定 LINE 身分 + 記錄同意時間」，不該推翻 OB 上線時已決定的方案。
   // 舊版無條件寫 `direct ? 'active' : 'trial'`，會把 OB 特意設成 active 的職人打回 trial，
-  // 連帶讓 20 筆預約上限復活、第 21 位客人被擋（2026-08-06 交付前抓到）。
+  // 連帶讓試用的筆數上限復活、客人被靜默擋下（2026-08-06 交付前抓到）。
   const nowIso = new Date().toISOString()
   const preset = (provider.plan ?? '').trim()
   const fourteenDays = () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()

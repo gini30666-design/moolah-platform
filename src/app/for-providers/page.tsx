@@ -84,7 +84,7 @@ const FEATURES: Feature[] = [
 
 const HIGHLIGHTS = [
   { val: 'NT$ 699', label: '月費', sub: '14 天免費試用 · 隨時可終止' },
-  // 試用：14 天全功能、上限 20 筆預約；不需試用可直接加入
+  // 試用：14 天全功能、上限 30 筆預約；不需試用可直接加入
   { val: '0%', label: '抽佣', sub: '永不收佣金' },
   { val: '0 天', label: '綁約期', sub: '提前 1 週通知' },
 ]
@@ -124,7 +124,7 @@ const FAQ = [
   },
   {
     q: 'MooLah 的月費是多少？',
-    a: 'NT$699／月，先 14 天免費試用（全功能、上限 20 筆預約、不需信用卡）。工作室或多人團隊可另外洽詢報價。',
+    a: 'NT$699／月，先 14 天免費試用（全功能、上限 30 筆預約、不需信用卡）。工作室或多人團隊可另外洽詢報價。',
   },
   {
     q: 'MooLah 是誰開發的？',
@@ -169,7 +169,7 @@ const jsonLd = {
         priceCurrency: 'TWD',
         availability: 'https://schema.org/InStock',
         url: `${BASE_URL}/for-providers`,
-        description: 'NT$699／月，0% 抽佣、不綁約，提供 14 天免費試用（全功能，上限 20 筆預約）。',
+        description: 'NT$699／月，0% 抽佣、不綁約，提供 14 天免費試用（全功能，上限 30 筆預約）。',
         eligibleRegion: { '@type': 'Country', name: 'Taiwan' },
       },
       provider: {
@@ -298,7 +298,7 @@ export default function ForProvidersPage() {
               <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(3rem,8vw,5rem)', fontWeight: 300, color: cream, lineHeight: 1, marginBottom: '6px' }}>
                 NT$ 699<span style={{ fontSize: '0.4em', color: 'rgba(251,249,244,0.55)' }}> / 月</span>
               </p>
-              <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', marginBottom: '28px' }}>14 天免費試用（全功能・上限 20 筆預約）· 不需試用可直接加入</p>
+              <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', marginBottom: '28px' }}>14 天免費試用（全功能・上限 30 筆預約）· 不需試用可直接加入</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', textAlign: 'left' }}>
                 {['✓ 0% 抽佣', '✓ 不綁約', '✓ 無解約金', '✓ 24h 上線'].map(t => (
                   <p key={t} style={{ fontSize: '13px', color: oak, padding: '8px 12px', background: 'rgba(166,137,102,0.1)', borderRadius: '6px' }}>{t}</p>

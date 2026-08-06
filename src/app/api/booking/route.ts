@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { TRIAL_BOOKING_LIMIT, TRIAL_WARN_AT } from '@/lib/plan'
 import { isSameCustomer } from '@/lib/customerIdentity'
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { isSlotBookable } from '@/lib/slots'
-import { pushFlexMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
+import { pushFlexMessage, pushMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
 import { rateLimit, clientIp } from '@/lib/rateLimit'
 
 function generateId() {
@@ -44,10 +45,10 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // 方案限制：trial=14 天 + 20 筆上限；expired=已暫停。active / 舊資料(空)=不限。
+  // 方案限制：trial=14 天 + 筆數上限（見 lib/plan）；expired=已暫停。active / 舊資料(空)=不限。
   // V(21)=plan、X(23)=trialEndsAt。對客人一律回中性訊息，不暴露試用機制。
-  const TRIAL_BOOKING_LIMIT = 20
   const plan = (providerRow[21] ?? '').toString().trim().toLowerCase()
+  let trialUsedBefore = -1   // -1 = 非試用中，不需預警
   if (plan === 'trial' || plan === 'expired') {
     const trialEndsAt = providerRow[23]
     const isExpired = plan === 'expired' || (trialEndsAt && Date.now() > new Date(trialEndsAt).getTime())
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
     }
     const allBookings = await getSheetData('bookings!A2:M', { provider_id: providerId })
     const used = allBookings.filter(r => r[1] === providerId && r[12] !== 'cancelled').length
+    trialUsedBefore = used
     if (used >= TRIAL_BOOKING_LIMIT) {
       return NextResponse.json({ error: 'unavailable', message: '此設計師暫不開放線上預約，請稍後再試或直接聯繫店家。' }, { status: 403 })
     }
@@ -176,6 +178,23 @@ export async function POST(req: NextRequest) {
     consumerNotified = notified
   } catch (e) {
     console.error('[booking] notification error (booking still saved):', e)
+  }
+
+  // 試用用量預警：只在「跨過門檻的那一筆」推播，不是每筆都吵。
+  // 沒有這個，第 30 筆之後客人會被靜默擋下，業務要等客訴才知道。
+  if (trialUsedBefore >= 0) {
+    const usedNow = trialUsedBefore + 1
+    const opsUserId = process.env.OPS_LINE_USER_ID
+    if (opsUserId && (usedNow === TRIAL_WARN_AT || usedNow === TRIAL_BOOKING_LIMIT)) {
+      const full = usedNow >= TRIAL_BOOKING_LIMIT
+      try {
+        await pushMessage(opsUserId, full
+          ? `🚫 試用額度已用完\n\n${storeName}（${providerId}）已達 ${TRIAL_BOOKING_LIMIT} 筆上限，\n之後的客人「會被系統擋下來」。\n\n請盡快與他確認是否轉為正式方案。`
+          : `⚠️ 試用額度快用完了\n\n${storeName}（${providerId}）已用 ${usedNow}/${TRIAL_BOOKING_LIMIT} 筆。\n剩 ${TRIAL_BOOKING_LIMIT - usedNow} 筆就會開始擋客人，建議先聯繫他談轉正。`)
+      } catch (e) {
+        console.error('[booking] trial quota warning failed:', e)
+      }
+    }
   }
 
   return NextResponse.json({ success: true, bookingId, consumerNotified })

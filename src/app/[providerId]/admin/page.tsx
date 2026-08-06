@@ -5,6 +5,7 @@ import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
 import MoolahLoader from '@/components/MoolahLoader'
 import ScheduleView from './ScheduleView'
+import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 import PortfolioView from './PortfolioView'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1013,7 +1014,7 @@ export default function AdminPage() {
   const monthRevenue = monthBookings.reduce((s, b) => s + b.servicePrice, 0)
 
   // ── 方案 / 試用狀態 ──
-  const TRIAL_LIMIT = 20
+  const TRIAL_LIMIT = TRIAL_BOOKING_LIMIT
   const isTrial = plan === 'trial'
   const trialEndMs = trialEndsAt ? new Date(trialEndsAt).getTime() : 0
   const isExpired = plan === 'expired' || (isTrial && trialEndMs > 0 && Date.now() > trialEndMs)

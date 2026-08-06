@@ -7,7 +7,7 @@ const CATEGORIES = ['髮型設計師', '美甲師', '美容師（做臉）', '�
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
 const METHODS    = ['口頭或電話確認', 'LINE 個人帳號', '無系統（自行記錄）', '已有其他軟體']
 const PLANS      = [
-  { key: 'trial',  title: '14 天免費試用', desc: '全功能體驗・試用期上限 20 筆預約' },
+  { key: 'trial',  title: '14 天免費試用', desc: '全功能體驗・試用期上限 30 筆預約' },
   { key: 'direct', title: '直接正式加入', desc: '免試用・NT$699/月・立即寄送客製立牌' },
 ]
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
+import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 
 // 每日 09:00 (UTC+8 = 01:00 UTC) 由 Vercel Cron 觸發
 // vercel.json: { "path": "/api/cron/trial-reminder", "schedule": "0 1 * * *" }
@@ -9,7 +10,7 @@ import { pushMessage } from '@/lib/line'
 //   ⏰ 3 天內到期 + 🔴 已到期未轉正（30 天內）
 // 目的：業務主動聯絡客戶確認續用意願、收反饋。提醒對象是業務，不是設計師。
 
-const TRIAL_LIMIT = 20
+const TRIAL_LIMIT = TRIAL_BOOKING_LIMIT
 const DAY = 86400000
 
 export async function GET(req: NextRequest) {
