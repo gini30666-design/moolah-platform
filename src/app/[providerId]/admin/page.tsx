@@ -1202,9 +1202,12 @@ export default function AdminPage() {
                 <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>試用剩餘天</p>
               </>
             ) : (
+              /* 2026-08-06 起不在後台叫價：這裡是職人的營運成績單，收費由業務個別處理 */
               <>
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>699</p>
-                <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>應付月費 NT$</p>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                  {monthBookings.length > 0 ? Math.round(monthRevenue / monthBookings.length).toLocaleString() : '—'}
+                </p>
+                <p style={{ fontSize: '9.5px', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>平均客單 NT$</p>
               </>
             )}
           </div>
@@ -1222,8 +1225,8 @@ export default function AdminPage() {
             </p>
           ) : (
             <p style={{ fontSize: '11px', color: charcoal, lineHeight: 1.55 }}>
-              <span style={{ fontWeight: 600, color: oak }}>✓ 月費 NT$699</span>
-              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　0% 抽佣 · 不綁約 · 解約提前 1 週通知</span>
+              <span style={{ fontWeight: 600, color: oak }}>✓ 0% 抽佣</span>
+              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　客人付多少全部都是你的 · 不綁約 · 解約提前 1 週通知</span>
             </p>
           )}
         </div>
