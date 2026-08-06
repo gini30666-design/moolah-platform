@@ -48,6 +48,7 @@ export default function ClaimPage() {
   const [lineUserId, setLineUserId] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [direct, setDirect] = useState(false)   // ?direct=1 = 跳過試用、直接正式加入
+  const [presetPlan, setPresetPlan] = useState('')  // OB 上線時已指定的方案（active/trial/空）
 
   useEffect(() => {
     async function init() {
@@ -79,6 +80,7 @@ export default function ClaimPage() {
         if (!data.provider) { setStage('not_found'); return }
 
         setProviderName(data.provider.storeName || data.provider.name)
+        setPresetPlan((data.provider.plan ?? '').trim())
         setStage('confirming')
       } catch {
         setStage('error')
@@ -149,8 +151,13 @@ export default function ClaimPage() {
 
             {/* 方案徽章 */}
             <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: '999px', background: 'rgba(166,137,102,0.14)', border: '1px solid rgba(166,137,102,0.35)', marginBottom: '24px' }}>
+              {/* 徽章必須反映這位職人「實際」的方案：OB 已設 active 的人若看到
+                  「上限 20 筆」會被誤導（他其實沒有上限）。費用細節由業務個別談定，
+                  這裡不叫價（與後台對帳面板一致）。 */}
               <span style={{ fontSize: '12px', color: oak, fontWeight: 600 }}>
-                {direct ? '正式加入 · NT$699/月（含免費客製立牌）' : '14 天免費試用 · 全功能・上限 20 筆預約'}
+                {presetPlan === 'active' || direct
+                  ? '正式合作 · 0% 抽佣・不綁約'
+                  : '14 天免費試用 · 全功能・上限 20 筆預約'}
               </span>
             </div>
 
