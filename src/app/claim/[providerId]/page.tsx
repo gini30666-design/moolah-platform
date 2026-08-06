@@ -49,6 +49,9 @@ export default function ClaimPage() {
   const [agreed, setAgreed] = useState(false)
   const [direct, setDirect] = useState(false)   // ?direct=1 = 跳過試用、直接正式加入
   const [presetPlan, setPresetPlan] = useState('')  // OB 上線時已指定的方案（active/trial/空）
+  const [hasAvatar, setHasAvatar] = useState(false)
+  const [hasInstagram, setHasInstagram] = useState(false)
+  const [hasPortfolio, setHasPortfolio] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -81,6 +84,9 @@ export default function ClaimPage() {
 
         setProviderName(data.provider.storeName || data.provider.name)
         setPresetPlan((data.provider.plan ?? '').trim())
+        setHasAvatar(!!(data.provider.avatarUrl ?? '').trim())
+        setHasInstagram(!!(data.provider.instagram ?? '').trim())
+        setHasPortfolio((data.portfolio ?? []).length > 0)
         setStage('confirming')
       } catch {
         setStage('error')
@@ -88,6 +94,13 @@ export default function ClaimPage() {
     }
     init()
   }, [providerId])
+
+  // 只列實際還缺的項目（OB 代填的職人多半全齊 → 陣列為空 → 顯示完成版）
+  const todoSteps = [
+    !hasAvatar && { n: '1', title: '補上頭像', desc: '進後台上方頭像區編輯' },
+    !hasPortfolio && { n: '2', title: '上傳環境或作品照', desc: '傳 LINE 給我們，我們幫你上架' },
+    !hasInstagram && { n: '3', title: '補上 IG 帳號', desc: '客人可以直接點進你的作品' },
+  ].filter(Boolean).map((x, i) => ({ ...(x as { n: string; title: string; desc: string }), n: String(i + 1) }))
 
   async function handleClaim() {
     setStage('claiming')
@@ -182,7 +195,7 @@ export default function ClaimPage() {
             </div>
 
             {/* Agree Checkbox */}
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', textAlign: 'left', marginBottom: '20px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', textAlign: 'left', marginBottom: '20px', minHeight: '44px', padding: '4px 0' }}>
               <div
                 onClick={() => setAgreed(v => !v)}
                 style={{
@@ -195,7 +208,6 @@ export default function ClaimPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginTop: '1px',
                   transition: 'all 0.2s',
                   cursor: 'pointer',
                 }}
@@ -229,7 +241,7 @@ export default function ClaimPage() {
                 transition: 'all 0.2s',
               }}
             >
-              {direct ? '確認正式加入' : '開始 14 天免費試用'}
+              {presetPlan === 'active' || direct ? '確認並綁定後台' : '開始 14 天免費試用'}
             </button>
             <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.25)', marginTop: '14px', lineHeight: 1.6 }}>綁定後您可透過此 LINE 帳號登入後台管理預約</p>
           </div>
@@ -263,12 +275,12 @@ export default function ClaimPage() {
             {/* 3-step walkthrough — only for fresh claim */}
             {stage === 'success' && (
               <div style={{ textAlign: 'left', marginBottom: '24px', padding: '16px 14px', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '14px' }}>
-                <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center', fontWeight: 600 }}>接下來 3 步驟</p>
-                {[
-                  { n: '1', title: '補上頭像', desc: '進「服務管理」上方頭像區編輯', emoji: '◆' },
-                  { n: '2', title: '設定可預約時段', desc: '進「排班設定」開啟營業日與時段', emoji: '◆' },
-                  { n: '3', title: '綁定 IG + 店家資訊', desc: '完整個人頁可提升 30% 預約率', emoji: '◆' },
-                ].map((s) => (
+                {/* 由 MooLah 代為建置的職人（OB 流程）通常頭像／作品／IG 都已備妥，
+                    不該還叫他「補上頭像」。這裡只列出實際還缺的項目。 */}
+                <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: oak, textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center', fontWeight: 600 }}>
+                  {todoSteps.length > 0 ? '接下來' : '你的頁面已經準備好了'}
+                </p>
+                {todoSteps.map((s) => (
                   <div key={s.n} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
                     <span style={{ flexShrink: 0, width: '20px', height: '20px', borderRadius: '50%', background: oak, color: cream, fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px' }}>{s.n}</span>
                     <div style={{ flex: 1 }}>
@@ -277,7 +289,13 @@ export default function ClaimPage() {
                     </div>
                   </div>
                 ))}
-                <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.32)', marginTop: '6px', lineHeight: 1.6, textAlign: 'center' }}>※ 作品集照片由 MooLah 審核後上架，請傳 LINE 給客服</p>
+                {todoSteps.length === 0 && (
+                  <p style={{ fontSize: '11.5px', color: 'rgba(251,249,244,0.6)', lineHeight: 1.7, textAlign: 'center' }}>
+                    服務項目、環境照與可預約時段都已設定完成。<br />
+                    進後台按「分享預約連結」就能開始接單。
+                  </p>
+                )}
+                <p style={{ fontSize: '10px', color: 'rgba(251,249,244,0.32)', marginTop: '10px', lineHeight: 1.6, textAlign: 'center' }}>※ 要新增或修改照片，傳 LINE 給我們就好</p>
               </div>
             )}
 
