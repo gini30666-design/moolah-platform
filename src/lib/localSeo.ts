@@ -30,6 +30,50 @@ export const CITIES: Record<string, { name: string; intro: string }> = {
     name: '屏東',
     intro: '屏東的好手藝不輸都會區。MooLah 把屏東在地職人的時間表搬上線，LINE 點一點就完成預約，還會自動提醒你別忘了赴約。',
   },
+  keelung: {
+    name: '基隆',
+    intro: '基隆的巷弄裡藏著不少熟客制的個人工作室。MooLah 讓這些職人的可預約時段直接顯示在 LINE 上，不用等回訊息、不用猜對方有沒有空。',
+  },
+  hsinchu: {
+    name: '新竹',
+    intro: '在新竹，時間比什麼都珍貴。MooLah 讓你在通勤或午休的空檔用 LINE 看完空檔、選好時段、直接送出——三十秒的事，不用下載任何 App。',
+  },
+  miaoli: {
+    name: '苗栗',
+    intro: '苗栗的美業以口碑相傳為主，好職人往往藏在住宅區裡。MooLah 幫他們把預約流程整理好，客人用 LINE 就能看到空檔、完成預約、收到行前提醒。',
+  },
+  changhua: {
+    name: '彰化',
+    intro: '從彰化市到員林、鹿港，在地職人的技術一點都不輸大城市。MooLah 提供 LINE 線上預約，不用私訊來回喬時間，選好時段送出就完成。',
+  },
+  nantou: {
+    name: '南投',
+    intro: '南投的生活步調慢，但好職人的時段一樣不好約。MooLah 把可預約時間攤開讓你直接挑，預約完成後系統會自動提醒，不怕忘記。',
+  },
+  yunlin: {
+    name: '雲林',
+    intro: '雲林的個人工作室多半靠熟客與介紹。MooLah 讓職人有一個可以直接分享的預約頁面，客人點開就能看作品、看價格、選時段。',
+  },
+  chiayi: {
+    name: '嘉義',
+    intro: '嘉義的美業正在長出自己的風格。MooLah 精選在地職人開放 LINE 線上預約，作品集、服務價格、可預約時段一頁看完，到店付款。',
+  },
+  yilan: {
+    name: '宜蘭',
+    intro: '宜蘭的工作室常常一人包辦全部流程，接電話最耗神。MooLah 讓客人自己在 LINE 上選時段，職人專心做手上的服務就好。',
+  },
+  hualien: {
+    name: '花蓮',
+    intro: '花蓮的職人服務講究節奏與品質。MooLah 把預約這件事變簡單——LINE 點開就能看到空檔，選好送出，行前一天自動提醒。',
+  },
+  taitung: {
+    name: '台東',
+    intro: '台東的美業以在地熟客與旅客並行。MooLah 讓外地來的客人也能提前用 LINE 預約好時段，不必到了才問「今天還有位子嗎」。',
+  },
+  penghu: {
+    name: '澎湖',
+    intro: '澎湖的旺季一位難求。MooLah 讓職人把可預約時段公開在 LINE 上，遊客出發前就能先訂好，不用到了現場才碰運氣。',
+  },
 }
 
 export const CATEGORIES: Record<string, {
@@ -107,7 +151,9 @@ export const CATEGORIES: Record<string, {
   },
 }
 
-// 全城市 × 全品類 自動展開（2026-07-16 起全台覆蓋：六都＋屏東）
+// 全城市 × 全品類 自動展開
+// 2026-07-16 六都＋屏東（7 城）→ 2026-08-06 擴至全台本島 18 縣市＋澎湖
+// 金門/連江刻意不做（搜尋量趨近零、無職人進駐可能）
 export const COMBOS: [string, string][] = Object.keys(CITIES).flatMap(city =>
   Object.keys(CATEGORIES).map(category => [city, category] as [string, string])
 )
