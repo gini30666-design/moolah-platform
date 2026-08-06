@@ -1222,7 +1222,9 @@ export default function BookPage() {
                 ['稱呼', customerNameInput || '—'],
                 ['性別', gender || '—'],
                 ['日期時段', date ? `${fmtDate} ${time || '—'}` : '—'],
-                ...(selectedInspirations.length > 0 ? [['靈感參考', `${selectedInspirations.length} 張已選`]] : [['靈感參考', '—']]),
+                // space 模式沒有靈感參考可挑，摘要就別留一行「靈感參考 —」
+                ...(isSpaceMode ? []
+                  : selectedInspirations.length > 0 ? [['靈感參考', `${selectedInspirations.length} 張已選`]] : [['靈感參考', '—']]),
                 ...(selectedTags.length ? [['備註標籤', selectedTags.join('、')]] : []),
               ].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderTop: '1px solid rgba(166,137,102,0.1)' }}>
