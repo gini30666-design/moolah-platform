@@ -8,7 +8,7 @@ import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 //
 // 給「業務（Gini）」的每日試用追蹤待辦，推到 OPS_LINE_USER_ID：
 //   ⏰ 3 天內到期 + 🔴 已到期未轉正（30 天內）
-// 目的：業務主動聯絡客戶確認續用意願、收反饋。提醒對象是業務，不是設計師。
+// 目的：業務主動聯絡客戶確認續用意願、聽取回饋。提醒對象是業務，不是設計師。
 
 const TRIAL_LIMIT = TRIAL_BOOKING_LIMIT
 const DAY = 86400000
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
   let msg = '📋 MooLah 試用追蹤（業務待辦）\n'
   if (soon.length) msg += `\n⏰ 即將到期（3 天內）\n${soon.join('\n')}\n`
   if (expired.length) msg += `\n🔴 已到期未轉正\n${expired.join('\n')}\n`
-  msg += '\n👉 主動聯絡：確認續用意願、收反饋；願意轉正再寄客製立牌 + 開電子發票'
+  msg += '\n👉 主動聯絡：確認續用意願、聽取使用回饋；確定合作後再寄客製立牌並開立電子發票'
 
   await pushMessage(ops, msg)
   return NextResponse.json({ ok: true, soon: soon.length, expired: expired.length })

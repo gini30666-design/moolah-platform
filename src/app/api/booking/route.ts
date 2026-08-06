@@ -189,8 +189,8 @@ export async function POST(req: NextRequest) {
       const full = usedNow >= TRIAL_BOOKING_LIMIT
       try {
         await pushMessage(opsUserId, full
-          ? `🚫 試用額度已用完\n\n${storeName}（${providerId}）已達 ${TRIAL_BOOKING_LIMIT} 筆上限，\n之後的客人「會被系統擋下來」。\n\n請盡快與他確認是否轉為正式方案。`
-          : `⚠️ 試用額度快用完了\n\n${storeName}（${providerId}）已用 ${usedNow}/${TRIAL_BOOKING_LIMIT} 筆。\n剩 ${TRIAL_BOOKING_LIMIT - usedNow} 筆就會開始擋客人，建議先聯繫他談轉正。`)
+          ? `🚫 試用額度已用完\n\n${storeName}（${providerId}）已達 ${TRIAL_BOOKING_LIMIT} 筆上限，新的預約將無法送出。\n\n請盡快與對方聯繫，確認後續方案。`
+          : `⚠️ 試用額度即將用完\n\n${storeName}（${providerId}）已使用 ${usedNow}／${TRIAL_BOOKING_LIMIT} 筆，剩餘 ${TRIAL_BOOKING_LIMIT - usedNow} 筆。\n額滿後新的預約將無法送出。\n\n請盡快與對方聯繫，確認後續方案。`)
       } catch (e) {
         console.error('[booking] trial quota warning failed:', e)
       }
