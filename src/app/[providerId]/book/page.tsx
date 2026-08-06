@@ -17,6 +17,8 @@ const HAIR_CATEGORIES = ['髮型設計師']
 const NOTE_TAGS = ['第一次來', '想換個風格', '特殊場合', '有指定參考', '預算有限', '會晚一點到']
 // space 模式（除毛/採耳/按摩等無「作品」可挑的品類）：拿掉與「挑款式」有關的標籤
 const NOTE_TAGS_SPACE = ['第一次來', '有特殊需求', '會晚一點到', '容易緊張', '想先諮詢']
+// 服務清單預設露出的項數（超過才顯示「查看全部」）
+const SERVICE_PREVIEW_COUNT = 6
 
 // ── ChapterHeader ─────────────────────────────────────────────────────
 // 去典禮化：不用編號/英文 eyebrow/菱形裝飾，直接一個清楚的群組標題（product register）
@@ -102,7 +104,7 @@ function QuickTags({ tags, selected, onToggle }: { tags: string[]; selected: str
         const sel = selected.includes(tag)
         return (
           <button key={tag} type="button" onClick={() => onToggle(tag)} style={{
-            padding: '7px 14px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
+            padding: '0 16px', minHeight: '40px', borderRadius: '99px', fontSize: '12px', cursor: 'pointer',
             border: sel ? '1.5px solid var(--oak)' : '1.5px solid rgba(166,137,102,0.25)',
             background: sel ? 'rgba(166,137,102,0.14)' : 'rgba(255,255,255,0.6)',
             color: sel ? 'var(--oak)' : 'rgba(44,40,37,0.7)',
@@ -246,12 +248,12 @@ function InlineCalendar({ providerId, value, onChange }: {
         <button type="button" onClick={prevM} disabled={viewMonth <= currentMonthStr}
           style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, padding: '4px 10px',
             color: viewMonth <= currentMonthStr ? 'rgba(166,137,102,0.2)' : 'var(--oak)',
-            cursor: viewMonth <= currentMonthStr ? 'default' : 'pointer' }}>‹</button>
+            cursor: viewMonth <= currentMonthStr ? 'default' : 'pointer', minWidth: '44px', minHeight: '44px' }}>‹</button>
         <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '16px', fontWeight: 500, color: 'var(--charcoal)', letterSpacing: '0.04em' }}>
           {yr} 年 {mo} 月
         </p>
         <button type="button" onClick={nextM}
-          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, padding: '4px 10px', color: 'var(--oak)', cursor: 'pointer' }}>›</button>
+          style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, padding: '4px 10px', color: 'var(--oak)', cursor: 'pointer', minWidth: '44px', minHeight: '44px' }}>›</button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '4px' }}>
         {DOW_LABELS.map(l => (
@@ -596,6 +598,7 @@ export default function BookPage() {
   const [consumerNotified, setConsumerNotified] = useState(false)
   const [isDemoDone, setIsDemoDone] = useState(false)
   const [isHairCategory, setIsHairCategory] = useState(false)
+  const [showAllServices, setShowAllServices] = useState(false)
   const [waitlistSlot, setWaitlistSlot] = useState<string | null>(null)
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
   const [waitlistDone, setWaitlistDone] = useState(false)
@@ -800,6 +803,14 @@ export default function BookPage() {
   const phoneValid = forOthers || customerPhone.replace(/\D/g, '').length >= 8
   // space 模式：職人的照片是環境/設備而非可挑選的作品 → 收起「靈感參考」、換掉挑款式類的備註標籤
   const isSpaceMode = provider?.portfolioMode === 'space'
+
+  // 服務清單摺疊：預設只露前 N 項；已選的服務若在名單外一定要看得到（否則使用者找不到自己選了什麼）
+  const visibleServices = showAllServices
+    ? allServices
+    : (() => {
+        const head = allServices.slice(0, SERVICE_PREVIEW_COUNT)
+        return service && !head.some(s => s.id === service.id) ? [...head, service] : head
+      })()
   const canSubmit = liffReady && date && time && gender && (isHairCategory ? !!hairLength : true) && hasCustomerInfo && phoneValid && !submitting
 
   const fmtDate = date ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : ''
@@ -975,7 +986,7 @@ export default function BookPage() {
       )}
       <div className="sticky top-0 z-40" style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(166,137,102,0.2)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
-          <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em' }}>{isSpaceMode ? '← 返回' : '← 作品集'}</button>
+          <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em', minHeight: '44px', display: 'flex', alignItems: 'center', padding: '0 10px 0 0' }}>{isSpaceMode ? '← 返回' : '← 作品集'}</button>
           <span className="font-display text-base tracking-[0.12em]" style={{ color: 'var(--cream)' }}>{provider.name}</span>
           <div style={{ width: '48px' }} />
         </div>
@@ -1012,7 +1023,7 @@ export default function BookPage() {
         {/* ── LINE OA join card ─── */}
         {liffReady && showLineCard && (
           <div className="mb-5" style={{ background: 'linear-gradient(135deg, rgba(6,199,85,0.08), rgba(6,199,85,0.04))', border: '1.5px solid rgba(6,199,85,0.25)', borderRadius: '16px', padding: '15px 16px', position: 'relative' }}>
-            <button type="button" onClick={() => setShowLineCard(false)} style={{ position: 'absolute', top: '10px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(44,40,37,0.32)', fontSize: '15px', lineHeight: 1, padding: '2px' }}>✕</button>
+            <button type="button" onClick={() => setShowLineCard(false)} style={{ position: 'absolute', top: '4px', right: '6px', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(44,40,37,0.32)', fontSize: '15px', lineHeight: 1, width: '40px', height: '40px', display: 'grid', placeItems: 'center' }}>✕</button>
             <div className="flex items-start gap-3">
               <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#06C755', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.582 2 2 5.088 2 8.9c0 2.477 1.338 4.685 3.43 6.125-.15.555-.544 2.013-.623 2.325-.1.388.143.385.3.28.123-.083 1.97-1.3 2.766-1.829.53.075 1.073.115 1.627.115C14.418 15.916 18 12.828 18 9.04 18 5.25 14.418 2 10 2Z" fill="white"/></svg>
@@ -1020,7 +1031,7 @@ export default function BookPage() {
               <div style={{ flex: 1, paddingRight: '20px' }}>
                 <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>加入 MooLah LINE，接收預約通知</p>
                 <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.60)' }}>加入後可即時收到預約確認與前一天提醒通知</p>
-                <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</a>
+                <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0 20px', minHeight: '44px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</a>
                 <span onClick={() => setShowLineCard(false)} className="text-xs ml-4" style={{ color: 'rgba(44,40,37,0.40)', cursor: 'pointer', textDecoration: 'underline' }}>略過</span>
               </div>
             </div>
@@ -1064,7 +1075,7 @@ export default function BookPage() {
           <div className="mb-6">
             <FieldLabel hint="可更換">選擇服務</FieldLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {allServices.map(s => {
+              {visibleServices.map(s => {
                 const sel = service.id === s.id
                 return (
                   <button key={s.id} type="button" onClick={() => setService(s)}
@@ -1089,6 +1100,22 @@ export default function BookPage() {
                 )
               })}
             </div>
+
+            {/* 服務多的職人（例如除毛有 17 項）預設只露前 6 項，避免要滑很久才看到日曆 */}
+            {allServices.length > SERVICE_PREVIEW_COUNT && (
+              <button type="button" onClick={() => setShowAllServices(v => !v)}
+                style={{
+                  width: '100%', marginTop: '10px', padding: '13px', borderRadius: '12px',
+                  border: '1.5px dashed rgba(166,137,102,0.35)', background: 'transparent',
+                  color: 'var(--oak)', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                }}>
+                {showAllServices
+                  ? '收合服務清單'
+                  : `查看全部 ${allServices.length} 項服務`}
+                <span style={{ fontSize: '11px', display: 'inline-block', transform: showAllServices ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s' }}>▼</span>
+              </button>
+            )}
           </div>
         )}
 
@@ -1178,7 +1205,7 @@ export default function BookPage() {
                       setTime(nextAvailable.time)
                       setTimeout(() => timeRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }), 700)
                     }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(196,132,90,0.16)', border: '1px solid rgba(196,132,90,0.55)', fontSize: '11px', fontWeight: 600, color: '#d99a6e', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0 14px', minHeight: '40px', borderRadius: '999px', background: 'rgba(196,132,90,0.16)', border: '1px solid rgba(196,132,90,0.55)', fontSize: '11.5px', fontWeight: 600, color: '#d99a6e', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     <svg viewBox="0 0 12 12" fill="currentColor" style={{ width: '10px', height: '10px' }}><path d="M6 1l1.2 2.4L10 4l-2 1.95.47 2.75L6 7.4l-2.47 1.3.47-2.75L2 4l2.8-.6z"/></svg>
                     最快 {nextAvailable.label} {nextAvailable.time}
                   </button>

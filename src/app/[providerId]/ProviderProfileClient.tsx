@@ -287,13 +287,13 @@ export default function ProviderPage() {
       }}>
         {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
-          <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
+          <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
               <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
           </button>
-          <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none' }}>MooLah</a>
+          <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center', padding: '0 8px' }}>MooLah</a>
           {isDemo
             ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
             : location
@@ -346,7 +346,8 @@ export default function ProviderPage() {
       {/* ── 3. Designer intro dark section ──────────────────────────────── */}
       <div data-animate data-dir="up" style={{
         background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
-        padding: '38px 22px 40px', margin: '8px 0',
+        // 底部留 106px：這一區最後是專長標籤與 IG 連結，留白不夠會停在底部浮動 CTA 的漸層裡被吃掉
+        padding: '38px 22px 106px', margin: '8px 0',
       }}>
         {/* top hairline gold */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
@@ -410,7 +411,7 @@ export default function ProviderPage() {
                 <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="var(--oak)" stroke="none" />
               </svg>
               <a href={`https://instagram.com/${handle.replace('@','')}`} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', letterSpacing: '0.04em', textDecoration: 'none' }}>
+                style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', letterSpacing: '0.04em', textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>
                 {handle}
               </a>
             </div>
