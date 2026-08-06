@@ -1080,11 +1080,10 @@ export default function BookPage() {
                 return (
                   <button key={s.id} type="button" onClick={() => setService(s)}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', borderRadius: '14px', cursor: 'pointer', border: sel ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(166,137,102,0.2)', background: sel ? 'rgba(44,40,37,0.04)' : 'rgba(255,255,255,0.7)', transition: 'all 0.2s ease', gap: '12px' }}>
-                    {s.imageUrl ? (
+                    {/* 沒有服務照就不放縮圖：整排灰色斜線佔位看起來像圖片載入失敗 */}
+                    {s.imageUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.imageUrl} alt={s.name} style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', flexShrink: 0 }} />
-                    ) : (
-                      <div style={{ width: '52px', height: '52px', borderRadius: '10px', background: 'repeating-linear-gradient(135deg, #efe6da 0 8px, #e6dccd 8px 16px)', flexShrink: 0 }} />
                     )}
                     <div style={{ flex: 1, textAlign: 'left' }}>
                       <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>{s.name}</p>
