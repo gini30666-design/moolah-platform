@@ -45,9 +45,39 @@ const CATEGORIES = [
     no: '04',
     img: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop',
   },
+  // 2026-08 補上藍海品類：與 localSeo 的品類頁對齊，否則招到的採耳/做臉/按摩職人
+  // 不會出現在「探索職人」（LINE 圖文選單的目的地）
+  {
+    id: '採耳師',
+    label: '採耳師',
+    en: 'Ear Cleaning',
+    no: '05',
+    img: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&fit=crop',
+  },
+  {
+    id: '美容師',
+    label: '美容師',
+    en: 'Facial Care',
+    no: '06',
+    img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80&fit=crop',
+  },
+  {
+    id: '按摩舒壓師',
+    label: '按摩舒壓師',
+    en: 'Massage',
+    no: '07',
+    img: 'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=600&q=80&fit=crop',
+  },
+  {
+    id: '熱蠟除毛師',
+    label: '熱蠟除毛師',
+    en: 'Waxing',
+    no: '08',
+    img: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?w=600&q=80&fit=crop',
+  },
 ]
 
-const QUICK_CITIES = ['高雄市', '台南市', '台中市', '台北市', '新北市', '屏東縣']
+const QUICK_CITIES = ['高雄市', '台南市', '台中市', '台北市', '新北市', '新竹市', '屏東縣']
 const TW_CITIES = [
   '台北市', '新北市', '桃園市', '台中市', '台南市', '高雄市',
   '基隆市', '新竹市', '嘉義市', '新竹縣', '苗栗縣', '彰化縣',
