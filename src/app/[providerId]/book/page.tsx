@@ -277,7 +277,7 @@ function InlineCalendar({ providerId, value, onChange }: {
               style={{
                 position: 'relative', overflow: 'hidden',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-                padding: '11px 2px', borderRadius: '8px', border: 'none',
+                padding: '11px 2px', minHeight: '44px', justifyContent: 'center', borderRadius: '8px', border: 'none',
                 cursor: isDisabled ? 'default' : 'pointer',
                 background: isSelected ? 'var(--charcoal)' : isToday ? 'rgba(166,137,102,0.15)' : 'transparent',
                 opacity: isPast ? 0.22 : 1, transition: 'background 0.15s',
@@ -1146,16 +1146,18 @@ export default function BookPage() {
 
             {/* For others toggle */}
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>替別人預約</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>幫親友代訂，輸入對方資訊</p>
-                </div>
-                <button type="button" onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
-                  style={{ width: '44px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0, background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)', position: 'relative', padding: 0, transition: 'background 0.2s' }}>
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: '3px', transform: forOthers ? 'translateX(18px)' : 'translateX(0)', transition: 'transform 0.2s var(--ease-expo)', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
-                </button>
-              </div>
+              {/* 整列可點：開關本體只有 26px 高，單獨當點擊區太小 */}
+              <button type="button" onClick={() => { setForOthers(v => !v); setRecipientName(''); setRecipientPhone('') }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', background: 'none', border: 'none', padding: '9px 0', minHeight: '44px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
+                <span>
+                  <span style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>替別人預約</span>
+                  <span style={{ display: 'block', fontSize: '11px', color: 'rgba(44,40,37,0.45)' }}>幫親友代訂，輸入對方資訊</span>
+                </span>
+                <span aria-hidden
+                  style={{ width: '44px', height: '26px', borderRadius: '13px', flexShrink: 0, background: forOthers ? 'var(--oak)' : 'rgba(44,40,37,0.12)', position: 'relative', display: 'block', transition: 'background 0.2s' }}>
+                  <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: '3px', transform: forOthers ? 'translateX(18px)' : 'translateX(0)', transition: 'transform 0.2s var(--ease-expo)', boxShadow: '0 1px 4px rgba(0,0,0,0.18)', display: 'block' }} />
+                </span>
+              </button>
               {forOthers && (
                 <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <input type="text" placeholder="受預約者姓名（必填）" value={recipientName} onChange={e => setRecipientName(e.target.value)}
