@@ -12,8 +12,8 @@ const cream = '#fbf9f4'
 const border = 'rgba(166,137,102,0.15)'
 const inputStyle: React.CSSProperties = {
   background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)',
-  borderRadius: '10px', padding: '9px 12px', fontSize: '13px', color: charcoal,
-  outline: 'none', width: '80px',
+  borderRadius: '10px', padding: '0 12px', minHeight: '44px', fontSize: '13px', color: charcoal,
+  outline: 'none', width: '84px',
 }
 
 export default function ScheduleView({ providerId }: { providerId: string }) {
@@ -105,21 +105,27 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
               {DAY_LABELS[s.day]}
             </span>
 
-            {/* Toggle */}
+            {/* Toggle — 開關本體 42x24 太小，外層補到 44px 可點區 */}
             <button
               onClick={() => toggleDay(s.day)}
+              aria-label={`${DAY_LABELS[s.day]}${s.isOpen ? '休息' : '營業'}`}
               style={{
-                width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                background: s.isOpen ? oak : 'rgba(166,137,102,0.2)',
-                position: 'relative', transition: 'background 0.2s', flexShrink: 0,
+                background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
+                padding: '10px 0', minHeight: '44px', display: 'flex', alignItems: 'center',
               }}
             >
               <span style={{
-                position: 'absolute', top: '3px',
-                left: s.isOpen ? '21px' : '3px',
-                width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
-                transition: 'left 0.2s',
-              }} />
+                width: '42px', height: '24px', borderRadius: '12px', display: 'block',
+                background: s.isOpen ? oak : 'rgba(166,137,102,0.2)',
+                position: 'relative', transition: 'background 0.2s',
+              }}>
+                <span style={{
+                  position: 'absolute', top: '3px',
+                  left: s.isOpen ? '21px' : '3px',
+                  width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
+                  transition: 'left 0.2s', display: 'block',
+                }} />
+              </span>
             </button>
 
             {s.isOpen ? (
@@ -142,7 +148,8 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                 <button
                   onClick={() => toggleBreak(s.day)}
                   style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px 0 0',
+                    minHeight: '44px', display: 'inline-flex', alignItems: 'center',
                     fontSize: '12px', color: s.breakStart && s.breakEnd ? oak : '#b0a89e',
                   }}
                 >

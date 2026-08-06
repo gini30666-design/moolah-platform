@@ -827,7 +827,7 @@ function ServiceItem({ service, providerId, onRefresh }: {
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '18px', color: charcoal }}>
             NT$ {service.price.toLocaleString()}
           </p>
-          <button onClick={() => setEditing(true)} style={{ padding: '6px 8px', background: 'rgba(166,137,102,0.1)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: oak, display: 'flex', alignItems: 'center' }}>
+          <button onClick={() => setEditing(true)} aria-label="編輯服務" style={{ width: '44px', height: '44px', background: 'rgba(166,137,102,0.1)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: oak, display: 'grid', placeItems: 'center' }}>
             <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}>
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
@@ -836,13 +836,13 @@ function ServiceItem({ service, providerId, onRefresh }: {
       </div>
       {confirmDelete ? (
         <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-          <button onClick={() => setConfirmDelete(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', padding: '8px', background: 'transparent', cursor: 'pointer' }}>取消</button>
-          <button onClick={handleDelete} disabled={deleting} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '8px', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => setConfirmDelete(false)} style={{ flex: 1, fontSize: '12px', color: '#8a7e76', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '10px', minHeight: '44px', background: 'transparent', cursor: 'pointer' }}>取消</button>
+          <button onClick={handleDelete} disabled={deleting} style={{ flex: 1, fontSize: '12px', color: '#fff', background: '#b04040', borderRadius: '10px', minHeight: '44px', border: 'none', cursor: 'pointer' }}>
             {deleting ? '刪除中...' : '確認刪除'}
           </button>
         </div>
       ) : (
-        <button onClick={() => setConfirmDelete(true)} style={{ marginTop: '10px', fontSize: '11px', color: '#c0b4ac', background: 'none', border: 'none', cursor: 'pointer', padding: '0' }}>刪除此服務</button>
+        <button onClick={() => setConfirmDelete(true)} style={{ marginTop: '4px', fontSize: '11px', color: '#c0b4ac', background: 'none', border: 'none', cursor: 'pointer', padding: '0 6px', minHeight: '40px', display: 'inline-flex', alignItems: 'center' }}>刪除此服務</button>
       )}
     </div>
   )
@@ -1108,11 +1108,11 @@ export default function AdminPage() {
         <style>{`@keyframes adminSpin { to { transform: rotate(360deg) } }`}</style>
         <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 3, display: 'flex', gap: '8px' }}>
           <button onClick={refreshAll} disabled={refreshing}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', padding: '7px 12px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)', opacity: refreshing ? 0.6 : 1 }}>
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', padding: '0 14px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)', opacity: refreshing ? 0.6 : 1 }}>
             <span style={{ display: 'inline-block', animation: refreshing ? 'adminSpin 0.8s linear infinite' : 'none' }}>↻</span>{refreshing ? '更新中' : '刷新'}
           </button>
           <button onClick={() => { const url = `${window.location.origin}/${providerId}`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em', padding: '7px 13px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: '12px', letterSpacing: '0.04em', padding: '0 15px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
             <span style={{ fontSize: '13px' }}>👁</span> 預覽
           </button>
         </div>
@@ -1372,7 +1372,7 @@ export default function AdminPage() {
               <button onClick={() => setAddingService(true)} style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
                 fontSize: '12px', color: oak, background: 'rgba(166,137,102,0.1)',
-                border: 'none', borderRadius: '20px', padding: '7px 14px', cursor: 'pointer',
+                border: 'none', borderRadius: '22px', padding: '0 16px', minHeight: '44px', cursor: 'pointer',
               }}>
                 <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}>
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -1473,7 +1473,8 @@ export default function AdminPage() {
           </pre>
           <p style={{ marginTop: '8px', fontSize: '10px', color: 'rgba(44,40,37,0.5)' }}>
             或直接分享連結：
-            <a href={`/embed/${providerId}`} target="_blank" rel="noopener noreferrer" style={{ color: oak, marginLeft: '4px', textDecoration: 'underline' }}>
+            <a href={`/embed/${providerId}`} target="_blank" rel="noopener noreferrer"
+              style={{ color: oak, marginLeft: '4px', textDecoration: 'underline', minHeight: '40px', display: 'inline-flex', alignItems: 'center', padding: '0 4px' }}>
               預覽 widget →
             </a>
           </p>
