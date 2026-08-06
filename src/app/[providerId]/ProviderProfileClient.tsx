@@ -332,7 +332,10 @@ export default function ProviderPage() {
         <div style={{ display: 'inline-flex', animation: 'marquee-op 24s linear infinite', padding: '8px 0' }}>
           {[0, 1].map(k => (
             <span key={k} style={{ display: 'inline-flex', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.9)' }}>
-              {['認證職人', '即時 LINE 通知', `${provider.reviewCount || '—'} 則好評`, '質感空間', '一對一諮詢'].map((t, i) => (
+              {/* 新職人還沒有評價 → 不顯示「— 則好評」這種破的字樣，改用不需資料的賣點 */}
+              {['認證職人', '即時 LINE 通知',
+                provider.reviewCount ? `${provider.reviewCount} 則好評` : '線上即時預約',
+                '質感空間', '一對一諮詢'].map((t, i) => (
                 <span key={i}>{t}<span style={{ margin: '0 16px', opacity: 0.4 }}>·</span></span>
               ))}
             </span>
@@ -487,11 +490,16 @@ export default function ProviderPage() {
               <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>價格</span>
               <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--oak)' }}>NT$ {fromPrice.toLocaleString()} 起</span>
             </div>
-            <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
-              <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>評分</span>
-              <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>★ {provider.rating || '—'}</span>
-            </div>
+            {/* 沒有評分就整欄收掉（含分隔線）：新職人顯示「★ —」比不顯示更傷 */}
+            {provider.rating && (
+              <>
+                <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
+                  <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>評分</span>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>★ {provider.rating}</span>
+                </div>
+              </>
+            )}
           </div>
 
           <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.32)', marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
