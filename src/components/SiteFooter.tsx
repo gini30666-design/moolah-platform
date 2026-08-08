@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { OA_CONSUMER, OA_B2B, lineAddFriendUrl } from '@/lib/lineOA'
-import TrackedLineLink from '@/components/TrackedLineLink'
+import LineLink from '@/components/LineLink'
 
 function LineIcon({ size = 18 }: { size?: number }) {
   return (
@@ -25,13 +25,13 @@ export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
               消費者 OA(@881zhkla) 已轉為內部帳號——只給拿到設計師連結／下過預約單的客人加；
               招商 OA 放在消費者頁又不對題。所以這裡改成給職人的入口。 */}
           {b2b ? (
-            /* 用 TrackedLineLink：App scheme 優先，避開 in-app browser 的英文中間頁，
+            /* 用 LineLink：App scheme 優先，避開 in-app browser 的英文中間頁，
                同時補上原本頁尾漏掉的點擊追蹤 */
-            <TrackedLineLink source="footer_b2b" oaId={OA_B2B}
+            <LineLink track source="footer_b2b" oaId={OA_B2B}
               className="inline-flex items-center gap-2 px-5 py-2.5 text-xs text-white tracking-widest uppercase"
               style={{ background: 'var(--line-green)' }}>
               <LineIcon size={14} />洽詢合作
-            </TrackedLineLink>
+            </LineLink>
           ) : (
             <Link href="/pro"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-widest uppercase"
@@ -59,10 +59,18 @@ export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
         <div data-animate data-delay="300">
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
-            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw'],
-              ...(b2b ? [[`LINE ${oa}`, lineAddFriendUrl(OA_B2B)]] : [])].map(([l, h]) => (
+            {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw']].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
+            {/* LINE 要走 LineLink（App scheme），不能跟上面的 email/IG 混在同一個 map 裡 */}
+            {b2b && (
+              <li>
+                <LineLink source="footer_contact" oaId={OA_B2B} track
+                  className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>
+                  {`LINE ${oa}`}
+                </LineLink>
+              </li>
+            )}
           </ul>
         </div>
       </div>

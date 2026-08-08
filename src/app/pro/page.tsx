@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import JoinForm from '@/components/JoinForm'
 import SiteFooter from '@/components/SiteFooter'
 import StickyTrialCTA from '@/components/StickyTrialCTA'
-import TrackedLineLink from '@/components/TrackedLineLink'
+import LineLink from '@/components/LineLink'
 import ScrollDepthTracker from '@/components/ScrollDepthTracker'
 import IndustryPicker from './IndustryPicker'
 import StepPhones from './StepPhones'
@@ -62,10 +62,10 @@ function LineIcon({ size = 20 }: { size?: number }) {
 function CtaBar({ source, label = '加 LINE 開通免費試用', pad = '30px 22px 40px' }: { source: string; label?: string; pad?: string }) {
   return (
     <div style={{ padding: pad, maxWidth: '520px', margin: '0 auto' }}>
-      <TrackedLineLink source={source} className="cta-btn"
+      <LineLink track source={source} className="cta-btn"
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '16px 24px', borderRadius: '13px', fontSize: '15.5px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 24px rgba(6,199,85,0.28)' }}>
         <LineIcon size={19} /> {label}
-      </TrackedLineLink>
+      </LineLink>
     </div>
   )
 }
@@ -291,11 +291,11 @@ MooLah 是專為獨立美業職人打造的<br />
                 </PhoneFrame>
               </div>
 
-              <TrackedLineLink source="pro_hero"
+              <LineLink track source="pro_hero"
                 className="cta-btn"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '18px 24px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 26px rgba(6,199,85,0.4)', marginBottom: '14px' }}>
                 <LineIcon /> 加 LINE 開通免費試用
-              </TrackedLineLink>
+              </LineLink>
               <div className="hero-sub-links" style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <a href={DEMO_URL} style={{ display: 'inline-block', fontSize: '13px', color: 'rgba(251,249,244,0.72)', textDecoration: 'underline', textUnderlineOffset: '4px' }}>
                   先看系統示範頁 →
@@ -653,17 +653,17 @@ MooLah 是專為獨立美業職人打造的<br />
             ⚠️ 刻意收在同一個區塊、主次分明（主鈕滿寬、次選項並排且視覺較輕），
                避免變成三個等重選項造成決策癱瘓。
           */}
-          <TrackedLineLink source="pro_mid"
+          <LineLink track source="pro_mid"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '18px 24px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 26px rgba(6,199,85,0.35)', marginBottom: '10px' }}>
             <LineIcon /> 開通 14 天免費試用
-          </TrackedLineLink>
+          </LineLink>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-            <TrackedLineLink source="pro_ask_first"
+            <LineLink track source="pro_ask_first"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', background: '#fff', color: charcoal, padding: '14px 12px', borderRadius: '12px', textDecoration: 'none', border: `1px solid ${oak}45`, minHeight: '62px' }}>
               <span style={{ fontSize: '14px', fontWeight: 700 }}>先問幾個問題</span>
               <span style={{ fontSize: '11.5px', color: 'rgba(44,40,37,0.6)' }}>還不用決定要不要用</span>
-            </TrackedLineLink>
+            </LineLink>
 
             <a href={DEMO_URL}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', background: '#fff', color: charcoal, padding: '14px 12px', borderRadius: '12px', textDecoration: 'none', border: `1px solid ${oak}45`, minHeight: '62px' }}>
@@ -739,10 +739,10 @@ MooLah 是專為獨立美業職人打造的<br />
             </div>
           </div>
 
-          <TrackedLineLink source="pro_card"
+          <LineLink track source="pro_card"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '9px', background: '#06C755', color: '#fff', padding: '15px 24px', borderRadius: '13px', fontSize: '15px', fontWeight: 700, textDecoration: 'none', marginTop: '18px', boxShadow: '0 8px 24px rgba(6,199,85,0.3)' }}>
             <LineIcon size={18} /> 直接加 Gini 的 LINE
-          </TrackedLineLink>
+          </LineLink>
         </section>
 
         {/* ══════════ 營運方資訊 ══════════ */}
