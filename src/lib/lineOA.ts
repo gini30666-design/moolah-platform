@@ -26,3 +26,42 @@ export const B2B_PREFILL = '我想了解 MooLah 的免費試用'
 
 /** 招商 CTA 連結（預填版）。 */
 export const LINE_B2B_URL = lineOaMessage(OA_B2B, B2B_PREFILL)
+
+/**
+ * 「加好友」的 App scheme。
+ *
+ * ⚠️ 2026-08-08 修的重大流失點：
+ * 原本所有 CTA 都直接連 `https://line.me/R/...`，那是 universal link——
+ * 在 Safari 點通常會直接開 App，但**在 Instagram / Facebook 的 in-app browser 裡會被攔截**，
+ * 改為顯示 LINE 的英文中間頁「Open LINE to continue / Download LINE」。
+ * 而 Reels 廣告的流量 100% 都在 in-app browser 內。
+ *
+ * 8/3–8/8 有 26 個人按了「加 LINE」卻沒有變成好友，這是最可能的原因——
+ * 他們是意圖最強的一批人，卻卡在這一步。
+ *
+ * 解法：點擊時先用 App scheme 直接喚起 LINE（in-app browser 也吃這個），
+ * 喚不起來才 fallback 回 https。使用者不需要多按任何一次。
+ */
+export const lineAddFriendScheme = (oaId: string) => `line://ti/p/${oaId}`
+
+/** 加好友的 https 版（fallback 用，也是沒有 JS 時的預設行為）。 */
+export const lineAddFriendUrl = (oaId: string) => `https://line.me/R/ti/p/${oaId}`
+
+/**
+ * 點擊「加 LINE」時呼叫：強制跳進 LINE App 的加好友畫面。
+ *
+ * 為什麼用「加好友」而不是 oaMessage（預填訊息）：
+ * oaMessage 要求先成為好友才有聊天室，路徑更長。改成直接加好友後，
+ * OA 的歡迎詞會自動送出（已設定成引導對方回「試用」），效果相同但少一步。
+ */
+export function openLineOA(oaId: string = OA_B2B): void {
+  if (typeof window === 'undefined') return
+  const t = Date.now()
+  // App scheme：in-app browser 也能喚起，且不會被彈窗阻擋（非 window.open）
+  window.location.href = lineAddFriendScheme(oaId)
+  // 沒裝 App / scheme 被擋 → 退回 https。頁面若已隱藏代表 App 開起來了，就不要再跳。
+  window.setTimeout(() => {
+    if (document.hidden || Date.now() - t > 2500) return
+    window.location.href = lineAddFriendUrl(oaId)
+  }, 1200)
+}

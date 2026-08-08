@@ -4,7 +4,7 @@
 // 長頁滾動中隨時可行動，避免職人被說服後找不到按鈕而流失
 import { ga } from '@/lib/gtag'
 import { trackContact } from '@/components/MetaPixel'
-import { LINE_B2B_URL } from '@/lib/lineOA'
+import { OA_B2B, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 
 export default function StickyTrialCTA() {
   return (
@@ -33,11 +33,18 @@ export default function StickyTrialCTA() {
         <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.3 }}>14 天免費試用</p>
         <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.55)' }}>0 抽佣・不綁約・30 秒開通</p>
       </div>
+      {/* App scheme 優先（見 lib/lineOA 的 openLineOA）：in-app browser 會攔截
+          universal link，害使用者卡在 LINE 的英文中間頁。不加 target=_blank，
+          開新分頁會讓喚起 App 更容易失敗。 */}
       <a
-        href={LINE_B2B_URL}
-        target="_blank"
+        href={lineAddFriendUrl(OA_B2B)}
         rel="noopener noreferrer"
-        onClick={() => { ga.clickLineOA('sticky_cta'); trackContact() }}
+        onClick={e => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+          e.preventDefault()
+          try { ga.clickLineOA('sticky_cta'); trackContact() } catch {}
+          openLineOA(OA_B2B)
+        }}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '7px', flexShrink: 0,
           background: '#06C755', color: 'white', padding: '11px 18px',

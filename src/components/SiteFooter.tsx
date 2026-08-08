@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { OA_CONSUMER, OA_B2B, LINE_B2B_URL } from '@/lib/lineOA'
+import { OA_CONSUMER, OA_B2B, lineAddFriendUrl } from '@/lib/lineOA'
+import TrackedLineLink from '@/components/TrackedLineLink'
 
 function LineIcon({ size = 18 }: { size?: number }) {
   return (
@@ -14,7 +15,6 @@ function LineIcon({ size = 18 }: { size?: number }) {
  *  OA 常數與預填連結的來源見 `@/lib/lineOA`。 */
 export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
   const oa = b2b ? OA_B2B : OA_CONSUMER
-  const oaHref = b2b ? LINE_B2B_URL : `https://line.me/R/ti/p/${OA_CONSUMER}`
   return (
     <footer style={{ background: '#0f0e0c', borderTop: '2px solid var(--oak)' }}>
       <div className="max-w-[1440px] mx-auto px-5 md:px-16 py-10 md:py-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
@@ -25,11 +25,13 @@ export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
               消費者 OA(@881zhkla) 已轉為內部帳號——只給拿到設計師連結／下過預約單的客人加；
               招商 OA 放在消費者頁又不對題。所以這裡改成給職人的入口。 */}
           {b2b ? (
-            <a href={oaHref} target="_blank" rel="noopener noreferrer"
+            /* 用 TrackedLineLink：App scheme 優先，避開 in-app browser 的英文中間頁，
+               同時補上原本頁尾漏掉的點擊追蹤 */
+            <TrackedLineLink source="footer_b2b" oaId={OA_B2B}
               className="inline-flex items-center gap-2 px-5 py-2.5 text-xs text-white tracking-widest uppercase"
               style={{ background: 'var(--line-green)' }}>
               <LineIcon size={14} />洽詢合作
-            </a>
+            </TrackedLineLink>
           ) : (
             <Link href="/pro"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-widest uppercase"
@@ -58,7 +60,7 @@ export default function SiteFooter({ b2b = false }: { b2b?: boolean }) {
           <h4 className="text-xs tracking-[.2em] uppercase mb-4 md:mb-6" style={{ color: 'var(--oak)' }}>聯絡</h4>
           <ul className="space-y-2.5 md:space-y-3">
             {[['service@moolah.studio', 'mailto:service@moolah.studio'], ['Instagram', 'https://instagram.com/moolah.tw'],
-              ...(b2b ? [[`LINE ${oa}`, oaHref]] : [])].map(([l, h]) => (
+              ...(b2b ? [[`LINE ${oa}`, lineAddFriendUrl(OA_B2B)]] : [])].map(([l, h]) => (
               <li key={l}><a href={h} target={h.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm hover:text-[var(--cream)] transition-colors" style={{ color: 'var(--oak-dim)' }}>{l}</a></li>
             ))}
           </ul>
