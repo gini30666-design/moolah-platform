@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { taipeiDate } from '@/lib/slots'
 import LineLink from '@/components/LineLink'
 import { OA_CONSUMER, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
@@ -201,7 +202,7 @@ function InlineCalendar({ providerId, value, onChange }: {
   providerId: string; value: string; onChange: (date: string) => void
 }) {
   const nowDate = new Date(); nowDate.setHours(0, 0, 0, 0)
-  const todayStr = nowDate.toISOString().split('T')[0]
+  const todayStr = taipeiDate(0)   // ⚠️ 台北時區，非 UTC
   const currentMonthStr = todayStr.slice(0, 7)
   const [viewMonth, setViewMonth] = useState(() => value ? value.slice(0, 7) : currentMonthStr)
   const [avail, setAvail] = useState<Record<string, DayStatus>>({})
@@ -602,6 +603,7 @@ export default function BookPage() {
   const [waitlistSlot, setWaitlistSlot] = useState<string | null>(null)
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
   const [waitlistDone, setWaitlistDone] = useState(false)
+  const [waitlistError, setWaitlistError] = useState('')
   const [nextAvailable, setNextAvailable] = useState<{ date: string; time: string; label: string } | null>(null)
   const [forOthers, setForOthers] = useState(false)
   const [recipientName, setRecipientName] = useState('')
@@ -924,15 +926,24 @@ export default function BookPage() {
                 const wlPhone = customerPhone.trim()
                 if (!wlName) return
                 setWaitlistSubmitting(true)
+                setWaitlistError('')
                 try {
-                  await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
+                  // ⚠️ 一定要檢查 res.ok：失敗卻顯示「已加入候補」＝客人以為排到了，
+                  // 然後一直等一個永遠不會來的通知（2026-08-08 複查時發現）
+                  const res = await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
+                  if (!res.ok) { setWaitlistError('加入候補失敗，請稍後再試一次'); return }
                   setWaitlistDone(true)
+                } catch {
+                  setWaitlistError('網路不穩，請稍後再試一次')
                 } finally { setWaitlistSubmitting(false) }
               }}
               style={{ padding: '8px 20px', background: '#c4845a', color: 'white', border: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
               {waitlistSubmitting ? '處理中…' : '確認加入候補'}
             </button>
             <button type="button" onClick={() => setWaitlistSlot(null)} style={{ marginLeft: '8px', fontSize: '12px', color: 'rgba(251,249,244,0.5)', background: 'none', border: 'none', cursor: 'pointer' }}>取消</button>
+            {waitlistError && (
+              <p style={{ marginTop: '10px', fontSize: '12px', color: '#e88b8b' }}>{waitlistError}</p>
+            )}
           </div>
         )}
         {waitlistDone && (

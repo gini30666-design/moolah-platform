@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { taipeiDate } from '@/lib/slots'
+import { copyText } from '@/lib/clipboard'
 import { useParams } from 'next/navigation'
 import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
@@ -36,7 +38,9 @@ const TAGS = [
   { label: '高風險', bg: 'rgba(200,60,60,0.1)', color: '#b03030', border: 'rgba(200,60,60,0.3)' },
 ]
 
-const todayStr = () => new Date().toISOString().split('T')[0]
+// ⚠️ 用台北時區：toISOString() 是 UTC，台灣凌晨 0–8 點會算成昨天，
+// 「今日預約」會顯示昨天的（2026-08-08 掃描發現）
+const todayStr = () => taipeiDate(0)
 
 // ─── Shared style tokens ──────────────────────────────────────────────────────
 const oak = '#A68966'
@@ -119,12 +123,20 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   }
 
   async function deleteKarte(id: number) {
+    // optimistic 移除後若失敗必須還原，否則職人以為刪了、重整又出現
+    const snapshot = karte
     setKarte(prev => prev.filter(k => k.id !== id))
-    await fetch('/api/admin/customer-history', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ providerId, id }),
-    }).catch(() => {})
+    try {
+      const res = await fetch('/api/admin/customer-history', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, id }),
+      })
+      if (!res.ok) throw new Error('delete failed')
+    } catch {
+      setKarte(snapshot)
+      setSheetError('刪除失敗，請再試一次')
+    }
   }
 
   async function saveNote() {
@@ -146,13 +158,20 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   }
 
   async function toggleTag(label: string) {
+    const prev = tags
     const next = tags.includes(label) ? tags.filter(t => t !== label) : [...tags, label]
     setTags(next)
-    await fetch('/api/admin/customer-note', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId, customerPhone: booking.customerPhone ?? '', tags: next }),
-    }).catch(() => {})
+    try {
+      const res = await fetch('/api/admin/customer-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, customerLineUserId: booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId, customerPhone: booking.customerPhone ?? '', tags: next }),
+      })
+      if (!res.ok) throw new Error('save failed')
+    } catch {
+      setTags(prev)                       // 標籤沒存到就還原，別讓畫面說謊
+      setSheetError('標籤儲存失敗，請再試一次')
+    }
   }
 
   return (
@@ -491,7 +510,7 @@ function TimelineView({ bookings, services, onViewCustomer }: {
   const shiftDay = (delta: number) => {
     const d = new Date(viewDate + 'T12:00:00')
     d.setDate(d.getDate() + delta)
-    setViewDate(d.toISOString().split('T')[0])
+    setViewDate(d.toLocaleDateString('sv-SE'))
   }
 
   const now = new Date()
@@ -612,7 +631,7 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
-  const today = new Date().toISOString().split('T')[0]
+  const today = taipeiDate(0)
   const selectedService = services.find(s => s.id === serviceId)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -858,7 +877,11 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
   // 消費者旅程：分享/複製的連結一律指向職人首頁（作品集+介紹）→ 客人再點「開始預約」進 book（Gini 2026-07-19 定案）
   const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}` : ''
   const share = async () => {
-    try { await navigator.clipboard.writeText(bookUrl); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+    // copyText 有 execCommand fallback；LINE/IG 的 webview 常常沒有 navigator.clipboard，
+    // 舊寫法是 catch {} 靜默失敗卻照樣顯示「已複製」（2026-08-08 掃描發現）
+    const ok = await copyText(bookUrl)
+    if (!ok) { alert(`複製失敗，請長按下方網址手動複製：\n${bookUrl}`); return }
+    setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   const steps = [
     { n: 1, title: '設定你的服務與價格', desc: '客人才能選擇要預約的項目', action: onGoServices, label: '去設定' },
@@ -891,7 +914,11 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
   const title = tab === 'today' ? '今天還沒有預約 🌿' : tab === 'upcoming' ? '目前沒有待服務的預約 🌿' : '沒有過去記錄'
   const showCta = tab !== 'past'
   const copy = async () => {
-    try { await navigator.clipboard.writeText(bookUrl); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+    // copyText 有 execCommand fallback；LINE/IG 的 webview 常常沒有 navigator.clipboard，
+    // 舊寫法是 catch {} 靜默失敗卻照樣顯示「已複製」（2026-08-08 掃描發現）
+    const ok = await copyText(bookUrl)
+    if (!ok) { alert(`複製失敗，請長按下方網址手動複製：\n${bookUrl}`); return }
+    setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   const shareLine = () => {
     const url = `https://line.me/R/msg/text/?${encodeURIComponent(`幫我線上預約 → ${bookUrl}`)}`

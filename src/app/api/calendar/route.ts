@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { taipeiDate, taipeiDayOfWeek } from '@/lib/slots'
 import { getSheetData } from '@/lib/sheets'
 
 export type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -24,14 +25,12 @@ export async function GET(req: NextRequest) {
   const hasSchedule = scheduleRows.length > 0
 
   const result: CalendarDay[] = []
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
 
   for (let i = 0; i < days; i++) {
-    const d = new Date(today)
-    d.setDate(d.getDate() + i)
-    const dateStr = d.toISOString().split('T')[0]
-    const dow = d.getDay() // 0=Sun
+    // ⚠️ 用台北時區算日期：舊寫法 new Date()+setHours 在 Vercel(UTC) 上，
+    // 台灣凌晨 0–8 點會讓日曆第一格變成昨天
+    const dateStr = taipeiDate(i)
+    const dow = taipeiDayOfWeek(dateStr) // 0=Sun
 
     // Explicitly blocked date
     if (blockRows.some(r => r[2] === dateStr)) {

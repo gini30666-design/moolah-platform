@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { taipeiDate, taipeiDayOfWeek } from '@/lib/slots'
 import { getSheetData } from '@/lib/sheets'
 
 const TIME_SLOTS = [
@@ -41,15 +42,13 @@ export async function GET(req: NextRequest) {
   const serviceRow = serviceRows.find(r => r[0] === providerId && r[1] === serviceId)
   const serviceSlots = serviceRow ? Math.ceil(Number(serviceRow[4]) / 30) : 1
 
-  const today = new Date(); today.setHours(0,0,0,0)
-
   for (let offset = 1; offset <= 30; offset++) {
-    const d = new Date(today); d.setDate(d.getDate() + offset)
-    const dateStr = d.toISOString().split('T')[0]
+    // 台北時區（理由同 /api/calendar）
+    const dateStr = taipeiDate(offset)
 
     if (blockRows.some(r => r[2] === dateStr)) continue
 
-    const dow = d.getDay()
+    const dow = taipeiDayOfWeek(dateStr)
     const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
     const daySched = scheduleRows.find(r => r[2] === DOW_NAMES[dow])
     if (daySched && daySched[5]?.toLowerCase() === 'false') continue

@@ -134,5 +134,29 @@ export function isSlotBookable(input: AvailabilityInput, time: string): boolean 
  * （2026-08-08 架構掃描時，在 my-bookings 與 webhook 的「我的預約」發現這個 bug）
  */
 export function todayInTaipei(): string {
-  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
+  return taipeiDate(0)
+}
+
+/**
+ * 台北時區的「今天 + n 天」（YYYY-MM-DD）。
+ *
+ * ⚠️ 也不要用 `const d = new Date(); d.setHours(0,0,0,0); d.toISOString()` ——
+ * `setHours` 設的是「執行環境時區」的午夜，Vercel 跑在 UTC，
+ * 於是台灣凌晨 0–8 點算出來會是台灣的昨天。
+ * （/api/calendar 的日曆第一格會變成昨天）
+ *
+ * 這裡改成先取台北的年月日，再用 UTC 建構做日期加減 —— 不受執行環境時區影響。
+ */
+export function taipeiDate(offsetDays = 0): string {
+  const [y, m, d] = new Date()
+    .toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
+    .split('-').map(Number)
+  const base = new Date(Date.UTC(y, m - 1, d))
+  base.setUTCDate(base.getUTCDate() + offsetDays)
+  return base.toISOString().slice(0, 10)
+}
+
+/** 台北時區的星期幾（0=Sun），與 taipeiDate 搭配用。 */
+export function taipeiDayOfWeek(dateStr: string): number {
+  return new Date(dateStr + 'T12:00:00Z').getUTCDay()
 }

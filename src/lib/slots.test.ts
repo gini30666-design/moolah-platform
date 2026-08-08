@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
   padTime, timeToMinutes, computeOccupiedSlots, computeAvailability, isSlotBookable,
-  DOW_NAMES, todayInTaipei, type Row,
+  DOW_NAMES, todayInTaipei, taipeiDate, taipeiDayOfWeek, type Row,
 } from './slots'
 
 // ── row builders（欄位順序對齊 sheets.ts TABLE_COLS）────────────────
@@ -190,5 +190,40 @@ describe('todayInTaipei — 台北時區的今天', () => {
     vi.setSystemTime(new Date('2026-08-08T06:00:00Z'))  // 台灣 14:00
     expect(todayInTaipei()).toBe('2026-08-08')
     vi.useRealTimers()
+  })
+})
+
+describe('taipeiDate — 台北時區的日期加減（不受執行環境時區影響）', () => {
+  it('offset 0 等於 todayInTaipei', () => {
+    expect(taipeiDate(0)).toBe(todayInTaipei())
+  })
+
+  it('★ 台灣凌晨（UTC 還是昨天）→ 日曆第一格必須是台灣的今天', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-08T19:00:00Z'))   // 台灣 8/9 03:00
+    expect(taipeiDate(0)).toBe('2026-08-09')
+    expect(taipeiDate(1)).toBe('2026-08-10')
+    expect(taipeiDate(-1)).toBe('2026-08-08')
+    vi.useRealTimers()
+  })
+
+  it('跨月正確', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-31T04:00:00Z'))   // 台灣 8/31 12:00
+    expect(taipeiDate(1)).toBe('2026-09-01')
+    vi.useRealTimers()
+  })
+
+  it('跨年正確', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-12-31T04:00:00Z'))
+    expect(taipeiDate(1)).toBe('2027-01-01')
+    vi.useRealTimers()
+  })
+
+  it('taipeiDayOfWeek 與 DOW_NAMES 對得起來', () => {
+    // 2026-08-09 是週日
+    expect(DOW_NAMES[taipeiDayOfWeek('2026-08-09')]).toBe('Sunday')
+    expect(DOW_NAMES[taipeiDayOfWeek('2026-08-10')]).toBe('Monday')
   })
 })

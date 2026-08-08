@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { taipeiDate } from '@/lib/slots'
 import { authHeader } from '@/lib/clientAuth'
 
 // breakStart/breakEnd 皆為空字串＝該日不休息
@@ -177,7 +178,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
           type="date"
           value={newBlockDate}
           onChange={e => setNewBlockDate(e.target.value)}
-          min={new Date().toISOString().split('T')[0]}
+          min={taipeiDate(0)}   /* 台北時區：UTC 會讓凌晨時可以選到昨天 */
           style={{ ...inputStyle, width: 'auto', flex: 1 }}
         />
         <button onClick={addBlockedDate} disabled={!newBlockDate} style={{
