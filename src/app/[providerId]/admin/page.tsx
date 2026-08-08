@@ -893,7 +893,11 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
   }
   const shareLine = () => {
     const url = `https://line.me/R/msg/text/?${encodeURIComponent(`幫我線上預約 → ${bookUrl}`)}`
-    try { liff.openWindow({ url, external: true }) } catch { window.open(url, '_blank') }
+    // ⚠️ external 必須是 false：設計師是在 LINE webview 內開後台，
+    // external:true 會先跳外部瀏覽器 → 撞上 LINE 的英文中間頁 → 再繞回 LINE，
+    // 多一跳而且常常失敗（同 2026-08-08「加 LINE」那個 bug 的成因）。
+    // external:false 直接在 LINE 內開分享選單。
+    try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') }
   }
   return (
     <div style={{ textAlign: 'center', padding: '40px 24px' }}>
