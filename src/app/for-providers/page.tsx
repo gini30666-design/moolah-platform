@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 import Link from 'next/link'
 import JoinForm from '@/components/JoinForm'
 import SiteNav from '@/components/SiteNav'
@@ -324,11 +326,10 @@ export default function ForProvidersPage() {
                 不用會技術、真人一對一協助上線。
               </p>
 
-              <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: 'white', padding: '17px 24px', fontSize: '15px', fontWeight: 700, borderRadius: '12px', textDecoration: 'none', marginBottom: '16px', boxShadow: '0 4px 14px rgba(6,199,85,0.35)' }}>
+              <LineLink source="for_providers_1" oaId={OA_B2B} track style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: 'white', padding: '17px 24px', fontSize: '15px', fontWeight: 700, borderRadius: '12px', textDecoration: 'none', marginBottom: '16px', boxShadow: '0 4px 14px rgba(6,199,85,0.35)' }}>
                 <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '20px', height: '20px' }}><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
                 加 LINE 開通 14 天免費試用
-              </a>
+              </LineLink>
 
               <div style={{ background: 'white', padding: '18px 20px', borderRadius: '14px', border: `1px solid ${oak}33`, display: 'flex', alignItems: 'center', gap: '18px' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

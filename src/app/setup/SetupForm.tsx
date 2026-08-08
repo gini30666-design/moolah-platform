@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 
 const oak = '#A68966'
 const charcoal = '#2C2825'
 const charcoalDeep = '#1a1714'
 const cream = '#fbf9f4'
-const LINE_URL = 'https://line.me/R/ti/p/@492ejbwx'
 
 const CATEGORIES = ['美甲師', '美髮設計師', '美睫師', '採耳師', '美容師（做臉）', '按摩舒壓師', '寵物美容師', '其他']
 const DISTRICTS = ['高雄市', '台南市', '台中市', '台北市', '新北市', '桃園市', '屏東縣', '其他']
@@ -73,10 +74,10 @@ export default function SetupForm() {
           我們會在 <strong style={{ color: charcoal }}>1 個工作天內</strong>與你聯繫，<br />
           幫你完成預約 AI 機器人的開通與設定 💛
         </p>
-        <a href={LINE_URL} target="_blank" rel="noopener noreferrer"
+        <LineLink source="setup_done" oaId={OA_B2B} track
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#06C755', color: '#fff', padding: '14px 26px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 22px rgba(6,199,85,0.28)' }}>
           <LineIcon /> 想更快？直接加 LINE 找我們
-        </a>
+        </LineLink>
       </div>
     )
   }

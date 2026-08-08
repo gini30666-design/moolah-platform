@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import HomeLeadForm from '@/components/HomeLeadForm'
@@ -350,15 +352,9 @@ function PartnerCTA() {
                 <div style={{ textAlign: 'left' }}>
                   <p className="text-[10px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--oak)' }}>LINE OA</p>
                   <p className="text-base font-semibold" style={{ color: 'var(--cream)' }}>@492ejbwx</p>
-                  <a
-                    href="https://line.me/R/ti/p/@492ejbwx"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs mt-2 px-3 py-1.5 transition-opacity hover:opacity-80"
-                    style={{ background: 'var(--line-green)', color: 'white', borderRadius: '6px' }}
-                  >
+                  <LineLink source="home_1" oaId={OA_B2B} track className="inline-flex items-center gap-1 text-xs mt-2 px-3 py-1.5 transition-opacity hover:opacity-80" style={{ background: 'var(--line-green)', color: 'white', borderRadius: '6px' }}>
                     加好友 →
-                  </a>
+                  </LineLink>
                 </div>
               </div>
             </div>

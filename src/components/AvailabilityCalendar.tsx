@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
+import LineLink from '@/components/LineLink'
+import { OA_CONSUMER } from '@/lib/lineOA'
 
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
 type CalendarDay = { date: string; status: DayStatus }
@@ -54,10 +56,9 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
       <div style={{ background: 'rgba(245,239,230,0.55)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '32px 20px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '18px', color: 'rgba(44,40,37,0.35)', marginBottom: '8px' }}>近期已額滿</p>
         <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.4)', lineHeight: 1.6 }}>目前未來 28 天皆已預約完畢<br />歡迎直接透過 LINE 詢問候補</p>
-        <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '16px', padding: '10px 20px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>
+        <LineLink source="availability_1" oaId={OA_CONSUMER} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '16px', padding: '10px 20px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>
           聯絡候補
-        </a>
+        </LineLink>
       </div>
     </section>
   )

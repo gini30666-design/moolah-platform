@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
+import LineLink from '@/components/LineLink'
+import { OA_CONSUMER, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 import { ga } from '@/lib/gtag'
@@ -439,7 +441,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID || ''
   const myBookingsUrl = `https://liff.line.me/${liffId}?to=${encodeURIComponent('/my-bookings')}`
   // web 訪客（無 LINE 身分）在「我的預約」追蹤不到自己的預約 → 改引導加好友（才收得到提醒）
-  const trackHref = isLineUser ? myBookingsUrl : 'https://line.me/R/ti/p/@881zhkla'
+  const trackHref = isLineUser ? myBookingsUrl : lineAddFriendUrl(OA_CONSUMER)
   const trackLabel = isLineUser ? '我的預約' : '加好友追蹤'
 
   const mapUrl = providerAddress
@@ -509,11 +511,10 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
               <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', marginBottom: '12px', lineHeight: 1.6, textAlign: 'center' }}>
                 {isLineUser ? '加入 MooLah LINE 好友，即可接收預約確認與提醒' : '設計師已收到通知。加入 LINE 好友可接收後續提醒'}
               </p>
-              <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px 20px', borderRadius: '10px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 500, textDecoration: 'none', boxShadow: '0 2px 12px rgba(6,199,85,0.28)' }}>
+              <LineLink source="book_1" oaId={OA_CONSUMER} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px 20px', borderRadius: '10px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 500, textDecoration: 'none', boxShadow: '0 2px 12px rgba(6,199,85,0.28)' }}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/></svg>
                 加入 MooLah LINE 好友
-              </a>
+              </LineLink>
             </div>
           )}
         </div>
@@ -548,11 +549,10 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '13px', height: '13px' }}><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
             {trackLabel}
           </a>
-          <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer"
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)', fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500 }}>
+          <LineLink source="book_2" oaId={OA_CONSUMER} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '11px', borderRadius: '10px', background: 'rgba(6,199,85,0.07)', border: '1px solid rgba(6,199,85,0.2)', fontSize: '12px', color: '#06C755', textDecoration: 'none', fontWeight: 500 }}>
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="#06C755"/></svg>
             LINE 聯繫
-          </a>
+          </LineLink>
         </div>
         <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.35)', paddingBottom: '2px', borderBottom: '1px solid rgba(44,40,37,0.15)', marginTop: '18px', animation: 'fadeSlideUp 0.4s ease 0.9s both' }}>
           返回設計師頁面
@@ -949,8 +949,10 @@ export default function BookPage() {
       {needAddFriend && (
         <button
           onClick={() => {
-            try { liff.openWindow({ url: 'https://line.me/R/ti/p/@881zhkla', external: false }) }
-            catch { window.location.href = 'https://line.me/R/ti/p/@881zhkla' }
+            // LINE webview 內用 liff.openWindow 是正解；失敗才退到 App scheme
+            // （openLineOA 會避開 in-app browser 的英文中間頁，見 lib/lineOA）
+            try { liff.openWindow({ url: lineAddFriendUrl(OA_CONSUMER), external: false }) }
+            catch { openLineOA(OA_CONSUMER) }
             setNeedAddFriend(false)
           }}
           style={{
@@ -1031,7 +1033,7 @@ export default function BookPage() {
               <div style={{ flex: 1, paddingRight: '20px' }}>
                 <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>加入 MooLah LINE，接收預約通知</p>
                 <p className="text-xs mb-3" style={{ color: 'rgba(44,40,37,0.60)' }}>加入後可即時收到預約確認與前一天提醒通知</p>
-                <a href="https://line.me/R/ti/p/@881zhkla" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0 20px', minHeight: '44px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</a>
+                <LineLink source="book_3" oaId={OA_CONSUMER} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0 20px', minHeight: '44px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</LineLink>
                 <span onClick={() => setShowLineCard(false)} className="text-xs ml-4" style={{ color: 'rgba(44,40,37,0.40)', cursor: 'pointer', textDecoration: 'underline' }}>略過</span>
               </div>
             </div>

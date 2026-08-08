@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 import { useParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
@@ -320,7 +322,7 @@ export default function ClaimPage() {
             <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', lineHeight: 1.6 }}>
               此頁面已由其他 LINE 帳號綁定。<br />如有問題請聯絡 MooLah 客服。
             </p>
-            <a href="https://line.me/R/ti/p/@492ejbwx" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '20px', padding: '12px 24px', borderRadius: '12px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>聯絡 MooLah</a>
+            <LineLink source="claim_1" oaId={OA_B2B} track style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '20px', padding: '12px 24px', borderRadius: '12px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>聯絡 MooLah</LineLink>
           </div>
         )}
 

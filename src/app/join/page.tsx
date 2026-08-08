@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import JoinForm from '@/components/JoinForm'
@@ -168,15 +170,9 @@ export default function JoinPage() {
               你透過後台管理，一切自動化運作，讓你專注在服務本身。
             </p>
             <div data-animate data-delay="300" className="flex flex-wrap gap-3">
-              <a
-                href="https://line.me/R/ti/p/@492ejbwx"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
-                style={{ background: '#06C755', color: 'white', fontWeight: 700 }}
-              >
+              <LineLink source="join_1" oaId={OA_B2B} track className="inline-flex items-center gap-2 px-7 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80" style={{ background: '#06C755', color: 'white', fontWeight: 700 }}>
                 加 LINE 開通 14 天免費試用
-              </a>
+              </LineLink>
               <a
                 href="#apply"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border text-sm tracking-widest uppercase hover:border-[var(--oak)] transition-colors"
