@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   padTime, timeToMinutes, computeOccupiedSlots, computeAvailability, isSlotBookable,
-  DOW_NAMES, type Row,
+  DOW_NAMES, todayInTaipei, type Row,
 } from './slots'
 
 // ── row builders（欄位順序對齊 sheets.ts TABLE_COLS）────────────────
@@ -167,5 +167,28 @@ describe('午休 break_start / break_end', () => {
     const rows = [scheduleWithBreak(dowOf(D), '09:00', '18:00', '12:00', '13:00')]
     expect(isSlotBookable(base({ availRows: rows }), '12:00')).toBe(false)
     expect(isSlotBookable(base({ availRows: rows }), '13:00')).toBe(true)
+  })
+})
+
+// ── 時區（2026-08-08 掃描發現的 bug 回歸測試）─────────────────
+describe('todayInTaipei — 台北時區的今天', () => {
+  it('回傳 YYYY-MM-DD 格式', () => {
+    expect(todayInTaipei()).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
+  it('★ 台灣凌晨時 UTC 還是昨天 → 必須回傳台灣的今天，不是 UTC 的', () => {
+    // 台灣 2026-08-09 03:00 = UTC 2026-08-08 19:00
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-08T19:00:00Z'))
+    expect(new Date().toISOString().split('T')[0]).toBe('2026-08-08')  // 舊寫法：錯的
+    expect(todayInTaipei()).toBe('2026-08-09')                          // 新寫法：對的
+    vi.useRealTimers()
+  })
+
+  it('台灣白天時兩者相同（所以這個 bug 只在凌晨 0–8 點出現，很難被發現）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-08T06:00:00Z'))  // 台灣 14:00
+    expect(todayInTaipei()).toBe('2026-08-08')
+    vi.useRealTimers()
   })
 })

@@ -123,3 +123,16 @@ export function isSlotBookable(input: AvailabilityInput, time: string): boolean 
   const slot = computeAvailability(input).find(s => s.time === target)
   return !!slot && slot.status !== 'booked'
 }
+
+// ── 日期／時區 ──────────────────────────────────────────────
+/**
+ * 台北時區的「今天」（YYYY-MM-DD）。
+ *
+ * ⚠️ 不要用 `new Date().toISOString().split('T')[0]` —— 那是 UTC 日期。
+ * 台灣是 UTC+8，所以台灣時間 00:00–08:00 之間，UTC 還停在「昨天」，
+ * 拿去比對 bookings.date 會把昨天的預約也算進「即將到來」。
+ * （2026-08-08 架構掃描時，在 my-bookings 與 webhook 的「我的預約」發現這個 bug）
+ */
+export function todayInTaipei(): string {
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
+}

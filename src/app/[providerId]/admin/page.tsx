@@ -802,12 +802,14 @@ function ServiceItem({ service, providerId, onRefresh }: {
 
   async function handleDelete() {
     setDeleting(true)
-    await fetch('/api/admin/service', {
+    // 刪除失敗卻照樣關掉確認框 = 職人以為刪了，客人還約得到（2026-08-08 掃描發現）
+    const res = await fetch('/api/admin/service', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ serviceId: service.id, providerId }),
     })
     setDeleting(false)
+    if (!res.ok) { alert('刪除失敗，這個服務還在，請再試一次'); return }
     onRefresh()
   }
 
@@ -1443,9 +1445,11 @@ export default function AdminPage() {
                     <button
                       onClick={async () => {
                         setRemovingWL(entry.id)
-                        await fetch('/api/admin/waitlist', { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify({ entryId: entry.id, status: 'cancelled' }) })
-                        setWaitlist(w => w.filter(e => e.id !== entry.id))
+                        // 失敗卻從畫面移除 = 這筆候補從此在後台消失，但客人還在等
+                        const wlRes = await fetch('/api/admin/waitlist', { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify({ entryId: entry.id, status: 'cancelled' }) })
                         setRemovingWL(null)
+                        if (!wlRes.ok) { alert('移除失敗，請再試一次'); return }
+                        setWaitlist(w => w.filter(e => e.id !== entry.id))
                       }}
                       disabled={removingWL === entry.id}
                       style={{ flex: 1, fontSize: '11px', color: '#7a6e68', border: `1px solid ${border}`, borderRadius: '10px', padding: '8px', background: 'transparent', cursor: 'pointer', opacity: removingWL === entry.id ? 0.5 : 1 }}

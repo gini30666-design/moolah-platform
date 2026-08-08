@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { todayInTaipei } from '@/lib/slots'
 import { getSheetData, updateBookingStatus } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
 
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get('userId')
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayInTaipei()   // ⚠️ 不可用 toISOString（那是 UTC，台灣凌晨會算成昨天）
 
   const [bookingRows, serviceRows, providerRows] = await Promise.all([
     getSheetData('bookings!A2:M', { customer_line_user_id: userId }),

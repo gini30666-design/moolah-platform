@@ -57,11 +57,19 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
     }
 
     setUploadProgress('儲存中...')
-    await fetch('/api/admin/portfolio', {
+    // 圖檔已上傳成功，但這一步失敗 = 照片不會出現在頁面上。
+    // 不檢查的話職人會以為傳好了（2026-08-08 掃描發現）。
+    const saveRes = await fetch('/api/admin/portfolio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageUrl: uploadData.url, caption }),
     })
+    if (!saveRes.ok) {
+      alert('照片上傳成功，但儲存失敗了，請再試一次')
+      setUploading(false)
+      setUploadProgress('')
+      return
+    }
 
     setUploading(false)
     setUploadProgress('')
@@ -82,11 +90,16 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
       imageUrl = `https://drive.google.com/uc?export=view&id=${gdMatch[1]}`
     }
 
-    await fetch('/api/admin/portfolio', {
+    const addRes = await fetch('/api/admin/portfolio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageUrl, caption }),
     })
+    if (!addRes.ok) {
+      alert('新增失敗，請確認網址正確後再試一次')
+      setUploading(false)
+      return
+    }
 
     setUploading(false)
     setUrlInput('')
@@ -98,12 +111,14 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
   async function handleDelete(item: PortfolioItem) {
     if (!confirm(`確定刪除這張作品集圖片？`)) return
     setDeletingId(item.id)
-    await fetch('/api/admin/portfolio', {
+    // 刪除失敗卻不提示最危險：職人以為照片下架了，實際還公開在頁面上。
+    const delRes = await fetch('/api/admin/portfolio', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, imageId: item.id }),
     })
     setDeletingId(null)
+    if (!delRes.ok) { alert('刪除失敗，這張照片還在頁面上，請再試一次'); return }
     fetchItems()
   }
 

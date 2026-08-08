@@ -28,8 +28,9 @@ export async function pushMessage(to: string, text: string): Promise<boolean> {
   return true
 }
 
-export async function multicastMessage(userIds: string[], text: string) {
-  await fetch(`${LINE_API}/multicast`, {
+export async function multicastMessage(userIds: string[], text: string): Promise<boolean> {
+  if (!userIds.length) return false
+  const res = await fetch(`${LINE_API}/multicast`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,6 +41,12 @@ export async function multicastMessage(userIds: string[], text: string) {
       messages: [{ type: 'text', text }],
     }),
   })
+  // 批次通知失敗若不記錄就完全無聲——沒人會知道一整批客人沒收到訊息
+  if (!res.ok) {
+    console.error('[LINE multicast error]', res.status, await res.text(), { count: userIds.length })
+    return false
+  }
+  return true
 }
 
 // LINE Quick Reply 預設套組 (#16)
