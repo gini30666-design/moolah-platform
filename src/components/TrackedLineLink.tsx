@@ -18,8 +18,6 @@ import { trackContact } from '@/components/MetaPixel'
 import { OA_B2B, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 
 type Props = {
-  /** 保留參數相容既有呼叫端；實際跳轉一律走 openLineOA（App scheme 優先）。 */
-  href?: string
   source: string
   /** 要加的 OA，預設招商窗口 @492ejbwx */
   oaId?: string
