@@ -21,7 +21,7 @@ export default function MyLineIdPage() {
     // 這頁是在 LINE webview 內開的，navigator.clipboard 常常不存在 —
     // 原本沒有 try/catch，會直接 throw，連「已複製」都不會顯示
     const ok = await copyText(userId)
-    if (!ok) { alert(`複製失敗，請長按下方 ID 手動複製：\n${userId}`); return }
+    if (!ok) { alert("複製失敗，請直接長按上方的 ID 手動複製"); return }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

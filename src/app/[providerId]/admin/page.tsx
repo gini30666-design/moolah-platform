@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import CopyableUrl from '@/components/CopyableUrl'
 import { taipeiDate } from '@/lib/slots'
 import { copyText } from '@/lib/clipboard'
 import { useParams } from 'next/navigation'
@@ -874,13 +875,15 @@ function ServiceItem({ service, providerId, onRefresh }: {
 // 首次使用引導：偵測到還沒設定服務時顯示，3 步驟帶新設計師上手
 function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { providerId: string; onGoServices: () => void; onGoSchedule: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
   // 消費者旅程：分享/複製的連結一律指向職人首頁（作品集+介紹）→ 客人再點「開始預約」進 book（Gini 2026-07-19 定案）
   const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}` : ''
   const share = async () => {
     // copyText 有 execCommand fallback；LINE/IG 的 webview 常常沒有 navigator.clipboard，
     // 舊寫法是 catch {} 靜默失敗卻照樣顯示「已複製」（2026-08-08 掃描發現）
     const ok = await copyText(bookUrl)
-    if (!ok) { alert(`複製失敗，請長按下方網址手動複製：\n${bookUrl}`); return }
+    if (!ok) { setCopyFailed(true); return }
+    setCopyFailed(false)
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   const steps = [
@@ -902,6 +905,7 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
           <button onClick={s.action} style={{ fontSize: '11.5px', color: oak, background: 'rgba(166,137,102,0.12)', border: `1px solid ${oak}`, borderRadius: '14px', padding: '11px 15px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{s.label}</button>
         </div>
       ))}
+          {copyFailed && <CopyableUrl url={bookUrl} />}
     </div>
   )
 }
@@ -909,6 +913,7 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
 // 空狀態 → 招客 CTA（不留白；把空白變成分享預約連結的入口）
 function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: string }) {
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
   // 消費者旅程：分享/複製的連結一律指向職人首頁（作品集+介紹）→ 客人再點「開始預約」進 book（Gini 2026-07-19 定案）
   const bookUrl = typeof window !== 'undefined' ? `${window.location.origin}/${providerId}` : ''
   const title = tab === 'today' ? '今天還沒有預約 🌿' : tab === 'upcoming' ? '目前沒有待服務的預約 🌿' : '沒有過去記錄'
@@ -917,7 +922,8 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
     // copyText 有 execCommand fallback；LINE/IG 的 webview 常常沒有 navigator.clipboard，
     // 舊寫法是 catch {} 靜默失敗卻照樣顯示「已複製」（2026-08-08 掃描發現）
     const ok = await copyText(bookUrl)
-    if (!ok) { alert(`複製失敗，請長按下方網址手動複製：\n${bookUrl}`); return }
+    if (!ok) { setCopyFailed(true); return }
+    setCopyFailed(false)
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   const shareLine = () => {
@@ -944,6 +950,7 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
               分享到 LINE
             </button>
           </div>
+          {copyFailed && <CopyableUrl url={bookUrl} />}
         </>
       )}
     </div>
