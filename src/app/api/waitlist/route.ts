@@ -30,6 +30,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
+  // 先確認職人存在：不驗的話會一路撞到 DB 外鍵約束 → 500 →
+  // 觸發錯誤監控推播吵到業務。對外也該回 404 而不是 500。
+  const providerRows = await getSheetData('providers!A2:A', { id: providerId })
+  if (!providerRows.some(r => r[0] === providerId)) {
+    return NextResponse.json({ error: 'provider_not_found' }, { status: 404 })
+  }
+
   const rows = await getSheetData('waitlist!A2:J')
   const exists = rows.find(r =>
     r[1] === providerId && r[3] === date && r[4] === time &&
