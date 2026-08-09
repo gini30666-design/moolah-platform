@@ -65,32 +65,51 @@ export async function POST(req: NextRequest) {
 
   const ops = OPS()
 
+  // 通知送出的結果要回報，不能靜默失敗。
+  // ⚠️ 這支 webhook 的唯一價值就是「通知」——推播沒送到卻回 200，
+  // 等於整個機制形同虛設，而且沒有人會發現。
+  // （2026-08-09：跟複製連結那個假 fallback 同一類錯誤，不再犯）
+  let notified = 0
+  let failed = 0
+  const notify = async (text: string) => {
+    if (!ops) { failed++; console.error('[b2b-webhook] OPS_LINE_USER_ID 未設定，通知無法送出'); return }
+    try {
+      const ok = await pushMessage(ops, text)
+      if (ok) notified++
+      else { failed++; console.error('[b2b-webhook] pushMessage 回報失敗') }
+    } catch (e) {
+      failed++
+      console.error('[b2b-webhook] pushMessage 丟出例外', e)
+    }
+  }
+
   for (const ev of events) {
     const userId = ev.source?.userId ?? ''
 
     // ── 有人加好友 → 即時通知，這是這支 webhook 存在的主要理由 ──
-    if (ev.type === 'follow' && ops) {
+    if (ev.type === 'follow') {
       const name = await getDisplayName(userId)
-      await pushMessage(ops,
+      await notify(
         `🎉 招商 OA 有新好友\n\n${name ? `暱稱：${name}\n` : ''}時間：${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}\n\n` +
         `⚠️ 對方還沒開口，你在聊天列表看不到他。\n可先主動打聲招呼，別等他先說話。`,
-      ).catch(() => {})
+      )
       continue
     }
 
     // ── 有人傳訊息 → 也通知一聲，但「不代替你回覆」 ──
-    if (ev.type === 'message' && ops) {
+    if (ev.type === 'message') {
       const name = await getDisplayName(userId)
       const text = ev.message?.type === 'text' ? (ev.message.text ?? '') : `（${ev.message?.type ?? '非文字'}訊息）`
-      await pushMessage(ops,
+      await notify(
         `💬 招商 OA 新訊息\n\n${name ? `${name}：` : ''}${text.slice(0, 120)}\n\n` +
         `👉 一分鐘內回覆不計訊息費，快去 LINE 後台回他。`,
-      ).catch(() => {})
+      )
       continue
     }
 
     // 其他事件（unfollow / join…）目前不處理，保持安靜
   }
 
-  return NextResponse.json({ ok: true })
+  // notified/failed 讓「通知到底有沒有送出」可被驗證（簽章已擋住外人，無敏感資訊）
+  return NextResponse.json({ ok: true, notified, failed })
 }
