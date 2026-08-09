@@ -306,8 +306,18 @@ export async function replyMessage(replyToken: string, messages: object[]) {
   }
 }
 
-export function verifySignature(body: string, signature: string): boolean {
-  const secret = process.env.LINE_MESSAGING_CHANNEL_SECRET
+/**
+ * 驗證 LINE webhook 簽章。
+ * @param secretEnv 指定用哪個 channel 的 secret —— 兩支 OA 是不同 channel、secret 不同：
+ *   · LINE_MESSAGING_CHANNEL_SECRET  = @881zhkla 消費者 bot（預設）
+ *   · LINE_B2B_CHANNEL_SECRET        = @492ejbwx 招商窗口（2026-08-09 啟用）
+ */
+export function verifySignature(
+  body: string,
+  signature: string,
+  secretEnv: 'LINE_MESSAGING_CHANNEL_SECRET' | 'LINE_B2B_CHANNEL_SECRET' = 'LINE_MESSAGING_CHANNEL_SECRET',
+): boolean {
+  const secret = process.env[secretEnv]
   if (!secret || !signature) return false // fail-closed：缺 secret/簽章一律拒
   const hash = crypto.createHmac('sha256', secret).update(body).digest('base64')
   // 用 timingSafeEqual（固定時間比對）；長度不等時它會 throw → 先擋（長度不等本就是非法簽章）
