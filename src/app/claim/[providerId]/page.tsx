@@ -5,7 +5,7 @@ import { OA_B2B } from '@/lib/lineOA'
 import { useParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 
-type Stage = 'loading' | 'confirming' | 'claiming' | 'success' | 'already_claimed' | 'already_owner' | 'not_found' | 'error'
+type Stage = 'loading' | 'need_line' | 'confirming' | 'claiming' | 'success' | 'already_claimed' | 'already_owner' | 'not_found' | 'error'
 
 const CONTRACT_TERMS = `合作服務條款
 
@@ -63,6 +63,15 @@ export default function ClaimPage() {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
 
         if (!liff.isLoggedIn()) {
+          // 🔴 2026-08-10：在「外部瀏覽器」自動導去 /dashboard 會造成無限跳轉。
+          // 機制：/dashboard 呼叫 liff.login() → 外部瀏覽器會去喚起 LINE App 認證
+          //      → LINE 跳回瀏覽器 → 又進 /dashboard → 又 login → 死循環。
+          // （Zuzu 實機遇到，螢幕錄影確認）
+          // 只有「已經在 LINE 裡」時走 /dashboard 轉接才安全（那裡是註冊過的 callback URL）。
+          if (!liff.isInClient()) {
+            setStage('need_line')
+            return
+          }
           // /claim/ is not a registered callback URL in LINE Login channel.
           // Route through /dashboard (which is registered) and use ?to= to return here.
           // 保住 direct 參數（跳過試用）跨過 LIFF 登入轉址
@@ -323,6 +332,29 @@ export default function ClaimPage() {
               此頁面已由其他 LINE 帳號綁定。<br />如有問題請聯絡 MooLah 客服。
             </p>
             <LineLink source="claim_1" oaId={OA_B2B} track style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '20px', padding: '12px 24px', borderRadius: '12px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>聯絡 MooLah</LineLink>
+          </div>
+        )}
+
+        {/* ── 在外部瀏覽器開啟 → 給一個回 LINE 的按鈕，不要自動跳（會死循環） ── */}
+        {stage === 'need_line' && (
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: cream, marginBottom: '10px' }}>請在 LINE 裡開啟</p>
+            <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', lineHeight: 1.7, marginBottom: '24px' }}>
+              綁定需要確認你的 LINE 身分，<br />請按下方按鈕在 LINE 中繼續。
+            </p>
+            <a
+              href={`https://liff.line.me/${process.env.NEXT_PUBLIC_LIFF_ID}?to=${encodeURIComponent(`/claim/${providerId}${direct ? '?direct=1' : ''}`)}`}
+              style={{
+                display: 'inline-block', padding: '14px 32px', borderRadius: '12px',
+                background: '#06C755', color: '#fff', fontSize: '15px', fontWeight: 600,
+                textDecoration: 'none', minHeight: '44px', lineHeight: '1.2',
+              }}
+            >
+              在 LINE 中開啟
+            </a>
+            <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.3)', marginTop: '20px', lineHeight: 1.6 }}>
+              如果按了沒反應，請回到 LINE 聊天室<br />直接點我們傳給你的連結
+            </p>
           </div>
         )}
 
