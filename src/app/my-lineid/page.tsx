@@ -2,20 +2,28 @@
 import { useEffect, useState } from 'react'
 import { copyText } from '@/lib/clipboard'
 import liff from '@line/liff'
+import OpenInLine from '@/components/OpenInLine'
 
 export default function MyLineIdPage() {
   const [userId, setUserId] = useState('')
   const [name, setName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [needLine, setNeedLine] = useState(false)
 
   useEffect(() => {
     liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! }).then(async () => {
-      if (!liff.isLoggedIn()) { liff.login(); return }
+      if (!liff.isLoggedIn()) {
+        // 外部瀏覽器不能直接 liff.login()，會無限跳轉（見 OpenInLine 註解）
+        if (!liff.isInClient()) { setNeedLine(true); return }
+        liff.login(); return
+      }
       const profile = await liff.getProfile()
       setUserId(profile.userId)
       setName(profile.displayName)
     })
   }, [])
+
+  if (needLine) return <OpenInLine path="/my-lineid" />
 
   async function copy() {
     // 這頁是在 LINE webview 內開的，navigator.clipboard 常常不存在 —

@@ -4,6 +4,7 @@ import LineLink from '@/components/LineLink'
 import { OA_B2B } from '@/lib/lineOA'
 import { useParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
+import OpenInLine from '@/components/OpenInLine'
 
 type Stage = 'loading' | 'need_line' | 'confirming' | 'claiming' | 'success' | 'already_claimed' | 'already_owner' | 'not_found' | 'error'
 
@@ -130,6 +131,16 @@ export default function ClaimPage() {
     } catch {
       setStage('error')
     }
+  }
+
+  // 外部瀏覽器開啟 → 給按鈕讓使用者主動回 LINE，不自動跳（會死循環）
+  if (stage === 'need_line') {
+    return (
+      <OpenInLine
+        path={`/claim/${providerId}${direct ? '?direct=1' : ''}`}
+        hint={'綁定後台需要確認你的 LINE 身分，\n請按下方按鈕在 LINE 中繼續。'}
+      />
+    )
   }
 
   return (
@@ -332,29 +343,6 @@ export default function ClaimPage() {
               此頁面已由其他 LINE 帳號綁定。<br />如有問題請聯絡 MooLah 客服。
             </p>
             <LineLink source="claim_1" oaId={OA_B2B} track style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '20px', padding: '12px 24px', borderRadius: '12px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>聯絡 MooLah</LineLink>
-          </div>
-        )}
-
-        {/* ── 在外部瀏覽器開啟 → 給一個回 LINE 的按鈕，不要自動跳（會死循環） ── */}
-        {stage === 'need_line' && (
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: cream, marginBottom: '10px' }}>請在 LINE 裡開啟</p>
-            <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.5)', lineHeight: 1.7, marginBottom: '24px' }}>
-              綁定需要確認你的 LINE 身分，<br />請按下方按鈕在 LINE 中繼續。
-            </p>
-            <a
-              href={`https://liff.line.me/${process.env.NEXT_PUBLIC_LIFF_ID}?to=${encodeURIComponent(`/claim/${providerId}${direct ? '?direct=1' : ''}`)}`}
-              style={{
-                display: 'inline-block', padding: '14px 32px', borderRadius: '12px',
-                background: '#06C755', color: '#fff', fontSize: '15px', fontWeight: 600,
-                textDecoration: 'none', minHeight: '44px', lineHeight: '1.2',
-              }}
-            >
-              在 LINE 中開啟
-            </a>
-            <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.3)', marginTop: '20px', lineHeight: 1.6 }}>
-              如果按了沒反應，請回到 LINE 聊天室<br />直接點我們傳給你的連結
-            </p>
           </div>
         )}
 

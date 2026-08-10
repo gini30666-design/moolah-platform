@@ -3,13 +3,15 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import liff from '@line/liff'
 import MoolahLoader from '@/components/MoolahLoader'
+import OpenInLine from '@/components/OpenInLine'
 
-type State = 'loading' | 'not_found' | 'error'
+type State = 'loading' | 'need_line' | 'not_found' | 'error'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [state, setState] = useState<State>('loading')
   const [name, setName] = useState('')
+  const [needLinePath, setNeedLinePath] = useState('/dashboard')
 
   useEffect(() => {
     // Read destination from two sources:
@@ -26,6 +28,14 @@ export default function DashboardPage() {
       .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
       .then(async () => {
         if (!liff.isLoggedIn()) {
+          // 🔴 外部瀏覽器不能直接 liff.login()，會無限跳轉（見 OpenInLine 註解）。
+          // dashboard 是 LIFF endpoint，正常只會在 LINE 內被開啟；
+          // 但只要有人在瀏覽器貼網址或點到舊連結就會卡死，所以一律防呆。
+          if (!liff.isInClient()) {
+            setNeedLinePath(destination || '/dashboard')
+            setState('need_line')
+            return
+          }
           // Preserve destination in redirectUri — liff.init() strips liff.state from URL
           const base = `${window.location.origin}/dashboard`
           const redirectUri = destination
@@ -56,6 +66,10 @@ export default function DashboardPage() {
 
   if (state === 'loading') {
     return <MoolahLoader label="識別身份中…" />
+  }
+
+  if (state === 'need_line') {
+    return <OpenInLine path={needLinePath} />
   }
 
   if (state === 'error') {

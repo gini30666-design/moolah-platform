@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import liff from '@line/liff'
+import OpenInLine from '@/components/OpenInLine'
 
 interface Booking {
   bookingId: string
@@ -25,12 +26,15 @@ export default function MyBookingsPage() {
   const [cancelled, setCancelled] = useState<Set<string>>(new Set())
   const [confirming, setConfirming] = useState<string | null>(null)
   const [userId, setUserId] = useState('')
+  const [needLine, setNeedLine] = useState(false)
 
   useEffect(() => {
     async function init() {
       try {
         await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
         if (!liff.isLoggedIn()) {
+          // 外部瀏覽器不能直接 liff.login()，會無限跳轉（見 OpenInLine 註解）
+          if (!liff.isInClient()) { setNeedLine(true); setLoading(false); return }
           liff.login({ redirectUri: window.location.href })
           return
         }
@@ -70,6 +74,8 @@ export default function MyBookingsPage() {
 
   const upcoming = bookings.filter(b => !b.isPast && !cancelled.has(b.bookingId))
   const past = bookings.filter(b => b.isPast && !cancelled.has(b.bookingId))
+
+  if (needLine) return <OpenInLine path="/my-bookings" hint={'查看預約需要確認你的 LINE 身分，\n請按下方按鈕在 LINE 中繼續。'} />
 
   return (
     <div
