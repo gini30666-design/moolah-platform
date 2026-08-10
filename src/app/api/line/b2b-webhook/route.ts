@@ -96,18 +96,15 @@ export async function POST(req: NextRequest) {
       continue
     }
 
-    // ── 有人傳訊息 → 也通知一聲，但「不代替你回覆」 ──
-    if (ev.type === 'message') {
-      const name = await getDisplayName(userId)
-      const text = ev.message?.type === 'text' ? (ev.message.text ?? '') : `（${ev.message?.type ?? '非文字'}訊息）`
-      await notify(
-        `💬 招商 OA 新訊息\n\n${name ? `${name}：` : ''}${text.slice(0, 120)}\n\n` +
-        `👉 一分鐘內回覆不計訊息費，快去 LINE 後台回他。`,
-      )
-      continue
-    }
+    // ── 有人傳訊息 → 刻意「不」通知（2026-08-10 Gini 指示）──
+    // 理由：他手機裝了 LINE 官方帳號 App，對方一傳訊息就會收到原生推播，
+    // 這裡再推一次是重複，只會把真正重要的 follow 通知淹掉。
+    // ⚠️ 唯一收不到原生通知的情境＝「加了好友但一句話都沒說」
+    //    （那種人不會出現在 OA 聊天列表，也無法被主動私訊）
+    //    ——那正好就是上面 follow 分支在補的洞，這支 webhook 的存在理由。
+    // 所以：follow 要通知，message 不要。
 
-    // 其他事件（unfollow / join…）目前不處理，保持安靜
+    // 其他事件（message / unfollow / join…）都不處理，保持安靜
   }
 
   // notified/failed 讓「通知到底有沒有送出」可被驗證（簽章已擋住外人，無敏感資訊）
