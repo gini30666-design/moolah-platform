@@ -200,3 +200,20 @@ create table if not exists payments (
 );
 create index if not exists idx_payments_period on payments(period);
 alter table payments enable row level security;  -- 僅 service role
+
+-- 13) b2b_followers（招商 OA @492ejbwx 的好友名冊，2026-08-11）
+-- 存在理由：LINE 的「純加好友、沒開口」的人不會出現在 OA Manager 聊天列表、也無法被點選私訊。
+-- webhook 的 follow 事件手上有 userId，存下來才聯絡得到（否則只能群發，會打擾正在談的客戶）。
+create table if not exists b2b_followers (
+  line_user_id      text primary key,
+  display_name      text,
+  picture_url       text,
+  followed_at       timestamptz not null default now(),
+  unfollowed_at     timestamptz,                     -- 有值 = 已封鎖/刪好友，push 會失敗
+  first_message_at  timestamptz,                     -- null = 從沒開口（＝聊天列表看不到的那群）
+  last_contacted_at timestamptz,                     -- 我們主動 push 的時間
+  note              text,
+  created_at        timestamptz not null default now()
+);
+create index if not exists idx_b2b_followers_silent on b2b_followers(first_message_at, unfollowed_at);
+alter table b2b_followers enable row level security;  -- 僅 service role

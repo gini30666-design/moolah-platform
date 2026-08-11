@@ -28,6 +28,34 @@ export async function pushMessage(to: string, text: string): Promise<boolean> {
   return true
 }
 
+/**
+ * 用「招商 OA（@492ejbwx）」的身分主動私訊某位好友。
+ *
+ * ⚠️ 不能用上面的 pushMessage —— 那支綁的是消費者 bot（@881zhkla）的 token，
+ *    對招商 OA 的好友會回 400（不是彼此的好友）。兩支是不同 channel。
+ *
+ * token 刻意在呼叫當下才讀（不是 module 載入時），因為本機 .env.local 沒有這把，
+ * 只有 Vercel 有；module-level 讀取會讓本機 import 就炸。
+ */
+export async function pushB2bMessage(to: string, text: string): Promise<boolean> {
+  const token = process.env.LINE_B2B_CHANNEL_ACCESS_TOKEN
+  if (!token) {
+    console.error('[LINE pushB2bMessage] LINE_B2B_CHANNEL_ACCESS_TOKEN 未設定')
+    return false
+  }
+  if (!to || !text) return false
+  const res = await fetch(`${LINE_API}/push`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ to, messages: [{ type: 'text', text }] }),
+  })
+  if (!res.ok) {
+    console.error('[LINE pushB2bMessage error]', res.status, await res.text(), { to: to.slice(0, 8) + '...' })
+    return false
+  }
+  return true
+}
+
 export async function multicastMessage(userIds: string[], text: string): Promise<boolean> {
   if (!userIds.length) return false
   const res = await fetch(`${LINE_API}/multicast`, {
