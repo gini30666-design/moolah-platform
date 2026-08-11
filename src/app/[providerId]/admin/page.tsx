@@ -144,8 +144,9 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
   }
 
   return (
-    <div style={{ marginBottom: '18px' }}>
-      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.88)', fontWeight: 600, marginBottom: '8px' }}>儲值卡 / 次卡</p>
+    // 整區給一個沙色底＋左側橡木條，把「儲值」從一長串同色區塊裡拉出來（職人反應這塊沒抓到眼睛）
+    <div style={{ marginBottom: '18px', background: 'rgba(166,137,102,0.10)', borderLeft: `3px solid ${oak}`, borderRadius: '4px 14px 14px 4px', padding: '14px 14px 16px' }}>
+      <p style={{ fontSize: 'calc(12.5px * var(--fs, 1))', color: charcoal, fontWeight: 700, marginBottom: '10px', letterSpacing: '0.02em' }}>儲值卡 / 次卡</p>
 
       {err && <div onClick={() => setErr('')} style={{ background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: 'calc(12px * var(--fs, 1))', padding: '9px 12px', borderRadius: '10px', marginBottom: '10px', cursor: 'pointer' }}>{err}（點此關閉）</div>}
       {warnings.map((w, i) => (
@@ -154,16 +155,21 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
 
       {loading && <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入中…</p>}
 
+      {/* 卡片刻意用白底＋較重的邊框：原本 rgba(166,137,102,0.07) 疊在 cream 上幾乎看不出邊界，
+          職人反應「這一塊是重點但沒抓到眼睛」。餘額也從 oak 改成 charcoal，對比才夠。 */}
       {!loading && cards.map(c => (
-        <div key={c.id} style={{ background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '12px 14px', marginBottom: '8px', opacity: c.expired || c.status === 'closed' ? 0.6 : 1 }}>
+        <div key={c.id} style={{ background: '#ffffff', border: '1px solid rgba(166,137,102,0.42)', boxShadow: '0 2px 10px rgba(44,40,37,0.06)', borderRadius: '14px', padding: '14px', marginBottom: '10px', opacity: c.expired || c.status === 'closed' ? 0.6 : 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
             <div style={{ minWidth: 0 }}>
-              <p style={{ fontSize: 'calc(13px * var(--fs, 1))', fontWeight: 600, color: charcoal, wordBreak: 'break-word' }}>{c.title}</p>
-              <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#574e48', marginTop: '2px' }}>
+              <p style={{ fontSize: 'calc(13.5px * var(--fs, 1))', fontWeight: 700, color: charcoal, wordBreak: 'break-word' }}>{c.title}</p>
+              <p style={{ fontSize: 'calc(10.5px * var(--fs, 1))', color: '#574e48', marginTop: '2px' }}>
                 {c.expired ? '已過期' : c.status === 'closed' ? '已結清' : c.expiresOn ? `到期 ${c.expiresOn}` : '無期限'}
               </p>
             </div>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', fontWeight: 600, color: oak, flexShrink: 0 }}>{c.balanceText}</p>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(23px * var(--fs, 1))', fontWeight: 600, color: charcoal, lineHeight: 1.1 }}>{c.balanceText}</p>
+              <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: '#7d736b', marginTop: '1px' }}>目前餘額</p>
+            </div>
           </div>
 
           {c.needsGuarantee && (
@@ -172,10 +178,11 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
             </p>
           )}
 
-          <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
-            <button onClick={() => { setAct({ id: c.id, mode: 'topup' }); setActValue('') }} style={{ flex: 1, minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.3)', background: 'transparent', color: oak, fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer' }}>＋ 儲值</button>
-            <button onClick={() => { setAct({ id: c.id, mode: 'redeem' }); setActValue('') }} style={{ flex: 1, minHeight: '40px', borderRadius: '10px', border: 'none', background: oak, color: '#fff', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, cursor: 'pointer' }}>− 扣款</button>
-            <button onClick={() => setOpenCard(openCard === c.id ? null : c.id)} style={{ minWidth: '44px', minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.2)', background: 'transparent', color: '#574e48', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer' }}>{openCard === c.id ? '收起' : '紀錄'}</button>
+          {/* 扣款＝主要動作，用深橡木色（#8a6f4f）而不是純黑：黑在這片暖色系裡太衝突 */}
+          <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
+            <button onClick={() => { setAct({ id: c.id, mode: 'topup' }); setActValue('') }} style={{ flex: 1, minHeight: '44px', borderRadius: '10px', border: '1.5px solid rgba(138,111,79,0.55)', background: 'transparent', color: '#8a6f4f', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 600, cursor: 'pointer' }}>＋ 儲值</button>
+            <button onClick={() => { setAct({ id: c.id, mode: 'redeem' }); setActValue('') }} style={{ flex: 1, minHeight: '44px', borderRadius: '10px', border: 'none', background: '#8a6f4f', color: '#fff', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, cursor: 'pointer' }}>− 扣款</button>
+            <button onClick={() => setOpenCard(openCard === c.id ? null : c.id)} style={{ minWidth: '52px', minHeight: '44px', borderRadius: '10px', border: '1.5px solid rgba(138,111,79,0.32)', background: 'transparent', color: '#4e453f', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer' }}>{openCard === c.id ? '收起' : '紀錄'}</button>
           </div>
 
           {act?.id === c.id && (
@@ -224,7 +231,8 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
       )}
 
       {creating && (
-        <div style={{ background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        // 建卡表單也改白底：現在整區已經是沙色，半透明沙疊沙會糊成一片
+        <div style={{ background: '#ffffff', border: '1px solid rgba(166,137,102,0.42)', borderRadius: '14px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'flex', gap: '6px' }}>
             {(['amount', 'count'] as const).map(k => (
               <button key={k} onClick={() => setF({ ...f, kind: k })} style={{
@@ -1249,12 +1257,14 @@ export default function AdminPage() {
     return () => { document.documentElement.style.removeProperty('--fs') }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  function cycleFontScale() {
-    const next = (fsIdx + 1) % FS_STEPS.length
-    setFsIdx(next)
-    localStorage.setItem('moolah_admin_fs', String(next))
-    document.documentElement.style.setProperty('--fs', String(FS_STEPS[next]))
+  function setFontScale(i: number) {
+    setFsIdx(i)
+    localStorage.setItem('moolah_admin_fs', String(i))
+    document.documentElement.style.setProperty('--fs', String(FS_STEPS[i]))
   }
+
+  // 頂部功能列（⋯）開合
+  const [menuOpen, setMenuOpen] = useState(false)
 
   // 手動刷新（不整頁 reload）— 重抓預約與候補
   const refreshAll = useCallback(async () => {
@@ -1409,28 +1419,48 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
         {/* 右上：刷新（不整頁 reload）+ 預覽（消費者視角＝職人首頁起點）*/}
         <style>{`@keyframes adminSpin { to { transform: rotate(360deg) } }`}</style>
-        <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 3, display: 'flex', gap: '8px' }}>
-          {/*
-            字級開關（2026-08-11）
-            ⚠️ 為什麼要自己做，不跟手機設定走：
-            iOS Safari 的「文字大小」設定**不會**影響網頁的 px 或 rem——唯一接得上的寫法是
-            `font: -apple-system-body`，但那會強制換成系統字體，品牌字型會整個毀掉。
-            Android Chrome 有文字縮放、桌機也吃 rem，但 iOS 沒有 → 跨平台唯一可靠的只有自己給開關。
-            做法：全站 inline 字級都寫成 calc(Npx * var(--fs))，這裡只改一個變數，整頁等比放大。
-          */}
-          <button onClick={cycleFontScale} aria-label="調整字體大小"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '3px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', minWidth: '52px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
-            <span style={{ fontSize: '11px', lineHeight: 1 }}>A</span>
-            <span style={{ fontSize: '16px', lineHeight: 1, fontWeight: 600 }}>A</span>
+        {/*
+          功能列（2026-08-11 收合）
+          原本三顆藥丸並排在深色 header 上，一來佔掉標題空間、二來半透明底看起來浮浮的。
+          改成一顆「⋯」，點開才展開；底色改成近黑實心，在深色 header 上才立得住。
+        */}
+        <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 5 }}>
+          <button onClick={() => setMenuOpen(v => !v)} aria-label="功能選單" aria-expanded={menuOpen}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '3px', background: menuOpen ? '#0e0c0b' : 'rgba(14,12,11,0.72)', border: '1px solid rgba(166,137,102,0.55)', color: 'var(--oak)', minWidth: '50px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(6px)', fontSize: '20px', lineHeight: 1, letterSpacing: '0.08em', paddingBottom: '6px' }}>
+            ⋯
           </button>
-          <button onClick={refreshAll} disabled={refreshing}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: 'calc(12px * var(--fs, 1))', padding: '0 14px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)', opacity: refreshing ? 0.6 : 1 }}>
-            <span style={{ display: 'inline-block', animation: refreshing ? 'adminSpin 0.8s linear infinite' : 'none' }}>↻</span>{refreshing ? '更新中' : '刷新'}
-          </button>
-          <button onClick={() => { const url = `${window.location.origin}/${providerId}`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: 'rgba(166,137,102,0.15)', border: '1px solid rgba(166,137,102,0.5)', color: 'var(--oak)', fontSize: 'calc(12px * var(--fs, 1))', letterSpacing: '0.04em', padding: '0 15px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
-            <span style={{ fontSize: 'calc(13px * var(--fs, 1))' }}>👁</span> 預覽
-          </button>
+
+          {menuOpen && (
+            <>
+              {/* 點外面關閉：蓋一層透明遮罩比在 document 上掛 listener 單純且不會漏拆 */}
+              <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: -1 }} />
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '186px', background: '#0e0c0b', border: '1px solid rgba(166,137,102,0.42)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(0,0,0,0.5)' }}>
+                {/* 字級：一列三段，直接看得到現在停在哪一級 */}
+                <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(166,137,102,0.18)' }}>
+                  <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(251,249,244,0.6)', marginBottom: '8px' }}>字體大小</p>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {['標準', '大', '特大'].map((label, i) => (
+                      <button key={label} onClick={() => setFontScale(i)}
+                        style={{ flex: 1, minHeight: '38px', borderRadius: '9px', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))', background: fsIdx === i ? 'var(--oak)' : 'transparent', color: fsIdx === i ? '#0e0c0b' : 'rgba(251,249,244,0.82)', border: `1px solid ${fsIdx === i ? 'var(--oak)' : 'rgba(166,137,102,0.35)'}`, fontWeight: fsIdx === i ? 700 : 400 }}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button onClick={() => { setMenuOpen(false); refreshAll() }} disabled={refreshing}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minHeight: '48px', padding: '0 16px', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(166,137,102,0.18)', color: 'rgba(251,249,244,0.92)', fontSize: 'calc(13.5px * var(--fs, 1))', cursor: 'pointer', textAlign: 'left', opacity: refreshing ? 0.55 : 1 }}>
+                  <span style={{ display: 'inline-block', color: 'var(--oak)', animation: refreshing ? 'adminSpin 0.8s linear infinite' : 'none' }}>↻</span>
+                  {refreshing ? '更新中…' : '重新整理'}
+                </button>
+
+                <button onClick={() => { setMenuOpen(false); const url = `${window.location.origin}/${providerId}`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minHeight: '48px', padding: '0 16px', background: 'transparent', border: 'none', color: 'rgba(251,249,244,0.92)', fontSize: 'calc(13.5px * var(--fs, 1))', cursor: 'pointer', textAlign: 'left' }}>
+                  <span style={{ color: 'var(--oak)' }}>👁</span> 預覽預約頁
+                </button>
+              </div>
+            </>
+          )}
         </div>
         <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--oak)', marginBottom: '10px', letterSpacing: '0.04em' }}>管理後台</p>
         <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 300, color: cream, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
