@@ -10,7 +10,7 @@ const cream = '#fbf9f4'
 const inputStyle: React.CSSProperties = {
   width: '100%', background: 'rgba(166,137,102,0.06)',
   border: '1px solid rgba(166,137,102,0.18)', borderRadius: '10px',
-  padding: '10px 13px', fontSize: '13px', color: charcoal, outline: 'none',
+  padding: '10px 13px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, outline: 'none',
   boxSizing: 'border-box',
 }
 
@@ -124,20 +124,20 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: '48px 0' }}>
-      <p style={{ fontSize: '12px', color: '#b0a89e' }}>載入作品集中...</p>
+      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入作品集中...</p>
     </div>
   )
 
   return (
     <div style={{ padding: '16px 16px 48px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+        <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
           作品集 ({items.length})
         </p>
         {!showAdd && (
           <button onClick={() => setShowAdd(true)} style={{
             display: 'flex', alignItems: 'center', gap: '6px',
-            fontSize: '12px', color: oak, background: 'rgba(166,137,102,0.1)',
+            fontSize: 'calc(12px * var(--fs, 1))', color: oak, background: 'rgba(166,137,102,0.1)',
             border: 'none', borderRadius: '20px', padding: '7px 14px', cursor: 'pointer',
           }}>
             <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}>
@@ -152,15 +152,15 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
       {showAdd && (
         <div style={{ background: 'rgba(251,249,244,0.9)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: charcoal }}>新增作品</p>
-            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} style={{ fontSize: '18px', color: '#b0a89e', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+            <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增作品</p>
+            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} style={{ fontSize: 'calc(18px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
           </div>
 
           {/* Mode toggle */}
           <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '10px', padding: '3px', marginBottom: '16px' }}>
             {(['upload', 'url'] as const).map(m => (
               <button key={m} onClick={() => setAddMode(m)} style={{
-                flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px',
+                flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))',
                 background: addMode === m ? charcoal : 'transparent',
                 color: addMode === m ? cream : '#8a7e76',
               }}>
@@ -187,13 +187,13 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                 background: 'rgba(166,137,102,0.03)', marginBottom: '12px',
               }}>
                 {uploading ? (
-                  <p style={{ fontSize: '13px', color: oak }}>{uploadProgress}</p>
+                  <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: oak }}>{uploadProgress}</p>
                 ) : (
                   <>
                     <svg viewBox="0 0 24 24" fill="none" stroke={oak} strokeWidth="1.5" style={{ width: '32px', height: '32px' }}>
                       <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <p style={{ fontSize: '13px', color: '#8a7e76' }}>點擊選擇圖片（最大 4MB）</p>
+                    <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76' }}>點擊選擇圖片（最大 4MB）</p>
                   </>
                 )}
               </label>
@@ -212,7 +212,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                 style={{
                   width: '100%', padding: '12px', borderRadius: '50px', border: 'none',
                   background: !urlInput.trim() || uploading ? 'rgba(166,137,102,0.3)' : oak,
-                  color: cream, fontSize: '13px', cursor: 'pointer',
+                  color: cream, fontSize: 'calc(13px * var(--fs, 1))', cursor: 'pointer',
                 }}
               >
                 {uploading ? '儲存中...' : '確認新增'}
@@ -234,8 +234,8 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
       {/* Portfolio grid */}
       {items.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '48px 0' }}>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '16px', color: '#c8c0b8' }}>尚未有作品集</p>
-          <p style={{ fontSize: '12px', color: '#d0c8c0', marginTop: '8px' }}>點選「新增作品」上傳作品照片</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(16px * var(--fs, 1))', color: '#c8c0b8' }}>尚未有作品集</p>
+          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#d0c8c0', marginTop: '8px' }}>點選「新增作品」上傳作品照片</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -249,7 +249,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
               />
               {item.caption && (
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(44,40,37,0.65)', padding: '6px 8px' }}>
-                  <p style={{ fontSize: '10px', color: cream, margin: 0 }}>{item.caption}</p>
+                  <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: cream, margin: 0 }}>{item.caption}</p>
                 </div>
               )}
               <button
@@ -259,7 +259,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                   position: 'absolute', top: '6px', right: '6px',
                   width: '26px', height: '26px', borderRadius: '50%',
                   background: 'rgba(176,64,64,0.85)', border: 'none',
-                  color: '#fff', fontSize: '14px', lineHeight: '26px', cursor: 'pointer',
+                  color: '#fff', fontSize: 'calc(14px * var(--fs, 1))', lineHeight: '26px', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >

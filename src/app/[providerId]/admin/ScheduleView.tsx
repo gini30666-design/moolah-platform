@@ -13,7 +13,7 @@ const cream = '#fbf9f4'
 const border = 'rgba(166,137,102,0.15)'
 const inputStyle: React.CSSProperties = {
   background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)',
-  borderRadius: '10px', padding: '0 12px', minHeight: '44px', fontSize: '13px', color: charcoal,
+  borderRadius: '10px', padding: '0 12px', minHeight: '44px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal,
   outline: 'none', width: '84px',
 }
 
@@ -84,7 +84,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: '48px 0' }}>
-      <p style={{ fontSize: '12px', color: '#b0a89e' }}>載入排班中...</p>
+      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入排班中...</p>
     </div>
   )
 
@@ -92,7 +92,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
     <div style={{ padding: '16px 16px 48px' }}>
 
       {/* Weekly schedule */}
-      <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '14px' }}>每週排班</p>
+      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '14px' }}>每週排班</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
         {schedule.map(s => (
           <div key={s.day} style={{
@@ -102,7 +102,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             transition: 'all 0.2s',
           }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', color: s.isOpen ? charcoal : '#b0a89e', width: '36px', flexShrink: 0 }}>
+            <span style={{ fontSize: 'calc(13px * var(--fs, 1))', color: s.isOpen ? charcoal : '#7d736b', width: '36px', flexShrink: 0 }}>
               {DAY_LABELS[s.day]}
             </span>
 
@@ -132,11 +132,11 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             {s.isOpen ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
                 <input type="time" value={s.startTime} onChange={e => updateTime(s.day, 'startTime', e.target.value)} style={inputStyle} />
-                <span style={{ fontSize: '11px', color: '#b0a89e' }}>至</span>
+                <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b' }}>至</span>
                 <input type="time" value={s.endTime} onChange={e => updateTime(s.day, 'endTime', e.target.value)} style={inputStyle} />
               </div>
             ) : (
-              <span style={{ fontSize: '11px', color: '#c8c0b8', marginLeft: 'auto' }}>休息日</span>
+              <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>休息日</span>
             )}
             </div>
 
@@ -151,7 +151,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px 0 0',
                     minHeight: '44px', display: 'inline-flex', alignItems: 'center',
-                    fontSize: '12px', color: s.breakStart && s.breakEnd ? oak : '#b0a89e',
+                    fontSize: 'calc(12px * var(--fs, 1))', color: s.breakStart && s.breakEnd ? oak : '#7d736b',
                   }}
                 >
                   {s.breakStart && s.breakEnd ? '☑' : '☐'} 中間休息
@@ -159,11 +159,11 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                 {s.breakStart && s.breakEnd ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
                     <input type="time" value={s.breakStart} onChange={e => updateTime(s.day, 'breakStart', e.target.value)} style={inputStyle} />
-                    <span style={{ fontSize: '11px', color: '#b0a89e' }}>至</span>
+                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b' }}>至</span>
                     <input type="time" value={s.breakEnd} onChange={e => updateTime(s.day, 'breakEnd', e.target.value)} style={inputStyle} />
                   </div>
                 ) : (
-                  <span style={{ fontSize: '11px', color: '#c8c0b8', marginLeft: 'auto' }}>不休息・整天可預約</span>
+                  <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>不休息・整天可預約</span>
                 )}
               </div>
             )}
@@ -172,7 +172,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       </div>
 
       {/* Blocked dates */}
-      <p style={{ fontSize: '10px', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '14px' }}>特定休假日</p>
+      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: oak, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '14px' }}>特定休假日</p>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
         <input
           type="date"
@@ -183,7 +183,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
         />
         <button onClick={addBlockedDate} disabled={!newBlockDate} style={{
           padding: '9px 16px', background: newBlockDate ? oak : 'rgba(166,137,102,0.2)',
-          color: cream, border: 'none', borderRadius: '10px', fontSize: '12px', cursor: 'pointer',
+          color: cream, border: 'none', borderRadius: '10px', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer',
         }}>新增</button>
       </div>
 
@@ -195,20 +195,20 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
               background: 'rgba(180,60,60,0.05)', border: '1px solid rgba(180,60,60,0.1)',
               borderRadius: '10px', padding: '10px 14px',
             }}>
-              <span style={{ fontSize: '13px', color: charcoal }}>{date}</span>
+              <span style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal }}>{date}</span>
               <button onClick={() => removeBlockedDate(date)} style={{
-                fontSize: '18px', color: '#c8a0a0', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1,
+                fontSize: 'calc(18px * var(--fs, 1))', color: '#c8a0a0', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1,
               }}>×</button>
             </div>
           ))}
         </div>
       ) : (
-        <p style={{ fontSize: '12px', color: '#c8c0b8', marginBottom: '28px' }}>尚未設定特定休假日</p>
+        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#c8c0b8', marginBottom: '28px' }}>尚未設定特定休假日</p>
       )}
 
       {/* Save */}
       {saveError && (
-        <p style={{ fontSize: '12px', color: '#b45c5c', marginBottom: '10px', textAlign: 'center' }}>{saveError}</p>
+        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#b45c5c', marginBottom: '10px', textAlign: 'center' }}>{saveError}</p>
       )}
       <button
         onClick={handleSave}
@@ -216,7 +216,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
         style={{
           width: '100%', padding: '15px', borderRadius: '50px', border: 'none', cursor: 'pointer',
           background: saved ? 'rgba(100,160,100,0.85)' : oak,
-          color: cream, fontSize: '14px', fontWeight: 500, transition: 'background 0.3s',
+          color: cream, fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 500, transition: 'background 0.3s',
         }}
       >
         {saving ? '儲存中...' : saved ? '✓ 已儲存' : '儲存排班設定'}
