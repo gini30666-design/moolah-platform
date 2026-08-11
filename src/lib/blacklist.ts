@@ -1,8 +1,8 @@
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
 import { isSameCustomer, normalizePhone } from '@/lib/customerIdentity'
-
-const NO_SHOW_THRESHOLD = 3
+// 單一真相來源：book 頁對客人公告的次數必須跟這裡執行的一致（見 plan.ts 註解）
+import { NO_SHOW_THRESHOLD } from '@/lib/plan'
 
 /**
  * 計算某客人對某設計師的 no_show 次數

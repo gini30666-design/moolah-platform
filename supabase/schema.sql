@@ -217,3 +217,63 @@ create table if not exists b2b_followers (
 );
 create index if not exists idx_b2b_followers_silent on b2b_followers(first_message_at, unfollowed_at);
 alter table b2b_followers enable row level security;  -- 僅 service role
+
+-- 14) 儲值卡／次卡（2026-08-11，S3 方案）
+-- ⚠️ MooLah 不經手任何金錢：錢由職人線下自己收，系統只記帳。
+--    平台代收儲值款項＝《電子支付機構管理條例》第 3 條「收受儲值款項」＝需金管會許可，做不到。
+-- ⚠️ 紅線：餘額只能綁單一職人（單一用途預收款）。做成跨職人通用錢包＝「多用途支付使用」＝電支業務＝違法。
+create table if not exists customer_credits (
+  id                    bigint generated always as identity primary key,
+  provider_id           text not null references providers(id) on delete cascade,
+  customer_line_user_id text,                            -- 沿用「電話為主鍵」設計，web 訪客可能沒有
+  customer_phone        text,
+  customer_name         text,
+  kind                  text not null check (kind in ('amount','count')),   -- 儲值金 | 次卡
+  title                 text not null,
+  expires_on            date,                            -- ↓ 三欄為《美容定型化契約應記載及不得記載事項》要求
+  refund_terms          text,
+  agreed_at             timestamptz,
+  status                text not null default 'active' check (status in ('active','closed')),
+  note                  text,
+  created_at            timestamptz not null default now()
+);
+create index if not exists idx_credits_provider on customer_credits(provider_id, status);
+create index if not exists idx_credits_phone on customer_credits(provider_id, customer_phone);
+create index if not exists idx_credits_line on customer_credits(provider_id, customer_line_user_id);
+alter table customer_credits enable row level security;
+
+-- 流水帳：餘額 = sum(delta)，不存 balance 欄位（避免「是誰改了餘額」的爭議）
+create table if not exists credit_ledger (
+  id           bigint generated always as identity primary key,
+  credit_id    bigint not null references customer_credits(id) on delete cascade,
+  provider_id  text not null,
+  entry_type   text not null check (entry_type in ('topup','redeem','adjust','refund','expire','reverse')),
+  delta        numeric not null,                          -- 餘額變化量（唯一權威數字）
+  paid         numeric not null default 0,                -- 客人實付
+  bonus        numeric not null default 0,                -- 贈送（法規：折扣率不得高於 20%）
+  booking_id   text,
+  service_name text,
+  memo         text,
+  reversal_of  bigint references credit_ledger(id),       -- 沖正指向被沖正那筆
+  created_by   text,
+  created_at   timestamptz not null default now()
+);
+create index if not exists idx_ledger_credit on credit_ledger(credit_id, created_at);
+create index if not exists idx_ledger_provider on credit_ledger(provider_id, created_at);
+alter table credit_ledger enable row level security;
+
+-- 🔑 保命線：流水帳 append-only。RLS 對 service_role 無效，trigger 有效 → 所以用 trigger。
+--    唯一逃生閥 app.allow_ledger_purge='on'（只有直連 DB 的管理腳本會設，app 端永遠不設）
+--    存在理由＝解約清資料與 provider cascade 刪除。
+create or replace function credit_ledger_append_only() returns trigger
+language plpgsql as $$
+begin
+  if coalesce(current_setting('app.allow_ledger_purge', true), 'off') = 'on' then
+    return coalesce(old, new);
+  end if;
+  raise exception 'credit_ledger is append-only: 要修正請新增一筆 entry_type=reverse 並填 reversal_of';
+end $$;
+drop trigger if exists trg_credit_ledger_append_only on credit_ledger;
+create trigger trg_credit_ledger_append_only
+before update or delete on credit_ledger
+for each row execute function credit_ledger_append_only();

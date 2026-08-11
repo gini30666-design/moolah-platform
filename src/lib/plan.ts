@@ -23,3 +23,13 @@ export const TRIAL_WARN_AT = Math.floor(TRIAL_BOOKING_LIMIT * TRIAL_WARN_RATIO)
 
 /** 標準方案月費（NT$） */
 export const MONTHLY_FEE = 699
+
+/**
+ * 未到店（no-show）累計幾次後自動加入黑名單、無法再線上預約。
+ *
+ * ⚠️ 這個數字現在同時出現在兩端：`lib/blacklist.ts` 的判斷，
+ * 以及 book 頁對客人的公告（D1 信用擔保）。兩邊講的必須是同一件事——
+ * 規則沒被告知就沒有嚇阻力，而告知的數字跟實際執行的不一樣更糟。
+ * 所以放在這裡當單一真相來源，不要在任何一端重新寫死。
+ */
+export const NO_SHOW_THRESHOLD = 3

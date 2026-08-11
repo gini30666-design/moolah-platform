@@ -6,6 +6,7 @@ import { OA_CONSUMER, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
 import { ga } from '@/lib/gtag'
+import { NO_SHOW_THRESHOLD } from '@/lib/plan'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
 type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' }
@@ -1273,6 +1274,23 @@ export default function BookPage() {
                   <span style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{v}</span>
                 </div>
               ))}
+            </div>
+
+            {/*
+              D1 · 信用擔保（2026-08-11）
+              取代「預付訂金」的不碰金流做法：不收錢，但把既有的 no-show 規則講給客人聽。
+              系統本來就在算 no-show 次數、滿 3 次自動加黑名單（lib/blacklist.ts），
+              以前只有職人知道 —— 規則沒被告知就沒有嚇阻力，等於白做。
+              放在「預約摘要」下方、送出鍵正上方，是客人決定要不要認真赴約的那一刻。
+            */}
+            <div style={{ marginTop: '14px', padding: '13px 16px', borderRadius: '12px', background: 'rgba(166,137,102,0.08)', border: '1px solid rgba(166,137,102,0.18)' }}>
+              <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '5px' }}>關於準時到店</p>
+              <p style={{ fontSize: '11.5px', color: 'rgba(44,40,37,0.68)', lineHeight: 1.7 }}>
+                這個時段會為你保留，期間不接其他客人。
+                臨時有事沒關係，請提前在「我的預約」取消就好 🙏
+                <br />
+                未事先取消而未到店累計 <strong style={{ color: 'var(--charcoal)' }}>{NO_SHOW_THRESHOLD} 次</strong>後，將無法再線上預約。
+              </p>
             </div>
           </div>
 

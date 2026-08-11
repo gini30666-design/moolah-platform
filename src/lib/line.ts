@@ -270,6 +270,47 @@ export function cancelNoticeFlex(p: { providerName: string; serviceName: string;
   }
 }
 
+/**
+ * 客人：儲值卡／次卡異動通知。
+ *
+ * ⚠️ 這張卡是這個功能的安全機制，不是行銷。
+ * 錢是職人在線下收的、餘額是系統記的——客人手上必須有一份即時、獨立的紀錄，
+ * 之後才吵不起來「你上次到底扣了多少」。每一筆異動都要送，不能省。
+ */
+export function creditLedgerFlex(p: {
+  providerName: string
+  title: string          // 卡名
+  headline: string       // 「已儲值」「已扣款」「已更正」
+  changeText: string     // 「+NT$5,000」「−1 次」
+  balanceText: string    // 「NT$3,800」「8 次」
+  expiresOn?: string | null
+  memo?: string
+  viewUrl: string
+}): object {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box', layout: 'vertical', spacing: 'md',
+      contents: [
+        { type: 'text', text: `💳 ${p.headline}`, weight: 'bold', size: 'xl', color: _CHARCOAL },
+        { type: 'text', text: `${p.providerName}・${p.title}`, size: 'sm', color: '#888888', wrap: true },
+        { type: 'separator', margin: 'md' },
+        { type: 'box', layout: 'vertical', margin: 'md', spacing: 'sm', contents: [
+          _infoRow('本次異動', p.changeText),
+          _infoRow('目前餘額', p.balanceText),
+          ...(p.expiresOn ? [_infoRow('有效期限', p.expiresOn)] : []),
+          ...(p.memo ? [_infoRow('說明', p.memo)] : []),
+        ] },
+        { type: 'box', layout: 'vertical', margin: 'md', paddingAll: '12px', backgroundColor: '#faf7f2', cornerRadius: '8px',
+          contents: [{ type: 'text', text: '此餘額由店家保管與提供服務，MooLah 僅負責記錄。若數字有疑問請直接與店家確認。', size: 'xs', color: '#888888', wrap: true }] },
+      ],
+    },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+      { type: 'button', style: 'primary', color: _OAK, height: 'sm', action: { type: 'uri', label: '查看餘額與紀錄', uri: p.viewUrl } },
+    ] },
+  }
+}
+
 // 設計師：每週成績單卡
 export function weeklyReportFlex(p: { displayName: string; weekRange: string; deals: number; revenue: number; noShows: number; nextWeekCount: number; tip: string; adminUrl: string }): object {
   return {

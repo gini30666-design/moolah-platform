@@ -60,6 +60,207 @@ const labelStyle: React.CSSProperties = {
   display: 'block', marginBottom: '8px',
 }
 
+// ─── 儲值卡／次卡（S3）────────────────────────────────────────────────────────
+// ⚠️ MooLah 不經手任何金錢：錢是職人在線下自己收的，這裡只記帳。
+//    法規依據與「為什麼不能做成平台錢包」見 src/lib/credits.ts 檔頭。
+type CreditEntry = { id: number; type: string; delta: number; memo: string | null; serviceName: string | null; reversalOf: number | null; createdAt: string }
+type CreditCardRow = {
+  id: number; kind: 'amount' | 'count'; title: string; status: string
+  expiresOn: string | null; refundTerms: string | null; balance: number; balanceText: string
+  expired: boolean; needsGuarantee: boolean; entries: CreditEntry[]
+}
+const ENTRY_LABEL: Record<string, string> = { topup: '儲值', redeem: '扣款', reverse: '更正', adjust: '調整', refund: '退款', expire: '到期' }
+
+function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerName, serviceName }: {
+  providerId: string; customerLineUserId: string; customerPhone: string; customerName: string; serviceName?: string
+}) {
+  const [cards, setCards] = useState<CreditCardRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [creating, setCreating] = useState(false)
+  const [openCard, setOpenCard] = useState<number | null>(null)
+  const [act, setAct] = useState<{ id: number; mode: 'topup' | 'redeem' } | null>(null)
+  const [actValue, setActValue] = useState('')
+
+  // 建卡表單
+  const [f, setF] = useState({ kind: 'amount' as 'amount' | 'count', title: '', initial: '', paid: '', bonus: '', expiresOn: '', refundTerms: '', agreed: false })
+
+  const lineId = customerLineUserId === 'MANUAL' ? '' : customerLineUserId
+  const q = `providerId=${providerId}&customerLineUserId=${encodeURIComponent(lineId)}&customerPhone=${encodeURIComponent(customerPhone ?? '')}`
+
+  const reload = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/credits?${q}`, { headers: authHeader() })
+      if (!res.ok) throw new Error()
+      const d = await res.json()
+      setCards(d.cards ?? [])
+    } catch { setErr('載入儲值資料失敗') } finally { setLoading(false) }
+  }, [q])
+
+  useEffect(() => { reload() }, [reload])
+
+  async function post(body: Record<string, unknown>) {
+    setBusy(true); setErr(''); setWarnings([])
+    try {
+      const res = await fetch('/api/admin/credits', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ providerId, ...body }),
+      })
+      const d = await res.json()
+      // 失敗一定要說出來——這裡動的是錢，靜默失敗會讓職人以為扣了、客人以為沒扣
+      if (!res.ok) { setErr(d.error ?? '操作失敗'); return false }
+      if (d.warnings?.length) setWarnings(d.warnings)
+      await reload()
+      return true
+    } catch { setErr('操作失敗，請再試一次'); return false } finally { setBusy(false) }
+  }
+
+  async function doCreate() {
+    if (!f.title.trim()) { setErr('請填卡片名稱'); return }
+    const ok = await post({
+      action: 'create', kind: f.kind, title: f.title.trim(),
+      customerLineUserId: lineId, customerPhone, customerName,
+      initialDelta: Number(f.initial || 0), paid: Number(f.paid || 0), bonus: Number(f.bonus || 0),
+      expiresOn: f.expiresOn || null, refundTerms: f.refundTerms || null, agreed: f.agreed,
+    })
+    if (ok) { setCreating(false); setF({ kind: 'amount', title: '', initial: '', paid: '', bonus: '', expiresOn: '', refundTerms: '', agreed: false }) }
+  }
+
+  async function doAct() {
+    if (!act) return
+    const v = Number(actValue)
+    if (!(v > 0)) { setErr('金額／次數必須大於 0'); return }
+    const ok = act.mode === 'topup'
+      ? await post({ action: 'topup', creditId: act.id, delta: v, paid: v })
+      : await post({ action: 'redeem', creditId: act.id, amount: v, serviceName })
+    if (ok) { setAct(null); setActValue('') }
+  }
+
+  const inputS: React.CSSProperties = {
+    width: '100%', background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)',
+    borderRadius: '10px', padding: '9px 12px', fontSize: '13px', color: charcoal, outline: 'none', boxSizing: 'border-box',
+  }
+
+  return (
+    <div style={{ marginBottom: '18px' }}>
+      <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.72)', fontWeight: 600, marginBottom: '8px' }}>儲值卡 / 次卡</p>
+
+      {err && <div onClick={() => setErr('')} style={{ background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: '12px', padding: '9px 12px', borderRadius: '10px', marginBottom: '10px', cursor: 'pointer' }}>{err}（點此關閉）</div>}
+      {warnings.map((w, i) => (
+        <div key={i} style={{ background: 'rgba(166,137,102,0.12)', border: '1px solid rgba(166,137,102,0.3)', color: '#7a5c2e', fontSize: '11px', lineHeight: 1.6, padding: '9px 12px', borderRadius: '10px', marginBottom: '8px' }}>⚠️ {w}</div>
+      ))}
+
+      {loading && <p style={{ fontSize: '12px', color: '#b0a89e' }}>載入中…</p>}
+
+      {!loading && cards.map(c => (
+        <div key={c.id} style={{ background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '12px 14px', marginBottom: '8px', opacity: c.expired || c.status === 'closed' ? 0.6 : 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: charcoal, wordBreak: 'break-word' }}>{c.title}</p>
+              <p style={{ fontSize: '10px', color: '#7a6e68', marginTop: '2px' }}>
+                {c.expired ? '已過期' : c.status === 'closed' ? '已結清' : c.expiresOn ? `到期 ${c.expiresOn}` : '無期限'}
+              </p>
+            </div>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '20px', fontWeight: 600, color: oak, flexShrink: 0 }}>{c.balanceText}</p>
+          </div>
+
+          {c.needsGuarantee && (
+            <p style={{ fontSize: '10px', color: '#7a5c2e', marginTop: '6px', lineHeight: 1.5 }}>
+              ⚠️ 未使用餘額逾 NT$50,000，依《美容定型化契約》超過部分應提供履約保障
+            </p>
+          )}
+
+          <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
+            <button onClick={() => { setAct({ id: c.id, mode: 'topup' }); setActValue('') }} style={{ flex: 1, minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.3)', background: 'transparent', color: oak, fontSize: '12px', cursor: 'pointer' }}>＋ 儲值</button>
+            <button onClick={() => { setAct({ id: c.id, mode: 'redeem' }); setActValue('') }} style={{ flex: 1, minHeight: '40px', borderRadius: '10px', border: 'none', background: oak, color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>− 扣款</button>
+            <button onClick={() => setOpenCard(openCard === c.id ? null : c.id)} style={{ minWidth: '44px', minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.2)', background: 'transparent', color: '#7a6e68', fontSize: '12px', cursor: 'pointer' }}>{openCard === c.id ? '收起' : '紀錄'}</button>
+          </div>
+
+          {act?.id === c.id && (
+            <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+              <input autoFocus type="number" inputMode="numeric" value={actValue} onChange={e => setActValue(e.target.value)}
+                placeholder={act.mode === 'topup' ? (c.kind === 'count' ? '增加次數' : '儲值金額') : (c.kind === 'count' ? '扣除次數' : '扣款金額')}
+                style={{ ...inputS, flex: 1 }} />
+              <button onClick={doAct} disabled={busy} style={{ minWidth: '64px', minHeight: '40px', borderRadius: '10px', border: 'none', background: charcoal, color: '#fff', fontSize: '12px', cursor: 'pointer' }}>{busy ? '…' : '確認'}</button>
+              <button onClick={() => setAct(null)} style={{ minWidth: '44px', minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(166,137,102,0.2)', background: 'transparent', color: '#7a6e68', fontSize: '12px', cursor: 'pointer' }}>取消</button>
+            </div>
+          )}
+
+          {openCard === c.id && (
+            <div style={{ marginTop: '10px', borderTop: '1px solid rgba(166,137,102,0.15)', paddingTop: '8px' }}>
+              {c.entries.length === 0 && <p style={{ fontSize: '11px', color: '#b0a89e' }}>還沒有異動</p>}
+              {c.entries.map(e => {
+                const reversed = c.entries.some(x => x.reversalOf === e.id)
+                return (
+                  <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: '11px', color: charcoal, textDecoration: reversed ? 'line-through' : 'none' }}>
+                        {ENTRY_LABEL[e.type] ?? e.type}{e.serviceName ? `・${e.serviceName}` : ''}{e.memo ? `・${e.memo}` : ''}
+                      </p>
+                      <p style={{ fontSize: '9px', color: '#b0a89e' }}>{(e.createdAt || '').slice(0, 16).replace('T', ' ')}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: e.delta >= 0 ? '#3d7a5a' : charcoal }}>{e.delta >= 0 ? '+' : '−'}{Math.abs(e.delta)}</span>
+                      {/* 更正只能靠沖正（DB trigger 禁止改／刪紀錄）→ 原紀錄永遠留著可追溯 */}
+                      {!reversed && e.type !== 'reverse' && (
+                        <button onClick={() => post({ action: 'reverse', creditId: c.id, ledgerId: e.id })} disabled={busy}
+                          style={{ fontSize: '10px', color: '#b04040', background: 'none', border: '1px solid rgba(176,64,64,0.25)', borderRadius: '8px', padding: '4px 8px', cursor: 'pointer' }}>沖正</button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {!loading && !creating && (
+        <button onClick={() => setCreating(true)} style={{ width: '100%', minHeight: '44px', borderRadius: '12px', border: '1px dashed rgba(166,137,102,0.4)', background: 'transparent', color: oak, fontSize: '13px', cursor: 'pointer' }}>
+          ＋ 建立{cards.length ? '另一張' : ''}儲值卡／次卡
+        </button>
+      )}
+
+      {creating && (
+        <div style={{ background: 'rgba(166,137,102,0.07)', borderRadius: '14px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {(['amount', 'count'] as const).map(k => (
+              <button key={k} onClick={() => setF({ ...f, kind: k })} style={{
+                flex: 1, minHeight: '40px', borderRadius: '10px', fontSize: '12px', cursor: 'pointer',
+                background: f.kind === k ? oak : 'transparent', color: f.kind === k ? '#fff' : '#7a6e68',
+                border: `1px solid ${f.kind === k ? oak : 'rgba(166,137,102,0.25)'}`,
+              }}>{k === 'amount' ? '儲值金' : '次卡'}</button>
+            ))}
+          </div>
+          <input value={f.title} onChange={e => setF({ ...f, title: e.target.value })} placeholder={f.kind === 'amount' ? '卡名（如：儲值金）' : '卡名（如：洗剪護 10 次卡）'} style={inputS} />
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <input type="number" inputMode="numeric" value={f.initial} onChange={e => setF({ ...f, initial: e.target.value, paid: f.kind === 'amount' && !f.paid ? e.target.value : f.paid })} placeholder={f.kind === 'amount' ? '入帳金額' : '總次數'} style={{ ...inputS, flex: 1 }} />
+            {f.kind === 'amount' && <input type="number" inputMode="numeric" value={f.paid} onChange={e => setF({ ...f, paid: e.target.value })} placeholder="客人實付" style={{ ...inputS, flex: 1 }} />}
+            {f.kind === 'amount' && <input type="number" inputMode="numeric" value={f.bonus} onChange={e => setF({ ...f, bonus: e.target.value })} placeholder="贈送" style={{ ...inputS, flex: 1 }} />}
+          </div>
+          {/* 下面兩欄是《美容定型化契約應記載及不得記載事項》要求的，不是我們自己想加的 */}
+          <input type="date" value={f.expiresOn} onChange={e => setF({ ...f, expiresOn: e.target.value })} style={inputS} />
+          <input value={f.refundTerms} onChange={e => setF({ ...f, refundTerms: e.target.value })} placeholder="退費規則（依規定消費者可隨時終止並退費，手續費上限 10%）" style={inputS} />
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#7a6e68', minHeight: '40px', cursor: 'pointer' }}>
+            <input type="checkbox" checked={f.agreed} onChange={e => setF({ ...f, agreed: e.target.checked })} style={{ width: '18px', height: '18px' }} />
+            已當面向客人說明期限與退費規則並取得同意（存證用）
+          </label>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button onClick={doCreate} disabled={busy} style={{ flex: 1, minHeight: '44px', borderRadius: '12px', border: 'none', background: oak, color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{busy ? '建立中…' : '建立'}</button>
+            <button onClick={() => { setCreating(false); setErr('') }} style={{ minWidth: '80px', minHeight: '44px', borderRadius: '12px', border: '1px solid rgba(166,137,102,0.25)', background: 'transparent', color: '#7a6e68', fontSize: '13px', cursor: 'pointer' }}>取消</button>
+          </div>
+        </div>
+      )}
+
+      <p style={{ fontSize: '10px', color: '#b0a89e', lineHeight: 1.6, marginTop: '8px' }}>
+        錢請你自己在店裡收（現金／轉帳／刷卡機），MooLah 只負責記帳，不經手款項。每次異動都會自動通知客人。
+      </p>
+    </div>
+  )
+}
+
 // ─── Customer History Sheet ───────────────────────────────────────────────────
 function CustomerSheet({ booking, allBookings, onClose, providerId }: {
   booking: Booking; allBookings: Booking[]; onClose: () => void; providerId: string
@@ -269,6 +470,15 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             </button>
           </div>
         )}
+
+        {/* 儲值卡／次卡 — 手動建單的客人也要能用（老客人最常儲值），靠電話識別即可 */}
+        <CreditsPanel
+          providerId={providerId}
+          customerLineUserId={booking.customerLineUserId}
+          customerPhone={booking.customerPhone ?? ''}
+          customerName={booking.customerName}
+          serviceName={booking.serviceName}
+        />
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
