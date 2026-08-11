@@ -1413,7 +1413,11 @@ export default function AdminPage() {
     <main style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
 
       {/* ── Header ── */}
-      <div style={{ background: 'var(--charcoal-deep)', padding: '52px 24px 28px', position: 'relative', overflow: 'hidden' }}>
+      {/* ⚠️ 這裡刻意「不」設 overflow:hidden：功能列的下拉選單會延伸到 header 下緣以外，
+          設了就會被整個裁掉、按了像沒反應（2026-08-11 實機踩到）。
+          內部的噪點層與頂部金線都是 inset/absolute 貼齊，本來就不會溢出，不需要裁切。
+          zIndex 讓 header 疊在後面的統計卡之上，選單才不會被蓋住。 */}
+      <div style={{ background: 'var(--charcoal-deep)', padding: '52px 24px 28px', position: 'relative', zIndex: 20 }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
@@ -1421,13 +1425,18 @@ export default function AdminPage() {
         <style>{`@keyframes adminSpin { to { transform: rotate(360deg) } }`}</style>
         {/*
           功能列（2026-08-11 收合）
-          原本三顆藥丸並排在深色 header 上，一來佔掉標題空間、二來半透明底看起來浮浮的。
-          改成一顆「⋯」，點開才展開；底色改成近黑實心，在深色 header 上才立得住。
+          原本三顆藥丸並排在深色 header 上，佔掉標題空間、半透明底也顯得浮。
+          收成一顆「☰ 選單」，刷新與預覽都在裡面。
+          ⚠️ 有標籤文字不是多餘的：只放一個圖示時，職人會找不到刷新和預覽跑哪去了。
         */}
         <div style={{ position: 'absolute', top: '20px', right: '18px', zIndex: 5 }}>
+          {/* ⚠️ 這顆按鈕「不能」做成近黑色：header 本身就是近黑，黑底黑鈕等於隱形
+              （2026-08-11 第一版就是這樣，Gini 直接找不到刷新和預覽在哪）。
+              深色底上要跳出來，靠的是亮色而不是更黑 → 用橡木色填底＋深色字。 */}
           <button onClick={() => setMenuOpen(v => !v)} aria-label="功能選單" aria-expanded={menuOpen}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '3px', background: menuOpen ? '#0e0c0b' : 'rgba(14,12,11,0.72)', border: '1px solid rgba(166,137,102,0.55)', color: 'var(--oak)', minWidth: '50px', minHeight: '44px', borderRadius: '99px', cursor: 'pointer', backdropFilter: 'blur(6px)', fontSize: '20px', lineHeight: 1, letterSpacing: '0.08em', paddingBottom: '6px' }}>
-            ⋯
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: menuOpen ? '#e8d9c2' : 'var(--oak)', border: 'none', color: '#211a13', minHeight: '44px', padding: '0 16px', borderRadius: '99px', cursor: 'pointer', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, letterSpacing: '0.04em', boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
+            <span style={{ fontSize: 'calc(15px * var(--fs, 1))', lineHeight: 1, marginTop: '-3px' }}>☰</span>
+            選單
           </button>
 
           {menuOpen && (
