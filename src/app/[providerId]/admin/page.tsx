@@ -286,6 +286,14 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
   const noShowCount = history.filter(b => b.status === 'no_show').length
 
+  // sheet 開著時鎖住背景捲動：否則手指在 sheet 邊緣滑會捲到後面那頁，
+  // 關掉之後停在莫名其妙的位置，感覺像「卡住」。關閉時務必還原原值。
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+
   useEffect(() => {
     if (isManual) return
     fetch(`/api/admin/customer-note?providerId=${providerId}&customerLineUserId=${booking.customerLineUserId === 'MANUAL' ? '' : booking.customerLineUserId}&customerPhone=${encodeURIComponent(booking.customerPhone ?? '')}`, { headers: authHeader() })
@@ -381,29 +389,41 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
       style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(44,40,37,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end' }}
       onClick={onClose}
     >
+      {/*
+        🐞 2026-08-11 修：這張 sheet 原本沒有高度上限也不能捲。
+        外層是 position:fixed + align-items:flex-end，所以內容一旦比螢幕高，
+        就會往「畫面上方」溢出到看不到的地方——關閉鍵剛好在最上面，於是整頁像被鎖死。
+        加了儲值面板之後高度撐爆才浮現（Gini 實測回報）。
+        解法三件：① 高度上限 + 自己可捲 ② 標題列 sticky（× 永遠按得到）③ 背景鎖捲。
+      */}
       <div
-        style={{ width: '100%', maxWidth: '480px', margin: '0 auto', background: cream, borderRadius: '24px 24px 0 0', padding: '16px 20px 44px', animation: 'slideUp 0.22s ease' }}
+        className="cust-sheet"
+        style={{ width: '100%', maxWidth: '480px', margin: '0 auto', background: cream, borderRadius: '24px 24px 0 0', padding: '0 20px 44px', animation: 'slideUp 0.22s ease' }}
         onClick={e => e.stopPropagation()}
       >
-        <div style={{ width: '40px', height: '4px', background: 'rgba(166,137,102,0.25)', borderRadius: '2px', margin: '0 auto 20px' }} />
+        {/* sticky 標題列：捲到多下面都關得掉 */}
+        <div style={{ position: 'sticky', top: 0, zIndex: 2, background: cream, paddingTop: '16px', margin: '0 -20px', padding: '16px 20px 0' }}>
+          <div style={{ width: '40px', height: '4px', background: 'rgba(166,137,102,0.25)', borderRadius: '2px', margin: '0 auto 16px' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: '1px solid rgba(166,137,102,0.12)', marginBottom: '16px' }}>
+            <div>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', fontWeight: 600, color: charcoal }}>
+                {booking.customerName || '匿名顧客'}
+              </p>
+              {(booking.gender || booking.hairLength) && (
+                <p style={{ fontSize: '11px', color: oak, marginTop: '3px' }}>
+                  {[booking.gender, booking.hairLength].filter(Boolean).join(' · ')}
+                </p>
+              )}
+            </div>
+            {/* tap target 拉到 44px，手機才好按 */}
+            <button onClick={onClose} aria-label="關閉" style={{ minWidth: '44px', minHeight: '44px', fontSize: '22px', color: '#b0a89e', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, marginTop: '-8px', marginRight: '-10px' }}>×</button>
+          </div>
+        </div>
         {sheetError && (
           <div onClick={() => setSheetError('')} style={{ background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: '12px', padding: '10px 14px', borderRadius: '12px', marginBottom: '14px', textAlign: 'center', cursor: 'pointer' }}>
             {sheetError}　（點此關閉）
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-          <div>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', fontWeight: 600, color: charcoal }}>
-              {booking.customerName || '匿名顧客'}
-            </p>
-            {(booking.gender || booking.hairLength) && (
-              <p style={{ fontSize: '11px', color: oak, marginTop: '3px' }}>
-                {[booking.gender, booking.hairLength].filter(Boolean).join(' · ')}
-              </p>
-            )}
-          </div>
-          <button onClick={onClose} style={{ fontSize: '22px', color: '#b0a89e', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, paddingTop: '2px' }}>×</button>
-        </div>
 
         {!isManual && (
           <>
@@ -545,7 +565,18 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
           ))}
         </div>
       </div>
-      <style>{`@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }`}</style>
+      <style>{`
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        /* 88vh 先保底，支援 dvh 的瀏覽器再覆蓋成 88dvh
+           （手機 vh 算的是「網址列收起來」的高度，會比實際可視範圍大一點） */
+        .cust-sheet {
+          max-height: 88vh;
+          max-height: 88dvh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;   /* 捲到底不要連背景一起帶著捲 */
+        }
+      `}</style>
     </div>
   )
 }
