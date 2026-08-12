@@ -51,12 +51,27 @@ export default function DashboardPage() {
         const res = await fetch(`/api/dashboard/me?userId=${profile.userId}`)
         const data = await res.json()
 
-        if (data.found) {
-          // 設計師 → 跳轉自己的後台
+        const dest = destination
+          ? (destination.startsWith('/') ? destination : `/${destination}`)
+          : ''
+        // 目的地的第一段路徑：'/liberty-island/book' → 'liberty-island'、'/claim/xxx' → 'claim'
+        const destOwner = dest.split('/').filter(Boolean)[0] ?? ''
+
+        // 🔴 明確帶了 ?to= 就以它為準 —— 但「指向自己」除外。
+        //
+        //    舊版是 `if (data.found) → 自己後台`，設計師身分無條件蓋過 destination。
+        //    後果不只是測試不便：**任何設計師想去別的職人那裡預約都會被綁架回自己後台**
+        //    （zuzu 想約自由島、甜姐兒想約別家全中招）。
+        //
+        //    保留 Day 32 的隱藏功能「設計師掃立牌＝實體快速登入」：
+        //    掃自己的立牌（to 指向自己）仍然進後台，那才是這功能的真實情境；
+        //    掃別人的立牌則照常進對方頁面，不再莫名其妙彈到自己後台。
+        const goingToOwnPage = data.found && destOwner === data.providerId
+
+        if (dest && !goingToOwnPage) {
+          router.replace(dest)
+        } else if (data.found) {
           router.replace(`/${data.providerId}/admin`)
-        } else if (destination) {
-          // 消費者帶有 to 目標 → 跳轉指定設計師頁
-          router.replace(destination.startsWith('/') ? destination : `/${destination}`)
         } else {
           setState('not_found')
         }

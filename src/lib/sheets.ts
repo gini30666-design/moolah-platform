@@ -5,6 +5,7 @@
 //  getSheetData 回傳 string[][]（與 Sheets 相同語意：值一律字串、null→''）。
 // ============================================================
 import { sb } from './supabase'
+import { colToIndex } from './colRef'
 
 // （2026-07 清理）googleapis client 已移除：資料層全走 Supabase；
 // 舊 Google Sheets client 只剩已退役的 opsAgent/drive 孤兒引用，不再於 live bundle 內。
@@ -25,12 +26,13 @@ const TABLE_COLS: Record<string, string[]> = {
   feedback: ['ts','area','severity','message','reporter','ua'],
 }
 
-const COL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 function parseRange(range: string) {
   const [table, a1 = ''] = range.split('!')
   const m = a1.match(/^([A-Z]+)\d*(?::([A-Z]+)\d*)?$/)
-  const startIdx = m ? COL.indexOf(m[1]) : 0
-  const endIdx = m && m[2] ? COL.indexOf(m[2]) : (m ? COL.indexOf(m[1]) : 25)
+  const startIdx = m ? colToIndex(m[1]) : 0
+  // 沒指定結束欄時，以該表實際欄數為準（舊版寫死 25，表一超過 26 欄就會截斷）
+  const tableEnd = (TABLE_COLS[table]?.length ?? 26) - 1
+  const endIdx = m ? (m[2] ? colToIndex(m[2]) : colToIndex(m[1])) : tableEnd
   return { table, startIdx, endIdx }
 }
 

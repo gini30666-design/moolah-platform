@@ -229,6 +229,16 @@ export default function ProviderPage() {
       .catch(() => {})
   }, [providerId])
 
+  // 職人頁多數情況就是「第一頁」（立牌 QR／短網址／LIFF／Google 搜尋進來），
+  // 這時 router.back() 會退出站外或整個沒反應 → 不該顯示返回鍵。
+  // 只有從站內（/discover、/local 等）點進來才給。
+  const [canGoBack, setCanGoBack] = useState(false)
+  useEffect(() => {
+    try {
+      setCanGoBack(!!document.referrer && new URL(document.referrer).origin === window.location.origin)
+    } catch { setCanGoBack(false) }
+  }, [])
+
   function handleBook() {
     const path = `/${providerId}/book${selectedServiceId ? `?service=${selectedServiceId}` : ''}`
     // 2026-08-01：預約一律需要 LINE 身分（提醒才發得出去）。
@@ -294,12 +304,14 @@ export default function ProviderPage() {
       }}>
         {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
-          <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
-              <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
-          </button>
+          {canGoBack ? (
+            <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
+                <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
+            </button>
+          ) : <span style={{ width: '40px' }} />}
           <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center', padding: '0 8px' }}>MooLah</a>
           {isDemo
             ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
