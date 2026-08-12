@@ -44,7 +44,12 @@ export default async function ProviderPage({ params }: Params) {
   const { provider: p, services } = data
   const store = p.store_name || p.name
   const url = `${BASE_URL}/${providerId}`
-  const image = p.cover_url || p.avatar_url || undefined
+  // ⚠️ JSON-LD 的 image 必須是絕對網址，Google 不吃相對路徑。
+  //    自架照片（/clients/{id}/…）存的是相對路徑，這裡補上網域。
+  const rawImage = p.cover_url || p.avatar_url || ''
+  const image = rawImage
+    ? (rawImage.startsWith('http') ? rawImage : `${BASE_URL}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`)
+    : undefined
 
   // JSON-LD：在地美業 + 服務 offers + 評價 → Google 在地搜尋/精選摘要看得懂
   const jsonLd: Record<string, unknown> = {

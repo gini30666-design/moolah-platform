@@ -421,8 +421,8 @@ function DemoCompletionScreen({ providerName, serviceName, date, time }: {
 }
 
 // ── CompletionScreen ──────────────────────────────────────────────────
-function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, servicePrice, providerAddress }: {
-  providerName: string; serviceName: string; date: string; time: string
+function CompletionScreen({ providerName, serviceName, date, time, onBack, isLineUser, consumerNotified, serviceDuration, servicePrice, providerAddress, providerTerm }: {
+  providerName: string; serviceName: string; date: string; time: string; providerTerm: string
   onBack: () => void; isLineUser: boolean; consumerNotified: boolean
   serviceDuration: number; servicePrice: number; providerAddress: string
 }) {
@@ -506,12 +506,12 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
               <svg viewBox="0 0 20 20" fill="none" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
                 <path d="M10 1.5C5.31 1.5 1.5 5.31 1.5 10c0 4.69 3.81 8.5 8.5 8.5s8.5-3.81 8.5-8.5c0-4.69-3.81-8.5-8.5-8.5zm-1 12.06l-3-3 1.06-1.06 1.94 1.94 4.44-4.44 1.06 1.06-5.5 5.5z" fill="#06C755"/>
               </svg>
-              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>LINE 確認通知已傳送給您與設計師</p>
+              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>LINE 確認通知已傳送給您與{providerTerm}</p>
             </div>
           ) : (
             <div style={{ padding: '16px', borderRadius: '14px', background: 'rgba(26,23,20,0.04)', border: '1px solid rgba(44,40,37,0.1)', marginBottom: '20px' }}>
               <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', marginBottom: '12px', lineHeight: 1.6, textAlign: 'center' }}>
-                {isLineUser ? '加入 MooLah LINE 好友，即可接收預約確認與提醒' : '設計師已收到通知。加入 LINE 好友可接收後續提醒'}
+                {isLineUser ? '加入 MooLah LINE 好友，即可接收預約確認與提醒' : `${providerTerm}已收到通知。加入 LINE 好友可接收後續提醒`}
               </p>
               <LineLink source="book_1" oaId={OA_CONSUMER} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px 20px', borderRadius: '10px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 500, textDecoration: 'none', boxShadow: '0 2px 12px rgba(6,199,85,0.28)' }}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/></svg>
@@ -557,7 +557,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
           </LineLink>
         </div>
         <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.35)', paddingBottom: '2px', borderBottom: '1px solid rgba(44,40,37,0.15)', marginTop: '18px', animation: 'fadeSlideUp 0.4s ease 0.9s both' }}>
-          返回設計師頁面
+          返回{providerTerm}頁面
         </button>
       </div>
     </div>
@@ -734,6 +734,12 @@ export default function BookPage() {
     }
   }
 
+  // space/scene 模式：照片是環境或活動實景而非可挑的作品 → 收起「靈感參考」、換掉挑款式類的備註標籤
+  // ⚠️ 定義必須在所有 early return 之前（CompletionScreen 那個 return 會用到 providerTerm）
+  const isSpaceMode = (provider?.portfolioMode ?? 'works') !== 'works'
+  // 「設計師」是美髮語彙；採耳/按摩/除毛/潛水一律改用品牌通用詞「職人」
+  const providerTerm = isSpaceMode ? '職人' : '設計師'
+
   // ⚠️ 示範帳號刻意放行：/pro 的「自己先看看」要讓職人在電腦上就能體驗完整流程。
   if (liffReady && !lineUserId && provider && !provider.isDemo) {
     return <LineRequiredScreen providerId={providerId} providerName={provider.storeName || provider.name} />
@@ -758,6 +764,7 @@ export default function BookPage() {
       serviceDuration={service.duration}
       servicePrice={service.price}
       providerAddress={provider.address ?? ''}
+      providerTerm={providerTerm}
     />
   }
 
@@ -804,8 +811,6 @@ export default function BookPage() {
     : (customerNameInput.trim().length > 0 && customerPhone.trim().length > 0)
   // 寬鬆電話驗證：去掉非數字後 ≥ 8 碼才算有效（擋 typo，不誤擋市話/含符號格式）
   const phoneValid = forOthers || customerPhone.replace(/\D/g, '').length >= 8
-  // space 模式：職人的照片是環境/設備而非可挑選的作品 → 收起「靈感參考」、換掉挑款式類的備註標籤
-  const isSpaceMode = (provider?.portfolioMode ?? 'works') !== 'works'
 
   // 服務清單摺疊：預設只露前 N 項；已選的服務若在名單外一定要看得到（否則使用者找不到自己選了什麼）
   const visibleServices = showAllServices
@@ -894,7 +899,7 @@ export default function BookPage() {
         {hotCount > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(196,132,90,0.13)', border: '1px solid rgba(196,132,90,0.32)', borderRadius: '10px' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c4845a', flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: '#d99a6e' }}>橘色為設計師較有空的時段，預約這些服務更從容</span>
+            <span style={{ fontSize: '12px', color: '#d99a6e' }}>橘色為{providerTerm}較有空的時段，預約這些服務更從容</span>
           </div>
         )}
         {periods.map(([label, fn]) => {
@@ -1246,7 +1251,7 @@ export default function BookPage() {
 
           {/* ════════════ Chapter 03 — 給設計師的話（order=3）════════════ */}
           <div data-animate style={{ margin: '14px 0', order: 3 }}>
-            <ChapterHeader no="03" eyebrow="One last thing" title="給設計師的話" />
+            <ChapterHeader no="03" eyebrow="One last thing" title={`給${providerTerm}的話`} />
 
             <FieldLabel hint="選填">快速標籤</FieldLabel>
             <QuickTags tags={isSpaceMode ? NOTE_TAGS_SPACE : NOTE_TAGS} selected={selectedTags} onToggle={toggleTag} />
