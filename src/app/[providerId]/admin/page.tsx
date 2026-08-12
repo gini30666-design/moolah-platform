@@ -1331,6 +1331,9 @@ export default function AdminPage() {
   const trialEndMs = trialEndsAt ? new Date(trialEndsAt).getTime() : 0
   const isExpired = plan === 'expired' || (isTrial && trialEndMs > 0 && Date.now() > trialEndMs)
   const trialDaysLeft = trialEndMs ? Math.max(0, Math.ceil((trialEndMs - Date.now()) / 86400000)) : 0
+  // 🔴 trial 但沒有到期日（認領前 OB 先設好方案、或 claim 寫入失敗）→ 不能顯示「剩 0 天」，
+  //    那會讓職人一進後台就以為試用已經用完。沒有日期就只說「試用中」。
+  const trialDateKnown = trialEndMs > 0
   const trialUsed = bookings.length // 後台 bookings 已是本職人未取消的預約
 
   // ── 回購率分析（#24）— 近 90 天範圍 ──
@@ -1529,7 +1532,7 @@ export default function AdminPage() {
       {/* 數據與對帳：預設收合，把操作內容（預約）往上提 */}
       <button data-animate data-delay="55" onClick={() => setShowAnalytics(v => !v)} style={{ display: 'flex', width: 'calc(100% - 32px)', margin: '14px 16px 0', alignItems: 'center', justifyContent: 'space-between', padding: '13px 16px', background: cardBg, border: `1px solid ${border}`, borderRadius: '14px', cursor: 'pointer' }}>
         <span style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 600 }}>
-          數據與對帳{isTrial && !isExpired ? ` · 試用剩 ${trialDaysLeft} 天` : ''}
+          數據與對帳{isTrial && !isExpired ? (trialDateKnown ? ` · 試用剩 ${trialDaysLeft} 天` : ' · 試用中') : ''}
         </span>
         <span style={{ fontSize: 'calc(12px * var(--fs, 1))', color: oak }}>{showAnalytics ? '收合 ▲' : '展開 ▼'}</span>
       </button>
@@ -1553,8 +1556,8 @@ export default function AdminPage() {
           <div style={{ textAlign: 'center', padding: '4px 6px' }}>
             {isTrial && !isExpired ? (
               <>
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>{trialDaysLeft}</p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>試用剩餘天</p>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>{trialDateKnown ? trialDaysLeft : '—'}</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>{trialDateKnown ? '試用剩餘天' : '試用中'}</p>
               </>
             ) : (
               /* 2026-08-06 起不在後台叫價：這裡是職人的營運成績單，收費由業務個別處理 */
@@ -1575,7 +1578,7 @@ export default function AdminPage() {
             </p>
           ) : isTrial ? (
             <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, lineHeight: 1.55 }}>
-              <span style={{ fontWeight: 600, color: oak }}>🎁 試用中 · 剩 {trialDaysLeft} 天 · 已用 {trialUsed}/{TRIAL_LIMIT} 筆</span>
+              <span style={{ fontWeight: 600, color: oak }}>🎁 試用中{trialDateKnown ? ` · 剩 ${trialDaysLeft} 天` : ''} · 已用 {trialUsed}/{TRIAL_LIMIT} 筆</span>
               <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　正式加入 NT$699/月解鎖無限預約 + 免費客製立牌</span>
             </p>
           ) : (
