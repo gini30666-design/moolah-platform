@@ -72,11 +72,38 @@ describe('computeAvailability — 整體狀態', () => {
     const slots = computeAvailability(base({ availRows: [schedule(dowOf(D), '09:00', '18:00', 'false')] }))
     expect(slots.every(s => s.status === 'booked')).toBe(true)
   })
-  it('營業時段外的格 → booked（10:00–12:00 營業）', () => {
-    const slots = computeAvailability(base({ availRows: [schedule(dowOf(D), '10:00', '12:00')] }))
-    expect(slots.find(s => s.time === '09:00')!.status).toBe('booked') // 開門前
-    expect(slots.find(s => s.time === '10:00')!.status).toBe('available')
-    expect(slots.find(s => s.time === '13:00')!.status).toBe('booked') // 打烊後
+  // 2026-08-12 全天時段表：營業時段外＝「不存在」而非「已約」。
+  // 客人只看到營業中的格子，不會被一整排凌晨灰格洗版。
+  it('營業時段外的格 → 不回傳（10:00–12:00 營業）', () => {
+    const input = base({ availRows: [schedule(dowOf(D), '10:00', '12:00')] })
+    const slots = computeAvailability(input)
+    expect(slots.map(s => s.time)).toEqual(['10:00', '10:30', '11:00', '11:30'])
+    expect(slots.every(s => s.status === 'available')).toBe(true)
+    // 不回傳 ≠ 可約：下單守門仍必須擋下開門前／打烊後
+    expect(isSlotBookable(input, '09:00')).toBe(false)
+    expect(isSlotBookable(input, '13:00')).toBe(false)
+    expect(isSlotBookable(input, '10:00')).toBe(true)
+  })
+  it('★ 全天時段表：早班 07:00 與晚班 22:00 都約得到', () => {
+    const early = base({ availRows: [schedule(dowOf(D), '07:00', '09:00')] })
+    expect(computeAvailability(early).map(s => s.time)).toEqual(['07:00', '07:30', '08:00', '08:30'])
+    expect(isSlotBookable(early, '07:00')).toBe(true)
+
+    const late = base({ availRows: [schedule(dowOf(D), '19:00', '22:00')] })
+    expect(isSlotBookable(late, '21:30')).toBe(true)
+    expect(isSlotBookable(late, '18:30')).toBe(false)
+  })
+  it('★ 收工填 00:00 視為午夜 24:00（time input 打不出 24:00）', () => {
+    const input = base({ availRows: [schedule(dowOf(D), '22:00', '00:00')] })
+    expect(computeAvailability(input).map(s => s.time)).toEqual(['22:00', '22:30', '23:00', '23:30'])
+    expect(isSlotBookable(input, '23:30')).toBe(true)
+  })
+  it('★ 服務不得做到打烊後：90 分服務在 11:00 收工的班表，10:00 起訂不到', () => {
+    // 全天時段表下，10:00+90分 = 10:00/10:30/11:00 三格在陣列上都存在，
+    // 但 11:00 已超過收工 → 必須擋下（改全天前這個 bug 被陣列邊界意外遮住）
+    const input = base({ availRows: [schedule(dowOf(D), '09:00', '11:00')], serviceId: 'svc90' })
+    expect(isSlotBookable(input, '10:00')).toBe(false) // 會做到 11:30，打烊後
+    expect(isSlotBookable(input, '09:00')).toBe(true)  // 佔 09:00/09:30/10:00，10:30 結束，剛好趕上
   })
   it('已被佔用的格 → booked；相鄰格 → hot', () => {
     const slots = computeAvailability(base({ bookingRows: [booking({ svc: 'svc30', date: D, time: '10:00' })], serviceId: 'svc30' }))

@@ -9,7 +9,7 @@ import { ga } from '@/lib/gtag'
 import { NO_SHOW_THRESHOLD } from '@/lib/plan'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
-type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' | 'scene' }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -805,7 +805,7 @@ export default function BookPage() {
   // 寬鬆電話驗證：去掉非數字後 ≥ 8 碼才算有效（擋 typo，不誤擋市話/含符號格式）
   const phoneValid = forOthers || customerPhone.replace(/\D/g, '').length >= 8
   // space 模式：職人的照片是環境/設備而非可挑選的作品 → 收起「靈感參考」、換掉挑款式類的備註標籤
-  const isSpaceMode = provider?.portfolioMode === 'space'
+  const isSpaceMode = (provider?.portfolioMode ?? 'works') !== 'works'
 
   // 服務清單摺疊：預設只露前 N 項；已選的服務若在名單外一定要看得到（否則使用者找不到自己選了什麼）
   const visibleServices = showAllServices

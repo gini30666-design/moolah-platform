@@ -6,7 +6,7 @@ import MoolahLoader from '@/components/MoolahLoader'
 type Provider = {
   id: string; name: string; category: string; description: string
   isDemo?: boolean
-  portfolioMode?: 'works' | 'space'
+  portfolioMode?: 'works' | 'space' | 'scene'
   avatarUrl: string; coverUrl: string; storeName: string; address: string
   district: string; businessHours: string; phone: string; instagram: string
   rating?: string; reviewCount?: string; years?: string; tagline?: string; specialties?: string; role?: string
@@ -256,8 +256,15 @@ export default function ProviderPage() {
   const location   = provider.district  || ''
   // 示範帳號：供廣告/招商展示用，作品集為情境示意圖而非真實客戶作品
   const isDemo     = provider.isDemo === true
-  // space 模式：除毛/採耳/按摩等拍不到「作品」的品類，這一區改成環境與設備照
-  const isSpaceMode = provider.portfolioMode === 'space'
+  // 相簿與文案依品類調整。works=作品集（美髮/美甲）、space=環境設備（除毛/採耳/按摩）、
+  // scene=活動實景（潛水/戶外體驗）。非 works 者一律不叫客人「挑作品當靈感參考」。
+  const mode = provider.portfolioMode ?? 'works'
+  const isSpaceMode = mode !== 'works'
+  const COPY = {
+    works: { en: 'Selected Work', zh: '作品集',   empty: '作品集即將更新', meet: 'Meet your designer', cta: <>準備好遇見<br />更好的自己了嗎</> },
+    space: { en: 'The Space',     zh: '環境・設備', empty: '環境照即將更新', meet: 'Meet your host',     cta: <>挑個好日子<br />我們等你來</> },
+    scene: { en: 'In Action',     zh: '活動實景',   empty: '活動照即將更新', meet: 'Meet your host',     cta: <>挑個好日子<br />我們等你來</> },
+  }[mode]
   // tagline = short header phrase (R column); bio = longer intro text (D column)
   const headerTagline = provider.tagline || ''
   const bioQuote      = provider.description || ''
@@ -356,7 +363,7 @@ export default function ProviderPage() {
         <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: GRAIN, backgroundSize: '300px', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '20px' }}>Meet your designer</p>
+          <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '20px' }}>{COPY.meet}</p>
 
           {/* Avatar + name + role */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '22px' }}>
@@ -423,8 +430,8 @@ export default function ProviderPage() {
       <div data-animate data-dir="up" style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
-            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>{isSpaceMode ? 'The Space' : 'Selected Work'}</p>
-            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>{isSpaceMode ? '環境・設備' : '作品集'}</p>
+            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>{COPY.en}</p>
+            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>{COPY.zh}</p>
             {isDemo && (
               <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.42)', marginTop: '6px', lineHeight: 1.5 }}>
                 本頁為系統示範，作品為情境示意圖
@@ -446,7 +453,7 @@ export default function ProviderPage() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed rgba(166,137,102,0.3)', borderRadius: '14px' }}>
-            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>{isSpaceMode ? '環境照即將更新' : '作品集即將更新'}</p>
+            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>{COPY.empty}</p>
           </div>
         )}
       </div>
@@ -463,7 +470,7 @@ export default function ProviderPage() {
           <p style={{ fontSize: '10px', letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '18px' }}>Ready when you are</p>
 
           <p className="font-display" style={{ fontSize: 'clamp(1.8rem,6vw,2.2rem)', fontWeight: 300, lineHeight: 1.18, color: 'var(--cream)', letterSpacing: '-0.01em' }}>
-            準備好遇見<br />更好的自己了嗎
+            {COPY.cta}
           </p>
 
           {/* gold diamond divider */}

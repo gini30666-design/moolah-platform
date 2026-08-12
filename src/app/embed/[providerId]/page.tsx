@@ -1,15 +1,10 @@
 import { getSheetData } from '@/lib/sheets'
+// ⚠️ 時段表一律 import（理由同 next-available：這裡原本也有一份漏改的舊副本）
+import { TIME_SLOTS, DOW_NAMES, padTime } from '@/lib/slots'
 
 export const dynamic = 'force-dynamic'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
-
-const TIME_SLOTS = [
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
-]
-const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
 function tt(t: string) { const [h,m] = t.split(':').map(Number); return h*60+m }
 
@@ -44,7 +39,8 @@ async function getAvailableSlots(providerId: string, limit = 6) {
     if (daySched && daySched[5]?.toLowerCase() === 'false') continue
 
     const startMin = tt(daySched ? (daySched[3] || '09:00') : '09:00')
-    const endMin = tt(daySched ? (daySched[4] || '19:00') : '19:00')
+    const rawEnd = daySched ? (daySched[4] || '19:00') : '19:00'
+    const endMin = padTime(rawEnd) === '00:00' ? 1440 : tt(rawEnd)
 
     const occupied = new Set<string>()
     for (const b of bookingRows) {

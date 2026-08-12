@@ -40,7 +40,10 @@ export async function GET(
     trialEndsAt: r[23] ?? '',                        // X: 試用到期 ISO
     isDemo:      String(r[24] ?? '').toLowerCase() === 'true',  // 示範帳號：可完整體驗流程，但不產生真實預約
     // Z: works（預設，有可挑選的作品）| space（除毛/採耳/按摩等無「作品」可拍的品類，改放環境與設備照）
-    portfolioMode: (String(r[25] ?? '').trim() === 'space' ? 'space' : 'works') as 'works' | 'space',
+    // works=作品集（美髮/美甲）｜space=環境設備（除毛/採耳/按摩）｜scene=活動實景（潛水/戶外體驗）
+    // 未知值一律退回 works，保持既有職人行為不變
+    portfolioMode: (['space', 'scene'].includes(String(r[25] ?? '').trim())
+      ? String(r[25]).trim() : 'works') as 'works' | 'space' | 'scene',
   }
 
   const services = serviceRows

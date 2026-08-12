@@ -7,14 +7,19 @@
 export type SlotStatus = 'available' | 'booked' | 'hot'
 export type Slot = { time: string; status: SlotStatus }
 
-// 與全站一致的時段表。
-// 2026-08-06 起 12:00/12:30 回歸：午休不再全站寫死，改由每位職人在排班自訂
-// （availability schedule 列的 break_start / break_end），留空＝整天不休。
-export const TIME_SLOTS = [
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-  '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
-]
+// 與全站一致的時段表 —— 全天 00:00–23:30，每 30 分一格（48 格）。
+//
+// 2026-08-06：12:00/12:30 回歸（午休改由每位職人在排班自訂 break_start/break_end，留空＝不休）
+// 2026-08-12：從「09:00–18:30 寫死」擴充為全天。
+//   ⚠️ 這個陣列只是「所有可能存在的格子」，不是「會顯示的格子」——
+//      computeAvailability 只回傳落在該職人營業時段內的格子（見下方 withinHours）。
+//      所以既有職人（預設 09:00–19:00）拿到的結果與擴充前完全相同，不會突然多出一堆灰格。
+//   ⚠️ 全站只能有這一份。next-available / embed 一律 import，不要再各自複製
+//      （8/06 加回 12:00 那次就是因為有三份副本而漏改兩份）。
+export const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2), m = i % 2 ? '30' : '00'
+  return `${String(h).padStart(2, '0')}:${m}`
+})
 export const DOW_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const SLOT_MINUTES = 30
 
@@ -71,18 +76,25 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   const blockRows = providerAvail.filter(r => r[1] === 'block')
   const scheduleRows = providerAvail.filter(r => r[1] === 'schedule')
 
-  const allBooked: Slot[] = TIME_SLOTS.map(t => ({ time: t, status: 'booked' as SlotStatus }))
+  // 先取營業時段，休假判斷才知道該回傳幾格
+  // （改全天時段表後，allBooked 若沿用整包 48 格，公休日會吐出一整排凌晨灰格）
+  const dayOfWeek = new Date(date + 'T12:00:00').getDay()
+  const daySchedule = scheduleRows.find(r => r[2] === DOW_NAMES[dayOfWeek])
+
+  const startMin = timeToMinutes(daySchedule ? (daySchedule[3] || '09:00') : '09:00')
+  // 收工時間 '00:00' 視為當日 24:00（<input type="time"> 打不出 24:00，這是營業到午夜的唯一表示法）
+  const rawEnd = daySchedule ? (daySchedule[4] || '19:00') : '19:00'
+  const endMin = padTime(rawEnd) === '00:00' ? 1440 : timeToMinutes(rawEnd)
+  const withinHours = (min: number) => min >= startMin && min < endMin
+
+  const allBooked: Slot[] = TIME_SLOTS
+    .filter(t => withinHours(timeToMinutes(t)))
+    .map(t => ({ time: t, status: 'booked' as SlotStatus }))
 
   // 1) 整天休假
   if (blockRows.some(r => r[2] === date)) return allBooked
-
-  // 2) 該 weekday 公休 / 取得營業時段
-  const dayOfWeek = new Date(date + 'T12:00:00').getDay()
-  const daySchedule = scheduleRows.find(r => r[2] === DOW_NAMES[dayOfWeek])
+  // 2) 該 weekday 公休
   if (daySchedule && (daySchedule[5] ?? '').toLowerCase() === 'false') return allBooked
-
-  const startMin = timeToMinutes(daySchedule ? (daySchedule[3] || '09:00') : '09:00')
-  const endMin = timeToMinutes(daySchedule ? (daySchedule[4] || '19:00') : '19:00')
 
   // 午休（每位職人自訂；兩欄都有值且成立才生效，留空＝不休）
   const rawBreakStart = daySchedule?.[6] ?? ''
@@ -96,16 +108,21 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   const occupied = computeOccupiedSlots(bookingRows, serviceRows, providerId, date)
   const serviceSlots = slotsForService(serviceRows, providerId, serviceId)
 
-  return TIME_SLOTS.map((time, idx) => {
+  // ⚠️ 只回傳營業時段內的格子。時段表是全天 48 格，若整包回傳，
+  //    客人會看到一整排凌晨的灰格。營業時段外＝不存在，不是「已約」。
+  //    （isSlotBookable 用 find()，找不到即視為不可約，行為仍正確。）
+  return TIME_SLOTS.filter(t => withinHours(timeToMinutes(t))).map(time => {
+    const idx = TIME_SLOTS.indexOf(time)
     const slotMin = timeToMinutes(time)
 
-    // 營業時段外 / 午休中
-    if (slotMin < startMin || slotMin >= endMin) return { time, status: 'booked' as SlotStatus }
+    // 午休中
     if (inBreak(slotMin)) return { time, status: 'booked' as SlotStatus }
 
-    // 服務能否從此格起連續塞下（不撞已佔用、不超出時段表、不跨進午休）
+    // 服務能否從此格起連續塞下（不撞已佔用、不做到打烊後、不跨進午休）
+    // ⚠️ withinHours 這關不能少：全天時段表下，18:30 起的 90 分服務在陣列上塞得下，
+    //    但會做到 20:00 —— 打烊後。改全天前這個 bug 被陣列邊界意外擋住了。
     const fits = Array.from({ length: serviceSlots }, (_, i) => TIME_SLOTS[idx + i])
-      .every(t => t !== undefined && !occupied.has(t) && !inBreak(timeToMinutes(t)))
+      .every(t => t !== undefined && withinHours(timeToMinutes(t)) && !occupied.has(t) && !inBreak(timeToMinutes(t)))
     if (!fits) return { time, status: 'booked' as SlotStatus }
 
     // 緊鄰既有預約 → hot（鼓勵集中）

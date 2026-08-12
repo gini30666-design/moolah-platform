@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { taipeiDate, taipeiDayOfWeek } from '@/lib/slots'
+// ⚠️ 時段表一律 import，不要在這裡自己複製一份。
+//    2026-08-12 前這支有自己的副本，且停在「沒有 12:00/12:30」的舊版
+//    （8/06 午休改成可自訂時漏改），導致中午不休息的職人永遠不會被推薦到 12:00。
+import { TIME_SLOTS, timeToMinutes, padTime, taipeiDate, taipeiDayOfWeek } from '@/lib/slots'
 import { getSheetData } from '@/lib/sheets'
-
-const TIME_SLOTS = [
-  '09:00','09:30','10:00','10:30','11:00','11:30',
-  '13:00','13:30','14:00','14:30','15:00','15:30',
-  '16:00','16:30','17:00','17:30','18:00','18:30',
-]
-
-function timeToMinutes(t: string) {
-  const [h, m] = t.split(':').map(Number)
-  return h * 60 + m
-}
 
 function dateLabel(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00')
@@ -54,14 +46,12 @@ export async function GET(req: NextRequest) {
     if (daySched && daySched[5]?.toLowerCase() === 'false') continue
 
     const startMin = timeToMinutes(daySched ? (daySched[3] || '09:00') : '09:00')
-    const endMin   = timeToMinutes(daySched ? (daySched[4] || '19:00') : '19:00')
+    const rawEnd   = daySched ? (daySched[4] || '19:00') : '19:00'
+    const endMin   = padTime(rawEnd) === '00:00' ? 1440 : timeToMinutes(rawEnd)
+    const withinHours = (min: number) => min >= startMin && min < endMin
 
     const dayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === dateStr && (r[12] ?? '') !== 'cancelled')
     const occupied = new Set<string>()
-    const padTime = (t: string) => {
-      const m = String(t ?? '').match(/^(\d{1,2}):(\d{2})$/)
-      return m ? `${m[1].padStart(2, '0')}:${m[2]}` : String(t ?? '')
-    }
     for (const b of dayBookings) {
       const svc = serviceRows.find(r => r[0] === providerId && r[1] === b[2])
       const dur = svc ? Math.ceil(Number(svc[4]) / 30) : 1
@@ -74,9 +64,10 @@ export async function GET(req: NextRequest) {
 
     for (let i = 0; i < TIME_SLOTS.length; i++) {
       const slotMin = timeToMinutes(TIME_SLOTS[i])
-      if (slotMin < startMin || slotMin >= endMin) continue
+      if (!withinHours(slotMin)) continue
+      // 整段服務都必須落在營業時間內，不能推薦一個會做到打烊後的起點
       const fits = Array.from({ length: serviceSlots }, (_, k) => TIME_SLOTS[i + k])
-        .every(t => t !== undefined && !occupied.has(t))
+        .every(t => t !== undefined && withinHours(timeToMinutes(t)) && !occupied.has(t))
       if (fits) {
         return NextResponse.json({ date: dateStr, time: TIME_SLOTS[i], label: dateLabel(dateStr) })
       }
