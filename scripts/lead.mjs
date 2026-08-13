@@ -9,15 +9,28 @@
  *   標記為合格時會送 Meta CAPI 的 QualifiedLead 事件，
  *   Meta 才學得到「什麼樣的人最後是真客戶」。
  *
+ * ⚠️ 為什麼需要 `add`（2026-08-13 發現的結構缺口）：
+ *   目前兩個廣告活動的目的地都是 IG Direct —— 付費流量**根本不會經過網站**，
+ *   所以不會觸發 Pixel、不會有 UTM、也不會自動變成 leads 的一列。
+ *   訊息廣告談進來的人如果不手動記，這張表就永遠只有自然流量，
+ *   「哪支廣告帶來好客戶」也就永遠算不出來。
+ *   → 談到有意願的人，用 `add` 記一筆，來源填你問到的答案。
+ *
  * 用法：
  *   node scripts/lead.mjs list                      # 近期名單（含分數與來源）
+ *   node scripts/lead.mjs report                    # ★ 依來源彙總：Lead / 合格 / 合格率
  *   node scripts/lead.mjs show <leadId>             # 單筆完整資料（含歸因）
+ *   node scripts/lead.mjs add --name "小美" --contact 0912345678 \
+ *        --source "meta:V6C-DM" --category 皮膚管理師 --note "IG DM 進來"
  *   node scripts/lead.mjs qualify <leadId> --score 4 --note "一人肌膚管理，月約 80 筆"
  *   node scripts/lead.mjs reject  <leadId> --note "同業探路"
  *   node scripts/lead.mjs status  <leadId> contacted|demo|trial|active|paid|lost
  *
  * 分數（顧問給的分級）：
  *   0 不相關  1 美業從業者  2 有工作室  3 正在找系統  4 願意試用  5 已開始使用
+ *
+ * 🔑 --source 就是「你從哪裡看到我們的」的答案。零成本、100% 準確，
+ *    比任何追蹤碼都可靠 —— 因為訊息廣告這條路技術上追不到。
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -100,7 +113,10 @@ function eventTimeFor(createdAt) {
 }
 
 function srcOf(l) {
-  if (l.utm_source || l.utm_campaign) return `${l.utm_source || '?'}/${l.utm_campaign || '?'}/${l.utm_content || '-'}`
+  // 只串有值的欄位 —— 手動記的 lead 通常只有 source + content，
+  // 硬塞 '?' 佔位會讓報表看起來像資料壞掉
+  const parts = [l.utm_source, l.utm_campaign, l.utm_content].filter(Boolean)
+  if (parts.length) return parts.join('/')
   if (l.fbclid) return 'meta(fbclid)'
   if (l.gclid) return 'google(gclid)'
   return '自然'
@@ -119,6 +135,66 @@ async function main() {
       console.log(`${q} ${l.id}  ${d}  ${(l.name || '').padEnd(8)} ${String(l.lead_score ?? '-')}/5  ${(l.status || '').padEnd(10)} ${srcOf(l)}`)
       if (l.note) console.log(`     ↳ ${l.note}`)
     }
+    return
+  }
+
+  if (cmd === 'report') {
+    const { data, error } = await sb.from('leads').select('*')
+    if (error) throw new Error(error.message)
+    if (!data.length) return console.log('（沒有 lead）')
+    const by = new Map()
+    for (const l of data) {
+      const k = srcOf(l)
+      const g = by.get(k) || { lead: 0, qualified: 0, rejected: 0, pending: 0, trial: 0, paid: 0, lost: 0 }
+      g.lead++
+      if (l.qualified === 'yes') g.qualified++
+      else if (l.qualified === 'no') g.rejected++
+      else g.pending++
+      if (['trial', 'active'].includes(l.status)) g.trial++
+      if (l.status === 'paid') g.paid++
+      if (l.status === 'lost') g.lost++
+      by.set(k, g)
+    }
+    console.log('來源'.padEnd(30), 'Lead  合格  不合  未判  試用  付費  流失   合格率')
+    console.log('-'.repeat(84))
+    for (const [k, g] of [...by].sort((a, b) => b[1].lead - a[1].lead)) {
+      const judged = g.qualified + g.rejected
+      const rate = judged ? `${Math.round(g.qualified / judged * 100)}%` : '—'
+      console.log(
+        k.slice(0, 29).padEnd(30),
+        String(g.lead).padStart(4), String(g.qualified).padStart(5),
+        String(g.rejected).padStart(5), String(g.pending).padStart(5),
+        String(g.trial).padStart(5), String(g.paid).padStart(5),
+        String(g.lost).padStart(5), rate.padStart(8),
+      )
+    }
+    console.log('\n⚠️ 花費不在這裡 —— Meta 那邊的數字要另外拉，再自己除出「每個合格名單成本」。')
+    console.log('   合格率的分母是「已判定」的，未判定的不算，否則會被稀釋成假的低合格率。')
+    return
+  }
+
+  if (cmd === 'add') {
+    const name = arg('name'), contact = arg('contact')
+    if (!name || !contact) return console.log('至少要 --name 與 --contact')
+    const source = arg('source', 'manual')
+    const category = arg('category', '')
+    const row = {
+      id: `lead-${Date.now()}`,
+      name, contact, category,
+      district: arg('district', ''),
+      current_method: arg('method', ''),
+      created_at: new Date().toISOString(),
+      status: 'contacted',            // 手動建的一定是已經談過了
+      plan: arg('plan', 'trial'),
+      utm_source: source.split(':')[0] || 'manual',
+      utm_content: source.split(':')[1] || '',
+      note: arg('note', ''),
+      lead_score: Number(arg('score', 1)),
+    }
+    const { error: e } = await sb.from('leads').insert(row)
+    if (e) throw new Error(e.message)
+    console.log(`✅ 已記錄 ${row.id}（來源 ${source}）`)
+    console.log(`   談完標記合格：node scripts/lead.mjs qualify ${row.id} --score N`)
     return
   }
 
