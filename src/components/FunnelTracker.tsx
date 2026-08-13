@@ -34,9 +34,21 @@ function fire(stage: FunnelStage, extra?: Record<string, unknown>) {
   } catch { /* 追蹤失敗絕不能擋住頁面 */ }
 }
 
-export default function FunnelTracker({ page }: { page: string }) {
+type Props = {
+  page: string
+  /**
+   * 只收 UTM、不送 view/engaged 事件。
+   * 給「不是廣告落地頁但有表單」的頁面用（例如首頁）——
+   * 沒有它的話，那些頁面的表單送出時 `getAttribution()` 是空的，來源就掉了。
+   * 但也不該讓它們的瀏覽混進 /pro 的漏斗與 Engaged 重定向池。
+   */
+  captureOnly?: boolean
+}
+
+export default function FunnelTracker({ page, captureOnly = false }: Props) {
   useEffect(() => {
     const attr = captureAttribution()
+    if (captureOnly) return
 
     fire('view', { content_name: page })
     trackEvent(GA_EVENT.view, {
@@ -79,7 +91,7 @@ export default function FunnelTracker({ page }: { page: string }) {
 
     window.addEventListener('scroll', onScroll, { passive: true })
     return cleanup
-  }, [page])
+  }, [page, captureOnly])
 
   return null
 }

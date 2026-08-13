@@ -2,9 +2,13 @@
 
 // B2B 頁手機版 sticky 底部 CTA：14 天免費試用 → 加 LINE（@492ejbwx）
 // 長頁滾動中隨時可行動，避免職人被說服後找不到按鈕而流失
-import { ga } from '@/lib/gtag'
-import { trackContact } from '@/components/MetaPixel'
-import { OA_B2B, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
+// ⚠️ 這裡原本自己手刻一份「ga.clickLineOA + trackContact + openLineOA」，
+//    跟 LineLink 做的事一模一樣。結果 2026-08-13 加 CAPI 鏡像與 CTA 變體時只改了 LineLink，
+//    這支就漏掉 —— 它的 Contact 事件沒有 eventId（廣告封鎖器擋掉就消失）、
+//    也回報不出使用者被分到哪個 CTA 版本。而它正是 /pro 手機版最容易被按的那顆。
+//    → 改用 LineLink，只留一條程式路徑。（同 8/8 併掉 TrackedLineLink 的教訓）
+import LineLink from '@/components/LineLink'
+import { OA_B2B } from '@/lib/lineOA'
 
 export default function StickyTrialCTA() {
   return (
@@ -33,18 +37,13 @@ export default function StickyTrialCTA() {
         <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.3 }}>14 天免費試用</p>
         <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.55)' }}>0 抽佣・不綁約・30 秒開通</p>
       </div>
-      {/* App scheme 優先（見 lib/lineOA 的 openLineOA）：in-app browser 會攔截
-          universal link，害使用者卡在 LINE 的英文中間頁。不加 target=_blank，
-          開新分頁會讓喚起 App 更容易失敗。 */}
-      <a
-        href={lineAddFriendUrl(OA_B2B)}
-        rel="noopener noreferrer"
-        onClick={e => {
-          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
-          e.preventDefault()
-          try { ga.clickLineOA('sticky_cta'); trackContact() } catch {}
-          openLineOA(OA_B2B)
-        }}
+      {/* LineLink 內含：App scheme 優先喚起（in-app browser 會攔截 universal link，
+          害使用者卡在 LINE 的英文中間頁）＋ Contact 事件（Pixel + CAPI 同 eventId）
+          ＋ CTA 變體回報。不加 target=_blank，開新分頁會讓喚起 App 更容易失敗。 */}
+      <LineLink
+        track
+        source="sticky_cta"
+        oaId={OA_B2B}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '7px', flexShrink: 0,
           background: '#06C755', color: 'white', padding: '11px 18px',
@@ -53,7 +52,7 @@ export default function StickyTrialCTA() {
       >
         <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '16px', height: '16px' }}><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         加 LINE 聊
-      </a>
+      </LineLink>
     </div>
   )
 }

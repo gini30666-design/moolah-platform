@@ -4,6 +4,7 @@ import { OA_B2B } from '@/lib/lineOA'
 import Link from 'next/link'
 import { TextReveal } from '@/components/TextReveal'
 import HomeLeadForm from '@/components/HomeLeadForm'
+import FunnelTracker from '@/components/FunnelTracker'
 import TrustBar from '@/components/TrustBar'
 import TestimonialWall from '@/components/TestimonialWall'
 import SiteNav from '@/components/SiteNav'
@@ -394,6 +395,10 @@ function BellIcon() {
 export default function HomePage() {
   return (
     <>
+      {/* 只收 UTM、不送漏斗事件 —— 首頁有 HomeLeadForm，
+          沒有這個的話從廣告帶 UTM 直接落在首頁的人，送出表單時來源會是空的。
+          但首頁瀏覽不該混進 /pro 的漏斗與 Engaged 重定向池，所以用 captureOnly。 */}
+      <FunnelTracker page="home" captureOnly />
       <style>{`
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>

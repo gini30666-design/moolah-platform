@@ -67,6 +67,8 @@ export async function POST(req: NextRequest) {
     }, {
       actionSource: 'business_messaging',   // 來自 LINE，不是網站點擊
       customData: { plan, provider_id: providerId },
+      // 認領是職人正在等待的畫面 —— 追蹤最多只准佔用 3 秒
+      timeoutMs: 3000,
     })
   } catch { /* 追蹤失敗絕不能擋住認領 */ }
 

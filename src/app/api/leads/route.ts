@@ -43,6 +43,15 @@ export async function POST(req: Request) {
 
     // ── 追蹤與通知：任何一項失敗都不能讓表單送出變成錯誤 ──────────────
     // 一律用 allSettled，且在 catch 裡吞掉；職人那端已經看到「申請已送出」了。
+    //
+    // ⚠️ 兩者都必須有逾時。表單送出是使用者正在等的畫面，
+    //    Meta 或 LINE 一卡住就會拖到 Vercel 函式逾時 → 對方看到「送出失敗」，
+    //    但資料其實已經寫進 DB 了 —— 最糟的一種失敗（他會重送或直接放棄）。
+    const withTimeout = <T,>(p: Promise<T>, ms: number, label: string): Promise<T | false> =>
+      Promise.race([
+        p,
+        new Promise<false>(r => setTimeout(() => { console.error(`[leads] ${label} 逾時 ${ms}ms`); r(false) }, ms)),
+      ])
 
     // ① Meta CAPI：與前端 fbq('Lead') 同一個 eventId → Meta 去重
     //    這是 zuzu 8/6 那筆漏掉的補救 —— 她的瀏覽器 Pixel 被擋，只靠前端等於沒發生
@@ -62,6 +71,7 @@ export async function POST(req: Request) {
         utm_campaign: a.utmCampaign || '(none)',
         utm_content: a.utmContent || '(none)',
       },
+      timeoutMs: 4000,
     })
 
     // ② 即時通知業務 —— 2026-08-06 的教訓：
@@ -92,7 +102,10 @@ export async function POST(req: Request) {
         ].filter(Boolean).join('\n'))
       : Promise.resolve(false)
 
-    await Promise.allSettled([capi, notify])
+    await Promise.allSettled([
+      withTimeout(capi, 4500, 'CAPI'),
+      withTimeout(notify, 4500, 'LINE 通知'),
+    ])
 
     return NextResponse.json({ ok: true })
   } catch (e) {

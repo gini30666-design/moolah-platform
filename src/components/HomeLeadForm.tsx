@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { trackLead } from '@/components/MetaPixel'
+import { getAttribution } from '@/lib/attribution'
+import { newEventId } from '@/lib/funnel'
 
 const CATEGORIES = ['髮型設計師', '寵物美容師', '汽車美容師', '美甲師']
 
@@ -17,15 +19,24 @@ export default function HomeLeadForm() {
       setError('請填寫姓名、聯絡方式與類別'); return
     }
     setStatus('loading'); setError('')
+    // 🔴 2026-08-13：這裡原本呼叫 trackLead() 不帶 eventId，
+    //    而 /api/leads 現在也會從伺服器送一次 CAPI Lead ——
+    //    兩邊都沒有去重鍵的話，一次送出會被 Meta 算成兩筆 Lead。
+    //    正要用 Lead 數判斷廣告好壞，灌水的代價很高。必須跟 JoinForm 用同一套。
+    const eventId = newEventId('lead')
+    const attr = getAttribution()
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, district: '', currentMethod: '', source: 'home' }),
+        body: JSON.stringify({
+          ...form, district: '', currentMethod: '', source: 'home',
+          eventId, attribution: attr,
+        }),
       })
       if (!res.ok) throw new Error()
       setStatus('success')
-      trackLead()
+      trackLead(eventId)
     } catch {
       setStatus('error'); setError('送出失敗，請稍後再試')
     }

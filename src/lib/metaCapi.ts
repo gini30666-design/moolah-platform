@@ -78,6 +78,14 @@ export type CapiOptions = {
   customData?: Record<string, unknown>
   /** 事件實際發生時間（秒）；預設現在。Meta 只接受 7 天內 */
   eventTime?: number
+  /**
+   * 逾時（毫秒），預設 5 秒。
+   * ⚠️ 這個不能拿掉：這支被 /api/claim 與 /api/leads 在**使用者等待中**的路徑呼叫。
+   *    沒有逾時的話，Meta 一卡住，職人的認領就跟著卡到 Vercel 函式逾時 ——
+   *    等於拿 onboarding 的可靠性去換一個追蹤事件，完全不划算。
+   *    使用者等待中的路徑建議壓到 3000。
+   */
+  timeoutMs?: number
 }
 
 /**
@@ -120,6 +128,7 @@ export async function sendCapiEvent(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(opts.timeoutMs ?? 5000),
     })
     if (!res.ok) {
       // 只記 log，不 throw —— 追蹤失敗不能影響業務流程
@@ -128,7 +137,8 @@ export async function sendCapiEvent(
     }
     return true
   } catch (e) {
-    console.error('[capi]', e)
+    // 逾時（TimeoutError）也走這裡。記 log 就好，讓呼叫端繼續往下跑。
+    console.error('[capi]', e instanceof Error ? `${e.name}: ${e.message}` : e)
     return false
   }
 }
