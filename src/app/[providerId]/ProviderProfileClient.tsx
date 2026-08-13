@@ -351,10 +351,18 @@ export default function ProviderPage() {
         <div style={{ display: 'inline-flex', animation: 'marquee-op 24s linear infinite', padding: '8px 0' }}>
           {[0, 1].map(k => (
             <span key={k} style={{ display: 'inline-flex', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.9)' }}>
-              {/* 新職人還沒有評價 → 不顯示「— 則好評」這種破的字樣，改用不需資料的賣點 */}
-              {['認證職人', '即時 LINE 通知',
-                provider.reviewCount ? `${provider.reviewCount} 則好評` : '線上即時預約',
-                '質感空間', '一對一諮詢'].map((t, i) => (
+              {/* 2026-08-13：優先跑職人自己填的專長（真實、每人不同），
+                  跑不出來才退回通用賣點。舊版寫死「質感空間」對潛水／課程類職人不成立，
+                  且「N 則好評」在沒有真實評價來源時不該憑空出現。 */}
+              {(() => {
+                const tags = (provider.specialties ?? '').split(',').map(s => s.trim()).filter(Boolean)
+                const items = tags.length >= 3
+                  ? ['線上即時預約', '即時 LINE 通知', ...tags.slice(0, 4)]
+                  : ['認證職人', '即時 LINE 通知',
+                     provider.reviewCount ? `${provider.reviewCount} 則好評` : '線上即時預約',
+                     '質感空間', '一對一諮詢']
+                return items
+              })().map((t, i) => (
                 <span key={i}>{t}<span style={{ margin: '0 16px', opacity: 0.4 }}>·</span></span>
               ))}
             </span>

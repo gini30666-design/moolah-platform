@@ -254,3 +254,74 @@ describe('taipeiDate — 台北時區的日期加減（不受執行環境時區�
     expect(DOW_NAMES[taipeiDayOfWeek('2026-08-10')]).toBe('Monday')
   })
 })
+
+// ── 固定梯次 slot_starts（2026-08-13，自由島潛水四梯制）─────────────
+// availability 第 9 欄（index 8）；留空＝維持每 30 分一格
+const scheduleWithSlots = (dow: string, start: string, end: string, slots: string): Row =>
+  [PID, 'schedule', dow, start, end, 'true', '', '', slots]
+
+describe('固定梯次（slot_starts）', () => {
+  const FOUR = '08:00,10:00,13:00,15:00'
+
+  it('留空＝維持預設，營業時段內每 30 分一格', () => {
+    const s = computeAvailability(base({ availRows: [schedule(dowOf(D), '08:00', '17:00')] }))
+    expect(s.length).toBe(18)
+    expect(s.map(x => x.time)).toContain('09:30')
+  })
+
+  it('設了四梯 → 只回傳這四格，其餘時間不存在（不是 booked）', () => {
+    const s = computeAvailability(base({ availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', FOUR)] }))
+    expect(s.map(x => x.time)).toEqual(['08:00', '10:00', '13:00', '15:00'])
+    expect(s.every(x => x.status !== 'booked')).toBe(true)
+  })
+
+  it('非梯次時間下單被擋，梯次時間放行', () => {
+    const input = base({ availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', FOUR)] })
+    expect(isSlotBookable(input, '09:30')).toBe(false)
+    expect(isSlotBookable(input, '11:00')).toBe(false)
+    expect(isSlotBookable(input, '10:00')).toBe(true)
+  })
+
+  it('120 分服務佔用跨到非梯次格，但下一梯仍可約', () => {
+    const svc120 = [...SERVICES, service('svc120', 120)]
+    const input = base({
+      serviceId: 'svc120', serviceRows: svc120,
+      bookingRows: [booking({ svc: 'svc120', date: D, time: '08:00' })],
+      availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', FOUR)],
+    })
+    const s = computeAvailability(input)
+    // 08:00 佔到 09:30（08:00/08:30/09:00/09:30）→ 該梯已滿
+    expect(s.find(x => x.time === '08:00')?.status).toBe('booked')
+    // 10:00 起的 120 分不撞既有預約 → 仍可約
+    expect(s.find(x => x.time === '10:00')?.status).not.toBe('booked')
+    expect(isSlotBookable(input, '10:00')).toBe(true)
+  })
+
+  it('梯次起點超出營業時段 → 該梯不出現', () => {
+    const s = computeAvailability(base({ availRows: [scheduleWithSlots(dowOf(D), '08:00', '14:00', FOUR)] }))
+    expect(s.map(x => x.time)).toEqual(['08:00', '10:00', '13:00'])
+  })
+
+  it('公休日設了梯次仍全部 booked（休假優先）', () => {
+    const s = computeAvailability(base({ availRows: [[PID, 'schedule', dowOf(D), '08:00', '17:00', 'false', '', '', FOUR]] }))
+    expect(s.length).toBe(4)
+    expect(s.every(x => x.status === 'booked')).toBe(true)
+  })
+
+  it('整天休假日設了梯次仍全部 booked', () => {
+    const s = computeAvailability(base({
+      availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', FOUR), block(D)],
+    }))
+    expect(s.every(x => x.status === 'booked')).toBe(true)
+  })
+
+  it('容錯：格式雜亂（空白、單位數小時、空項）仍解析得出來', () => {
+    const s = computeAvailability(base({ availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', ' 8:00 , ,10:00,亂碼, 13:00 ')] }))
+    expect(s.map(x => x.time)).toEqual(['08:00', '10:00', '13:00'])
+  })
+
+  it('全部是亂碼＝視同沒設，回到預設每 30 分一格', () => {
+    const s = computeAvailability(base({ availRows: [scheduleWithSlots(dowOf(D), '08:00', '17:00', 'abc,,,')] }))
+    expect(s.length).toBe(18)
+  })
+})

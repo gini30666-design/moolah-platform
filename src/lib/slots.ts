@@ -42,7 +42,23 @@ export type AvailabilityInput = {
   serviceId?: string | null    // 指定服務 → 依時長判斷能否塞下
   bookingRows: Row[]           // getSheetData('bookings!A2:M')
   serviceRows: Row[]           // getSheetData('services!A2:F')
-  availRows: Row[]             // getSheetData('availability!A2:H')
+  availRows: Row[]             // getSheetData('availability!A2:I')
+}
+
+/**
+ * 固定梯次（slot_starts，availability 第 9 欄）。
+ *
+ * 有些職人不是「營業時段內每 30 分都能開始」，而是固定幾個梯次出發
+ * （自由島潛水：08:00／10:00／13:00／15:00 四梯，每梯 2 小時）。
+ * 留空 ＝ 維持預設行為（每 30 分一格），既有職人零影響。
+ *
+ * ⚠️ 非梯次時間的處理是「不回傳」而不是「回傳 booked」——
+ *    與 withinHours 同一個原則：那個時間點不存在，不是「已經被約走」。
+ *    isSlotBookable 用 find()，找不到即 false，下單守門自動跟著生效。
+ */
+function parseSlotStarts(raw: unknown): Set<string> | null {
+  const list = String(raw ?? '').split(',').map(s => padTime(s.trim())).filter(s => /^\d{2}:\d{2}$/.test(s))
+  return list.length ? new Set(list) : null
 }
 
 // 某服務需要幾個 30 分格（找不到服務 → 1 格）
@@ -87,8 +103,12 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   const endMin = padTime(rawEnd) === '00:00' ? 1440 : timeToMinutes(rawEnd)
   const withinHours = (min: number) => min >= startMin && min < endMin
 
+  // 固定梯次：有設就只開這幾個起點（且仍須落在營業時段內）
+  const slotStarts = parseSlotStarts(daySchedule?.[8])
+  const isOpenStart = (t: string) => withinHours(timeToMinutes(t)) && (!slotStarts || slotStarts.has(t))
+
   const allBooked: Slot[] = TIME_SLOTS
-    .filter(t => withinHours(timeToMinutes(t)))
+    .filter(isOpenStart)
     .map(t => ({ time: t, status: 'booked' as SlotStatus }))
 
   // 1) 整天休假
@@ -111,7 +131,8 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   // ⚠️ 只回傳營業時段內的格子。時段表是全天 48 格，若整包回傳，
   //    客人會看到一整排凌晨的灰格。營業時段外＝不存在，不是「已約」。
   //    （isSlotBookable 用 find()，找不到即視為不可約，行為仍正確。）
-  return TIME_SLOTS.filter(t => withinHours(timeToMinutes(t))).map(time => {
+  //    設了固定梯次時同理：非梯次的起點一律不回傳。
+  return TIME_SLOTS.filter(isOpenStart).map(time => {
     const idx = TIME_SLOTS.indexOf(time)
     const slotMin = timeToMinutes(time)
 

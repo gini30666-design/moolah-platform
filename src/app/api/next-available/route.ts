@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const [bookingRows, serviceRows, availRows] = await Promise.all([
     getSheetData('bookings!A2:M', { provider_id: providerId }),
     getSheetData('services!A2:F', { provider_id: providerId }),
-    getSheetData('availability!A2:H', { provider_id: providerId }),
+    getSheetData('availability!A2:I', { provider_id: providerId }),
   ])
 
   const providerAvail = availRows.filter(r => r[0] === providerId)

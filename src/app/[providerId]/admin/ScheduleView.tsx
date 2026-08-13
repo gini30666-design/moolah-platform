@@ -4,7 +4,9 @@ import { taipeiDate } from '@/lib/slots'
 import { authHeader } from '@/lib/clientAuth'
 
 // breakStart/breakEnd 皆為空字串＝該日不休息
-type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean; breakStart: string; breakEnd: string }
+// slotStarts 為空字串＝營業時段內每 30 分都可預約（預設）；
+// 有值＝只開這幾個梯次，如 "08:00,10:00,13:00,15:00"（潛水／課程／團體班常用）
+type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean; breakStart: string; breakEnd: string; slotStarts: string }
 
 const DAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
 const oak = '#A68966'
@@ -51,6 +53,24 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       const on = !!s.breakStart && !!s.breakEnd
       return on ? { ...s, breakStart: '', breakEnd: '' } : { ...s, breakStart: '12:00', breakEnd: '13:00' }
     }))
+  }
+
+  // 固定梯次開關：關掉＝清空（回到每 30 分一格）；打開＝帶入營業起始時間當第一梯
+  function toggleSlotStarts(day: number) {
+    setSchedule(prev => prev.map(s => {
+      if (s.day !== day) return s
+      return s.slotStarts ? { ...s, slotStarts: '' } : { ...s, slotStarts: s.startTime || '09:00' }
+    }))
+  }
+
+  function updateSlotStarts(day: number, value: string) {
+    setSchedule(prev => prev.map(s => s.day === day ? { ...s, slotStarts: value } : s))
+  }
+
+  // 把某天的梯次設定套用到其他所有營業日（梯次制通常每天一樣，一天一天打太痛苦）
+  function copySlotStartsToAll(day: number) {
+    const src = schedule.find(s => s.day === day)?.slotStarts ?? ''
+    setSchedule(prev => prev.map(s => s.isOpen ? { ...s, slotStarts: src } : s))
   }
 
   function addBlockedDate() {
@@ -164,6 +184,59 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                   </div>
                 ) : (
                   <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>不休息・整天可預約</span>
+                )}
+              </div>
+            )}
+
+            {/* 固定梯次（潛水／課程／團體班：一天只出發幾趟，不是隨到隨開） */}
+            {s.isOpen && (
+              <div style={{
+                marginTop: '10px', paddingTop: '10px',
+                borderTop: '1px dashed rgba(166,137,102,0.18)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => toggleSlotStarts(s.day)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px 0 0',
+                      minHeight: '44px', display: 'inline-flex', alignItems: 'center',
+                      fontSize: 'calc(12px * var(--fs, 1))', color: s.slotStarts ? oak : '#7d736b',
+                    }}
+                  >
+                    {s.slotStarts ? '☑' : '☐'} 固定梯次
+                  </button>
+                  {!s.slotStarts && (
+                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>
+                      每 30 分鐘皆可預約
+                    </span>
+                  )}
+                </div>
+                {s.slotStarts && (
+                  <>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={s.slotStarts}
+                      onChange={e => updateSlotStarts(s.day, e.target.value)}
+                      placeholder="08:00,10:00,13:00,15:00"
+                      style={{ ...inputStyle, width: '100%', minHeight: '44px', marginTop: '4px' }}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '6px' }}>
+                      <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b', lineHeight: 1.5 }}>
+                        客人只會看到這幾個時間，用逗號分隔
+                      </span>
+                      <button
+                        onClick={() => copySlotStartsToAll(s.day)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer', padding: '0',
+                          minHeight: '44px', marginLeft: 'auto',
+                          fontSize: 'calc(12px * var(--fs, 1))', color: oak, textDecoration: 'underline',
+                        }}
+                      >
+                        套用到其他營業日
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             )}

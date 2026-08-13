@@ -17,7 +17,7 @@ const TABLE_COLS: Record<string, string[]> = {
   services: ['provider_id','service_id','name','price','duration','description','image_url'],
   portfolio: ['provider_id','portfolio_id','image_url','caption','sort_order','created_at'],
   bookings: ['booking_id','provider_id','service_id','customer_name','customer_line_user_id','date','time','note','created_at','gender','hair_length','customer_phone','status'],
-  availability: ['provider_id','type','day_or_date','start_time','end_time','active','break_start','break_end'],
+  availability: ['provider_id','type','day_or_date','start_time','end_time','active','break_start','break_end','slot_starts'],
   waitlist: ['id','provider_id','service_id','date','time','customer_name','customer_line_user_id','customer_phone','created_at','status'],
   reviews: ['booking_id','provider_id','customer_name','rating','comment','status','created_at'],
   customer_notes: ['provider_id','customer_line_user_id','note','updated_at','tags'],
