@@ -4,6 +4,7 @@ import SiteFooter from '@/components/SiteFooter'
 import StickyTrialCTA from '@/components/StickyTrialCTA'
 import LineLink from '@/components/LineLink'
 import ScrollDepthTracker from '@/components/ScrollDepthTracker'
+import FunnelTracker from '@/components/FunnelTracker'
 import IndustryPicker from './IndustryPicker'
 import StepPhones from './StepPhones'
 import {
@@ -61,13 +62,57 @@ function LineIcon({ size = 20 }: { size?: number }) {
   return <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: size, height: size }}><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
 }
 
+/**
+ * CTA 文案 A/B/C 測試（2026-08-13 顧問建議）
+ *
+ * 為什麼要測：「加 LINE 開通免費試用」對陌生人隱含「我要加盟你？」的承諾感，
+ * 而我們真正想要的只是「來試一下」。三個版本測「承諾強度」對點擊率的影響。
+ *
+ * 實作方式刻意不用 React state —— 那樣會有 hydration mismatch 或閃爍。
+ * 改成：inline script 在畫面繪製前把版本寫進 <html data-cta-variant>，
+ * 三個標籤全部渲染進 DOM，由 CSS 決定顯示哪一個。零閃爍、零 SSR 衝突。
+ */
+const CTA_VARIANTS = {
+  a: '加 LINE 開通免費試用',   // 對照組（原文案）
+  b: '免費試用 MooLah',
+  c: '我有工作室，我要試用',
+} as const
+
+/** 分組並寫進 <html>；同一個人固定同一版（存 localStorage），否則數據會被自己洗掉 */
+const CTA_ASSIGN_SCRIPT = `
+(function(){try{
+  var k='moolah_cta_v1', v=localStorage.getItem(k);
+  if(v!=='a'&&v!=='b'&&v!=='c'){ v=['a','b','c'][Math.floor(Math.random()*3)]; localStorage.setItem(k,v); }
+  document.documentElement.setAttribute('data-cta-variant', v);
+}catch(e){ document.documentElement.setAttribute('data-cta-variant','a'); }})();
+`
+
+const CTA_CSS = `
+.cta-v{display:none}
+html[data-cta-variant="a"] .cta-v-a,
+html[data-cta-variant="b"] .cta-v-b,
+html[data-cta-variant="c"] .cta-v-c{display:inline}
+/* script 被擋掉時的保底：顯示對照組 */
+html:not([data-cta-variant]) .cta-v-a{display:inline}
+`
+
+function CtaLabel() {
+  return (
+    <>
+      <span className="cta-v cta-v-a">{CTA_VARIANTS.a}</span>
+      <span className="cta-v cta-v-b">{CTA_VARIANTS.b}</span>
+      <span className="cta-v cta-v-c">{CTA_VARIANTS.c}</span>
+    </>
+  )
+}
+
 /** 每個說服段落結束都給一次行動機會（客立樂的作法） */
-function CtaBar({ source, label = '加 LINE 開通免費試用', pad = '30px 22px 40px' }: { source: string; label?: string; pad?: string }) {
+function CtaBar({ source, label, pad = '30px 22px 40px' }: { source: string; label?: string; pad?: string }) {
   return (
     <div style={{ padding: pad, maxWidth: '520px', margin: '0 auto' }}>
       <LineLink track source={source} className="cta-btn"
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '16px 24px', borderRadius: '13px', fontSize: '15.5px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 24px rgba(6,199,85,0.28)' }}>
-        <LineIcon size={19} /> {label}
+        <LineIcon size={19} /> {label ?? <CtaLabel />}
       </LineLink>
     </div>
   )
@@ -249,7 +294,11 @@ export default function ProLandingPage() {
     <>
       <ScrollDepthTracker label="pro" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-      <style dangerouslySetInnerHTML={{ __html: SCENE_CSS }} />
+      {/* CTA 分組必須在畫面繪製前跑完，否則會看到標籤閃一下才換 */}
+      <script dangerouslySetInnerHTML={{ __html: CTA_ASSIGN_SCRIPT }} />
+      <style dangerouslySetInnerHTML={{ __html: SCENE_CSS + CTA_CSS }} />
+      {/* 漏斗前兩階：ViewContent（看到）→ Engaged（真的在讀），同時收下網址上的 UTM */}
+      <FunnelTracker page="pro" />
       {/*
         ⚠️ 用 overflow-x: clip，不要用 hidden。
         CSS 規範下 overflow-x:hidden 會把 overflow-y 算成 auto，
@@ -274,16 +323,21 @@ export default function ProLandingPage() {
           <div className="hero-wrap">
             <div className="hero-copy">
               <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontWeight: 300, fontSize: 'clamp(2rem, 7.4vw, 3.5rem)', lineHeight: 1.2, letterSpacing: '-0.015em', color: cream, marginBottom: '18px' }}>
-                你在服務客人時<br />誰幫你接單
+                客人自己預約<br />你專心做手藝
               </h1>
               <p style={{ fontSize: 'clamp(15px, 4.2vw, 17px)', lineHeight: 1.8, color: 'rgba(251,249,244,0.85)', marginBottom: '26px' }}>
 {/* ⚠️ 定位鐵律（2026-08-03 Gini 拍板）：人眼讀到的第一句**不放「預約系統」**。
     那是既有品類名，用了就被歸進客立樂/folio/夯客的抽屜 → 進功能比較戰 → 必輸。
-    Google 的到達網頁體驗看的是整頁文本，metadata title + FAQ + 下方段落有就夠了。 */}
-MooLah 是專為獨立美業職人打造的<br />
-                <strong style={{ color: cream, fontWeight: 700 }}>AI 接單助理</strong>——<br />
+    Google 的到達網頁體驗看的是整頁文本，metadata title + FAQ + 下方段落有就夠了。
+
+    ⚠️ 第二鐵律（2026-08-13 Gini）：不要寫「美業」——太攏統，職人不會覺得在講自己。
+    這裡直接點名藍海品類，而且**必須與廣告文案第一句同一組字**
+    （廣告：「如果你自己經營肌膚管理、採耳、按摩或美甲工作室」）。
+    廣告講什麼、落地頁第一屏就接什麼＝scent match，中間斷掉人就走了。 */}
+                肌膚管理・採耳・按摩・美甲・做臉・熱蠟除毛<br />
+                一人工作室的 <strong style={{ color: cream, fontWeight: 700 }}>AI 接單助理</strong>——<br />
                 幫你收預約、提醒客人、記住每個人的細節。<br />
-                <span style={{ color: oak, fontWeight: 700 }}>你只要專心做手藝。</span>
+                <span style={{ color: oak, fontWeight: 700 }}>不抽成，客人付多少都是你的。</span>
               </p>
 
               {/* 手機版：畫面接在文案後面；桌機版由 grid 移到右欄 */}
@@ -297,11 +351,11 @@ MooLah 是專為獨立美業職人打造的<br />
               <LineLink track source="pro_hero"
                 className="cta-btn"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '18px 24px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 26px rgba(6,199,85,0.4)', marginBottom: '14px' }}>
-                <LineIcon /> 加 LINE 開通免費試用
+                <LineIcon /> <CtaLabel />
               </LineLink>
               <div className="hero-sub-links" style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <a href={DEMO_URL} style={{ display: 'inline-block', fontSize: '13px', color: 'rgba(251,249,244,0.72)', textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                  先看系統示範頁 →
+                  30 秒看懂怎麼用 →
                 </a>
               </div>
 
@@ -695,7 +749,7 @@ MooLah 是專為獨立美業職人打造的<br />
           */}
           <LineLink track source="pro_mid"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: '#06C755', color: '#fff', padding: '18px 24px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 26px rgba(6,199,85,0.35)', marginBottom: '10px' }}>
-            <LineIcon /> 開通 14 天免費試用
+            <LineIcon /> <CtaLabel />
           </LineLink>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>

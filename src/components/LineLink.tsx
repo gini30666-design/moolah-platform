@@ -16,7 +16,14 @@
 import type { CSSProperties, ReactNode, MouseEvent } from 'react'
 import { ga, trackEvent } from '@/lib/gtag'
 import { trackContact } from '@/components/MetaPixel'
+import { newEventId } from '@/lib/funnel'
 import { OA_B2B, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
+
+/** 目前這個訪客被分到哪個 CTA 版本（由 /pro 的 inline script 寫在 <html> 上） */
+function ctaVariant(): string {
+  if (typeof document === 'undefined') return 'na'
+  return document.documentElement.dataset.ctaVariant || 'na'
+}
 
 type Props = {
   /** 要加的 OA，預設招商窗口 */
@@ -39,8 +46,18 @@ export default function LineLink({
     e.preventDefault()
     try {
       if (track) {
-        ga.clickLineOA(source)   // 內含 Google Ads 轉換上報
-        trackContact()
+        const variant = ctaVariant()
+        const eventId = newEventId('contact')
+        ga.clickLineOA(source, variant)   // 內含 Google Ads 轉換上報
+        trackContact(eventId)
+        // 伺服器端再送一次同 eventId：廣告封鎖器擋掉 fbq 時仍算得到。
+        // ⚠️ keepalive 必要 —— 下一行就跳去 LINE App，一般 fetch 會被瀏覽器中斷。
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: 'contact', eventId, url: window.location.href }),
+          keepalive: true,
+        }).catch(() => {})
       } else {
         trackEvent('add_line_friend', { source, oa: oaId })
       }

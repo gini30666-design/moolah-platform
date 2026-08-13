@@ -22,7 +22,8 @@ const TABLE_COLS: Record<string, string[]> = {
   reviews: ['booking_id','provider_id','customer_name','rating','comment','status','created_at'],
   customer_notes: ['provider_id','customer_line_user_id','note','updated_at','tags'],
   blacklist: ['provider_id','customer_line_user_id','customer_name','reason','created_at','source','customer_phone'],
-  leads: ['id','name','category','district','contact','current_method','created_at','status','plan'],
+  // 2026-08-13 加了來源歸因欄（A:R）——沒有這些就只知道「有人填表」，不知道是哪支廣告帶來的
+  leads: ['id','name','category','district','contact','current_method','created_at','status','plan','utm_source','utm_medium','utm_campaign','utm_content','referrer','landing_path','fbp','fbc','note'],
   feedback: ['ts','area','severity','message','reporter','ua'],
 }
 

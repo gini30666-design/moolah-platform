@@ -4,8 +4,10 @@ import LineLink from '@/components/LineLink'
 import { OA_B2B } from '@/lib/lineOA'
 import { trackLead } from '@/components/MetaPixel'
 import { ga } from '@/lib/gtag'
+import { getAttribution } from '@/lib/attribution'
+import { newEventId } from '@/lib/funnel'
 
-const CATEGORIES = ['髮型設計師', '美甲師', '美容師（做臉）', '採耳師', '按摩舒壓師', '寵物美容師', '汽車美容師', '刺青師']
+const CATEGORIES = ['髮型設計師', '美甲師', '美容師（做臉）', '皮膚管理師', '頭療師', '採耳師', '按摩舒壓師', '熱蠟除毛師', '寵物美容師', '汽車美容師', '刺青師']
 const DISTRICTS  = ['高雄市', '屏東縣', '台南市', '台中市', '台北市', '其他']
 const METHODS    = ['口頭或電話確認', 'LINE 個人帳號', '無系統（自行記錄）', '已有其他軟體']
 const PLANS      = [
@@ -26,16 +28,23 @@ export default function JoinForm() {
       setError('請留下稱呼與聯絡方式，我們就能聯絡你'); return
     }
     setStatus('loading'); setError('')
+    // Pixel 與伺服器端 CAPI 共用同一個 eventId → Meta 去重。
+    // ⚠️ 這正是 zuzu 8/6 那筆表單漏掉的原因：她的瀏覽器 fbq 被擋，
+    //    只靠前端就等於那筆轉換不存在。現在後端會補送一次。
+    const eventId = newEventId('lead')
+    const attr = getAttribution()
+    const variant = typeof document !== 'undefined'
+      ? (document.documentElement.dataset.ctaVariant || 'na') : 'na'
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, eventId, attribution: attr, ctaVariant: variant }),
       })
       if (!res.ok) throw new Error()
       setStatus('success')
-      trackLead()
-      ga.submitLead(form.category, form.plan)
+      trackLead(eventId)
+      ga.submitLead(form.category, form.plan, variant)
     } catch {
       setStatus('error'); setError('送出失敗，請稍後再試或直接加入 LINE')
     }

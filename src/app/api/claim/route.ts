@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sb } from '@/lib/supabase'
+import { sendCapiEvent, capiUserFromRequest } from '@/lib/metaCapi'
 
 export async function POST(req: NextRequest) {
   const { providerId, lineUserId, agreedAt, direct } = await req.json()
@@ -55,5 +56,19 @@ export async function POST(req: NextRequest) {
   }).eq('id', providerId)
 
   if (updErr) return NextResponse.json({ error: 'server_error' }, { status: 500 })
+
+  // 漏斗第 5 階：試用真的開始了。
+  // 這比「填了表」深一階 —— 餵回 Meta，它才學得到「哪種人最後會真的裝起來用」。
+  // ⚠️ 純伺服器事件（認領發生在 LIFF 裡，沒有 Pixel），失敗不影響認領結果。
+  try {
+    await sendCapiEvent('trial', {
+      ...capiUserFromRequest(req),
+      externalId: providerId,
+    }, {
+      actionSource: 'business_messaging',   // 來自 LINE，不是網站點擊
+      customData: { plan, provider_id: providerId },
+    })
+  } catch { /* 追蹤失敗絕不能擋住認領 */ }
+
   return NextResponse.json({ success: true, plan, trialEndsAt: trialEndsAt || null })
 }

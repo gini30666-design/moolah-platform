@@ -37,13 +37,14 @@ export const ga = {
   viewDiscover: (category?: string) =>
     trackEvent('view_discover', { category: category ?? 'all' }),
 
-  clickLineOA: (source: string) => {
-    trackEvent('click_line_oa', { source })
+  // cta_variant = /pro 的 CTA A/B/C 分組，用來判斷哪個說法最會帶來聯絡
+  clickLineOA: (source: string, ctaVariant = 'na') => {
+    trackEvent('click_line_oa', { source, cta_variant: ctaVariant })
     trackAdsConversion(ADS_CONVERSIONS.lineContact)
   },
 
-  submitLead: (category: string, plan: string) => {
-    trackEvent('generate_lead', { category, plan })
+  submitLead: (category: string, plan: string, ctaVariant = 'na') => {
+    trackEvent('generate_lead', { category, plan, cta_variant: ctaVariant })
     trackAdsConversion(ADS_CONVERSIONS.leadForm)
   },
 }
