@@ -28,6 +28,8 @@ const STATIC_CATS = [
   { id: '美容師', en: 'Facial Care', desc: '做臉、清粉刺、保濕護理' },
   { id: '按摩舒壓師', en: 'Massage', desc: '腳底按摩、精油舒壓、肩頸' },
   { id: '熱蠟除毛師', en: 'Waxing', desc: '熱蠟除毛、私密處、身體' },
+  { id: '皮膚管理師', en: 'Skin Care', desc: '皮膚管理、水飛梭、科技護膚' },
+  { id: '頭療師', en: 'Head Spa', desc: '舒眠頭療、頭皮護理、肩頸紓壓' },
   { id: '潛水教練', en: 'Diving', desc: '體驗潛水、考照課程、海上活動' },
 ]
 

@@ -28,6 +28,9 @@ const staticPages: MetadataRoute.Sitemap = [
   { url: `${base}/services/ear-cleaning`,  lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/facial`,        lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/services/massage`,       lastModified: new Date('2026-07-17'), changeFrequency: 'weekly',  priority: 0.85 },
+  // 2026-08-13 新品類（皮膚管理 5,400/月・頭療 6,600/月）—— 只做全台級，不展開城市頁
+  { url: `${base}/services/skin-care`,     lastModified: new Date('2026-08-13'), changeFrequency: 'weekly',  priority: 0.85 },
+  { url: `${base}/services/head-spa`,      lastModified: new Date('2026-08-13'), changeFrequency: 'weekly',  priority: 0.85 },
   { url: `${base}/join`,                   lastModified: new Date('2026-05-18'), changeFrequency: 'monthly', priority: 0.8 },
   { url: `${base}/features/booking`,       lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
   { url: `${base}/features/scheduling`,    lastModified: new Date('2026-05-13'), changeFrequency: 'monthly', priority: 0.7 },
