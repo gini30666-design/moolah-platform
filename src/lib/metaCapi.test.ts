@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { normalizePhoneE164 } from './metaCapi'
 import { newEventId, META_EVENT, GA_EVENT } from './funnel'
+import { scoreLeadForm } from './leadScore'
 
 // 這支測的是「錯了不會噴錯、只會靜默失效」的兩件事：
 //   1. 電話正規化 —— 格式錯 → Meta 比對率 0 → 事件收到了卻歸因不到任何廣告
@@ -76,5 +77,39 @@ describe('事件階梯對照表', () => {
     expect(META_EVENT.lead).toBe('Lead')
     expect(META_EVENT.trial).toBe('StartTrial')
     expect(META_EVENT.paid).toBe('Subscribe')
+  })
+
+  it('qualified 這一階存在 —— Lead 不等於好客戶，少了這階就分不出廣告好壞', () => {
+    expect(META_EVENT.qualified).toBe('QualifiedLead')
+    expect(GA_EVENT.qualified).toBe('qualify_lead')  // GA4 已標為重要事件，不可改名
+  })
+})
+
+describe('scoreLeadForm（進線當下的初評，0-3）', () => {
+  it('只填必填欄位 → 0 分（多數人會落在這，這是預期的）', () => {
+    expect(scoreLeadForm({})).toBe(0)
+    expect(scoreLeadForm({ plan: 'trial' })).toBe(0)
+  })
+
+  it('選了服務類別＝自己對號入座說「我是這行的」', () => {
+    expect(scoreLeadForm({ category: '皮膚管理師' })).toBe(1)
+  })
+
+  it('願意回答「目前怎麼接預約」＝已意識到這是問題，不是純好奇', () => {
+    expect(scoreLeadForm({ currentMethod: 'LINE 個人帳號' })).toBe(1)
+  })
+
+  it('直接要正式加入（跳過試用）＝意圖最強', () => {
+    expect(scoreLeadForm({ plan: 'direct' })).toBe(1)
+  })
+
+  it('訊號可以疊加，但上限 3（4-5 分要談過才算）', () => {
+    expect(scoreLeadForm({
+      category: '採耳師', currentMethod: '無系統（自行記錄）', plan: 'direct',
+    })).toBe(3)
+  })
+
+  it('空字串不算填了（前端沒選時送的是空字串不是 undefined）', () => {
+    expect(scoreLeadForm({ category: '', currentMethod: '   ', district: '高雄市' })).toBe(0)
   })
 })

@@ -14,6 +14,7 @@ export type FunnelStage =
   | 'engaged'    // 停留夠久／捲夠深 ＝ 真的在讀，不是誤觸
   | 'contact'    // 點了「加 LINE」
   | 'lead'       // 送出招商表單
+  | 'qualified'  // ★ 談過之後確認是真的美業工作室主 ＝ 值錢的那一批
   | 'trial'      // 認領成功、試用開始
   | 'activated'  // 收到第一筆真實客人預約 ＝ 系統真的在他店裡運轉
   | 'paid'       // 月費入帳
@@ -24,6 +25,7 @@ export const META_EVENT: Record<FunnelStage, string> = {
   engaged:   'Engaged',        // 自訂：Meta 沒有對應的標準事件
   contact:   'Contact',
   lead:      'Lead',
+  qualified: 'QualifiedLead',  // 自訂：Meta 沒有標準的「合格名單」事件
   trial:     'StartTrial',
   activated: 'Activated',      // 自訂
   paid:      'Subscribe',      // 月費訂閱制 → Subscribe 比 Purchase 貼切
@@ -35,10 +37,26 @@ export const GA_EVENT: Record<FunnelStage, string> = {
   engaged:   'engaged_view',
   contact:   'click_line_oa',   // ⚠️ 既有事件，GA4 報表在用，不可改名
   lead:      'generate_lead',   // ⚠️ 同上，且是 Google Ads 匯入的轉換
+  qualified: 'qualify_lead',    // ⚠️ GA4 已標為重要事件（Day 51 業務目標範本），沿用
   trial:     'start_trial',
   activated: 'activated',
   paid:      'subscribe',
 }
+
+/**
+ * ⚠️ Meta 該優化哪一階，跟「哪一階最接近錢」是兩件事。
+ *
+ * 顧問 2026-08-13 的提醒：現在 Lead 全期只有 2 筆。
+ * 直接叫 Meta「優化 Lead」它會因為事件量太少而學不動（每組每週要 ~50 次事件）。
+ * 所以要走 signal ladder，量夠了才往下一階移：
+ *
+ *   現在   → CONVERSATIONS（訊息對話，量最大）★ 目前設定，正確，不要動
+ *   量夠後 → Lead / StartTrial
+ *   再之後 → Activated / Paid
+ *
+ * 這個常數只是把判斷寫下來備忘，程式不讀它 —— 優化目標設在 Meta 後台的 ad set。
+ */
+export const OPTIMIZATION_LADDER = ['contact', 'lead', 'qualified', 'trial', 'paid'] as const
 
 /** 判定「有在讀」的門檻 —— 兩個條件任一達成即算 engaged */
 export const ENGAGED_DWELL_MS = 10_000

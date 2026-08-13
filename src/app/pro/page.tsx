@@ -333,11 +333,13 @@ export default function ProLandingPage() {
     ⚠️ 第二鐵律（2026-08-13 Gini）：不要寫「美業」——太攏統，職人不會覺得在講自己。
     這裡直接點名藍海品類，而且**必須與廣告文案第一句同一組字**
     （廣告：「如果你自己經營肌膚管理、採耳、按摩或美甲工作室」）。
-    廣告講什麼、落地頁第一屏就接什麼＝scent match，中間斷掉人就走了。 */}
-                肌膚管理・採耳・按摩・美甲・做臉・熱蠟除毛<br />
-                一人工作室的 <strong style={{ color: cream, fontWeight: 700 }}>AI 接單助理</strong>——<br />
-                幫你收預約、提醒客人、記住每個人的細節。<br />
-                <span style={{ color: oak, fontWeight: 700 }}>不抽成，客人付多少都是你的。</span>
+    廣告講什麼、落地頁第一屏就接什麼＝scent match，中間斷掉人就走了。
+
+    ⚠️ 只留兩行（2026-08-13 顧問）：原本四個價值主張（是什麼／做什麼／不抽成／專心做手藝）
+    全擠在第一屏互相搶順位，反而一個都沒記住。
+    「0 抽佣・不綁約・免下載」下面的 chips 已經在講了，段落裡重複只是稀釋。 */}
+                給一人工作室的 <strong style={{ color: cream, fontWeight: 700 }}>LINE 接單助理</strong><br />
+                <span style={{ color: oak, fontWeight: 700 }}>肌膚管理｜採耳｜按摩｜美甲｜做臉｜除毛</span>
               </p>
 
               {/* 手機版：畫面接在文案後面；桌機版由 grid 移到右欄 */}

@@ -3,6 +3,7 @@ import { appendRow } from '@/lib/sheets'
 import { rateLimit, clientIp } from '@/lib/rateLimit'
 import { sendCapiEvent, capiUserFromRequest } from '@/lib/metaCapi'
 import { pushMessage } from '@/lib/line'
+import { scoreLeadForm } from '@/lib/leadScore'
 
 export async function POST(req: Request) {
   try {
@@ -25,13 +26,19 @@ export async function POST(req: Request) {
     const planChoice = plan === 'direct' ? 'direct' : 'trial'
 
     const a = (attribution ?? {}) as Record<string, string | undefined>
-    // ⚠️ 欄位順序必須與 sheets.ts 的 TABLE_COLS.leads 完全一致（A:R 共 18 欄）
-    await appendRow('leads!A:R', [
+    // 進線當下能推得的分數（0-3）。真正的資格判定要談過才知道 → scripts/lead.mjs qualify
+    const score = scoreLeadForm({ category, currentMethod, plan: planChoice })
+
+    // ⚠️ 欄位順序必須與 sheets.ts 的 TABLE_COLS.leads 完全一致（A:AA 共 27 欄）
+    await appendRow('leads!A:AA', [
       id, name.trim(), category || '', district || '', contact.trim(),
       currentMethod || '', createdAt, 'new', planChoice,
       a.utmSource || '', a.utmMedium || '', a.utmCampaign || '', a.utmContent || '',
       a.referrer || '', a.landingPath || '', a.fbp || '', a.fbc || '',
       ctaVariant ? `cta=${ctaVariant}` : '',
+      a.firstUtmSource || '', a.firstUtmMedium || '', a.firstUtmCampaign || '',
+      a.firstUtmContent || '', a.firstSeenAt || '',
+      a.fbclid || '', a.gclid || '', score, '',
     ])
 
     // ── 追蹤與通知：任何一項失敗都不能讓表單送出變成錯誤 ──────────────
@@ -61,20 +68,27 @@ export async function POST(req: Request) {
     //    艾里歐 8/3 進線、躺了三天沒人接，8/6 掃描才發現，他已經選了別家。
     //    每個 lead 的獲客成本約 NT$2,070，沒有通知就是花錢買客戶然後放到爛。
     const ops = process.env.OPS_LINE_USER_ID
+    const last = a.utmSource || a.utmCampaign
+      ? `${a.utmSource || '?'} / ${a.utmCampaign || '?'} / ${a.utmContent || '-'}`
+      : (a.fbclid ? 'Meta 廣告（有 fbclid）' : a.gclid ? 'Google 廣告（有 gclid）' : '自然流量')
+    // first-touch 跟 last-touch 不同時才另外列 —— 相同的話多印一行只是雜訊
+    const first = a.firstUtmSource && a.firstUtmSource !== a.utmSource
+      ? `初次認識：${a.firstUtmSource} / ${a.firstUtmCampaign || '-'}`
+      : null
     const notify = ops
       ? pushMessage(ops, [
-          '🔔 新招商 Lead',
+          `🔔 新招商 Lead（初評 ${score}/5）`,
           `稱呼：${name.trim()}`,
           `聯絡：${contact.trim()}`,
           category ? `類別：${category}` : null,
           district ? `地區：${district}` : null,
           currentMethod ? `現況：${currentMethod}` : null,
           `方案：${planChoice === 'direct' ? '直接正式加入' : '14 天試用'}`,
-          a.utmCampaign || a.utmSource
-            ? `來源：${a.utmSource || '?'} / ${a.utmCampaign || '?'} / ${a.utmContent || '-'}`
-            : '來源：自然流量',
+          `來源：${last}`,
+          first,
           '',
-          '⏱ 30 分鐘內完成第一次聯絡',
+          '⏱ 10 分鐘內回第一句（過了就去看別家了）',
+          `談完標記：node scripts/lead.mjs qualify ${id} --score N`,
         ].filter(Boolean).join('\n'))
       : Promise.resolve(false)
 

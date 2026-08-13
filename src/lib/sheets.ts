@@ -22,8 +22,9 @@ const TABLE_COLS: Record<string, string[]> = {
   reviews: ['booking_id','provider_id','customer_name','rating','comment','status','created_at'],
   customer_notes: ['provider_id','customer_line_user_id','note','updated_at','tags'],
   blacklist: ['provider_id','customer_line_user_id','customer_name','reason','created_at','source','customer_phone'],
-  // 2026-08-13 加了來源歸因欄（A:R）——沒有這些就只知道「有人填表」，不知道是哪支廣告帶來的
-  leads: ['id','name','category','district','contact','current_method','created_at','status','plan','utm_source','utm_medium','utm_campaign','utm_content','referrer','landing_path','fbp','fbc','note'],
+  // 2026-08-13 加來源歸因（A:R）＋ first-touch／點擊 ID／分數（→AA，共 27 欄）
+  // 沒有這些就只知道「有人填表」，不知道是哪支廣告帶來的、也分不出好壞客戶
+  leads: ['id','name','category','district','contact','current_method','created_at','status','plan','utm_source','utm_medium','utm_campaign','utm_content','referrer','landing_path','fbp','fbc','note','first_utm_source','first_utm_medium','first_utm_campaign','first_utm_content','first_seen_at','fbclid','gclid','lead_score','qualified'],
   feedback: ['ts','area','severity','message','reporter','ua'],
 }
 
