@@ -23,6 +23,15 @@ export const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
 export const DOW_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const SLOT_MINUTES = 30
 
+/**
+ * 最短預約前置時間（分鐘）—— 時段開始時間距離「現在」不足這麼久就不開放。
+ *
+ * 客人不可能十分鐘後就到店，職人也需要準備時間。
+ * 只影響「今天」；明天以後整天照常開放。
+ * 2026-08-14 Gini 定 30 分鐘。要調整改這一個常數即可。
+ */
+export const BOOKING_LEAD_MINUTES = 30
+
 // "9:00" → "09:00"（相容歷史去前導零資料）
 export function padTime(t: unknown): string {
   const m = String(t ?? '').match(/^(\d{1,2}):(\d{2})$/)
@@ -106,13 +115,12 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
   // 固定梯次：有設就只開這幾個起點（且仍須落在營業時段內）
   const slotStarts = parseSlotStarts(daySchedule?.[8])
 
-  // 今天已經過去的時段一律不開放。
-  // ⚠️ 這裡跟 withinHours／slot_starts 同一個原則：過去的時間「不存在」，
+  // 今天：已經過去、以及太趕（不足 BOOKING_LEAD_MINUTES）的時段一律不開放。
+  // ⚠️ 這裡跟 withinHours／slot_starts 同一個原則：約不到的時間「不存在」，
   //    不是「被別人約走」—— 所以是不回傳，不是回傳 booked。
-  //    只擋「已經過去的」，不含緩衝時間（要不要留 30 分鐘準備時間是產品決策，不在這裡預設）。
   const isToday = date === todayInTaipei()
-  const nowMin = isToday ? taipeiNowMinutes() : -1
-  const notPast = (min: number) => !isToday || min > nowMin
+  const earliestMin = isToday ? taipeiNowMinutes() + BOOKING_LEAD_MINUTES : -1
+  const notPast = (min: number) => !isToday || min >= earliestMin
 
   const isOpenStart = (t: string) => {
     const min = timeToMinutes(t)

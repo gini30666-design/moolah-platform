@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
   padTime, timeToMinutes, computeOccupiedSlots, computeAvailability, isSlotBookable,
-  DOW_NAMES, todayInTaipei, taipeiDate, taipeiDayOfWeek, type Row,
+  DOW_NAMES, todayInTaipei, taipeiDate, taipeiDayOfWeek, BOOKING_LEAD_MINUTES, type Row,
 } from './slots'
 
 // ── row builders（欄位順序對齊 sheets.ts TABLE_COLS）────────────────
@@ -349,13 +349,13 @@ describe('今天已經過去的時段', () => {
     vi.useRealTimers()
   })
 
-  it('台北 13:10 → 只剩 13:30 之後', () => {
+  it('台北 13:10 → 加 30 分緩衝後最早 13:40，所以 13:30 也擋掉', () => {
     atTaipei('13:10')
-    expect(times()).toEqual(['13:30','14:00','14:30','15:00','15:30'])
+    expect(times()).toEqual(['14:00','14:30','15:00','15:30'])
     vi.useRealTimers()
   })
 
-  it('剛好等於現在的那一格也擋掉（13:30 時 13:30 不可約）', () => {
+  it('緩衝邊界：13:30 時 14:00 剛好滿 30 分 → 可約', () => {
     atTaipei('13:30')
     expect(times()).toEqual(['14:00','14:30','15:00','15:30'])
     vi.useRealTimers()
@@ -374,8 +374,9 @@ describe('今天已經過去的時段', () => {
       bookingRows: [] as Row[], serviceRows: SERVICES,
       availRows: [schedule(dow, '09:00', '16:00')],
     }
-    expect(isSlotBookable(input, '09:00')).toBe(false)
-    expect(isSlotBookable(input, '14:00')).toBe(true)
+    expect(isSlotBookable(input, '09:00')).toBe(false)  // 已過去
+    expect(isSlotBookable(input, '13:30')).toBe(false)  // 只剩 20 分，不足 30 分緩衝
+    expect(isSlotBookable(input, '14:00')).toBe(true)   // 50 分後，可以
     vi.useRealTimers()
   })
 
@@ -399,5 +400,40 @@ describe('今天已經過去的時段', () => {
     })
     expect(s.map(x => x.time)).toEqual(['13:00', '15:00'])
     vi.useRealTimers()
+  })
+})
+
+describe('最短預約前置時間（BOOKING_LEAD_MINUTES = 30）', () => {
+  const TODAY = '2026-08-20'
+  const dow = dowOf(TODAY)
+  const atTaipei = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 7, 20, h - 8, m, 0)))
+  }
+  const first = () => computeAvailability({
+    providerId: PID, date: TODAY, serviceId: null,
+    bookingRows: [], serviceRows: SERVICES,
+    availRows: [schedule(dow, '09:00', '18:00')],
+  })[0]?.time
+
+  it('常數就是 30', () => {
+    expect(BOOKING_LEAD_MINUTES).toBe(30)
+  })
+
+  it('14:00 整 → 最早 14:30（剛好滿 30 分）', () => {
+    atTaipei('14:00'); expect(first()).toBe('14:30'); vi.useRealTimers()
+  })
+
+  it('14:01 → 14:30 不夠 30 分，順延到 15:00', () => {
+    atTaipei('14:01'); expect(first()).toBe('15:00'); vi.useRealTimers()
+  })
+
+  it('14:29 → 仍是 15:00', () => {
+    atTaipei('14:29'); expect(first()).toBe('15:00'); vi.useRealTimers()
+  })
+
+  it('17:31 → 18:00 已是打烊時間，今天沒有了', () => {
+    atTaipei('17:31'); expect(first()).toBe(undefined); vi.useRealTimers()
   })
 })
