@@ -56,6 +56,12 @@ export async function getSheetData(
   const cols = TABLE_COLS[table]
   if (!cols) return []
   let query = sb.from(table).select(cols.join(',')).order(cols[0], { ascending: true })
+  // ⚠️ 第一欄幾乎都是 provider_id —— 查單一職人時整批同值，
+  //    Postgres 對同值列「不保證」回傳順序，結果會隨查詢計畫飄動。
+  //    補第二排序鍵（services→service_id、portfolio→portfolio_id…）讓順序穩定。
+  //    2026-08-14 發現：Lia 有 31 項服務，預約頁預設選中的竟是最後一項。
+  //    服務少的職人只是剛好沒被看出來，不是沒中招。
+  if (cols[1]) query = query.order(cols[1], { ascending: true })
   if (filters) {
     for (const [k, v] of Object.entries(filters)) {
       if (cols.includes(k)) query = query.eq(k, v)
