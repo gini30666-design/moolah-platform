@@ -325,3 +325,79 @@ describe('固定梯次（slot_starts）', () => {
     expect(s.length).toBe(18)
   })
 })
+
+// ── 今天已過去的時段（2026-08-14 發現：zuzu 16:00 打烊，晚上七點查仍整天可約）──
+describe('今天已經過去的時段', () => {
+  const TODAY = '2026-08-20'   // 週四
+  const dow = dowOf(TODAY)
+
+  const atTaipei = (hhmm: string) => {
+    // 台北 hh:mm → UTC（台北 = UTC+8）
+    const [h, m] = hhmm.split(':').map(Number)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 7, 20, h - 8, m, 0)))
+  }
+  const times = (over = {}) => computeAvailability({
+    providerId: PID, date: TODAY, serviceId: null,
+    bookingRows: [], serviceRows: SERVICES,
+    availRows: [schedule(dow, '09:00', '16:00')], ...over,
+  }).map(s => s.time)
+
+  it('台北 08:00（尚未開店）→ 整天都還在', () => {
+    atTaipei('08:00')
+    expect(times()).toEqual(['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'])
+    vi.useRealTimers()
+  })
+
+  it('台北 13:10 → 只剩 13:30 之後', () => {
+    atTaipei('13:10')
+    expect(times()).toEqual(['13:30','14:00','14:30','15:00','15:30'])
+    vi.useRealTimers()
+  })
+
+  it('剛好等於現在的那一格也擋掉（13:30 時 13:30 不可約）', () => {
+    atTaipei('13:30')
+    expect(times()).toEqual(['14:00','14:30','15:00','15:30'])
+    vi.useRealTimers()
+  })
+
+  it('台北 19:00（已打烊）→ 今天一格都不剩', () => {
+    atTaipei('19:00')
+    expect(times()).toEqual([])
+    vi.useRealTimers()
+  })
+
+  it('過去的時段下單被擋，未來的放行', () => {
+    atTaipei('13:10')
+    const input = {
+      providerId: PID, date: TODAY, serviceId: null,
+      bookingRows: [] as Row[], serviceRows: SERVICES,
+      availRows: [schedule(dow, '09:00', '16:00')],
+    }
+    expect(isSlotBookable(input, '09:00')).toBe(false)
+    expect(isSlotBookable(input, '14:00')).toBe(true)
+    vi.useRealTimers()
+  })
+
+  it('⚠️ 只影響今天：明天以後整天照舊', () => {
+    atTaipei('19:00')
+    const tomorrow = computeAvailability({
+      providerId: PID, date: '2026-08-21', serviceId: null,
+      bookingRows: [], serviceRows: SERVICES,
+      availRows: [schedule(dowOf('2026-08-21'), '09:00', '16:00')],
+    })
+    expect(tomorrow.length).toBe(14)
+    vi.useRealTimers()
+  })
+
+  it('固定梯次也吃這個過濾（早上的梯次過了就不出現）', () => {
+    atTaipei('11:00')
+    const s = computeAvailability({
+      providerId: PID, date: TODAY, serviceId: null,
+      bookingRows: [], serviceRows: SERVICES,
+      availRows: [[PID, 'schedule', dow, '08:00', '17:00', 'true', '', '', '08:00,10:00,13:00,15:00']],
+    })
+    expect(s.map(x => x.time)).toEqual(['13:00', '15:00'])
+    vi.useRealTimers()
+  })
+})

@@ -105,7 +105,19 @@ export function computeAvailability(input: AvailabilityInput): Slot[] {
 
   // 固定梯次：有設就只開這幾個起點（且仍須落在營業時段內）
   const slotStarts = parseSlotStarts(daySchedule?.[8])
-  const isOpenStart = (t: string) => withinHours(timeToMinutes(t)) && (!slotStarts || slotStarts.has(t))
+
+  // 今天已經過去的時段一律不開放。
+  // ⚠️ 這裡跟 withinHours／slot_starts 同一個原則：過去的時間「不存在」，
+  //    不是「被別人約走」—— 所以是不回傳，不是回傳 booked。
+  //    只擋「已經過去的」，不含緩衝時間（要不要留 30 分鐘準備時間是產品決策，不在這裡預設）。
+  const isToday = date === todayInTaipei()
+  const nowMin = isToday ? taipeiNowMinutes() : -1
+  const notPast = (min: number) => !isToday || min > nowMin
+
+  const isOpenStart = (t: string) => {
+    const min = timeToMinutes(t)
+    return withinHours(min) && notPast(min) && (!slotStarts || slotStarts.has(t))
+  }
 
   const allBooked: Slot[] = TIME_SLOTS
     .filter(isOpenStart)
@@ -192,6 +204,20 @@ export function taipeiDate(offsetDays = 0): string {
   const base = new Date(Date.UTC(y, m - 1, d))
   base.setUTCDate(base.getUTCDate() + offsetDays)
   return base.toISOString().slice(0, 10)
+}
+
+/**
+ * 台北「現在」是當日的第幾分鐘（00:00 起算）。
+ *
+ * 用來擋掉今天已經過去的時段 —— 沒有這道過濾，客人下午三點打開頁面
+ * 仍看得到今天早上九點可約，送出後職人會收到一張時間已經過去的預約單。
+ * （2026-08-14 檢查 zuzu 時發現：她 16:00 打烊，晚上七點查仍回傳整天可約）
+ */
+export function taipeiNowMinutes(): number {
+  const hhmm = new Date().toLocaleTimeString('en-GB', {
+    timeZone: 'Asia/Taipei', hour12: false, hour: '2-digit', minute: '2-digit',
+  })
+  return timeToMinutes(hhmm)
 }
 
 /** 台北時區的星期幾（0=Sun），與 taipeiDate 搭配用。 */

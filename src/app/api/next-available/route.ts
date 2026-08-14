@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-// ⚠️ 時段表一律 import，不要在這裡自己複製一份。
-//    2026-08-12 前這支有自己的副本，且停在「沒有 12:00/12:30」的舊版
-//    （8/06 午休改成可自訂時漏改），導致中午不休息的職人永遠不會被推薦到 12:00。
-import { TIME_SLOTS, timeToMinutes, padTime, taipeiDate, taipeiDayOfWeek } from '@/lib/slots'
+// ⚠️ 時段規則一律走 computeAvailability，不要在這裡自己算一套。
+//    這支曾經有自己的完整副本，而且每次規則變更都漏改：
+//      · 2026-08-12 前停在「沒有 12:00/12:30」的舊時段表（8/06 午休改可自訂時漏改）
+//      · 到 2026-08-14 為止仍不支援午休、不支援固定梯次、也不排除今天已過去的時段
+//        → 自由島第一梯被訂走後，它會推薦 08:30 這種她根本不出船的時間。
+//    改成共用同一套邏輯後，往後時段規則只要改 slots.ts 一處。
+import { computeAvailability, taipeiDate } from '@/lib/slots'
 import { getSheetData } from '@/lib/sheets'
 
 function dateLabel(dateStr: string): string {
@@ -27,50 +30,16 @@ export async function GET(req: NextRequest) {
     getSheetData('availability!A2:I', { provider_id: providerId }),
   ])
 
-  const providerAvail = availRows.filter(r => r[0] === providerId)
-  const blockRows     = providerAvail.filter(r => r[1] === 'block')
-  const scheduleRows  = providerAvail.filter(r => r[1] === 'schedule')
-
-  const serviceRow = serviceRows.find(r => r[0] === providerId && r[1] === serviceId)
-  const serviceSlots = serviceRow ? Math.ceil(Number(serviceRow[4]) / 30) : 1
-
-  for (let offset = 1; offset <= 30; offset++) {
-    // 台北時區（理由同 /api/calendar）
+  // offset 從 0 開始 —— 今天剩下的時段也該賣得掉。
+  // （改用 computeAvailability 前這裡是 offset=1，早上九點打開會被推薦到明天）
+  for (let offset = 0; offset <= 30; offset++) {
     const dateStr = taipeiDate(offset)
-
-    if (blockRows.some(r => r[2] === dateStr)) continue
-
-    const dow = taipeiDayOfWeek(dateStr)
-    const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-    const daySched = scheduleRows.find(r => r[2] === DOW_NAMES[dow])
-    if (daySched && daySched[5]?.toLowerCase() === 'false') continue
-
-    const startMin = timeToMinutes(daySched ? (daySched[3] || '09:00') : '09:00')
-    const rawEnd   = daySched ? (daySched[4] || '19:00') : '19:00'
-    const endMin   = padTime(rawEnd) === '00:00' ? 1440 : timeToMinutes(rawEnd)
-    const withinHours = (min: number) => min >= startMin && min < endMin
-
-    const dayBookings = bookingRows.filter(r => r[1] === providerId && r[5] === dateStr && (r[12] ?? '') !== 'cancelled')
-    const occupied = new Set<string>()
-    for (const b of dayBookings) {
-      const svc = serviceRows.find(r => r[0] === providerId && r[1] === b[2])
-      const dur = svc ? Math.ceil(Number(svc[4]) / 30) : 1
-      const startIdx = TIME_SLOTS.indexOf(padTime(b[6]))
-      if (startIdx === -1) continue
-      for (let i = 0; i < dur; i++) {
-        if (TIME_SLOTS[startIdx + i]) occupied.add(TIME_SLOTS[startIdx + i])
-      }
-    }
-
-    for (let i = 0; i < TIME_SLOTS.length; i++) {
-      const slotMin = timeToMinutes(TIME_SLOTS[i])
-      if (!withinHours(slotMin)) continue
-      // 整段服務都必須落在營業時間內，不能推薦一個會做到打烊後的起點
-      const fits = Array.from({ length: serviceSlots }, (_, k) => TIME_SLOTS[i + k])
-        .every(t => t !== undefined && withinHours(timeToMinutes(t)) && !occupied.has(t))
-      if (fits) {
-        return NextResponse.json({ date: dateStr, time: TIME_SLOTS[i], label: dateLabel(dateStr) })
-      }
+    const slots = computeAvailability({
+      providerId, date: dateStr, serviceId, bookingRows, serviceRows, availRows,
+    })
+    const first = slots.find(s => s.status !== 'booked')
+    if (first) {
+      return NextResponse.json({ date: dateStr, time: first.time, label: dateLabel(dateStr) })
     }
   }
 
