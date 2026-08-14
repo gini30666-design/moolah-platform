@@ -8,14 +8,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { computeAvailability, taipeiDate } from '@/lib/slots'
 import { getSheetData } from '@/lib/sheets'
 
+// ⚠️ 不要用 `new Date(); setHours(0,0,0,0)` 算天數差 ——
+//    那是「執行環境時區」的午夜，而 Vercel 跑在 UTC。
+//    `dateStr + 'T12:00:00'`（無 Z）在 UTC 環境被當成 UTC 正午，
+//    減掉 UTC 午夜只有 0.5 天，Math.round 進位成 1 → 今天被標成「明天」。
+//    （2026-08-14 實測：Lia 回傳 date=2026-08-14 卻顯示「明天」）
+//    比日期字串最安全，完全不做時間算術。
 function dateLabel(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  const today = new Date(); today.setHours(0,0,0,0)
-  const diff = Math.round((d.getTime() - today.getTime()) / 86400000)
-  if (diff === 0) return '今天'
-  if (diff === 1) return '明天'
+  if (dateStr === taipeiDate(0)) return '今天'
+  if (dateStr === taipeiDate(1)) return '明天'
+  const d = new Date(dateStr + 'T12:00:00Z')
   const DOW = ['日','一','二','三','四','五','六']
-  return `${d.getMonth()+1}/${d.getDate()}（周${DOW[d.getDay()]}）`
+  return `${d.getUTCMonth()+1}/${d.getUTCDate()}（周${DOW[d.getUTCDay()]}）`
 }
 
 export async function GET(req: NextRequest) {

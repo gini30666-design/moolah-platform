@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import LineLink from '@/components/LineLink'
 import { OA_CONSUMER } from '@/lib/lineOA'
+import { todayInTaipei } from '@/lib/slots'
 
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
 type CalendarDay = { date: string; status: DayStatus }
@@ -63,9 +64,10 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
     </section>
   )
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const todayStr = today.toISOString().split('T')[0]
+  // ⚠️ 不要用 `new Date().toISOString().split('T')[0]` —— 那是 UTC 日期。
+  //    台灣是 UTC+8，凌晨 0–8 點之間 UTC 還停在昨天 → 日曆的「今天」標記會落在昨天。
+  //    （同一個坑 2026-08-08 在 my-bookings／calendar 修過，這支當時漏掉）
+  const todayStr = todayInTaipei()
 
   // Pad the front of the grid to align weekday columns
   const firstDate = new Date(days[0].date + 'T12:00:00')
@@ -148,7 +150,7 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
 
                   const isToday = cell.date === todayStr
                   const style = STATUS_STYLE[cell.status]
-                  const isPast = new Date(cell.date + 'T12:00:00') < today
+                  const isPast = cell.date < todayStr
 
                   return (
                     <div
