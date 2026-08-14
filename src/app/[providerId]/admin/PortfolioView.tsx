@@ -138,7 +138,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
           <button onClick={() => setShowAdd(true)} style={{
             display: 'flex', alignItems: 'center', gap: '6px',
             fontSize: 'calc(12px * var(--fs, 1))', color: oak, background: 'rgba(166,137,102,0.1)',
-            border: 'none', borderRadius: '20px', padding: '7px 14px', cursor: 'pointer',
+            border: 'none', borderRadius: '20px', padding: '11px 16px', minHeight: '40px', cursor: 'pointer',
           }}>
             <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}>
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -153,7 +153,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
         <div style={{ background: 'rgba(251,249,244,0.9)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增作品</p>
-            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} style={{ fontSize: 'calc(18px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} aria-label="關閉" style={{ fontSize: 'calc(18px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer', minWidth: '40px', minHeight: '40px' }}>×</button>
           </div>
 
           {/* Mode toggle */}
@@ -252,18 +252,28 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                   <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: cream, margin: 0 }}>{item.caption}</p>
                 </div>
               )}
+              {/* 刪除鈕：視覺維持 28px 小圓（疊在照片上不搶戲），
+                  但外層用透明 padding 把「可點區」撐到 40px —— 這顆按下去會刪掉作品，
+                  26px 的熱區在手機上既難點中、又容易誤觸。 */}
               <button
                 onClick={() => handleDelete(item)}
                 disabled={deletingId === item.id}
+                aria-label="刪除這張作品"
                 style={{
-                  position: 'absolute', top: '6px', right: '6px',
-                  width: '26px', height: '26px', borderRadius: '50%',
-                  background: 'rgba(176,64,64,0.85)', border: 'none',
-                  color: '#fff', fontSize: 'calc(14px * var(--fs, 1))', lineHeight: '26px', cursor: 'pointer',
+                  position: 'absolute', top: 0, right: 0,
+                  width: '40px', height: '40px', padding: '6px',
+                  background: 'none', border: 'none', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                {deletingId === item.id ? '...' : '×'}
+                <span style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: 'rgba(176,64,64,0.85)',
+                  color: '#fff', fontSize: 'calc(14px * var(--fs, 1))',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {deletingId === item.id ? '...' : '×'}
+                </span>
               </button>
             </div>
           ))}
