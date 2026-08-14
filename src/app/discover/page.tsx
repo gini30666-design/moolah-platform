@@ -24,6 +24,8 @@ const STATIC_CATS = [
   { id: '寵物美容師', en: 'Pet Grooming', desc: '毛孩洗澡、剃毛、造型' },
   { id: '汽車美容師', en: 'Auto Detailing', desc: '鍍膜、打蠟、清潔' },
   { id: '美甲師', en: 'Nail Artist', desc: '光療、凝膠、手繪' },
+  { id: '美睫師', en: 'Eyelash', desc: '單根接睫、仙女款、眼型調整' },
+  { id: '霧唇師', en: 'Lip Blush', desc: '霧唇、韓式唇線、補色' },
   { id: '採耳師', en: 'Ear Cleaning', desc: '可視採耳、耳燭、耳部SPA' },
   { id: '美容師', en: 'Facial Care', desc: '做臉、清粉刺、保濕護理' },
   { id: '按摩舒壓師', en: 'Massage', desc: '腳底按摩、精油舒壓、肩頸' },
