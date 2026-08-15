@@ -509,20 +509,37 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
               <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.65)', lineHeight: 1.5 }}>LINE 確認通知已傳送給您與{providerTerm}</p>
             </div>
           ) : (
-            <div style={{ padding: '16px', borderRadius: '14px', background: 'rgba(26,23,20,0.04)', border: '1px solid rgba(44,40,37,0.1)', marginBottom: '20px' }}>
-              <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.55)', marginBottom: '12px', lineHeight: 1.6, textAlign: 'center' }}>
-                {isLineUser ? '加入 MooLah LINE 好友，即可接收預約確認與提醒' : `${providerTerm}已收到通知。加入 LINE 好友可接收後續提醒`}
+            /* 未加好友 → 提醒與確認通知都送不到。
+               2026-08-15：自由島頭兩位客人都沒加，等於「前一天自動提醒」這個核心承諾交付不了。
+               舊版是灰底 12px 灰字寫「即可接收預約確認與提醒」——講好處、視覺權重還低於
+               下面的行事曆按鈕，客人直接滑過去。改成講後果 + 提高視覺層級。 */
+            <div style={{
+              padding: '18px 16px', borderRadius: '14px',
+              background: 'rgba(6,199,85,0.06)', border: '1.5px solid rgba(6,199,85,0.45)',
+              marginBottom: '20px', textAlign: 'center',
+            }}>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '6px', letterSpacing: '0.01em' }}>
+                還差一步，別漏接提醒
               </p>
-              <LineLink source="book_1" oaId={OA_CONSUMER} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px 20px', borderRadius: '10px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 500, textDecoration: 'none', boxShadow: '0 2px 12px rgba(6,199,85,0.28)' }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/></svg>
-                加入 MooLah LINE 好友
+              <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.72)', marginBottom: '14px', lineHeight: 1.65 }}>
+                {providerTerm}已經收到你的預約了。<br />
+                <b style={{ color: 'var(--charcoal)', fontWeight: 600 }}>前一天的提醒會傳到 LINE</b> —— 加好友才收得到。
+              </p>
+              <LineLink source="book_1" oaId={OA_CONSUMER} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0 20px', minHeight: '50px', borderRadius: '12px', background: '#06C755', color: 'white', fontSize: '15px', fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 16px rgba(6,199,85,0.32)' }}>
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1C4.134 1 1 3.701 1 7.04c0 1.982 1.07 3.748 2.744 4.9-.12.444-.435 1.61-.498 1.86-.08.31.114.308.24.224.099-.066 1.577-1.04 2.213-1.463.424.06.858.092 1.301.092C11.866 12.653 15 9.952 15 6.613 15 3.274 11.866 1 8 1Z" fill="white"/></svg>
+                加入 LINE 好友
               </LineLink>
+              <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.4)', marginTop: '10px' }}>
+                加了才會在預約前一天收到提醒
+              </p>
             </div>
           )}
         </div>
         {/* Reassurance action grid: calendar + map */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%', maxWidth: '320px', animation: 'fadeSlideUp 0.4s ease 0.8s both', marginBottom: '10px' }}>
-          <button onClick={handleAddToCalendar} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: 'var(--charcoal)', color: 'var(--cream)', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', letterSpacing: '0.02em' }}>
+          {/* 還沒加好友時降權：深炭實底會跟上方綠色主鈕搶視線，
+              而此刻最重要的動作是加好友（不加就收不到提醒） */}
+          <button onClick={handleAddToCalendar} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', borderRadius: '12px', background: consumerNotified ? 'var(--charcoal)' : 'rgba(44,40,37,0.07)', color: consumerNotified ? 'var(--cream)' : 'rgba(44,40,37,0.65)', border: consumerNotified ? 'none' : '1px solid rgba(44,40,37,0.1)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.02em' }}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '14px', height: '14px' }}>
               <rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 1.5v3M11 1.5v3M2 7h12"/>
             </svg>
