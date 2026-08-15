@@ -1331,6 +1331,25 @@ export default function BookPage() {
             style={{ width: '100%', padding: '17px', borderRadius: '15px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', background: canSubmit ? 'var(--charcoal)' : 'rgba(44,40,37,0.18)', color: 'var(--cream)', fontSize: '15px', fontWeight: 600, letterSpacing: '0.04em', boxShadow: canSubmit ? '0 12px 30px rgba(26,23,20,0.28)' : 'none', transition: 'all .3s cubic-bezier(0.16,1,0.3,1)' }}>
             {submitting ? '預約中…' : canSubmit ? `確認預約 · ${fmtDate} ${time}` : !date ? '請選擇日期' : !time ? '請選擇時段' : !hasCustomerInfo ? '請填寫稱呼與電話' : !phoneValid ? '請輸入有效電話' : !gender ? '請選擇性別' : isHairCategory && !hairLength ? '請選擇髮長' : '請完成必填'}
           </button>
+
+          {/* 個資告知（個資法第 8 條：蒐集前應告知目的與利用範圍）
+              ⚠️ 2026-08-15 補上 —— 在此之前預約頁完全沒有隱私政策連結，
+                 而客人在這裡交出的是姓名／電話／性別／備註／LINE userID。
+              ⚠️ 連結一律走 liff.openWindow(external:false)：在 LINE 內開新視窗可以返回，
+                 直接用 <a> 導航會離開表單，填到一半的資料就沒了。 */}
+          <p style={{ marginTop: '12px', fontSize: '11.5px', lineHeight: 1.65, color: 'rgba(44,40,37,0.5)', textAlign: 'center' }}>
+            送出即表示你同意
+            <button
+              type="button"
+              onClick={() => {
+                const url = `${window.location.origin}/privacy`
+                try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') }
+              }}
+              style={{ background: 'none', border: 'none', padding: '0 2px', font: 'inherit', color: 'var(--oak)', textDecoration: 'underline', cursor: 'pointer' }}
+            >隱私權政策</button>
+            <br />
+            你的資料僅供{providerTerm}與你聯繫、完成本次預約與提醒使用
+          </p>
         </div>
       </div>
     </div>
