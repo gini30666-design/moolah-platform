@@ -55,8 +55,23 @@ export async function PUT(req: NextRequest) {
   const auth = await verifyOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  // 砍掉該職人所有舊排班/休假，重建（取代舊「清空+append」）
-  await sb.from('availability').delete().eq('provider_id', providerId)
+  // 砍掉該職人所有舊排班/休假，重建。
+  // ⚠️ 這是「先刪再寫」，兩步之間若失敗，職人的排班會整批消失
+  //    （排班沒了＝客人看到整月都不能約，職人不會馬上發現）。
+  //    Supabase JS SDK 無法跨語句開 transaction，所以改用兩道防線：
+  //      1) delete 失敗就直接中止，不進到 insert
+  //      2) insert 失敗就把舊資料寫回去（下方 catch）
+  //    真正的原子性要移到 DB function，這裡先把「靜默清空」這個最壞情況堵掉。
+  const { data: previous, error: readErr } = await sb
+    .from('availability').select('*').eq('provider_id', providerId)
+  if (readErr) {
+    return NextResponse.json({ error: '讀取原排班失敗，未做任何變更' }, { status: 500 })
+  }
+
+  const { error: delErr } = await sb.from('availability').delete().eq('provider_id', providerId)
+  if (delErr) {
+    return NextResponse.json({ error: '清除舊排班失敗，未做任何變更' }, { status: 500 })
+  }
 
   const rows: Record<string, unknown>[] = []
   for (const s of schedule ?? []) {
@@ -80,7 +95,21 @@ export async function PUT(req: NextRequest) {
   }
   if (rows.length) {
     const { error } = await sb.from('availability').insert(rows)
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      // 寫入失敗 → 把剛才刪掉的舊排班補回去，不要讓職人的班表憑空消失。
+      // 還原本身若再失敗就只能記錄下來（監控會推播），但至少不是靜默的。
+      if (previous?.length) {
+        const { error: restoreErr } = await sb.from('availability').insert(previous)
+        if (restoreErr) {
+          console.error('[schedule] 新排班寫入失敗且舊排班還原也失敗', { providerId, restoreErr })
+          return NextResponse.json(
+            { error: '排班儲存失敗，且原排班未能還原，請立即重新設定一次排班' },
+            { status: 500 },
+          )
+        }
+      }
+      return NextResponse.json({ error: '排班儲存失敗，已還原為原本的設定，請再試一次' }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ ok: true })

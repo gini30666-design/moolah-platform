@@ -1,7 +1,16 @@
 import { NextRequest } from 'next/server'
 import { getSheetData } from './sheets'
 
-// 從 Authorization: Bearer <LIFF access token> 取出 LINE userId（向 LINE 驗證）
+/**
+ * 從 Authorization: Bearer <LIFF access token> 取出 LINE userId（向 LINE 驗證）。
+ *
+ * 🔑 這是唯一可信的身分來源。前端傳來的 userId 一律不可信 ——
+ *    LINE userId 只是一串字，拿到別人的就能冒用。
+ *
+ * ⚠️ 必須有逾時：這支在預約與查詢的使用者等待路徑上，
+ *    LINE API 一卡，客人會看到「送出失敗」但實際上什麼都沒發生。
+ *    （同型問題 2026-08-13 在 CAPI/LINE 推播上修過一次）
+ */
 export async function getAuthUserId(req: NextRequest): Promise<string | null> {
   const header = req.headers.get('authorization') ?? ''
   const token = header.startsWith('Bearer ') ? header.slice(7).trim() : ''
@@ -9,6 +18,7 @@ export async function getAuthUserId(req: NextRequest): Promise<string | null> {
   try {
     const res = await fetch('https://api.line.me/v2/profile', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(4500),
     })
     if (!res.ok) return null
     const profile = await res.json()

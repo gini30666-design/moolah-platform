@@ -5,6 +5,7 @@ import LineLink from '@/components/LineLink'
 import { OA_CONSUMER, lineAddFriendUrl, openLineOA } from '@/lib/lineOA'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import liff from '@line/liff'
+import { authHeader } from '@/lib/clientAuth'
 import { ga } from '@/lib/gtag'
 import { NO_SHOW_THRESHOLD } from '@/lib/plan'
 
@@ -711,7 +712,7 @@ export default function BookPage() {
     try {
       const res = await fetch('/api/booking', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({
           providerId, serviceId: service?.id,
           customerName: name, customerLineUserId: lineUserId || '',   // 幫別人約也要帶訂位者 ID，提醒才發得出去
@@ -953,7 +954,7 @@ export default function BookPage() {
                 try {
                   // ⚠️ 一定要檢查 res.ok：失敗卻顯示「已加入候補」＝客人以為排到了，
                   // 然後一直等一個永遠不會來的通知（2026-08-08 複查時發現）
-                  const res = await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
+                  const res = await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify({ providerId, serviceId: service?.id, date, time: waitlistSlot, customerName: wlName, customerLineUserId: lineUserId, customerPhone: wlPhone }) })
                   if (!res.ok) { setWaitlistError('加入候補失敗，請稍後再試一次'); return }
                   setWaitlistDone(true)
                 } catch {

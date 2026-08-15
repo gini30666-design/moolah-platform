@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import liff from '@line/liff'
+import { authHeader } from '@/lib/clientAuth'
 import OpenInLine from '@/components/OpenInLine'
 
 interface Booking {
@@ -40,7 +41,7 @@ export default function MyBookingsPage() {
         }
         const profile = await liff.getProfile()
         setUserId(profile.userId)
-        const res = await fetch(`/api/my-bookings?userId=${profile.userId}`)
+        const res = await fetch('/api/my-bookings', { headers: authHeader() })
         const data = await res.json()
         setBookings(data.bookings ?? [])
       } catch {
@@ -58,8 +59,8 @@ export default function MyBookingsPage() {
     try {
       const res = await fetch('/api/my-bookings', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, userId }),
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ bookingId }),
       })
       if (res.ok) {
         setCancelled(prev => new Set([...prev, bookingId]))

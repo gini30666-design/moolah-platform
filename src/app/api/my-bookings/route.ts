@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { todayInTaipei } from '@/lib/slots'
 import { getSheetData, updateBookingStatus } from '@/lib/sheets'
 import { pushMessage } from '@/lib/line'
+import { getAuthUserId } from '@/lib/auth'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 export async function GET(req: NextRequest) {
-  const userId = req.nextUrl.searchParams.get('userId')
-  if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
+  // 🔑 身分一律以 LINE access token 為準。
+  //    舊版讀 ?userId= —— 那只是一串字，拿到別人的 LINE userId 就能查他的全部預約
+  //    （姓名、日期、時間、找哪位職人）。
+  const userId = await getAuthUserId(req)
+  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const today = todayInTaipei()   // ⚠️ 不可用 toISOString（那是 UTC，台灣凌晨會算成昨天）
 
@@ -44,11 +48,14 @@ export async function GET(req: NextRequest) {
 
 // Consumer-facing cancellation — verifies lineUserId matches booking owner
 export async function PATCH(req: NextRequest) {
-  const { bookingId, userId } = await req.json()
-
-  if (!bookingId || !userId) {
-    return NextResponse.json({ error: 'bookingId and userId required' }, { status: 400 })
+  const { bookingId } = await req.json()
+  if (!bookingId) {
+    return NextResponse.json({ error: 'bookingId required' }, { status: 400 })
   }
+  // 🔑 取消是破壞性操作，身分必須來自 token —— 舊版信任 body 的 userId，
+  //    等於拿到別人的 LINE userId 就能取消他的預約。
+  const userId = await getAuthUserId(req)
+  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const rows = await getSheetData('bookings!A2:M', { booking_id: bookingId })
   const row = rows.find(r => r[0] === bookingId)

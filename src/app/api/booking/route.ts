@@ -5,6 +5,7 @@ import { getSheetData, appendRow } from '@/lib/sheets'
 import { isSlotBookable } from '@/lib/slots'
 import { pushFlexMessage, pushMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
 import { rateLimit, clientIp } from '@/lib/rateLimit'
+import { getAuthUserId } from '@/lib/auth'
 
 function generateId() {
   return `BK${Date.now()}`
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
   }
   const body = await req.json()
-  const { providerId, serviceId, customerName, customerLineUserId, customerPhone, date, time, note, gender, hairLength } = body
+  const { providerId, serviceId, customerName, customerPhone, date, time, note, gender, hairLength } = body
 
   if (!providerId || !serviceId || !customerName || !date || !time) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -70,12 +71,18 @@ export async function POST(req: NextRequest) {
   //  2) 營運面：無法識別、無法封鎖、無法留客戶備註（見 lib/customerIdentity）。
   //  3) 安全面：7/31–8/1 連續出現陌生人以假名假電話下單，OA 好友數卻沒增加。
   // ⚠️ 例外：demo 帳號在上面已先回傳；設計師手動建單走 /api/admin/manual-booking，不經過這裡。
-  if (!customerLineUserId) {
+  // 🔑 身分以 LINE access token 為準，不信任 body 傳來的 customerLineUserId。
+  //    body 只是一串字，偽造就能用別人的身分下單（那個人會收到不是自己約的通知）。
+  //    「幫別人預約」時 body 帶的本來就是訂位者自己的 ID，與 token 一致，不受影響。
+  const authedUserId = await getAuthUserId(req)
+  if (!authedUserId) {
     return NextResponse.json({
       error: 'line_required',
       message: '請用 LINE 開啟預約頁，才能收到預約確認與提醒。',
     }, { status: 403 })
   }
+  // 以下一律使用 authedUserId；body 的 lineUserId 自此不再參與判斷
+  const lineUserId = authedUserId
 
   // 黑名單檢查（#19）— LINE userId ／【電話】／姓名
   // ⚠️ 電話是 2026-08-01 補上的：web 訪客沒有 LINE ID，原本只能靠姓名比對，
@@ -85,7 +92,7 @@ export async function POST(req: NextRequest) {
     const isBlocked = blacklistRows.some(r => {
       if (r[0] !== providerId) return false
       return isSameCustomer(
-        { lineUserId: customerLineUserId, name: customerName, phone: customerPhone },
+        { lineUserId: lineUserId, name: customerName, phone: customerPhone },
         { lineUserId: r[1] as string, name: r[2] as string, phone: r[6] as string },
       )
     })
@@ -128,7 +135,7 @@ export async function POST(req: NextRequest) {
       providerId,
       serviceId,
       customerName,
-      customerLineUserId ?? '',
+      lineUserId ?? '',
       date,
       time,
       note ?? '',
@@ -167,9 +174,9 @@ export async function POST(req: NextRequest) {
       providerLineUserId, '📋 新預約',
       providerBookingFlex({ customerName, customerPhone: customerPhone ?? '', serviceName, date, time, adminUrl })
     )
-    const consumerMsg = customerLineUserId
+    const consumerMsg = lineUserId
       ? pushFlexMessage(
-          customerLineUserId, '🎉 預約成功',
+          lineUserId, '🎉 預約成功',
           consumerBookingFlex({ bookingId, serviceName, storeName, date, time, viewUrl })
         )
       : Promise.resolve(false)

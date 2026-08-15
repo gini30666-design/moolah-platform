@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuthUserId } from '@/lib/auth'
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { rateLimit, clientIp } from '@/lib/rateLimit'
 
@@ -25,7 +26,10 @@ export async function POST(req: NextRequest) {
   if (!rateLimit(`waitlist:${clientIp(req)}`, 8, 60_000)) {
     return NextResponse.json({ error: 'rate_limited', message: '操作太頻繁，請稍後再試。' }, { status: 429 })
   }
-  const { providerId, serviceId, date, time, customerName, customerLineUserId, customerPhone } = await req.json()
+  const { providerId, serviceId, date, time, customerName, customerPhone } = await req.json()
+  // 🔑 身分以 token 為準（同 /api/booking）：候補會觸發 LINE 推播，
+  //    信任 body 等於讓人用別人的身分排候補、讓那個人收到不是自己排的通知。
+  const customerLineUserId = await getAuthUserId(req)
   if (!providerId || !date || !time || !customerName) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
