@@ -49,9 +49,9 @@ describe('getAuthUserId — 身分只認 LINE token', () => {
   })
 
   it('打 LINE 時有帶逾時（signal），避免卡住使用者等待路徑', async () => {
-    const spy = vi.fn(async () => ({ ok: true, json: async () => ({ userId: 'U1' }) }))
+    const spy = vi.fn(async (_url: unknown, init?: { signal?: unknown }) => { void init; return { ok: true, json: async () => ({ userId: 'U1' }) } })
     vi.stubGlobal('fetch', spy)
     await getAuthUserId(reqWith('Bearer x'))
-    expect(spy.mock.calls[0][1]).toHaveProperty('signal')
+    expect(spy.mock.calls[0]?.[1]).toHaveProperty('signal')
   })
 })
