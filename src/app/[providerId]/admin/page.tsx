@@ -881,6 +881,7 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [error, setError] = useState('')
   const today = taipeiDate(0)
   const selectedService = services.find(s => s.id === serviceId)
 
@@ -888,12 +889,20 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
     e.preventDefault()
     if (!serviceId || !date || !time) return
     setSubmitting(true)
+    setError('')
     const res = await fetch('/api/admin/manual-booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ providerId, serviceId, customerName, date, time, note }),
     })
     setSubmitting(false)
+    // 失敗一定要講出來 —— 舊版只處理 res.ok，撞到已被預約的時段時
+    // 畫面完全沒反應，職人會以為建好了（實際上沒有）。
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      setError(data.message || '建立失敗，請再試一次')
+      return
+    }
     if (res.ok) {
       setDone(true)
       setTimeout(() => {
@@ -962,6 +971,15 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
             <label style={labelStyle}>備註（選填）</label>
             <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="特殊需求或提醒..." rows={2} style={{ ...inputStyle, resize: 'none' }} />
           </div>
+          {error && (
+            <div onClick={() => setError('')} style={{
+              padding: '11px 14px', borderRadius: '12px', cursor: 'pointer',
+              background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)',
+              color: '#b04040', fontSize: 'calc(12.5px * var(--fs, 1))', lineHeight: 1.5, textAlign: 'center',
+            }}>
+              {error}
+            </div>
+          )}
           <button type="submit" disabled={!serviceId || !date || !time || submitting} style={{
             background: !serviceId || !date || !time || submitting ? 'rgba(166,137,102,0.4)' : oak,
             color: cream, borderRadius: '50px', padding: '14px',
