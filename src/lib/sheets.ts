@@ -6,14 +6,15 @@
 // ============================================================
 import { sb } from './supabase'
 import { colToIndex } from './colRef'
+import { isMissingProviderThemeColumn } from './providerTheme'
 
 // （2026-07 清理）googleapis client 已移除：資料層全走 Supabase；
 // 舊 Google Sheets client 只剩已退役的 opsAgent/drive 孤兒引用，不再於 live bundle 內。
 
 // 每張表的「欄位順序」＝ 舊試算表 A,B,C… 的對應，routes 用 r[0],r[12] 索引取值
-const TABLE_COLS: Record<string, string[]> = {
+export const TABLE_COLS: Record<string, string[]> = {
   // ⚠️ 加欄位＝必須同步把讀取端的 'providers!A2:X' 範圍往後延，否則新欄讀不到（2026-08-01 教訓）
-  providers: ['id','name','category','description','line_user_id','avatar_url','store_name','address','district','business_hours','phone','instagram','short_code','cover_url','rating','review_count','years','tagline','specialties','role','agreed_at','plan','trial_start_at','trial_ends_at','is_demo','portfolio_mode'],
+  providers: ['id','name','category','description','line_user_id','avatar_url','store_name','address','district','business_hours','phone','instagram','short_code','cover_url','rating','review_count','years','tagline','specialties','role','agreed_at','plan','trial_start_at','trial_ends_at','is_demo','portfolio_mode','theme'],
   services: ['provider_id','service_id','name','price','duration','description','image_url'],
   portfolio: ['provider_id','portfolio_id','image_url','caption','sort_order','created_at'],
   bookings: ['booking_id','provider_id','service_id','customer_name','customer_line_user_id','date','time','note','created_at','gender','hair_length','customer_phone','status'],
@@ -55,19 +56,31 @@ export async function getSheetData(
   const { table, startIdx, endIdx } = parseRange(range)
   const cols = TABLE_COLS[table]
   if (!cols) return []
-  let query = sb.from(table).select(cols.join(',')).order(cols[0], { ascending: true })
-  // ⚠️ 第一欄幾乎都是 provider_id —— 查單一職人時整批同值，
-  //    Postgres 對同值列「不保證」回傳順序，結果會隨查詢計畫飄動。
-  //    補第二排序鍵（services→service_id、portfolio→portfolio_id…）讓順序穩定。
-  //    2026-08-14 發現：Lia 有 31 項服務，預約頁預設選中的竟是最後一項。
-  //    服務少的職人只是剛好沒被看出來，不是沒中招。
-  if (cols[1]) query = query.order(cols[1], { ascending: true })
-  if (filters) {
-    for (const [k, v] of Object.entries(filters)) {
-      if (cols.includes(k)) query = query.eq(k, v)
+  // providers 的 AA/theme 允許程式先上、DDL 後上：只在呼叫端真的要求 AA 時查 theme。
+  // DDL 尚未核准／執行時，42703 會退回舊 A:Z，AA 以空字串回傳並由主題層正規化為預設值。
+  const requestedCols = table === 'providers' ? cols.slice(0, endIdx + 1) : cols
+  const runSelect = async (selectedCols: string[]) => {
+    let query = sb.from(table).select(selectedCols.join(',')).order(cols[0], { ascending: true })
+    // ⚠️ 第一欄幾乎都是 provider_id —— 查單一職人時整批同值，
+    //    Postgres 對同值列「不保證」回傳順序，結果會隨查詢計畫飄動。
+    //    補第二排序鍵（services→service_id、portfolio→portfolio_id…）讓順序穩定。
+    //    2026-08-14 發現：Lia 有 31 項服務，預約頁預設選中的竟是最後一項。
+    //    服務少的職人只是剛好沒被看出來，不是沒中招。
+    if (cols[1]) query = query.order(cols[1], { ascending: true })
+    if (filters) {
+      for (const [k, v] of Object.entries(filters)) {
+        if (selectedCols.includes(k)) query = query.eq(k, v)
+      }
     }
+    return query
   }
-  const { data, error } = await query
+
+  let { data, error } = await runSelect(requestedCols)
+  if (table === 'providers' && requestedCols.includes('theme') && isMissingProviderThemeColumn(error)) {
+    const fallback = await runSelect(requestedCols.filter(column => column !== 'theme'))
+    data = fallback.data
+    error = fallback.error
+  }
   if (error) { console.error('[getSheetData]', table, error.message); return [] }
   const rows = (data ?? []) as unknown as Record<string, unknown>[]
   return rows.map(row => {

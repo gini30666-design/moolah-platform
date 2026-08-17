@@ -12,6 +12,7 @@ export const PROVIDER_THEME_KEYS = [
 export type ProviderThemeKey = (typeof PROVIDER_THEME_KEYS)[number]
 
 export const DEFAULT_PROVIDER_THEME: ProviderThemeKey = 'moolah-gold'
+export const PROVIDER_THEME_COLUMN_INDEX = 26
 
 export type ProviderThemeOption = Readonly<{
   key: ProviderThemeKey
@@ -41,6 +42,18 @@ export function normalizeProviderTheme(value: unknown): ProviderThemeKey {
   return isProviderThemeKey(candidate)
     ? (candidate as ProviderThemeKey)
     : DEFAULT_PROVIDER_THEME
+}
+
+export function providerThemeFromRow(row: readonly unknown[]): ProviderThemeKey {
+  return normalizeProviderTheme(row[PROVIDER_THEME_COLUMN_INDEX])
+}
+
+export function isMissingProviderThemeColumn(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const candidate = error as { code?: unknown; message?: unknown }
+  const code = typeof candidate.code === 'string' ? candidate.code : ''
+  const message = typeof candidate.message === 'string' ? candidate.message : ''
+  return code === '42703' && /(?:providers\.)?theme|theme.*column|column.*theme/i.test(message)
 }
 
 export function resolveProviderTheme(

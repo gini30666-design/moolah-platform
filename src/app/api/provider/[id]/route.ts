@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
+import { providerThemeFromRow } from '@/lib/providerTheme'
 
 export async function GET(
   _req: NextRequest,
@@ -8,7 +9,7 @@ export async function GET(
   const { id } = await params
 
   const [providerRows, serviceRows, portfolioRows] = await Promise.all([
-    getSheetData('providers!A2:Z'),
+    getSheetData('providers!A2:AA'),
     getSheetData('services!A2:G'),  // G = imageUrl (#11)
     getSheetData('portfolio!A2:D'),
   ])
@@ -44,6 +45,7 @@ export async function GET(
     // 未知值一律退回 works，保持既有職人行為不變
     portfolioMode: (['space', 'scene'].includes(String(r[25] ?? '').trim())
       ? String(r[25]).trim() : 'works') as 'works' | 'space' | 'scene',
+    theme: providerThemeFromRow(r),
   }
 
   const services = serviceRows

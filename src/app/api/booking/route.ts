@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [providerRows, serviceRows] = await Promise.all([
-    getSheetData('providers!A2:Z'),
+    getSheetData('providers!A2:AA'),
     getSheetData('services!A2:F'),
   ])
 

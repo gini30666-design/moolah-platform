@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_PROVIDER_THEME,
   normalizeProviderTheme,
+  providerThemeFromRow,
   PROVIDER_THEME_KEYS,
   PROVIDER_THEME_OPTIONS,
   resolveProviderTheme,
@@ -45,5 +46,20 @@ describe('resolveProviderTheme', () => {
 
   it('falls back to the default when neither value is allowed', () => {
     expect(resolveProviderTheme(null, null)).toBe(DEFAULT_PROVIDER_THEME)
+  })
+})
+
+describe('providerThemeFromRow', () => {
+  it('reads providers.theme from AA without shifting A:Z', () => {
+    const row = Array.from({ length: 27 }, (_, index) => `column-${index}`)
+    row[25] = 'space'
+    row[26] = 'rainforest-jade'
+
+    expect(providerThemeFromRow(row)).toBe('rainforest-jade')
+    expect(row[25]).toBe('space')
+  })
+
+  it('uses the default for legacy 26-column rows', () => {
+    expect(providerThemeFromRow(Array(26).fill(''))).toBe(DEFAULT_PROVIDER_THEME)
   })
 })
