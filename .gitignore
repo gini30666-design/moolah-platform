@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/.visual-baseline/
+/work/
 
 # next.js
 /.next/
