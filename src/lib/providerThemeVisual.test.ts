@@ -35,6 +35,13 @@ function recipeTokens(theme: string): Record<string, string> {
   )
 }
 
+function scopedAliasTokens(): Record<string, string> {
+  const block = css.match(/\[data-theme\] \{([\s\S]*?)\n\}/)?.[1] ?? ''
+  return Object.fromEntries(
+    [...block.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/gi)].map(([, name, value]) => [name, value.trim()]),
+  )
+}
+
 function channelToLinear(channel: number): number {
   const value = channel / 255
   return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
@@ -115,5 +122,21 @@ describe('provider visual recipe contract', () => {
         `${theme}: ${foreground} on ${background}`,
       ).toBeGreaterThanOrEqual(4.5)
     }
+  })
+
+  it('rebinds every legacy theme alias on the data-theme scope', () => {
+    const tokens = scopedAliasTokens()
+    expect(tokens['--charcoal']).toBe('var(--theme-ink)')
+    expect(tokens['--cream']).toBe('var(--theme-canvas)')
+    expect(tokens['--oak']).toBe('var(--theme-accent)')
+    expect(tokens['--oak-light']).toBe('var(--theme-accent-light)')
+    expect(tokens['--oak-pale']).toBe('var(--theme-accent-pale)')
+    expect(tokens['--oak-dim']).toBe('var(--theme-accent-dim)')
+    expect(tokens['--oak-40']).toBe('rgba(var(--theme-accent-rgb-legacy),0.40)')
+    expect(tokens['--sand']).toBe('var(--theme-surface)')
+    expect(tokens['--sand-deep']).toBe('var(--theme-surface-deep)')
+    expect(tokens['--border']).toBe('var(--theme-border)')
+    expect(tokens['--glass-bg']).toBe('rgba(var(--theme-background-rgb-legacy),0.10)')
+    expect(tokens['--glass-border']).toBe('rgba(var(--theme-accent-rgb-legacy),0.22)')
   })
 })
