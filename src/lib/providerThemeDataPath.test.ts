@@ -39,8 +39,11 @@ describe('providers.theme AA data path guard', () => {
     const providerProfile = readSource('../app/[providerId]/ProviderProfileClient.tsx')
 
     expect(providerProfile).toContain("filter: 'var(--theme-image-filter)'")
-    expect(providerProfile).toContain("background: 'var(--theme-panel)'")
-    expect(providerProfile).toContain("color: 'var(--theme-ink)'")
+    expect(providerProfile).toContain("background: 'var(--theme-home-dock)'")
+    expect(providerProfile).toContain("background: 'var(--theme-home-profile)'")
+    expect(providerProfile).toContain("background: 'var(--theme-home-gallery)'")
+    expect(providerProfile).toContain("color: 'var(--theme-home-ink)'")
+    expect(providerProfile).toContain("color: 'var(--theme-home-profile-ink)'")
     expect(providerProfile).toContain("color: 'var(--theme-muted)'")
   })
 
@@ -90,7 +93,9 @@ describe('providers.theme AA data path guard', () => {
       expect(source).toContain('var(--theme-ink)')
       expect(source).toContain('var(--theme-muted)')
     }
-    expect(adminPage).toContain('var(--theme-header)')
+    expect(adminPage).toContain('var(--theme-admin-header)')
+    expect(adminPage).toContain('var(--theme-admin-panel)')
+    expect(adminPage).toContain('var(--theme-admin-workbench)')
     expect(schedule).toContain('var(--theme-field)')
     expect(portfolio).toContain('var(--theme-field)')
   })
