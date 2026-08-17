@@ -48,12 +48,18 @@ export function providerThemeFromRow(row: readonly unknown[]): ProviderThemeKey 
   return normalizeProviderTheme(row[PROVIDER_THEME_COLUMN_INDEX])
 }
 
+// DDL 尚未執行時，讀跟寫拿到的錯誤碼「不一樣」——2026-08-17 打真實 Supabase 實測：
+//   select → 42703    "column providers.theme does not exist"        （Postgres 原生碼）
+//   update → PGRST204 "Could not find the 'theme' column ... schema cache" （PostgREST 碼）
+// 只認 42703 的話，寫入會掉到 generic 500，而不是預期的 503 theme_storage_unavailable。
+const MISSING_COLUMN_CODES = new Set(['42703', 'PGRST204'])
+
 export function isMissingProviderThemeColumn(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false
   const candidate = error as { code?: unknown; message?: unknown }
   const code = typeof candidate.code === 'string' ? candidate.code : ''
   const message = typeof candidate.message === 'string' ? candidate.message : ''
-  return code === '42703' && /(?:providers\.)?theme|theme.*column|column.*theme/i.test(message)
+  return MISSING_COLUMN_CODES.has(code) && /(?:providers\.)?theme|theme.*column|column.*theme/i.test(message)
 }
 
 export function resolveProviderTheme(

@@ -1879,7 +1879,9 @@ export default function AdminPage() {
         </summary>
         <div style={{ marginTop: '12px', fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.7)', lineHeight: 1.7 }}>
           <p style={{ marginBottom: '10px' }}>把以下程式碼貼到你的網站，客人可直接看到最近可預約時段：</p>
-          <pre style={{ background: '#2C2825', color: 'var(--theme-accent)', padding: '12px', borderRadius: '8px', fontSize: 'calc(10.5px * var(--fs, 1))', overflowX: 'auto', fontFamily: 'ui-monospace, Menlo, monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
+          {/* 深底上用 accent-light 不用 accent：實測 accent 在 #2C2825 上八主題只有 2.50–4.45，
+              換 light 後 5.22–6.45 全數過 4.5:1（2026-08-17） */}
+          <pre style={{ background: '#2C2825', color: 'var(--theme-accent-light)', padding: '12px', borderRadius: '8px', fontSize: 'calc(10.5px * var(--fs, 1))', overflowX: 'auto', fontFamily: 'ui-monospace, Menlo, monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
 {`<iframe src="https://moolah.studio/embed/${providerId}" width="360" height="540" frameborder="0" style="border:0;border-radius:14px;"></iframe>`}
           </pre>
           <p style={{ marginTop: '8px', fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)' }}>

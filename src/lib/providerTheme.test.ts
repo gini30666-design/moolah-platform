@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import {
   DEFAULT_PROVIDER_THEME,
+  isMissingProviderThemeColumn,
   normalizeProviderTheme,
   providerThemeFromRow,
   PROVIDER_THEME_KEYS,
@@ -72,5 +73,29 @@ describe('providerThemeFromRow', () => {
 
   it('uses the default for legacy 26-column rows', () => {
     expect(providerThemeFromRow(Array(26).fill(''))).toBe(DEFAULT_PROVIDER_THEME)
+  })
+})
+
+// 2026-08-17：DDL 未執行時，讀寫拿到的錯誤碼不同（真實 Supabase 實測）
+describe('缺 theme 欄位的兩種錯誤碼', () => {
+  it('select 的 42703 要認得', () => {
+    expect(isMissingProviderThemeColumn({
+      code: '42703', message: 'column providers.theme does not exist',
+    })).toBe(true)
+  })
+  it('update 的 PGRST204 也要認得（原本會漏，掉成 500）', () => {
+    expect(isMissingProviderThemeColumn({
+      code: 'PGRST204',
+      message: "Could not find the 'theme' column of 'providers' in the schema cache",
+    })).toBe(true)
+  })
+  it('別的欄位缺失不可誤判成 theme', () => {
+    expect(isMissingProviderThemeColumn({
+      code: 'PGRST204', message: "Could not find the 'plan' column of 'providers' in the schema cache",
+    })).toBe(false)
+  })
+  it('其他錯誤碼一律 false（不可吞掉真的失敗）', () => {
+    expect(isMissingProviderThemeColumn({ code: '23505', message: 'duplicate key theme' })).toBe(false)
+    expect(isMissingProviderThemeColumn(null)).toBe(false)
   })
 })
