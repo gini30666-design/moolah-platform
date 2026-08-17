@@ -46,6 +46,7 @@ describe('providers.theme AA data path guard', () => {
     const bookingPage = readSource('../app/[providerId]/book/page.tsx')
 
     expect(bookingPage).toContain('data-layout="booking-flow"')
+    expect(bookingPage).toContain('data-booking-surface="light"')
     expect(bookingPage).toContain("fetch('/api/booking'")
   })
 
