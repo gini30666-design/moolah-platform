@@ -51,4 +51,16 @@ describe('provider theme hardcode scanner', () => {
     expect(result.status).toBe(0)
     expect(result.stdout).toContain('No managed provider-theme literals found.')
   })
+
+  it('reports every legacy neutral family that can disappear on themed surfaces', () => {
+    const colors = ['#7d736b', '#574e48', '#8a7e76', '#c8c0b8', '#4e453f', '#d0c8c0']
+    const file = fixture(colors.map(color => `const copy = { color: '${color}' }`).join('\n'))
+
+    const result = runScanner(file)
+
+    expect(result.status).toBe(1)
+    colors.forEach((color, index) => {
+      expect(result.stderr).toContain(`${file}:${index + 1}: managed theme literal legacy neutral ${color}`)
+    })
+  })
 })

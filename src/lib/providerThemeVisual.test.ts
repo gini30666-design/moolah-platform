@@ -5,6 +5,7 @@ import { PROVIDER_THEME_KEYS, PROVIDER_THEME_OPTIONS } from './providerTheme'
 const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
 const providerHomeSource = readFileSync(new URL('../app/[providerId]/ProviderProfileClient.tsx', import.meta.url), 'utf8')
 const bookingSource = readFileSync(new URL('../app/[providerId]/book/page.tsx', import.meta.url), 'utf8')
+const adminSource = readFileSync(new URL('../app/[providerId]/admin/page.tsx', import.meta.url), 'utf8')
 
 const requiredTokens = [
   '--theme-canvas',
@@ -287,6 +288,38 @@ describe('provider visual recipe contract', () => {
       '<form onSubmit={handleSubmit}',
     ]) {
       expect(bookingSource, behaviorMarker).toContain(behaviorMarker)
+    }
+  })
+
+  it('keeps the admin operations inside six stable visual regions', () => {
+    const regions = [
+      'admin-shell',
+      'admin-header',
+      'admin-kpis',
+      'admin-workbench',
+      'admin-tabs',
+      'admin-footer',
+    ]
+
+    for (const region of regions) {
+      expect(
+        adminSource.match(new RegExp(`data-theme-region=["']${region}["']`, 'g')),
+        region,
+      ).toHaveLength(1)
+    }
+
+    expect(adminSource).not.toContain('borderLeft: `3px solid ${oak}`')
+
+    for (const behaviorMarker of [
+      'fetch(`/api/admin/bookings?providerId=${providerId}`',
+      "fetch('/api/admin/service'",
+      "setMainView('schedule')",
+      "['theme', '頁面風格']",
+      '<ThemePickerPanel',
+      '<ScheduleView',
+      '<PortfolioView',
+    ]) {
+      expect(adminSource, behaviorMarker).toContain(behaviorMarker)
     }
   })
 })

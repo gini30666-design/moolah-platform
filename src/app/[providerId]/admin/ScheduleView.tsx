@@ -152,11 +152,11 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             {s.isOpen ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
                 <input type="time" value={s.startTime} onChange={e => updateTime(s.day, 'startTime', e.target.value)} style={inputStyle} />
-                <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b' }}>至</span>
+                <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)' }}>至</span>
                 <input type="time" value={s.endTime} onChange={e => updateTime(s.day, 'endTime', e.target.value)} style={inputStyle} />
               </div>
             ) : (
-              <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>休息日</span>
+              <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginLeft: 'auto' }}>休息日</span>
             )}
             </div>
 
@@ -171,7 +171,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px 0 0',
                     minHeight: '44px', display: 'inline-flex', alignItems: 'center',
-                    fontSize: 'calc(12px * var(--fs, 1))', color: s.breakStart && s.breakEnd ? oak : '#7d736b',
+                    fontSize: 'calc(12px * var(--fs, 1))', color: s.breakStart && s.breakEnd ? oak : 'var(--theme-muted)',
                   }}
                 >
                   {s.breakStart && s.breakEnd ? '☑' : '☐'} 中間休息
@@ -179,11 +179,11 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                 {s.breakStart && s.breakEnd ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
                     <input type="time" value={s.breakStart} onChange={e => updateTime(s.day, 'breakStart', e.target.value)} style={inputStyle} />
-                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b' }}>至</span>
+                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)' }}>至</span>
                     <input type="time" value={s.breakEnd} onChange={e => updateTime(s.day, 'breakEnd', e.target.value)} style={inputStyle} />
                   </div>
                 ) : (
-                  <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>不休息・整天可預約</span>
+                  <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginLeft: 'auto' }}>不休息・整天可預約</span>
                 )}
               </div>
             )}
@@ -200,13 +200,13 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px 0 0',
                       minHeight: '44px', display: 'inline-flex', alignItems: 'center',
-                      fontSize: 'calc(12px * var(--fs, 1))', color: s.slotStarts ? oak : '#7d736b',
+                      fontSize: 'calc(12px * var(--fs, 1))', color: s.slotStarts ? oak : 'var(--theme-muted)',
                     }}
                   >
                     {s.slotStarts ? '☑' : '☐'} 固定梯次
                   </button>
                   {!s.slotStarts && (
-                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#c8c0b8', marginLeft: 'auto' }}>
+                    <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginLeft: 'auto' }}>
                       每 30 分鐘皆可預約
                     </span>
                   )}
@@ -222,7 +222,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                       style={{ ...inputStyle, width: '100%', minHeight: '44px', marginTop: '4px' }}
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '6px' }}>
-                      <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b', lineHeight: 1.5 }}>
+                      <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.5 }}>
                         客人只會看到這幾個時間，用逗號分隔
                       </span>
                       <button
@@ -276,7 +276,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
           ))}
         </div>
       ) : (
-        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#c8c0b8', marginBottom: '28px' }}>尚未設定特定休假日</p>
+        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '28px' }}>尚未設定特定休假日</p>
       )}
 
       {/* Save */}

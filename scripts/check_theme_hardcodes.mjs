@@ -22,6 +22,12 @@ const MANAGED_LITERALS = [
   { label: 'fixed white surface', pattern: /background(?:Color)?\s*:\s*['"`](?:#fff(?:fff)?|white)['"`]/gi },
   { label: 'fixed white translucent surface', pattern: /background(?:Color)?\s*:\s*['"`]rgba\(\s*255\s*,\s*255\s*,\s*255\s*,/gi },
   { label: 'fixed neutral ink', pattern: /color\s*:\s*['"`]rgba\(\s*44\s*,\s*40\s*,\s*37\s*,/gi },
+  { label: 'legacy neutral #7d736b', pattern: /#7d736b/gi },
+  { label: 'legacy neutral #574e48', pattern: /#574e48/gi },
+  { label: 'legacy neutral #8a7e76', pattern: /#8a7e76/gi },
+  { label: 'legacy neutral #c8c0b8', pattern: /#c8c0b8/gi },
+  { label: 'legacy neutral #4e453f', pattern: /#4e453f/gi },
+  { label: 'legacy neutral #d0c8c0', pattern: /#d0c8c0/gi },
 ]
 
 let failed = false

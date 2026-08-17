@@ -234,8 +234,8 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
       {/* Portfolio grid */}
       {items.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '48px 0' }}>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(16px * var(--fs, 1))', color: '#c8c0b8' }}>尚未有作品集</p>
-          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#d0c8c0', marginTop: '8px' }}>點選「新增作品」上傳作品照片</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(16px * var(--fs, 1))', color: 'var(--theme-muted)' }}>尚未有作品集</p>
+          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '8px' }}>點選「新增作品」上傳作品照片</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>

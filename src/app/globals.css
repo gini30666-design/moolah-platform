@@ -867,6 +867,129 @@
   }
 }
 
+/* ── Bali Stone: admin is a light stone workbench, not a dark skin ───── */
+[data-theme="bali-stone"] [data-layout="provider-admin"] {
+  --theme-ink: var(--theme-admin-ink);
+  --charcoal: var(--theme-admin-ink);
+  --oak: #765c3f;
+  --theme-muted: #665e53;
+  --theme-border: #b7aa97;
+  --theme-field: var(--theme-admin-field);
+  --theme-panel: var(--theme-admin-panel);
+  --theme-panel-elevated: #fffaf0;
+  --theme-surface: var(--theme-admin-workbench);
+  --theme-surface-deep: #ded3c3;
+  color-scheme: light;
+  background-color: var(--theme-admin-canvas) !important;
+  background-image:
+    radial-gradient(circle at 12% 2%, rgba(255,255,255,0.5), transparent 27%),
+    repeating-linear-gradient(118deg, rgba(73,60,43,0.025) 0 1px, transparent 1px 8px);
+  color: var(--theme-admin-ink) !important;
+  box-shadow: 0 28px 80px rgba(32,27,22,0.34) !important;
+}
+
+[data-theme="bali-stone"] [data-layout="provider-admin"] input,
+[data-theme="bali-stone"] [data-layout="provider-admin"] textarea,
+[data-theme="bali-stone"] [data-layout="provider-admin"] select {
+  min-height: 44px;
+  color-scheme: light;
+  border-radius: 4px !important;
+  color: var(--theme-admin-ink) !important;
+}
+
+[data-theme="bali-stone"] [data-layout="provider-admin"] input::placeholder,
+[data-theme="bali-stone"] [data-layout="provider-admin"] textarea::placeholder {
+  color: #6b6257 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-header"] {
+  --theme-ink: var(--theme-header-ink);
+  --charcoal: var(--theme-header-ink);
+  --oak: #d2b68f;
+  --theme-muted: #c7bcaa;
+  --theme-border: #5e5344;
+  background-color: var(--theme-admin-header) !important;
+  background-image:
+    radial-gradient(circle at 12% -35%, rgba(185,154,113,0.2), transparent 42%),
+    repeating-linear-gradient(101deg, rgba(214,187,148,0.028) 0 1px, transparent 1px 10px) !important;
+  border-bottom-color: #6c5b45 !important;
+  box-shadow: 0 10px 28px rgba(24,20,16,0.25);
+}
+
+[data-theme="bali-stone"] [data-theme-control="admin-menu-trigger"] {
+  border-color: #a98c65 !important;
+  border-radius: 3px !important;
+  background: #f2e9dc !important;
+  color: #29231d !important;
+  box-shadow: 0 6px 16px rgba(14,12,10,0.2) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-menu-popover"] {
+  --theme-ink: var(--theme-admin-ink);
+  --charcoal: var(--theme-admin-ink);
+  --oak: #765c3f;
+  --theme-muted: #665e53;
+  --theme-border: #b7aa97;
+  --theme-panel-elevated: #fffaf0;
+  border-radius: 5px !important;
+  background: var(--theme-panel-elevated) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-kpis"] {
+  margin-top: 18px !important;
+  border-radius: 4px !important;
+  background-color: var(--theme-admin-panel) !important;
+  background-image: repeating-linear-gradient(116deg, rgba(75,61,43,0.02) 0 1px, transparent 1px 9px);
+  box-shadow: 0 12px 26px rgba(48,39,29,0.12) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-workbench"] {
+  margin: 16px 8px 0 !important;
+  border-radius: 12px 12px 0 0 !important;
+  background-color: var(--theme-admin-workbench) !important;
+  background-image:
+    radial-gradient(circle at 88% 4%, rgba(255,255,255,0.52), transparent 27%),
+    repeating-linear-gradient(112deg, rgba(74,61,45,0.022) 0 1px, transparent 1px 9px);
+  box-shadow: 0 14px 34px rgba(48,39,29,0.11) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-workbench"] button {
+  min-height: 44px;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-workbench"] > div,
+[data-theme="bali-stone"] [data-theme-region="admin-workbench"] > section {
+  color: var(--theme-admin-ink);
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-tabs"] {
+  position: relative;
+  padding-right: 18px;
+  border-bottom: 1px solid #b7aa97;
+  scrollbar-width: thin;
+  scrollbar-color: #9e896d transparent;
+  mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 22px), transparent 100%);
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-tabs"] button {
+  border-radius: 0 !important;
+  color: #5f574d;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-footer"] {
+  --theme-muted: #665e53;
+  background-color: var(--theme-admin-workbench) !important;
+  background-image: repeating-linear-gradient(112deg, rgba(74,61,45,0.022) 0 1px, transparent 1px 9px);
+}
+
+@media (min-width: 760px) {
+  [data-theme="bali-stone"] [data-layout="provider-admin"] {
+    margin-block: 28px;
+    border: 1px solid rgba(185,154,113,0.45);
+  }
+}
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }

@@ -152,7 +152,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
 
   return (
     // 整區給一個沙色底＋左側橡木條，把「儲值」從一長串同色區塊裡拉出來（職人反應這塊沒抓到眼睛）
-    <div style={{ marginBottom: '18px', background: 'rgba(var(--theme-accent-rgb-legacy),0.10)', borderLeft: `3px solid ${oak}`, borderRadius: '4px 14px 14px 4px', padding: '14px 14px 16px' }}>
+    <div style={{ marginBottom: '18px', background: 'rgba(var(--theme-accent-rgb-legacy),0.10)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.28)', borderRadius: '12px', padding: '14px 14px 16px' }}>
       <p style={{ fontSize: 'calc(12.5px * var(--fs, 1))', color: charcoal, fontWeight: 700, marginBottom: '10px', letterSpacing: '0.02em' }}>儲值卡 / 次卡</p>
 
       {err && <div onClick={() => setErr('')} style={{ background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: 'calc(12px * var(--fs, 1))', padding: '9px 12px', borderRadius: '10px', marginBottom: '10px', cursor: 'pointer' }}>{err}（點此關閉）</div>}
@@ -160,7 +160,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
         <div key={i} style={{ background: 'rgba(var(--theme-accent-rgb-legacy),0.12)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.3)', color: '#7a5c2e', fontSize: 'calc(11px * var(--fs, 1))', lineHeight: 1.6, padding: '9px 12px', borderRadius: '10px', marginBottom: '8px' }}>⚠️ {w}</div>
       ))}
 
-      {loading && <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入中…</p>}
+      {loading && <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)' }}>載入中…</p>}
 
       {/* 卡片刻意用白底＋較重的邊框：原本 rgba(var(--theme-accent-rgb-legacy),0.07) 疊在 cream 上幾乎看不出邊界，
           職人反應「這一塊是重點但沒抓到眼睛」。餘額也從 oak 改成 charcoal，對比才夠。 */}
@@ -169,13 +169,13 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: 'calc(13.5px * var(--fs, 1))', fontWeight: 700, color: charcoal, wordBreak: 'break-word' }}>{c.title}</p>
-              <p style={{ fontSize: 'calc(10.5px * var(--fs, 1))', color: '#574e48', marginTop: '2px' }}>
+              <p style={{ fontSize: 'calc(10.5px * var(--fs, 1))', color: 'var(--theme-ink)', marginTop: '2px' }}>
                 {c.expired ? '已過期' : c.status === 'closed' ? '已結清' : c.expiresOn ? `到期 ${c.expiresOn}` : '無期限'}
               </p>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(23px * var(--fs, 1))', fontWeight: 600, color: charcoal, lineHeight: 1.1 }}>{c.balanceText}</p>
-              <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: '#7d736b', marginTop: '1px' }}>目前餘額</p>
+              <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '1px' }}>目前餘額</p>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
           <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
             <button onClick={() => { setAct({ id: c.id, mode: 'topup' }); setActValue('') }} style={{ flex: 1, minHeight: '44px', borderRadius: '10px', border: '1.5px solid rgba(138,111,79,0.55)', background: 'transparent', color: 'var(--theme-accent-strong)', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 600, cursor: 'pointer' }}>＋ 儲值</button>
             <button onClick={() => { setAct({ id: c.id, mode: 'redeem' }); setActValue('') }} style={{ flex: 1, minHeight: '44px', borderRadius: '10px', border: 'none', background: 'var(--theme-accent-strong)', color: '#fff', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, cursor: 'pointer' }}>− 扣款</button>
-            <button onClick={() => setOpenCard(openCard === c.id ? null : c.id)} style={{ minWidth: '52px', minHeight: '44px', borderRadius: '10px', border: '1.5px solid rgba(138,111,79,0.32)', background: 'transparent', color: '#4e453f', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer' }}>{openCard === c.id ? '收起' : '紀錄'}</button>
+            <button onClick={() => setOpenCard(openCard === c.id ? null : c.id)} style={{ minWidth: '52px', minHeight: '44px', borderRadius: '10px', border: '1.5px solid rgba(138,111,79,0.32)', background: 'transparent', color: 'var(--theme-ink)', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer' }}>{openCard === c.id ? '收起' : '紀錄'}</button>
           </div>
 
           {act?.id === c.id && (
@@ -198,13 +198,13 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
                 placeholder={act.mode === 'topup' ? (c.kind === 'count' ? '增加次數' : '儲值金額') : (c.kind === 'count' ? '扣除次數' : '扣款金額')}
                 style={{ ...inputS, flex: 1 }} />
               <button onClick={doAct} disabled={busy} style={{ minWidth: '64px', minHeight: '40px', borderRadius: '10px', border: 'none', background: charcoal, color: '#fff', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer' }}>{busy ? '…' : '確認'}</button>
-              <button onClick={() => setAct(null)} style={{ minWidth: '44px', minHeight: '40px', borderRadius: '10px', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', background: 'transparent', color: '#574e48', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer' }}>取消</button>
+              <button onClick={() => setAct(null)} style={{ minWidth: '44px', minHeight: '44px', borderRadius: '10px', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', background: 'transparent', color: 'var(--theme-ink)', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer' }}>取消</button>
             </div>
           )}
 
           {openCard === c.id && (
             <div style={{ marginTop: '10px', borderTop: '1px solid rgba(var(--theme-accent-rgb-legacy),0.15)', paddingTop: '8px' }}>
-              {c.entries.length === 0 && <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#7d736b' }}>還沒有異動</p>}
+              {c.entries.length === 0 && <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)' }}>還沒有異動</p>}
               {c.entries.map(e => {
                 const reversed = c.entries.some(x => x.reversalOf === e.id)
                 return (
@@ -213,7 +213,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
                       <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, textDecoration: reversed ? 'line-through' : 'none' }}>
                         {ENTRY_LABEL[e.type] ?? e.type}{e.serviceName ? `・${e.serviceName}` : ''}{e.memo ? `・${e.memo}` : ''}
                       </p>
-                      <p style={{ fontSize: 'calc(9px * var(--fs, 1))', color: '#7d736b' }}>{(e.createdAt || '').slice(0, 16).replace('T', ' ')}</p>
+                      <p style={{ fontSize: 'calc(9px * var(--fs, 1))', color: 'var(--theme-muted)' }}>{(e.createdAt || '').slice(0, 16).replace('T', ' ')}</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                       <span style={{ fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, color: e.delta >= 0 ? '#3d7a5a' : charcoal }}>{e.delta >= 0 ? '+' : '−'}{Math.abs(e.delta)}</span>
@@ -244,7 +244,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
             {(['amount', 'count'] as const).map(k => (
               <button key={k} onClick={() => setF({ ...f, kind: k })} style={{
                 flex: 1, minHeight: '40px', borderRadius: '10px', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer',
-                background: f.kind === k ? oak : 'transparent', color: f.kind === k ? '#fff' : '#574e48',
+                background: f.kind === k ? oak : 'transparent', color: f.kind === k ? 'var(--theme-on-accent)' : 'var(--theme-ink)',
                 border: `1px solid ${f.kind === k ? oak : 'rgba(var(--theme-accent-rgb-legacy),0.25)'}`,
               }}>{k === 'amount' ? '儲值金' : '次卡'}</button>
             ))}
@@ -258,18 +258,18 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
           {/* 下面兩欄是《美容定型化契約應記載及不得記載事項》要求的，不是我們自己想加的 */}
           <input type="date" value={f.expiresOn} onChange={e => setF({ ...f, expiresOn: e.target.value })} style={inputS} />
           <input value={f.refundTerms} onChange={e => setF({ ...f, refundTerms: e.target.value })} placeholder="退費規則（依規定消費者可隨時終止並退費，手續費上限 10%）" style={inputS} />
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'calc(11px * var(--fs, 1))', color: '#574e48', minHeight: '40px', cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', minHeight: '44px', cursor: 'pointer' }}>
             <input type="checkbox" checked={f.agreed} onChange={e => setF({ ...f, agreed: e.target.checked })} style={{ width: '18px', height: '18px' }} />
             已當面向客人說明期限與退費規則並取得同意（存證用）
           </label>
           <div style={{ display: 'flex', gap: '6px' }}>
             <button onClick={doCreate} disabled={busy} style={{ flex: 1, minHeight: '44px', borderRadius: '12px', border: 'none', background: oak, color: '#fff', fontSize: 'calc(13px * var(--fs, 1))', fontWeight: 600, cursor: 'pointer' }}>{busy ? '建立中…' : '建立'}</button>
-            <button onClick={() => { setCreating(false); setErr('') }} style={{ minWidth: '80px', minHeight: '44px', borderRadius: '12px', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.25)', background: 'transparent', color: '#574e48', fontSize: 'calc(13px * var(--fs, 1))', cursor: 'pointer' }}>取消</button>
+            <button onClick={() => { setCreating(false); setErr('') }} style={{ minWidth: '80px', minHeight: '44px', borderRadius: '12px', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.25)', background: 'transparent', color: 'var(--theme-ink)', fontSize: 'calc(13px * var(--fs, 1))', cursor: 'pointer' }}>取消</button>
           </div>
         </div>
       )}
 
-      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#7d736b', lineHeight: 1.6, marginTop: '8px' }}>
+      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.6, marginTop: '8px' }}>
         錢請你自己在店裡收（現金／轉帳／刷卡機），MooLah 只負責記帳，不經手款項。每次異動都會自動通知客人。
       </p>
     </div>
@@ -431,7 +431,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
               )}
             </div>
             {/* tap target 拉到 44px，手機才好按 */}
-            <button onClick={onClose} aria-label="關閉" style={{ minWidth: '44px', minHeight: '44px', fontSize: 'calc(22px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, marginTop: '-8px', marginRight: '-10px' }}>×</button>
+            <button onClick={onClose} aria-label="關閉" style={{ minWidth: '44px', minHeight: '44px', fontSize: 'calc(22px * var(--fs, 1))', color: 'var(--theme-muted)', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, marginTop: '-8px', marginRight: '-10px' }}>×</button>
           </div>
         </div>
         {sheetError && (
@@ -450,7 +450,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
               ].map((item: { label: string; value: string; red?: boolean }) => (
                 <div key={item.label} style={{ flex: 1, background: item.red ? 'rgba(200,60,60,0.07)' : 'rgba(var(--theme-accent-rgb-legacy),0.07)', borderRadius: '14px', padding: '12px 8px', textAlign: 'center' }}>
                   <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(18px * var(--fs, 1))', fontWeight: 600, color: item.red ? '#b03030' : oak, lineHeight: 1 }}>{item.value}</p>
-                  <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: item.red ? '#c05050' : '#574e48', marginTop: '4px', letterSpacing: '0.05em' }}>{item.label}</p>
+                  <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: item.red ? '#c05050' : 'var(--theme-ink)', marginTop: '4px', letterSpacing: '0.05em' }}>{item.label}</p>
                 </div>
               ))}
             </div>
@@ -464,7 +464,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
                     <button key={tag.label} onClick={() => toggleTag(tag.label)} style={{
                       padding: '5px 14px', borderRadius: '20px', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: active ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s',
                       background: active ? tag.bg : 'transparent',
-                      color: active ? tag.color : '#7d736b',
+                      color: active ? tag.color : 'var(--theme-muted)',
                       border: `1px solid ${active ? tag.border : 'rgba(var(--theme-accent-rgb-legacy),0.18)'}`,
                     }}>{tag.label}</button>
                   )
@@ -548,7 +548,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
                       <div style={{ width: '96px', height: '96px', borderRadius: '12px', background: 'rgba(var(--theme-accent-rgb-legacy),0.08)' }} />
                     )}
                     <button onClick={() => deleteKarte(k.id)} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(44,40,37,0.6)', color: '#fff', border: 'none', fontSize: 'calc(12px * var(--fs, 1))', lineHeight: '20px', cursor: 'pointer', padding: 0 }}>×</button>
-                    {k.note && <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#4e453f', marginTop: '4px', lineHeight: 1.3 }}>{k.note}</p>}
+                    {k.note && <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-ink)', marginTop: '4px', lineHeight: 1.3 }}>{k.note}</p>}
                     <p style={{ fontSize: 'calc(9px * var(--fs, 1))', color: oak, marginTop: '2px' }}>{(k.createdAt || '').slice(0, 10)}</p>
                   </div>
                 ))}
@@ -568,7 +568,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             }}>
               <div>
                 <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: b.id === booking.id ? 500 : 400 }}>{b.serviceName}</p>
-                <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#4e453f', marginTop: '2px' }}>
+                <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', marginTop: '2px' }}>
                   {b.date} {b.time}
                   {b.id === booking.id && <span style={{ color: oak, marginLeft: '6px' }}>← 本次</span>}
                 </p>
@@ -687,7 +687,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
         <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--oak)', marginLeft: 'auto' }}>顧客紀錄 →</span>
       </button>
 
-      {booking.note && <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#4e453f', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
+      {booking.note && <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
       <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '8px' }}>#{booking.id}</p>
 
       {!isNoShow && !showConfirm && !showNoShowConfirm && (
@@ -695,7 +695,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
           <button onClick={() => setShowNoShowConfirm(true)} style={{ flex: 1, fontSize: 'calc(11px * var(--fs, 1))', color: '#a04030', border: '1px solid rgba(200,60,60,0.2)', borderRadius: '12px', padding: '13px', background: 'rgba(200,60,60,0.04)', cursor: 'pointer' }}>
             標記爽約
           </button>
-          <button onClick={() => setShowConfirm(true)} style={{ flex: 1, fontSize: 'calc(11px * var(--fs, 1))', color: '#574e48', border: `1px solid ${border}`, borderRadius: '12px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>
+          <button onClick={() => setShowConfirm(true)} style={{ flex: 1, fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', border: `1px solid ${border}`, borderRadius: '12px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>
             取消預約
           </button>
         </div>
@@ -704,7 +704,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
         <div style={{ marginTop: '14px', background: 'rgba(200,60,60,0.06)', border: '1px solid rgba(200,60,60,0.15)', borderRadius: '12px', padding: '14px' }}>
           <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#b04040', textAlign: 'center', marginBottom: '12px' }}>確認標記為爽約？此紀錄將保留在顧客歷史中。</p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setShowNoShowConfirm(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#8a7e76', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
+            <button onClick={() => setShowNoShowConfirm(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
             <button onClick={handleNoShow} disabled={markingNoShow} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '13px', border: 'none', cursor: 'pointer', opacity: markingNoShow ? 0.6 : 1 }}>
               {markingNoShow ? '處理中...' : '確認爽約'}
             </button>
@@ -717,7 +717,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
             確定取消？{!isManual && '系統將自動通知客戶。'}
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setShowConfirm(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#8a7e76', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
+            <button onClick={() => setShowConfirm(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', padding: '13px', background: 'transparent', cursor: 'pointer' }}>返回</button>
             <button onClick={handleCancel} disabled={cancelling} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#fff', background: '#b04040', borderRadius: '10px', padding: '13px', border: 'none', cursor: 'pointer', opacity: cancelling ? 0.6 : 1 }}>
               {cancelling ? '取消中...' : '確認取消'}
             </button>
@@ -782,7 +782,7 @@ function TimelineView({ bookings, services, onViewCustomer }: {
         <button onClick={() => shiftDay(-1)} style={{ background: 'none', border: 'none', fontSize: 'calc(22px * var(--fs, 1))', color: oak, cursor: 'pointer', padding: '0 12px', lineHeight: 1 }}>‹</button>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(17px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>{dateLabel()}</p>
-          <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#7d736b', marginTop: '2px' }}>{dayBookings.length > 0 ? `${dayBookings.length} 筆預約` : '尚無預約'}</p>
+          <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '2px' }}>{dayBookings.length > 0 ? `${dayBookings.length} 筆預約` : '尚無預約'}</p>
         </div>
         <button onClick={() => shiftDay(1)} style={{ background: 'none', border: 'none', fontSize: 'calc(22px * var(--fs, 1))', color: oak, cursor: 'pointer', padding: '0 12px', lineHeight: 1 }}>›</button>
       </div>
@@ -794,7 +794,7 @@ function TimelineView({ bookings, services, onViewCustomer }: {
           {slots.map((t, i) => (
             <div key={t} style={{ height: `${SLOT_H}px`, display: 'flex', alignItems: 'flex-start', paddingTop: '3px' }}>
               {i % 2 === 0
-                ? <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#7d736b', fontVariantNumeric: 'tabular-nums' }}>{t}</span>
+                ? <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', fontVariantNumeric: 'tabular-nums' }}>{t}</span>
                 : <span style={{ fontSize: 'calc(9px * var(--fs, 1))', color: 'rgba(176,168,158,0.4)', paddingLeft: '6px' }}>·</span>
               }
             </div>
@@ -938,12 +938,12 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
     <div style={{ background: cardBg, backdropFilter: 'blur(12px)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
         <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增私下預約</p>
-        <button onClick={() => setOpen(false)} style={{ color: '#7d736b', fontSize: 'calc(18px * var(--fs, 1))', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+        <button onClick={() => setOpen(false)} style={{ color: 'var(--theme-muted)', fontSize: 'calc(18px * var(--fs, 1))', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
       </div>
       {done ? (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(28px * var(--fs, 1))', color: oak, marginBottom: '8px' }}>✓</p>
-          <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76' }}>已成功新增！</p>
+          <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: 'var(--theme-muted)' }}>已成功新增！</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1043,12 +1043,12 @@ function ServiceForm({ service, providerId, onSuccess, onClose }: {
     <div style={{ background: cardBg, backdropFilter: 'blur(12px)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
         <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>{isNew ? '新增服務項目' : '編輯服務項目'}</p>
-        <button onClick={onClose} style={{ color: '#7d736b', fontSize: 'calc(18px * var(--fs, 1))', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+        <button onClick={onClose} style={{ color: 'var(--theme-muted)', fontSize: 'calc(18px * var(--fs, 1))', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
       </div>
       {done ? (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(28px * var(--fs, 1))', color: oak, marginBottom: '8px' }}>✓</p>
-          <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76' }}>{isNew ? '已新增！' : '已更新！'}</p>
+          <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: 'var(--theme-muted)' }}>{isNew ? '已新增！' : '已更新！'}</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1133,7 +1133,7 @@ function ServiceItem({ service, providerId, onRefresh }: {
       </div>
       {confirmDelete ? (
         <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-          <button onClick={() => setConfirmDelete(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#8a7e76', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', minHeight: '44px', background: 'transparent', cursor: 'pointer' }}>取消</button>
+          <button onClick={() => setConfirmDelete(false)} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '10px', minHeight: '44px', background: 'transparent', cursor: 'pointer' }}>取消</button>
           <button onClick={handleDelete} disabled={deleting} style={{ flex: 1, fontSize: 'calc(12px * var(--fs, 1))', color: '#fff', background: '#b04040', borderRadius: '10px', minHeight: '44px', border: 'none', cursor: 'pointer' }}>
             {deleting ? '刪除中...' : '確認刪除'}
           </button>
@@ -1426,7 +1426,7 @@ export default function AdminPage() {
   if (loadError) return themed(
     <div style={{ display: 'flex', height: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '32px', background: cream, textAlign: 'center' }}>
       <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', color: charcoal }}>後台載入失敗</p>
-      <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76', lineHeight: 1.6 }}>請確認網路連線後再試一次</p>
+      <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.6 }}>請確認網路連線後再試一次</p>
       <button onClick={() => window.location.reload()} style={{ marginTop: '8px', padding: '11px 28px', borderRadius: '99px', background: oak, color: cream, border: 'none', fontSize: 'calc(14px * var(--fs, 1))', cursor: 'pointer' }}>
         重試
       </button>
@@ -1443,20 +1443,20 @@ export default function AdminPage() {
       </div>
       <div>
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', color: charcoal, marginBottom: '8px' }}>無訪問權限</p>
-        <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76', lineHeight: 1.6 }}>此頁面僅供已綁定的合作夥伴使用</p>
+        <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.6 }}>此頁面僅供已綁定的合作夥伴使用</p>
       </div>
     </div>
   )
 
   return themed(
-    <main data-layout="provider-admin" data-admin-surface="adaptive" style={{ minHeight: '100svh', background: 'var(--theme-canvas)', color: 'var(--theme-ink)', maxWidth: '480px', margin: '0 auto', boxShadow: 'var(--theme-card-shadow)' }}>
+    <main data-layout="provider-admin" data-admin-surface="adaptive" data-theme-region="admin-shell" style={{ minHeight: '100svh', background: 'var(--theme-admin-canvas)', color: 'var(--theme-admin-ink)', maxWidth: '480px', margin: '0 auto', boxShadow: 'var(--theme-card-shadow)' }}>
 
       {/* ── Header ── */}
       {/* ⚠️ 這裡刻意「不」設 overflow:hidden：功能列的下拉選單會延伸到 header 下緣以外，
           設了就會被整個裁掉、按了像沒反應（2026-08-11 實機踩到）。
           內部的噪點層與頂部金線都是 inset/absolute 貼齊，本來就不會溢出，不需要裁切。
           zIndex 讓 header 疊在後面的統計卡之上，選單才不會被蓋住。 */}
-      <div style={{ background: 'var(--theme-header)', color: 'var(--theme-header-ink)', padding: '42px 20px 20px', position: 'relative', zIndex: 20, borderBottom: '1px solid var(--theme-border)', backdropFilter: 'blur(16px)' }}>
+      <div data-theme-region="admin-header" style={{ background: 'var(--theme-admin-header)', color: 'var(--theme-header-ink)', padding: '42px 20px 20px', position: 'relative', zIndex: 20, borderBottom: '1px solid var(--theme-border)', backdropFilter: 'blur(16px)' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
@@ -1472,7 +1472,7 @@ export default function AdminPage() {
           {/* ⚠️ 這顆按鈕「不能」做成近黑色：header 本身就是近黑，黑底黑鈕等於隱形
               （2026-08-11 第一版就是這樣，Gini 直接找不到刷新和預覽在哪）。
               深色底上要跳出來，靠的是亮色而不是更黑 → 用橡木色填底＋深色字。 */}
-          <button onClick={() => setMenuOpen(v => !v)} aria-label="功能選單" aria-expanded={menuOpen}
+          <button data-theme-control="admin-menu-trigger" onClick={() => setMenuOpen(v => !v)} aria-label="功能選單" aria-expanded={menuOpen}
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: menuOpen ? 'rgba(var(--theme-accent-rgb-legacy),0.22)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', color: charcoal, minHeight: '44px', padding: '0 14px', borderRadius: '12px', cursor: 'pointer', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, letterSpacing: '0.04em', boxShadow: 'var(--theme-card-shadow)' }}>
             <span style={{ fontSize: 'calc(15px * var(--fs, 1))', lineHeight: 1, marginTop: '-3px' }}>☰</span>
             選單
@@ -1482,7 +1482,7 @@ export default function AdminPage() {
             <>
               {/* 點外面關閉：蓋一層透明遮罩比在 document 上掛 listener 單純且不會漏拆 */}
               <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: -1 }} />
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '186px', background: 'var(--theme-panel-elevated)', border: '1px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
+              <div data-theme-region="admin-menu-popover" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '186px', background: 'var(--theme-panel-elevated)', border: '1px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
                 {/* 字級：一列三段，直接看得到現在停在哪一級 */}
                 <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
                   <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '8px' }}>字體大小</p>
@@ -1516,7 +1516,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── Stats 2×2 ── */}
-      <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0', margin: '16px 16px 0', background: 'var(--theme-panel)', border: `1px solid ${border}`, borderRadius: 'var(--theme-card-radius)', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
+      <div data-animate data-theme-region="admin-kpis" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0', margin: '16px 16px 0', background: 'var(--theme-admin-panel)', border: `1px solid ${border}`, borderRadius: 'var(--theme-card-radius)', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
         {[
           { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'primary' as const },
           { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
@@ -1671,11 +1671,11 @@ export default function AdminPage() {
       </>)}
 
       {/* ── Sand content panel ── */}
-      <div style={{ position: 'relative', margin: '14px 8px 0', background: 'var(--theme-surface)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius) var(--theme-card-radius) 0 0', boxShadow: 'var(--theme-card-shadow)', paddingBottom: '8px' }}>
+      <div data-theme-region="admin-workbench" style={{ position: 'relative', margin: '14px 8px 0', background: 'var(--theme-admin-workbench)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius) var(--theme-card-radius) 0 0', boxShadow: 'var(--theme-card-shadow)', paddingBottom: '8px' }}>
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '46px', height: '3px', borderRadius: '0 0 3px 3px', background: 'var(--oak)', opacity: 0.5 }} />
 
       {/* ── Main Nav (scrollable) ── */}
-      <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div data-animate data-delay="100" data-theme-region="admin-tabs" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.15)', paddingBottom: '0', minWidth: 'max-content' }}>
         {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['theme', '頁面風格'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => { setMainView(v); if (v === 'waitlist') fetchWaitlist() }} style={{
@@ -1788,8 +1788,8 @@ export default function AdminPage() {
 
           {services.length === 0 && !addingService ? (
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(16px * var(--fs, 1))', color: '#c8c0b8' }}>尚未設定服務項目</p>
-              <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#d0c8c0', marginTop: '8px' }}>點選「新增服務」開始設定</p>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(16px * var(--fs, 1))', color: 'var(--theme-muted)' }}>尚未設定服務項目</p>
+              <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '8px' }}>點選「新增服務」開始設定</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1838,7 +1838,7 @@ export default function AdminPage() {
                     <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#8a5c20', background: 'rgba(180,120,40,0.12)', padding: '3px 10px', borderRadius: '20px' }}>候補中</span>
                   </div>
                   {entry.customerPhone && (
-                    <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#574e48', marginBottom: '10px' }}>📱 {entry.customerPhone}</p>
+                    <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', marginBottom: '10px' }}>📱 {entry.customerPhone}</p>
                   )}
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -1851,7 +1851,7 @@ export default function AdminPage() {
                         setWaitlist(w => w.filter(e => e.id !== entry.id))
                       }}
                       disabled={removingWL === entry.id}
-                      style={{ flex: 1, fontSize: 'calc(11px * var(--fs, 1))', color: '#574e48', border: `1px solid ${border}`, borderRadius: '10px', padding: '8px', background: 'transparent', cursor: 'pointer', opacity: removingWL === entry.id ? 0.5 : 1 }}
+                      style={{ flex: 1, fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-ink)', border: `1px solid ${border}`, borderRadius: '10px', padding: '8px', minHeight: '44px', background: 'transparent', cursor: 'pointer', opacity: removingWL === entry.id ? 0.5 : 1 }}
                     >
                       移除
                     </button>
@@ -1866,7 +1866,7 @@ export default function AdminPage() {
       </div>{/* end sand panel */}
 
       {/* ── Light footer ── */}
-      <div style={{ background: 'var(--theme-surface-deep)', borderTop: '1px solid var(--theme-border)', padding: '28px 24px 34px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div data-theme-region="admin-footer" style={{ background: 'var(--theme-admin-workbench)', borderTop: '1px solid var(--theme-border)', padding: '28px 24px 34px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 500, color: charcoal, marginBottom: '10px', position: 'relative' }}>{providerName}</p>
         <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', position: 'relative' }}>MooLah · 合作夥伴後台</p>
