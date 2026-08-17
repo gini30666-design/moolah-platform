@@ -51,6 +51,9 @@
   --theme-accent: #A68966;
   --theme-accent-rgb: 166 137 102;
   --theme-accent-rgb-legacy: 166,137,102;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #876d4d;
   --theme-accent-strong: #8a6f4f;
   --theme-accent-light: #c4a882;
   --theme-accent-pale: #ede3d8;
@@ -75,6 +78,9 @@
   --theme-accent: #8b765d;
   --theme-accent-rgb: 139 118 93;
   --theme-accent-rgb-legacy: 139,118,93;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #6f5c45;
   --theme-accent-strong: #6f5c45;
   --theme-accent-light: #baa991;
   --theme-accent-pale: #e6ddd1;
@@ -99,6 +105,9 @@
   --theme-accent: #68725a;
   --theme-accent-rgb: 104 114 90;
   --theme-accent-rgb-legacy: 104,114,90;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #4d5742;
   --theme-accent-strong: #4d5742;
   --theme-accent-light: #a5aa92;
   --theme-accent-pale: #dfe2d5;
@@ -123,6 +132,9 @@
   --theme-accent: #8d795d;
   --theme-accent-rgb: 141 121 93;
   --theme-accent-rgb-legacy: 141,121,93;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #6f604b;
   --theme-accent-strong: #6f604b;
   --theme-accent-light: #b9aa94;
   --theme-accent-pale: #e9e2d8;
@@ -147,6 +159,9 @@
   --theme-accent: #477064;
   --theme-accent-rgb: 71 112 100;
   --theme-accent-rgb-legacy: 71,112,100;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #31554c;
   --theme-accent-strong: #31554c;
   --theme-accent-light: #8fa99f;
   --theme-accent-pale: #d8e4df;
@@ -171,6 +186,9 @@
   --theme-accent: #b36f55;
   --theme-accent-rgb: 179 111 85;
   --theme-accent-rgb-legacy: 179,111,85;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #8f523e;
   --theme-accent-strong: #8f523e;
   --theme-accent-light: #d3a088;
   --theme-accent-pale: #f0dcd0;
@@ -195,6 +213,9 @@
   --theme-accent: #53677b;
   --theme-accent-rgb: 83 103 123;
   --theme-accent-rgb-legacy: 83,103,123;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #3e5165;
   --theme-accent-strong: #3e5165;
   --theme-accent-light: #91a4b3;
   --theme-accent-pale: #dbe4e8;
@@ -219,6 +240,9 @@
   --theme-accent: #765f75;
   --theme-accent-rgb: 118 95 117;
   --theme-accent-rgb-legacy: 118,95,117;
+  /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
+     這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
+  --theme-accent-text: #594758;
   --theme-accent-strong: #594758;
   --theme-accent-light: #aa94a7;
   --theme-accent-pale: #e6dce4;

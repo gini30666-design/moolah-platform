@@ -115,10 +115,10 @@ export function ThemePickerPanel({
       <div style={{ marginTop: '16px', padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.58)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)' }}>
         <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.52)', marginBottom: '10px' }}>以顧客視角檢查目前選擇</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-          <a href={providerThemePreviewHref(providerId, selectedTheme, 'home')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-strong)', color: 'var(--theme-accent-strong)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
+          <a href={providerThemePreviewHref(providerId, selectedTheme, 'home')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
             預覽專屬首頁
           </a>
-          <a href={providerThemePreviewHref(providerId, selectedTheme, 'book')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-strong)', color: 'var(--theme-accent-strong)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
+          <a href={providerThemePreviewHref(providerId, selectedTheme, 'book')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
             預覽預約頁
           </a>
         </div>
