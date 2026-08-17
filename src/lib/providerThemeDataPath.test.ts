@@ -22,6 +22,8 @@ describe('providers.theme AA data path guard', () => {
     expect(providerPage).toContain('<ProviderThemeShell')
     expect(bookingPage).toContain('<ProviderThemeShell')
     expect(adminPage).toContain('<ProviderThemeShell')
+    expect(adminPage).toContain('<ThemePickerPanel')
+    expect(adminPage).toContain("['theme', '頁面風格']")
   })
 
   it('keeps the pending DDL nullable and whitelist constrained', () => {

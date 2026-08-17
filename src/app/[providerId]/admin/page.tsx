@@ -11,6 +11,7 @@ import ScheduleView from './ScheduleView'
 import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 import PortfolioView from './PortfolioView'
 import { ProviderThemeShell } from '@/components/ProviderThemeShell'
+import { ThemePickerPanel } from '@/components/ThemePickerPanel'
 import {
   DEFAULT_PROVIDER_THEME,
   normalizeProviderTheme,
@@ -35,7 +36,7 @@ type Booking = {
 }
 type Service = { id: string; name: string; price: number; duration: number; description: string }
 type WaitlistEntry = { id: string; date: string; time: string; customerName: string; customerLineUserId: string; customerPhone: string; addedAt: string }
-type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio' | 'waitlist'
+type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio' | 'theme' | 'waitlist'
 type BookingTab = 'timeline' | 'today' | 'upcoming' | 'past'
 
 const TAGS = [
@@ -1247,6 +1248,7 @@ export default function AdminPage() {
   const [plan, setPlan] = useState('')               // trial | active | expired | ''(舊資料=正式)
   const [trialEndsAt, setTrialEndsAt] = useState('')
   const [providerTheme, setProviderTheme] = useState<ProviderThemeKey>(DEFAULT_PROVIDER_THEME)
+  const [draftTheme, setDraftTheme] = useState<ProviderThemeKey>(DEFAULT_PROVIDER_THEME)
   const [customerSheet, setCustomerSheet] = useState<Booking | null>(null)
   const [addingService, setAddingService] = useState(false)
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
@@ -1321,6 +1323,7 @@ export default function AdminPage() {
         setPlan(data.provider?.plan ?? '')
         setTrialEndsAt(data.provider?.trialEndsAt ?? '')
         setProviderTheme(normalizeProviderTheme(data.provider?.theme))
+        setDraftTheme(normalizeProviderTheme(data.provider?.theme))
         setServices(data.services ?? [])
 
         const access = await accessRes.json()
@@ -1411,7 +1414,7 @@ export default function AdminPage() {
     })
   const nextBookingId = (tab === 'upcoming' || tab === 'today') ? filteredBookings[0]?.id : undefined
   const themed = (content: React.ReactNode) => (
-    <ProviderThemeShell theme={providerTheme} previewTheme={previewTheme} style={{ minHeight: '100svh' }}>
+    <ProviderThemeShell theme={draftTheme} previewTheme={previewTheme} style={{ minHeight: '100svh' }}>
       {content}
     </ProviderThemeShell>
   )
@@ -1673,7 +1676,7 @@ export default function AdminPage() {
       {/* ── Main Nav (scrollable) ── */}
       <div data-animate data-delay="100" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.15)', paddingBottom: '0', minWidth: 'max-content' }}>
-        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
+        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['theme', '頁面風格'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => { setMainView(v); if (v === 'waitlist') fetchWaitlist() }} style={{
             padding: '10px 16px 12px', fontSize: 'calc(12px * var(--fs, 1))',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
@@ -1802,6 +1805,17 @@ export default function AdminPage() {
 
       {/* ════════════════ PORTFOLIO VIEW ════════════════ */}
       {mainView === 'portfolio' && <PortfolioView providerId={providerId} />}
+
+      {/* ════════════════ THEME VIEW ════════════════ */}
+      {mainView === 'theme' && (
+        <ThemePickerPanel
+          providerId={providerId}
+          selectedTheme={draftTheme}
+          savedTheme={providerTheme}
+          onSelect={setDraftTheme}
+          onSaved={(theme) => { setProviderTheme(theme); setDraftTheme(theme) }}
+        />
+      )}
 
       {/* ════════════════ WAITLIST VIEW ════════════════ */}
       {mainView === 'waitlist' && (
