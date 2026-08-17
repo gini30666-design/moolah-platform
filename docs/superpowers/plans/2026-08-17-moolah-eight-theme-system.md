@@ -187,8 +187,8 @@ Use:
 var(--theme-accent)
 var(--theme-accent-strong)
 var(--theme-selected)
-rgb(var(--theme-accent-rgb) / 0.4)
-rgb(var(--theme-selected-rgb) / 0.2)
+rgba(var(--theme-accent-rgb-legacy),0.4)
+rgba(var(--theme-selected-rgb-legacy),0.2)
 ```
 
 Do not replace semantic LINE, error, success, neutral black/white, or charcoal literals. Do not move JSX or touch event handlers.

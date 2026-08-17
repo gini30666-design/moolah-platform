@@ -159,11 +159,11 @@ function ProviderReveal({ name, avatar, startReveal, onDone }: {
       <style>{`@keyframes pr-rise{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}`}</style>
       <div style={{ animation: 'pr-rise .55s cubic-bezier(0.22,1,0.36,1) both', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
         {avatar
-          ? <img src={avatar} alt="" style={{ width: '88px', height: '88px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(166,137,102,0.55)' }} />
-          : <div style={{ width: '88px', height: '88px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(166,137,102,0.4)', color: '#A98A5E', fontSize: '38px' }}>M</div>
+          ? <img src={avatar} alt="" style={{ width: '88px', height: '88px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.55)' }} />
+          : <div style={{ width: '88px', height: '88px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', color: '#A98A5E', fontSize: '38px' }}>M</div>
         }
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif', fontSize: '10px', letterSpacing: '0.34em', textTransform: 'uppercase', color: '#A68966', opacity: 0.7, marginBottom: '10px' }}>MooLah</p>
+          <p style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif', fontSize: '10px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--theme-accent)', opacity: 0.7, marginBottom: '10px' }}>MooLah</p>
           <p style={{ fontSize: '1.7rem', fontWeight: 400, color: '#fbf9f4', letterSpacing: '0.01em' }}>{name}</p>
         </div>
       </div>
@@ -298,7 +298,7 @@ export default function ProviderPage() {
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
       <div ref={headerRef} style={{
         padding: '34px 20px 26px', position: 'relative',
-        background: 'radial-gradient(120% 78% at 50% -18%, rgba(166,137,102,0.16), transparent 62%)',
+        background: 'radial-gradient(120% 78% at 50% -18%, rgba(var(--theme-accent-rgb-legacy),0.16), transparent 62%)',
         animation: 'phase-in .55s cubic-bezier(0.16,1,0.3,1)',
         willChange: 'transform, opacity',
       }}>
@@ -314,7 +314,7 @@ export default function ProviderPage() {
           ) : <span style={{ width: '40px' }} />}
           <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center', padding: '0 8px' }}>MooLah</a>
           {isDemo
-            ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
             : location
             ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(44,40,37,0.42)' }}>{location}</span>
             : <span style={{ width: '40px' }} />
@@ -390,7 +390,7 @@ export default function ProviderPage() {
             <div style={{
               width: '84px', height: '84px', borderRadius: '50%', flexShrink: 0,
               position: 'relative', overflow: 'hidden',
-              border: '1px solid rgba(166,137,102,0.4)',
+              border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)',
               background: 'repeating-linear-gradient(135deg, #2a2520 0 9px, #211d18 9px 18px)',
             }}>
               {provider.avatarUrl ? (
@@ -398,7 +398,7 @@ export default function ProviderPage() {
                 <img src={provider.avatarUrl} alt={provider.name}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'ui-monospace,monospace', fontSize: '8px', letterSpacing: '0.06em', color: 'rgba(166,137,102,0.7)', textAlign: 'center', lineHeight: 1.4 }}>
+                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'ui-monospace,monospace', fontSize: '8px', letterSpacing: '0.06em', color: 'rgba(var(--theme-accent-rgb-legacy),0.7)', textAlign: 'center', lineHeight: 1.4 }}>
                   設計師<br />照片
                 </span>
               )}
@@ -426,7 +426,7 @@ export default function ProviderPage() {
           {specialties.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: handle ? '18px' : 0 }}>
               {specialties.map(s => (
-                <span key={s} style={{ fontSize: '11px', letterSpacing: '0.04em', padding: '6px 13px', borderRadius: '99px', color: 'var(--oak)', border: '1px solid rgba(166,137,102,0.4)', background: 'rgba(166,137,102,0.06)' }}>{s}</span>
+                <span key={s} style={{ fontSize: '11px', letterSpacing: '0.04em', padding: '6px 13px', borderRadius: '99px', color: 'var(--oak)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', background: 'rgba(var(--theme-accent-rgb-legacy),0.06)' }}>{s}</span>
               ))}
             </div>
           )}
@@ -472,7 +472,7 @@ export default function ProviderPage() {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed rgba(166,137,102,0.3)', borderRadius: '14px' }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed rgba(var(--theme-accent-rgb-legacy),0.3)', borderRadius: '14px' }}>
             <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>{COPY.empty}</p>
           </div>
         )}
@@ -513,7 +513,7 @@ export default function ProviderPage() {
                 <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>歡迎預約</span>
               )}
             </div>
-            <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
+            <div style={{ width: '1px', background: 'rgba(var(--theme-accent-rgb-legacy),0.25)', margin: '2px 0', flexShrink: 0 }} />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
               <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>價格</span>
               <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--oak)' }}>NT$ {fromPrice.toLocaleString()} 起</span>
@@ -521,7 +521,7 @@ export default function ProviderPage() {
             {/* 沒有評分就整欄收掉（含分隔線）：新職人顯示「★ —」比不顯示更傷 */}
             {provider.rating && (
               <>
-                <div style={{ width: '1px', background: 'rgba(166,137,102,0.25)', margin: '2px 0', flexShrink: 0 }} />
+                <div style={{ width: '1px', background: 'rgba(var(--theme-accent-rgb-legacy),0.25)', margin: '2px 0', flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
                   <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>評分</span>
                   <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>★ {provider.rating}</span>
@@ -539,7 +539,7 @@ export default function ProviderPage() {
             background: 'var(--oak)', color: 'var(--charcoal-deep)',
             fontSize: '15px', fontWeight: 700, letterSpacing: '0.02em',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            boxShadow: '0 6px 22px rgba(166,137,102,0.35)',
+            boxShadow: '0 6px 22px rgba(var(--theme-accent-rgb-legacy),0.35)',
           }}>
             開始預約
             {fromPrice > 0 && <span style={{ fontSize: '12px', fontWeight: 500, opacity: 0.75 }}>NT$ {fromPrice.toLocaleString()} 起</span>}
@@ -562,11 +562,11 @@ export default function ProviderPage() {
           {/* CTA button with float animation — always shows lowest price */}
           <button onClick={handleBook} style={{
             width: '100%', padding: '17px', borderRadius: '15px',
-            border: '1px solid rgba(166,137,102,0.5)', cursor: 'pointer',
+            border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.5)', cursor: 'pointer',
             background: 'linear-gradient(160deg, #2d2720 0%, #191510 100%)',
             color: 'var(--cream)',
             fontSize: '15px', fontWeight: 600,
-            boxShadow: '0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(166,137,102,0.22)',
+            boxShadow: '0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(var(--theme-accent-rgb-legacy),0.22)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
             fontFamily: 'inherit',
             animation: 'float-cta 3s ease-in-out infinite',

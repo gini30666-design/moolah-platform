@@ -64,6 +64,7 @@
 ```css
 --theme-accent: #A68966;
 --theme-accent-rgb: 166 137 102;
+--theme-accent-rgb-legacy: 166,137,102;
 --theme-accent-strong: #8a6f4f;
 --theme-accent-light: #c4a882;
 --theme-accent-pale: #ede3d8;
@@ -74,6 +75,7 @@
 --theme-border: #e8e0d8;
 --theme-selected: #c4845a;
 --theme-selected-rgb: 196 132 90;
+--theme-selected-rgb-legacy: 196,132,90;
 --theme-shadow-rgb: 44 40 37;
 --theme-hero-overlay: rgba(26, 23, 20, 0.52);
 --theme-texture-opacity: 0.025;
@@ -82,14 +84,14 @@
 --oak-light: var(--theme-accent-light);
 --oak-pale: var(--theme-accent-pale);
 --oak-dim: var(--theme-accent-dim);
---oak-40: rgb(var(--theme-accent-rgb) / 0.4);
+--oak-40: rgba(var(--theme-accent-rgb-legacy),0.4);
 --cream: var(--theme-background);
 --sand: var(--theme-surface);
 --sand-deep: var(--theme-surface-deep);
 --border: var(--theme-border);
 ```
 
-透明品牌色一律用 `rgb(var(--theme-accent-rgb) / <alpha>)`，避免 `rgba(166,137,102,...)` 殘留金色。
+透明品牌色使用 `rgba(var(--theme-accent-rgb-legacy),<alpha>)`。此寫法仍由主題 token 控制，並保留原本 legacy `rgba(...)` 的像素合成結果；實測改成現代空白分隔 `rgb(... / alpha)` 會在漸層產生 ±1 色階的捨入差。不得殘留 `rgba(166,137,102,...)` 硬編金色。
 
 ### 3.3 Phase 0：零視覺變化
 

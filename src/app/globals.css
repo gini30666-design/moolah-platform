@@ -1,18 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --cream: #fbf9f4;
+  --theme-accent: #A68966;
+  --theme-accent-rgb: 166 137 102;
+  --theme-accent-rgb-legacy: 166,137,102;
+  --theme-accent-strong: #8a6f4f;
+  --theme-accent-light: #c4a882;
+  --theme-accent-pale: #ede3d8;
+  --theme-accent-dim: #D9C5B2;
+  --theme-background: #fbf9f4;
+  --theme-surface: #f5efe6;
+  --theme-surface-deep: #ede8dc;
+  --theme-border: #e8e0d8;
+  --theme-selected: #c4845a;
+  --theme-selected-rgb: 196 132 90;
+  --theme-selected-rgb-legacy: 196,132,90;
+  --theme-shadow-rgb: 44 40 37;
+  --theme-hero-overlay: rgba(26, 23, 20, 0.52);
+  --theme-texture-opacity: 0.025;
+
+  --cream: var(--theme-background);
   --charcoal: #2C2825;
   --charcoal-deep: #1a1714;
-  --oak: #A68966;
-  --oak-light: #c4a882;
-  --oak-pale: #ede3d8;
-  --oak-dim: #D9C5B2;
-  --oak-40: rgba(166,137,102,0.40);
-  --sand: #f5efe6;
-  --sand-deep: #ede8dc;
+  --oak: var(--theme-accent);
+  --oak-light: var(--theme-accent-light);
+  --oak-pale: var(--theme-accent-pale);
+  --oak-dim: var(--theme-accent-dim);
+  --oak-40: rgba(var(--theme-accent-rgb-legacy),0.40);
+  --sand: var(--theme-surface);
+  --sand-deep: var(--theme-surface-deep);
   --muted: #9b8ea0;
-  --border: #e8e0d8;
+  --border: var(--theme-border);
   --line-green: #06C755;
   --radius-xl: 24px;
   --radius-lg: 16px;
@@ -21,7 +39,7 @@
   --ease-silk: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
   --glass-bg: rgba(251,249,244,0.10);
-  --glass-border: rgba(166,137,102,0.22);
+  --glass-border: rgba(var(--theme-accent-rgb-legacy),0.22);
 }
 
 * { box-sizing: border-box; }
@@ -55,7 +73,7 @@ body::after {
   position: fixed;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.025;
+  opacity: var(--theme-texture-opacity);
   pointer-events: none;
   z-index: 9999;
 }
