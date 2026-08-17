@@ -228,11 +228,12 @@ describe('provider visual recipe contract', () => {
     }
   })
 
-  it('keeps the provider home behavior inside seven stable visual regions', () => {
+  it('keeps the provider home behavior inside eight stable visual regions', () => {
     const regions = [
       'home-shell',
       'home-hero',
       'home-dock',
+      'home-marquee',
       'home-profile',
       'home-gallery',
       'home-closing',
@@ -256,7 +257,7 @@ describe('provider visual recipe contract', () => {
     }
   })
 
-  it('keeps the booking state machine inside eight stable visual regions', () => {
+  it('keeps the booking state machine inside nine stable visual regions', () => {
     const regions = [
       'book-shell',
       'book-header',
@@ -265,6 +266,7 @@ describe('provider visual recipe contract', () => {
       'book-calendar',
       'book-slot-stage',
       'book-customer',
+      'book-recap',
       'book-sticky-cta',
     ]
 
@@ -291,7 +293,7 @@ describe('provider visual recipe contract', () => {
     }
   })
 
-  it('keeps the admin operations inside six stable visual regions', () => {
+  it('keeps the admin operations inside seven stable visual regions', () => {
     const regions = [
       'admin-shell',
       'admin-header',
@@ -299,6 +301,7 @@ describe('provider visual recipe contract', () => {
       'admin-workbench',
       'admin-tabs',
       'admin-footer',
+      'admin-embed',
     ]
 
     for (const region of regions) {

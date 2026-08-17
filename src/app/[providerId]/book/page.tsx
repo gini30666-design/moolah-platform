@@ -1080,7 +1080,7 @@ export default function BookPage() {
               <div style={{ flex: 1, paddingRight: '20px' }}>
                 <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>加入 MooLah LINE，接收預約通知</p>
                 <p className="text-xs mb-3" style={{ color: 'var(--theme-muted)' }}>加入後可即時收到預約確認與前一天提醒通知</p>
-                <LineLink source="book_3" oaId={OA_CONSUMER} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0 20px', minHeight: '44px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>立即加入 →</LineLink>
+                <LineLink source="book_3" oaId={OA_CONSUMER} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0 20px', minHeight: '44px', borderRadius: '99px', background: '#06C755', color: '#10391f', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>立即加入 →</LineLink>
                 <span onClick={() => setShowLineCard(false)} className="text-xs ml-4" style={{ color: 'var(--theme-muted)', cursor: 'pointer', textDecoration: 'underline' }}>略過</span>
               </div>
             </div>
@@ -1288,7 +1288,7 @@ export default function BookPage() {
               style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid var(--theme-border)', background: 'var(--theme-field)', fontSize: '14px', color: 'var(--theme-ink)', outline: 'none', resize: 'none', fontFamily: 'inherit', lineHeight: 1.6, marginBottom: '20px' }} />
 
             {/* Summary recap */}
-            <div style={{ background: 'var(--sand-deep)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.28)', borderRadius: '14px', padding: '16px 18px' }}>
+            <div data-theme-region="book-recap" style={{ background: 'var(--sand-deep)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.28)', borderRadius: '14px', padding: '16px 18px' }}>
               <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '12px' }}>預約摘要</p>
               {[
                 ['服務', service.name],

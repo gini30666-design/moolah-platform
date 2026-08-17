@@ -1220,7 +1220,7 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
             <button onClick={copy} style={{ padding: '12px 18px', borderRadius: '20px', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer', background: copied ? oak : 'transparent', color: copied ? cream : oak, border: `1px solid ${oak}`, transition: 'all 0.18s' }}>
               {copied ? '✓ 已複製' : '📋 複製預約連結'}
             </button>
-            <button onClick={shareLine} style={{ padding: '12px 18px', borderRadius: '20px', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer', background: '#06C755', color: '#fff', border: '1px solid #06C755' }}>
+            <button onClick={shareLine} style={{ padding: '12px 18px', borderRadius: '20px', fontSize: 'calc(12.5px * var(--fs, 1))', cursor: 'pointer', background: '#06C755', color: '#10391f', border: '1px solid #06C755' }}>
               分享到 LINE
             </button>
           </div>
@@ -1873,7 +1873,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── 嵌入到 IG/網站 widget snippet (#30) ── */}
-      <details style={{ margin: '0 16px 24px', padding: '14px 18px', background: 'rgba(var(--theme-accent-rgb-legacy),0.08)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.25)', borderRadius: '12px' }}>
+      <details data-theme-region="admin-embed" style={{ margin: '0 16px 24px', padding: '14px 18px', background: 'rgba(var(--theme-accent-rgb-legacy),0.08)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.25)', borderRadius: '12px' }}>
         <summary style={{ cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, color: oak, letterSpacing: '0.06em', listStyle: 'none' }}>
           📌 嵌入到 IG bio / 自己網站
         </summary>

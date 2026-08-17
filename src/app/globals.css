@@ -570,6 +570,11 @@
   box-shadow: 0 6px 14px rgba(34,29,24,0.2) !important;
 }
 
+[data-theme="bali-stone"] [data-theme-region="home-marquee"] span {
+  color: #211a13 !important;
+  font-weight: 650;
+}
+
 [data-theme="bali-stone"] [data-theme-region="home-profile"] {
   --theme-ink: var(--theme-home-profile-ink);
   --charcoal: var(--theme-home-profile-ink);
@@ -672,9 +677,18 @@
 /* ── Bali Stone: booking as a light workbench with a dark time stage ─── */
 [data-theme="bali-stone"] [data-layout="booking-flow"] {
   --theme-ink: var(--theme-book-ink);
+  --theme-ink-rgb-legacy: 42,36,30;
   --charcoal: var(--theme-book-ink);
   --oak: #765c3f;
-  --theme-muted: #665e53;
+  --theme-accent: #765c3f;
+  --theme-accent-rgb: 118 92 63;
+  --theme-accent-rgb-legacy: 118,92,63;
+  --theme-accent-strong: #765c3f;
+  --theme-on-accent: #fffaf0;
+  --theme-selected: #76543e;
+  --theme-selected-rgb: 118 84 62;
+  --theme-selected-rgb-legacy: 118,84,62;
+  --theme-muted: #5f574d;
   --theme-border: #b7aa97;
   --theme-field: #fffaf0;
   --theme-panel: var(--theme-book-panel);
@@ -693,6 +707,11 @@
 [data-theme="bali-stone"] [data-layout="booking-flow"] input,
 [data-theme="bali-stone"] [data-layout="booking-flow"] textarea {
   color-scheme: light !important;
+}
+
+[data-theme="bali-stone"] [data-layout="booking-flow"] button,
+[data-theme="bali-stone"] [data-layout="booking-flow"] summary {
+  min-height: 44px !important;
 }
 
 [data-theme="bali-stone"] [data-layout="booking-flow"] input::placeholder,
@@ -804,6 +823,11 @@
   --theme-border: #5e5344;
   --theme-field: #2d2924;
   --theme-surface-deep: #39332b;
+  --theme-accent: #d2b68f;
+  --theme-accent-rgb: 210 182 143;
+  --theme-accent-rgb-legacy: 210,182,143;
+  --theme-accent-strong: #765c3f;
+  --theme-on-accent: #fffaf0;
   --theme-selected: #e0aa7f;
   --theme-selected-rgb-legacy: 224,170,127;
   margin: 24px -16px 0;
@@ -840,8 +864,16 @@
   background: var(--theme-admin-field) !important;
 }
 
+[data-theme="bali-stone"] [data-theme-region="book-recap"] {
+  --charcoal: var(--theme-book-slot-ink);
+  --theme-muted: #c7bcaa;
+  background-color: var(--theme-book-slot-stage) !important;
+  border-color: #6b5942 !important;
+  color: var(--theme-book-slot-ink);
+}
+
 [data-theme="bali-stone"] [data-theme-region="book-sticky-cta"] {
-  --theme-muted: #5f574d;
+  --theme-muted: #494239;
   background: linear-gradient(to top, rgba(201,189,171,0.99) 66%, rgba(201,189,171,0.9) 84%, transparent) !important;
 }
 
@@ -872,7 +904,10 @@
   --theme-ink: var(--theme-admin-ink);
   --charcoal: var(--theme-admin-ink);
   --oak: #765c3f;
-  --theme-muted: #665e53;
+  --theme-accent: #765c3f;
+  --theme-accent-strong: #765c3f;
+  --theme-on-accent: #fffaf0;
+  --theme-muted: #51493f;
   --theme-border: #b7aa97;
   --theme-field: var(--theme-admin-field);
   --theme-panel: var(--theme-admin-panel);
@@ -907,6 +942,9 @@
   --theme-ink: var(--theme-header-ink);
   --charcoal: var(--theme-header-ink);
   --oak: #d2b68f;
+  --theme-accent: #d2b68f;
+  --theme-accent-strong: #d2b68f;
+  --theme-on-accent: #211a13;
   --theme-muted: #c7bcaa;
   --theme-border: #5e5344;
   background-color: var(--theme-admin-header) !important;
@@ -929,7 +967,10 @@
   --theme-ink: var(--theme-admin-ink);
   --charcoal: var(--theme-admin-ink);
   --oak: #765c3f;
-  --theme-muted: #665e53;
+  --theme-accent: #765c3f;
+  --theme-accent-strong: #765c3f;
+  --theme-on-accent: #fffaf0;
+  --theme-muted: #51493f;
   --theme-border: #b7aa97;
   --theme-panel-elevated: #fffaf0;
   border-radius: 5px !important;
@@ -978,9 +1019,30 @@
 }
 
 [data-theme="bali-stone"] [data-theme-region="admin-footer"] {
-  --theme-muted: #665e53;
+  --theme-muted: #51493f;
   background-color: var(--theme-admin-workbench) !important;
   background-image: repeating-linear-gradient(112deg, rgba(74,61,45,0.022) 0 1px, transparent 1px 9px);
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-embed"] {
+  --oak: #5f482f;
+  --theme-muted: #51493f;
+  background-color: rgba(255,250,240,0.52) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-embed"] a {
+  min-height: 44px !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="admin-embed"] summary,
+[data-theme="bali-stone"] [data-theme-region="admin-embed"] a {
+  color: #5f482f !important;
+}
+
+[data-theme="bali-stone"] [data-layout="provider-admin"] summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 @media (min-width: 760px) {

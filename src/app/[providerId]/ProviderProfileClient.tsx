@@ -377,7 +377,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 2. Marquee strip ────────────────────────────────────────────── */}
-      <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.18)', borderBottom: '1px solid rgba(44,40,37,0.08)' }}>
+      <div data-theme-region="home-marquee" style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.18)', borderBottom: '1px solid rgba(44,40,37,0.08)' }}>
         <div style={{ display: 'inline-flex', animation: 'marquee-op 24s linear infinite', padding: '8px 0' }}>
           {[0, 1].map(k => (
             <span key={k} style={{ display: 'inline-flex', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.9)' }}>
