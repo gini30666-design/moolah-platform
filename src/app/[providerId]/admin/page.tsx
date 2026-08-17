@@ -1449,7 +1449,7 @@ export default function AdminPage() {
   )
 
   return themed(
-    <main style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
+    <main data-layout="provider-admin-light" style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
 
       {/* ── Header ── */}
       {/* ⚠️ 這裡刻意「不」設 overflow:hidden：功能列的下拉選單會延伸到 header 下緣以外，

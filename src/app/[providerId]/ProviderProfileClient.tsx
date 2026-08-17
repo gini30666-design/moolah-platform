@@ -285,7 +285,7 @@ export default function ProviderPage() {
     : services.slice(0, 3).map(s => s.name)
 
   return (
-    <div style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+    <div data-layout="provider-home" style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--theme-background)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: '0 0 44px rgba(var(--theme-shadow-rgb),0.12)' }}>
       <style>{`
         @keyframes marquee-op { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
@@ -297,8 +297,8 @@ export default function ProviderPage() {
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
       <div ref={headerRef} style={{
-        padding: provider.coverUrl ? '34px 20px 42px' : '34px 20px 26px', position: 'relative',
-        minHeight: provider.coverUrl ? '330px' : undefined,
+        padding: provider.coverUrl ? '30px 20px 50px' : '34px 20px 30px', position: 'relative',
+        minHeight: provider.coverUrl ? '390px' : undefined,
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflow: 'hidden',
         background: 'radial-gradient(120% 78% at 50% -18%, rgba(var(--theme-accent-rgb-legacy),0.16), transparent 62%)',
         animation: 'phase-in .55s cubic-bezier(0.16,1,0.3,1)',
@@ -357,8 +357,27 @@ export default function ProviderPage() {
         </div>
       </div>
 
+      {/* Existing availability + price + booking action, recomposed as the hero dock. */}
+      <div style={{ position: 'relative', zIndex: 4, margin: '-24px 14px 12px', padding: '13px 10px 13px 16px', display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(84px,.8fr) auto', alignItems: 'center', gap: '10px', background: 'rgba(var(--theme-background-rgb-legacy),0.96)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.26)', borderRadius: '14px', boxShadow: '0 12px 30px rgba(var(--theme-shadow-rgb),0.18)', backdropFilter: 'blur(14px)' }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.48)', marginBottom: '4px', letterSpacing: '0.08em' }}>最快</p>
+          <p style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {nextAvail ? `${nextAvail.label} ${nextAvail.time}` : '歡迎預約'}
+          </p>
+        </div>
+        <div style={{ minWidth: 0, paddingLeft: '10px', borderLeft: '1px solid var(--theme-border)' }}>
+          <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.48)', marginBottom: '4px', letterSpacing: '0.08em' }}>價格</p>
+          <p className="font-display" style={{ fontSize: '15px', color: 'var(--charcoal)', whiteSpace: 'nowrap' }}>
+            {fromPrice > 0 ? `NT$ ${fromPrice.toLocaleString()} 起` : '依服務項目'}
+          </p>
+        </div>
+        <button onClick={handleBook} style={{ minHeight: '46px', padding: '0 15px', border: 'none', borderRadius: '11px', cursor: 'pointer', background: 'var(--theme-accent-strong)', color: '#fffaf4', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 7px 18px rgba(var(--theme-accent-rgb-legacy),0.28)' }}>
+          開始預約
+        </button>
+      </div>
+
       {/* ── 2. Marquee strip ────────────────────────────────────────────── */}
-      <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div style={{ background: 'var(--oak)', overflow: 'hidden', whiteSpace: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.18)', borderBottom: '1px solid rgba(44,40,37,0.08)' }}>
         <div style={{ display: 'inline-flex', animation: 'marquee-op 24s linear infinite', padding: '8px 0' }}>
           {[0, 1].map(k => (
             <span key={k} style={{ display: 'inline-flex', fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.9)' }}>
@@ -383,15 +402,14 @@ export default function ProviderPage() {
 
       {/* ── 3. Designer intro dark section ──────────────────────────────── */}
       <div data-animate data-dir="up" style={{
-        background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
-        // 底部留 106px：這一區最後是專長標籤與 IG 連結，留白不夠會停在底部浮動 CTA 的漸層裡被吃掉
-        padding: '38px 22px 106px', margin: '8px 0',
+        background: 'var(--theme-surface)', position: 'relative', overflow: 'hidden',
+        padding: '30px 22px 34px', margin: '10px 12px 12px', borderRadius: '22px',
+        border: '1px solid var(--theme-border)', boxShadow: '0 12px 34px rgba(var(--theme-shadow-rgb),0.08)',
       }}>
-        {/* top hairline gold */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.3 }} />
+        {/* top hairline accent */}
+        <div style={{ position: 'absolute', top: 0, left: '22px', right: '22px', height: '1px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.55 }} />
         {/* grain */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: GRAIN, backgroundSize: '300px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, opacity: 'var(--theme-texture-opacity)', backgroundImage: GRAIN, backgroundSize: '300px', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative' }}>
           <p style={{ fontSize: '10px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '20px' }}>{COPY.meet}</p>
@@ -402,7 +420,7 @@ export default function ProviderPage() {
               width: '84px', height: '84px', borderRadius: '50%', flexShrink: 0,
               position: 'relative', overflow: 'hidden',
               border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)',
-              background: 'repeating-linear-gradient(135deg, #2a2520 0 9px, #211d18 9px 18px)',
+              background: 'repeating-linear-gradient(135deg, var(--theme-accent-pale) 0 9px, var(--theme-surface-deep) 9px 18px)',
             }}>
               {provider.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -415,12 +433,12 @@ export default function ProviderPage() {
               )}
             </div>
             <div style={{ flex: 1 }}>
-              <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--cream)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
-              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.5)' }}>{provider.role || provider.category}</p>
+              <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(44,40,37,0.56)' }}>{provider.role || provider.category}</p>
               {provider.years && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '8px' }}>
                   <span className="font-display" style={{ fontSize: '1.3rem', color: 'var(--oak)', lineHeight: 1 }}>{provider.years}</span>
-                  <span style={{ fontSize: '10px', color: 'rgba(251,249,244,0.4)', letterSpacing: '0.08em' }}>年經驗</span>
+                  <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.46)', letterSpacing: '0.08em' }}>年經驗</span>
                 </div>
               )}
             </div>
@@ -428,7 +446,7 @@ export default function ProviderPage() {
 
           {/* Bio quote — longer description from D column */}
           {bioQuote && (
-            <p className="font-display" style={{ fontSize: '1.18rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.7, color: 'rgba(251,249,244,0.82)', marginBottom: '20px' }}>
+            <p className="font-display" style={{ fontSize: '1.13rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.72, color: 'rgba(44,40,37,0.82)', marginBottom: '20px' }}>
               「{bioQuote}」
             </p>
           )}
@@ -449,7 +467,7 @@ export default function ProviderPage() {
                 <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="var(--oak)" stroke="none" />
               </svg>
               <a href={`https://instagram.com/${handle.replace('@','')}`} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: '12px', color: 'rgba(251,249,244,0.55)', letterSpacing: '0.04em', textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>
+                style={{ fontSize: '12px', color: 'rgba(44,40,37,0.62)', letterSpacing: '0.04em', textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>
                 {handle}
               </a>
             </div>
@@ -567,15 +585,15 @@ export default function ProviderPage() {
         <div style={{
           width: '100%', maxWidth: '480px',
           padding: '14px 20px calc(20px + env(safe-area-inset-bottom, 0px))',
-          background: 'linear-gradient(to top, rgba(26,23,20,0.98) 65%, rgba(26,23,20,0.85) 82%, transparent)',
+          background: 'linear-gradient(to top, rgba(var(--theme-background-rgb-legacy),0.99) 68%, rgba(var(--theme-background-rgb-legacy),0.9) 84%, transparent)',
           pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: '10px',
         }}>
           {/* CTA button with float animation — always shows lowest price */}
           <button onClick={handleBook} style={{
             width: '100%', padding: '17px', borderRadius: '15px',
-            border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.5)', cursor: 'pointer',
-            background: 'linear-gradient(160deg, #2d2720 0%, #191510 100%)',
-            color: 'var(--cream)',
+            border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.55)', cursor: 'pointer',
+            background: 'var(--theme-accent-strong)',
+            color: '#fffaf4',
             fontSize: '15px', fontWeight: 600,
             boxShadow: '0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(var(--theme-accent-rgb-legacy),0.22)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -584,11 +602,11 @@ export default function ProviderPage() {
           }}>
             開始預約
             {fromPrice > 0 && (
-              <span style={{ fontSize: '12px', color: 'var(--oak)', fontWeight: 500 }}>
+              <span style={{ fontSize: '12px', color: 'rgba(255,250,244,0.78)', fontWeight: 500 }}>
                 NT$ {fromPrice.toLocaleString()} 起
               </span>
             )}
-            <span style={{ fontSize: '16px', color: 'var(--oak)' }}>→</span>
+            <span style={{ fontSize: '16px', color: 'rgba(255,250,244,0.9)' }}>→</span>
           </button>
         </div>
       </div>

@@ -35,6 +35,27 @@ describe('providers.theme AA data path guard', () => {
     expect(providerProfile).toContain('handleBook')
   })
 
+  it('keeps the provider-home composition attached to its original booking action', () => {
+    const providerProfile = readSource('../app/[providerId]/ProviderProfileClient.tsx')
+
+    expect(providerProfile).toContain('data-layout="provider-home"')
+    expect(providerProfile).toContain('onClick={handleBook}')
+  })
+
+  it('keeps the booking-flow composition attached to its original submit API', () => {
+    const bookingPage = readSource('../app/[providerId]/book/page.tsx')
+
+    expect(bookingPage).toContain('data-layout="booking-flow"')
+    expect(bookingPage).toContain("fetch('/api/booking'")
+  })
+
+  it('keeps the light-admin composition attached to owner authentication', () => {
+    const adminPage = readSource('../app/[providerId]/admin/page.tsx')
+
+    expect(adminPage).toContain('data-layout="provider-admin-light"')
+    expect(adminPage).toContain('authHeader()')
+  })
+
   it('keeps the pending DDL nullable and whitelist constrained', () => {
     const migration = readSource('../../supabase/migrations/20260817_add_provider_theme.sql')
 

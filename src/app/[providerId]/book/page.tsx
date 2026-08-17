@@ -988,7 +988,7 @@ export default function BookPage() {
   }
 
   return themed(
-    <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
+    <div data-layout="booking-flow" className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
       {needAddFriend && (
         <button
           onClick={() => {
