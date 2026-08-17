@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { PROVIDER_THEME_KEYS, PROVIDER_THEME_OPTIONS } from './providerTheme'
 
 const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
+const providerHomeSource = readFileSync(new URL('../app/[providerId]/ProviderProfileClient.tsx', import.meta.url), 'utf8')
 
 const requiredTokens = [
   '--theme-canvas',
@@ -220,6 +221,34 @@ describe('provider visual recipe contract', () => {
         contrast(tokens[foreground], tokens[background]),
         `bali-stone: ${foreground} on ${background}`,
       ).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it('keeps the provider home behavior inside seven stable visual regions', () => {
+    const regions = [
+      'home-shell',
+      'home-hero',
+      'home-dock',
+      'home-profile',
+      'home-gallery',
+      'home-closing',
+      'home-sticky-cta',
+    ]
+
+    for (const region of regions) {
+      expect(
+        providerHomeSource.match(new RegExp(`data-theme-region=["']${region}["']`, 'g')),
+        region,
+      ).toHaveLength(1)
+    }
+
+    for (const behaviorMarker of [
+      'onClick={handleBook}',
+      'https://instagram.com/',
+      'setLightbox(i)',
+      '<ProviderReveal',
+    ]) {
+      expect(providerHomeSource, behaviorMarker).toContain(behaviorMarker)
     }
   })
 })

@@ -285,7 +285,7 @@ export default function ProviderPage() {
     : services.slice(0, 3).map(s => s.name)
 
   return (
-    <div data-layout="provider-home" style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--theme-canvas)', color: 'var(--theme-ink)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: 'var(--theme-card-shadow)' }}>
+    <div data-layout="provider-home" data-theme-region="home-shell" style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--theme-home-canvas)', color: 'var(--theme-home-ink)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: 'var(--theme-card-shadow)' }}>
       <style>{`
         @keyframes marquee-op { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
@@ -296,7 +296,7 @@ export default function ProviderPage() {
       `}</style>
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
-      <div ref={headerRef} style={{
+      <div ref={headerRef} data-theme-region="home-hero" style={{
         padding: provider.coverUrl ? '30px 20px 50px' : '34px 20px 30px', position: 'relative',
         minHeight: provider.coverUrl ? '390px' : undefined,
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflow: 'hidden',
@@ -358,20 +358,20 @@ export default function ProviderPage() {
       </div>
 
       {/* Existing availability + price + booking action, recomposed as the hero dock. */}
-      <div style={{ position: 'relative', zIndex: 4, margin: '-24px 14px 12px', padding: '13px 10px 13px 16px', display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(84px,.8fr) auto', alignItems: 'center', gap: '10px', background: 'var(--theme-panel-elevated)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', boxShadow: 'var(--theme-card-shadow)', backdropFilter: 'blur(14px)' }}>
+      <div data-theme-region="home-dock" style={{ position: 'relative', zIndex: 4, margin: '-24px 14px 12px', padding: '13px 10px 13px 16px', display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(84px,.8fr) auto', alignItems: 'center', gap: '10px', background: 'var(--theme-home-dock)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', boxShadow: 'var(--theme-card-shadow)', backdropFilter: 'blur(14px)' }}>
         <div style={{ minWidth: 0 }}>
           <p style={{ fontSize: '9px', color: 'var(--theme-muted)', marginBottom: '4px', letterSpacing: '0.08em' }}>最快</p>
-          <p style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p style={{ fontSize: '13px', color: 'var(--theme-home-ink)', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {nextAvail ? `${nextAvail.label} ${nextAvail.time}` : '歡迎預約'}
           </p>
         </div>
         <div style={{ minWidth: 0, paddingLeft: '10px', borderLeft: '1px solid var(--theme-border)' }}>
           <p style={{ fontSize: '9px', color: 'var(--theme-muted)', marginBottom: '4px', letterSpacing: '0.08em' }}>價格</p>
-          <p className="font-display" style={{ fontSize: '15px', color: 'var(--charcoal)', whiteSpace: 'nowrap' }}>
+          <p className="font-display" style={{ fontSize: '15px', color: 'var(--theme-home-ink)', whiteSpace: 'nowrap' }}>
             {fromPrice > 0 ? `NT$ ${fromPrice.toLocaleString()} 起` : '依服務項目'}
           </p>
         </div>
-        <button onClick={handleBook} style={{ minHeight: '46px', padding: '0 15px', border: 'none', borderRadius: '11px', cursor: 'pointer', background: 'var(--theme-accent-strong)', color: '#fffaf4', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 7px 18px rgba(var(--theme-accent-rgb-legacy),0.28)' }}>
+        <button onClick={handleBook} style={{ minHeight: '46px', padding: '0 15px', border: 'none', borderRadius: '11px', cursor: 'pointer', background: 'var(--theme-accent-strong)', color: 'var(--theme-on-accent)', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 7px 18px rgba(var(--theme-accent-rgb-legacy),0.28)' }}>
           開始預約
         </button>
       </div>
@@ -401,8 +401,8 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 3. Designer intro dark section ──────────────────────────────── */}
-      <div data-animate data-dir="up" style={{
-        background: 'var(--theme-surface)', position: 'relative', overflow: 'hidden',
+      <div data-animate data-dir="up" data-theme-region="home-profile" style={{
+        background: 'var(--theme-home-profile)', color: 'var(--theme-home-profile-ink)', position: 'relative', overflow: 'hidden',
         padding: '30px 22px 34px', margin: '10px 12px 12px', borderRadius: '22px',
         border: '1px solid var(--theme-border)', boxShadow: '0 12px 34px rgba(var(--theme-shadow-rgb),0.08)',
       }}>
@@ -433,7 +433,7 @@ export default function ProviderPage() {
               )}
             </div>
             <div style={{ flex: 1 }}>
-              <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
+              <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--theme-home-profile-ink)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
               <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'var(--theme-muted)' }}>{provider.role || provider.category}</p>
               {provider.years && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '8px' }}>
@@ -446,7 +446,7 @@ export default function ProviderPage() {
 
           {/* Bio quote — longer description from D column */}
           {bioQuote && (
-            <p className="font-display" style={{ fontSize: '1.13rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.72, color: 'var(--theme-ink)', marginBottom: '20px' }}>
+            <p className="font-display" style={{ fontSize: '1.13rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.72, color: 'var(--theme-home-profile-ink)', marginBottom: '20px' }}>
               「{bioQuote}」
             </p>
           )}
@@ -476,11 +476,11 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 4. Portfolio section ─────────────────────────────────────────── */}
-      <div data-animate data-dir="up" style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
+      <div data-animate data-dir="up" data-theme-region="home-gallery" style={{ padding: '28px 20px 30px', background: 'var(--theme-home-gallery)', color: 'var(--theme-home-ink)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
             <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--theme-muted)', marginBottom: '6px' }}>{COPY.en}</p>
-            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>{COPY.zh}</p>
+            <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--theme-home-ink)' }}>{COPY.zh}</p>
             {isDemo && (
               <p style={{ fontSize: '11px', color: 'var(--theme-muted)', marginTop: '6px', lineHeight: 1.5 }}>
                 本頁為系統示範，作品為情境示意圖
@@ -508,8 +508,8 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 5. Closing dark editorial section ───────────────────────────── */}
-      <div data-animate data-dir="up" style={{
-        background: 'var(--charcoal-deep)', position: 'relative', overflow: 'hidden',
+      <div data-animate data-dir="up" data-theme-region="home-closing" style={{
+        background: 'var(--theme-home-profile)', color: 'var(--theme-home-profile-ink)', position: 'relative', overflow: 'hidden',
         padding: '46px 26px 160px', textAlign: 'center',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
@@ -518,7 +518,7 @@ export default function ProviderPage() {
         <div style={{ position: 'relative' }}>
           <p style={{ fontSize: '10px', letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '18px' }}>Ready when you are</p>
 
-          <p className="font-display" style={{ fontSize: 'clamp(1.8rem,6vw,2.2rem)', fontWeight: 300, lineHeight: 1.18, color: 'var(--cream)', letterSpacing: '-0.01em' }}>
+          <p className="font-display" style={{ fontSize: 'clamp(1.8rem,6vw,2.2rem)', fontWeight: 300, lineHeight: 1.18, color: 'var(--theme-home-profile-ink)', letterSpacing: '-0.01em' }}>
             {COPY.cta}
           </p>
 
@@ -532,19 +532,19 @@ export default function ProviderPage() {
           {/* three-column stats */}
           <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', gap: '0' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
-              <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>最快</span>
+              <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--theme-home-profile-ink)', opacity: 0.7 }}>最快</span>
               {nextAvail ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
-                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)', lineHeight: 1.1 }}>{nextAvail.label}</span>
-                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'rgba(251,249,244,0.65)', lineHeight: 1.1 }}>{nextAvail.time}</span>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--theme-home-profile-ink)', lineHeight: 1.1 }}>{nextAvail.label}</span>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--theme-home-profile-ink)', lineHeight: 1.1, opacity: 0.72 }}>{nextAvail.time}</span>
                 </div>
               ) : (
-                <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>歡迎預約</span>
+                <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--theme-home-profile-ink)' }}>歡迎預約</span>
               )}
             </div>
             <div style={{ width: '1px', background: 'rgba(var(--theme-accent-rgb-legacy),0.25)', margin: '2px 0', flexShrink: 0 }} />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
-              <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>價格</span>
+              <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--theme-home-profile-ink)', opacity: 0.7 }}>價格</span>
               <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--oak)' }}>NT$ {fromPrice.toLocaleString()} 起</span>
             </div>
             {/* 沒有評分就整欄收掉（含分隔線）：新職人顯示「★ —」比不顯示更傷 */}
@@ -552,14 +552,14 @@ export default function ProviderPage() {
               <>
                 <div style={{ width: '1px', background: 'rgba(var(--theme-accent-rgb-legacy),0.25)', margin: '2px 0', flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '0 8px' }}>
-                  <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(251,249,244,0.38)' }}>評分</span>
-                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--cream)' }}>★ {provider.rating}</span>
+                  <span style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--theme-home-profile-ink)', opacity: 0.7 }}>評分</span>
+                  <span className="font-display" style={{ fontSize: '1.05rem', color: 'var(--theme-home-profile-ink)' }}>★ {provider.rating}</span>
                 </div>
               </>
             )}
           </div>
 
-          <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(251,249,244,0.32)', marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
+          <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'var(--theme-home-profile-ink)', opacity: 0.7, marginTop: '24px' }}>選擇喜歡的時段，其餘交給我們</p>
 
           {/* 頁內預約 CTA（不只靠底部浮動鈕，內容流裡也給明確入口）*/}
           <button onClick={handleBook} style={{
@@ -578,7 +578,7 @@ export default function ProviderPage() {
       </div>
 
       {/* ── 6 + 7. Combined fixed bottom bar: pills + CTA ───────────────── */}
-      <div style={{
+      <div data-theme-region="home-sticky-cta" style={{
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30,
         display: 'flex', justifyContent: 'center', pointerEvents: 'none',
       }}>
