@@ -65,7 +65,7 @@ function Segmented({ options, value, onChange }: { options: string[]; value: str
             position: 'relative', zIndex: 1, background: 'none', border: 'none',
             padding: '11px 4px', cursor: 'pointer',
             fontSize: '13px', fontWeight: sel ? 600 : 400,
-            color: sel ? 'var(--cream)' : 'var(--charcoal)',
+            color: sel ? 'var(--theme-book-selection-ink)' : 'var(--charcoal)',
             transition: 'color 0.3s',
           }}>{o}</button>
         )
@@ -180,7 +180,7 @@ function PillGroup({ options, value, onChange }: { options: string[]; value: str
             padding: '12px 20px', borderRadius: '99px', fontSize: '13px',
             border: selected ? '1.5px solid var(--charcoal)' : '1.5px solid rgba(var(--theme-accent-rgb-legacy),0.28)',
             background: selected ? 'var(--theme-ink)' : 'var(--theme-field)',
-            color: selected ? 'var(--cream)' : 'var(--charcoal)',
+            color: selected ? 'var(--theme-book-selection-ink)' : 'var(--charcoal)',
             boxShadow: selected ? '0 3px 10px rgba(var(--theme-shadow-rgb),0.18)' : '0 1px 3px rgba(var(--theme-accent-rgb-legacy),0.10)',
             transform: selected ? 'translateY(-1px)' : 'none',
             transition: 'all 0.18s ease', cursor: 'pointer', fontWeight: selected ? 500 : 400,
@@ -300,12 +300,12 @@ function InlineCalendar({ providerId, value, onChange }: {
               <span style={{
                 fontSize: '13px', lineHeight: 1, position: 'relative', zIndex: 1,
                 fontWeight: isSelected || isToday ? 600 : 400,
-                color: isSelected ? 'var(--theme-canvas)' : isToday ? 'var(--oak)' : isDisabled && !isPast ? 'rgba(var(--theme-ink-rgb-legacy),0.38)' : 'var(--theme-ink)',
+                color: isSelected ? 'var(--theme-book-selection-ink)' : isToday ? 'var(--oak)' : isDisabled && !isPast ? 'rgba(var(--theme-ink-rgb-legacy),0.38)' : 'var(--theme-ink)',
               }}>{day}</span>
               {!isPast && status !== 'closed' && (
                 <span style={{
                   width: '4px', height: '4px', borderRadius: '50%', flexShrink: 0, position: 'relative', zIndex: 1,
-                  background: isSelected ? 'rgba(var(--theme-canvas-rgb-legacy),0.7)' : status === 'full' ? 'transparent' : status === 'limited' ? 'rgba(var(--theme-accent-rgb-legacy),0.5)' : 'var(--oak)',
+                  background: isSelected ? 'var(--theme-accent-light)' : status === 'full' ? 'transparent' : status === 'limited' ? 'rgba(var(--theme-accent-rgb-legacy),0.5)' : 'var(--oak)',
                 }} />
               )}
             </button>
@@ -988,7 +988,7 @@ export default function BookPage() {
   }
 
   return themed(
-    <div data-layout="booking-flow" data-booking-surface="adaptive" className="max-w-[480px] mx-auto" style={{ background: 'var(--theme-canvas)', color: 'var(--theme-ink)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: 'var(--theme-card-shadow)' }}>
+    <div data-layout="booking-flow" data-booking-surface="adaptive" data-theme-region="book-shell" className="max-w-[480px] mx-auto" style={{ background: 'var(--theme-book-canvas)', color: 'var(--theme-book-ink)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: 'var(--theme-card-shadow)' }}>
       {needAddFriend && (
         <button
           onClick={() => {
@@ -1002,7 +1002,7 @@ export default function BookPage() {
             position: 'fixed', left: '50%', bottom: '16px', transform: 'translateX(-50%)',
             zIndex: 60, width: 'calc(100% - 28px)', maxWidth: '452px',
             display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', textAlign: 'left',
-            background: 'var(--charcoal-deep)', color: 'var(--cream)',
+            background: 'var(--charcoal-deep)', color: 'var(--theme-on-image)',
             border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', borderRadius: '16px',
             padding: '12px 14px', boxShadow: '0 10px 28px rgba(0,0,0,0.28)',
           }}
@@ -1028,12 +1028,12 @@ export default function BookPage() {
       {/* 示範帳號提示：一定要在流程「開始前」就講清楚，
           不能讓人填完資料才發現不是真的預約——那是欺騙體驗。 */}
       {provider.isDemo && (
-        <div style={{ background: 'var(--oak)', color: '#fff', textAlign: 'center',
+        <div style={{ background: 'var(--oak)', color: 'var(--theme-on-accent)', textAlign: 'center',
           padding: '9px 16px', fontSize: '12.5px', lineHeight: 1.6, fontWeight: 600 }}>
           示範帳號 · 你可以完整體驗預約流程，送出後不會產生真實預約
         </div>
       )}
-      <div className="sticky top-0 z-40" style={{ background: 'rgba(var(--theme-header-rgb-legacy),0.96)', color: 'var(--theme-header-ink)', borderBottom: '1px solid var(--theme-border)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 24px rgba(var(--theme-shadow-rgb),0.12)' }}>
+      <div data-theme-region="book-header" className="sticky top-0 z-40" style={{ background: 'var(--theme-book-header)', color: 'var(--theme-header-ink)', borderBottom: '1px solid var(--theme-border)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 24px rgba(var(--theme-shadow-rgb),0.12)' }}>
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
           <button onClick={() => router.back()} style={{ color: 'var(--oak)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.12em', minHeight: '44px', display: 'flex', alignItems: 'center', padding: '0 10px 0 0' }}>{isSpaceMode ? '← 返回' : '← 作品集'}</button>
           <span className="font-display text-base tracking-[0.12em]" style={{ color: 'var(--charcoal)' }}>{provider.name}</span>
@@ -1067,7 +1067,7 @@ export default function BookPage() {
         })()}
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-4" style={{ paddingBottom: '120px' }}>
+      <div data-theme-region="book-workbench" className="max-w-lg mx-auto px-4 py-4" style={{ paddingBottom: '120px' }}>
 
         {/* ── LINE OA join card ─── */}
         {liffReady && showLineCard && (
@@ -1088,7 +1088,7 @@ export default function BookPage() {
         )}
 
         {/* ── Service summary card ─── */}
-        <div data-animate className="mb-4" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', padding: '12px', position: 'relative', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)', display: 'flex', gap: '13px', alignItems: 'center' }}>
+        <div data-animate data-theme-region="book-service-summary" className="mb-4" style={{ background: 'var(--theme-book-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', padding: '12px', position: 'relative', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)', display: 'flex', gap: '13px', alignItems: 'center' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', zIndex: 2 }} />
           {service.imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -1118,9 +1118,9 @@ export default function BookPage() {
 
         {/* ── Service switcher ─── */}
         {allServices.length > 1 && (
-          <div className="mb-6">
-            <FieldLabel hint="可更換">選擇服務</FieldLabel>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <details data-theme-region="book-service-picker" className="mb-6">
+            <summary>更換服務 <span aria-hidden>＋</span></summary>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
               {visibleServices.map(s => {
                 const sel = service.id === s.id
                 return (
@@ -1161,13 +1161,13 @@ export default function BookPage() {
                 <span style={{ fontSize: '11px', display: 'inline-block', transform: showAllServices ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s' }}>▼</span>
               </button>
             )}
-          </div>
+          </details>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
 
           {/* ════════════ Chapter 01 — 關於你（CSS order=2：視覺上排在「選擇時間」之後）════════════ */}
-          <div data-animate style={{ margin: '14px 0', order: 2 }}>
+          <div data-animate data-theme-region="book-customer" style={{ margin: '14px 0', order: 2 }}>
             <ChapterHeader no="02" eyebrow="About you" title="關於你" />
 
             {/* 稱呼 + 電話：一律必填（給設計師的聯絡資訊），不論是否抓到 LINE */}
@@ -1238,7 +1238,7 @@ export default function BookPage() {
           </div>
 
           {/* ════════════ Chapter 02 — 選擇時間（CSS order=1：先選時段，再填資料）════════════ */}
-          <div className="ch-panel" style={{ order: 1 }}>
+          <div className="ch-panel" data-theme-region="book-calendar" style={{ order: 1 }}>
             <ChapterHeader title="選擇時間" />
 
             {/* Date section */}
@@ -1263,7 +1263,7 @@ export default function BookPage() {
             </div>
 
             {/* Time slots */}
-            <div ref={timeRef}>
+            <div ref={timeRef} data-theme-region="book-slot-stage">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <FieldLabel>時段</FieldLabel>
                 {date && !loadingSlots && slots.length > 0 && (
@@ -1330,7 +1330,7 @@ export default function BookPage() {
       </div>
 
       {/* ── Fixed bottom CTA ─── */}
-      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, background: 'linear-gradient(to top, var(--theme-canvas) 62%, transparent)', padding: '20px 20px 28px' }}>
+      <div data-theme-region="book-sticky-cta" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, background: 'linear-gradient(to top, var(--theme-book-canvas) 62%, transparent)', padding: '20px 20px 28px' }}>
         <div style={{ maxWidth: '480px', margin: '0 auto' }}>
           {submitError && (
             <div onClick={() => setSubmitError('')} style={{ marginBottom: '10px', padding: '11px 14px', borderRadius: '12px', background: 'rgba(176,64,64,0.1)', border: '1px solid rgba(176,64,64,0.3)', color: '#b04040', fontSize: '12.5px', textAlign: 'center', lineHeight: 1.5, cursor: 'pointer' }}>

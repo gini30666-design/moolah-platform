@@ -36,7 +36,7 @@ Extend `providerThemeVisual.test.ts` with three explicit region token groups:
 ```ts
 const pageRegionTokens = {
   home: ['--theme-home-canvas', '--theme-home-ink', '--theme-home-profile', '--theme-home-profile-ink', '--theme-home-gallery', '--theme-home-dock'],
-  book: ['--theme-book-canvas', '--theme-book-ink', '--theme-book-workbench', '--theme-book-panel', '--theme-book-slot-stage', '--theme-book-slot-ink', '--theme-book-header'],
+  book: ['--theme-book-canvas', '--theme-book-ink', '--theme-book-workbench', '--theme-book-panel', '--theme-book-slot-stage', '--theme-book-slot-ink', '--theme-book-selection-ink', '--theme-book-header'],
   admin: ['--theme-admin-canvas', '--theme-admin-ink', '--theme-admin-header', '--theme-admin-workbench', '--theme-admin-panel', '--theme-admin-field'],
 } as const
 ```

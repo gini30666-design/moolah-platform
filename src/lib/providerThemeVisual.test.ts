@@ -4,6 +4,7 @@ import { PROVIDER_THEME_KEYS, PROVIDER_THEME_OPTIONS } from './providerTheme'
 
 const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
 const providerHomeSource = readFileSync(new URL('../app/[providerId]/ProviderProfileClient.tsx', import.meta.url), 'utf8')
+const bookingSource = readFileSync(new URL('../app/[providerId]/book/page.tsx', import.meta.url), 'utf8')
 
 const requiredTokens = [
   '--theme-canvas',
@@ -45,6 +46,7 @@ const pageRegionTokens = {
     '--theme-book-panel',
     '--theme-book-slot-stage',
     '--theme-book-slot-ink',
+    '--theme-book-selection-ink',
     '--theme-book-header',
   ],
   admin: [
@@ -184,6 +186,7 @@ describe('provider visual recipe contract', () => {
       '--theme-book-panel': 'var(--theme-panel)',
       '--theme-book-slot-stage': 'var(--theme-surface)',
       '--theme-book-slot-ink': 'var(--theme-ink)',
+      '--theme-book-selection-ink': 'var(--theme-canvas)',
       '--theme-book-header': 'var(--theme-header)',
       '--theme-admin-canvas': 'var(--theme-canvas)',
       '--theme-admin-ink': 'var(--theme-ink)',
@@ -249,6 +252,41 @@ describe('provider visual recipe contract', () => {
       '<ProviderReveal',
     ]) {
       expect(providerHomeSource, behaviorMarker).toContain(behaviorMarker)
+    }
+  })
+
+  it('keeps the booking state machine inside eight stable visual regions', () => {
+    const regions = [
+      'book-shell',
+      'book-header',
+      'book-service-summary',
+      'book-service-picker',
+      'book-calendar',
+      'book-slot-stage',
+      'book-customer',
+      'book-sticky-cta',
+    ]
+
+    for (const region of regions) {
+      expect(
+        bookingSource.match(new RegExp(`data-theme-region=["']${region}["']`, 'g')),
+        region,
+      ).toHaveLength(1)
+    }
+
+    expect(bookingSource).toMatch(/<details[^>]*data-theme-region="book-service-picker"/)
+    expect(bookingSource).toContain('<summary>更換服務')
+    expect(bookingSource).toContain('onClick={() => setService(s)}')
+
+    for (const behaviorMarker of [
+      'async function handleSubmit',
+      'res.status === 409',
+      'customerPhone',
+      'provider.isDemo',
+      '/privacy',
+      '<form onSubmit={handleSubmit}',
+    ]) {
+      expect(bookingSource, behaviorMarker).toContain(behaviorMarker)
     }
   })
 })

@@ -94,6 +94,7 @@
   --theme-book-panel: var(--theme-panel);
   --theme-book-slot-stage: var(--theme-surface);
   --theme-book-slot-ink: var(--theme-ink);
+  --theme-book-selection-ink: var(--theme-canvas);
   --theme-book-header: var(--theme-header);
   --theme-admin-canvas: var(--theme-canvas);
   --theme-admin-ink: var(--theme-ink);
@@ -203,6 +204,7 @@
   --theme-book-panel: #faf5eb;
   --theme-book-slot-stage: #211e19;
   --theme-book-slot-ink: #f4eee3;
+  --theme-book-selection-ink: #f4eee3;
   --theme-book-header: #1d1a17;
   --theme-admin-canvas: #d8cebd;
   --theme-admin-ink: #2a241e;
@@ -662,6 +664,204 @@
 
 @media (min-width: 760px) {
   [data-theme="bali-stone"] [data-layout="provider-home"] {
+    margin-block: 28px;
+    border: 1px solid rgba(185,154,113,0.45);
+  }
+}
+
+/* ── Bali Stone: booking as a light workbench with a dark time stage ─── */
+[data-theme="bali-stone"] [data-layout="booking-flow"] {
+  --theme-ink: var(--theme-book-ink);
+  --charcoal: var(--theme-book-ink);
+  --oak: #765c3f;
+  --theme-muted: #665e53;
+  --theme-border: #b7aa97;
+  --theme-field: #fffaf0;
+  --theme-panel: var(--theme-book-panel);
+  --theme-panel-elevated: #fffaf0;
+  --theme-surface: var(--theme-book-workbench);
+  --theme-surface-deep: #ded3c3;
+  color-scheme: light;
+  background-color: var(--theme-book-canvas) !important;
+  background-image:
+    radial-gradient(circle at 12% 3%, rgba(255,255,255,0.45), transparent 25%),
+    repeating-linear-gradient(117deg, rgba(73,60,43,0.026) 0 1px, transparent 1px 8px);
+  color: var(--theme-book-ink) !important;
+  box-shadow: 0 28px 80px rgba(32,27,22,0.34) !important;
+}
+
+[data-theme="bali-stone"] [data-layout="booking-flow"] input,
+[data-theme="bali-stone"] [data-layout="booking-flow"] textarea {
+  color-scheme: light !important;
+}
+
+[data-theme="bali-stone"] [data-layout="booking-flow"] input::placeholder,
+[data-theme="bali-stone"] [data-layout="booking-flow"] textarea::placeholder {
+  color: #6b6257 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-header"] {
+  --theme-ink: var(--theme-header-ink);
+  --charcoal: var(--theme-header-ink);
+  --oak: #d2b68f;
+  --theme-muted: #c7bcaa;
+  --theme-border: #5e5344;
+  background-color: var(--theme-book-header) !important;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,0.025), transparent 42%),
+    repeating-linear-gradient(102deg, rgba(214,187,148,0.028) 0 1px, transparent 1px 10px) !important;
+  border-bottom-color: #6c5b45 !important;
+  box-shadow: 0 10px 26px rgba(24,20,16,0.24) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-header"] button,
+[data-theme="bali-stone"] [data-theme-region="book-header"] span {
+  color: var(--theme-header-ink);
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-header"] button {
+  color: #d2b68f !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-workbench"] {
+  background-color: var(--theme-book-workbench);
+  background-image:
+    radial-gradient(circle at 90% 8%, rgba(255,255,255,0.55), transparent 26%),
+    repeating-linear-gradient(112deg, rgba(74,61,45,0.022) 0 1px, transparent 1px 9px);
+  border-inline: 1px solid rgba(126,107,83,0.18);
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-summary"] {
+  background-color: var(--theme-book-panel) !important;
+  border-radius: 4px 4px 12px 12px !important;
+  box-shadow: 0 12px 26px rgba(48,39,29,0.12) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-summary"] img {
+  border-radius: 3px !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"] {
+  margin: -4px 0 20px;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"] > summary {
+  min-height: 44px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid #ad9e89;
+  border-radius: 3px;
+  background: rgba(255,250,240,0.68);
+  color: #5e5143;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"] > summary::-webkit-details-marker {
+  display: none;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"][open] > summary span {
+  transform: rotate(45deg);
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"] > summary span {
+  color: #765c3f;
+  font-size: 18px;
+  transition: transform 180ms ease;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-service-picker"] button {
+  border-radius: 4px !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-calendar"] {
+  margin: 10px -1px 16px !important;
+  padding: 24px 16px 0 !important;
+  overflow: hidden;
+  border-radius: 12px !important;
+  background-color: var(--theme-book-panel) !important;
+  background-image: repeating-linear-gradient(116deg, rgba(75,61,43,0.02) 0 1px, transparent 1px 9px);
+  box-shadow: 0 14px 34px rgba(48,39,29,0.12) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-calendar"] > div:nth-of-type(2) > div {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-slot-stage"] {
+  --theme-ink: var(--theme-book-slot-ink);
+  --charcoal: var(--theme-book-slot-ink);
+  --oak: #d2b68f;
+  --theme-muted: #c7bcaa;
+  --theme-border: #5e5344;
+  --theme-field: #2d2924;
+  --theme-surface-deep: #39332b;
+  --theme-selected: #e0aa7f;
+  --theme-selected-rgb-legacy: 224,170,127;
+  margin: 24px -16px 0;
+  padding: 24px 16px 26px;
+  color: var(--theme-book-slot-ink);
+  background-color: var(--theme-book-slot-stage);
+  background-image:
+    radial-gradient(circle at 88% -15%, rgba(185,154,113,0.16), transparent 38%),
+    repeating-linear-gradient(98deg, rgba(214,187,148,0.026) 0 1px, transparent 1px 10px);
+  border-top: 1px solid #6b5942;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-slot-stage"] button {
+  min-height: 44px;
+  border-radius: 3px !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-slot-stage"] button:disabled {
+  color: #aaa194 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-customer"] {
+  margin-block: 24px !important;
+  padding: 24px 17px 22px;
+  border: 1px solid #b7aa97;
+  border-radius: 10px;
+  background: rgba(250,245,235,0.7);
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-customer"] input,
+[data-theme="bali-stone"] [data-theme-region="book-customer"] textarea {
+  border-radius: 4px !important;
+  background: var(--theme-admin-field) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-sticky-cta"] {
+  --theme-muted: #5f574d;
+  background: linear-gradient(to top, rgba(201,189,171,0.99) 66%, rgba(201,189,171,0.9) 84%, transparent) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-sticky-cta"] button:not(:disabled) {
+  border: 1px solid #9f825c !important;
+  border-radius: 3px !important;
+  background: #26221d !important;
+  color: #f7f0e4 !important;
+  box-shadow: 0 10px 26px rgba(24,20,16,0.32) !important;
+}
+
+[data-theme="bali-stone"] [data-theme-region="book-sticky-cta"] button:disabled {
+  border: 1px solid #ad9e89 !important;
+  border-radius: 3px !important;
+  background: #ddd2c2 !important;
+  color: #5f574d !important;
+}
+
+@media (min-width: 760px) {
+  [data-theme="bali-stone"] [data-layout="booking-flow"] {
     margin-block: 28px;
     border: 1px solid rgba(185,154,113,0.45);
   }

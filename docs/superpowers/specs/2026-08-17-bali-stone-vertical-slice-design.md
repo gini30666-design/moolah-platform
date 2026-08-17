@@ -42,6 +42,7 @@ booking:
   --theme-book-panel
   --theme-book-slot-stage
   --theme-book-slot-ink
+  --theme-book-selection-ink
   --theme-book-header
 
 admin:
