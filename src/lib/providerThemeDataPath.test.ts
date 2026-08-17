@@ -54,6 +54,7 @@ describe('providers.theme AA data path guard', () => {
     const adminPage = readSource('../app/[providerId]/admin/page.tsx')
 
     expect(adminPage).toContain('data-layout="provider-admin-light"')
+    expect(adminPage).toContain('data-admin-surface="light"')
     expect(adminPage).toContain('authHeader()')
   })
 
