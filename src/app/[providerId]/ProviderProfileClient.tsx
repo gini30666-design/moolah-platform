@@ -69,9 +69,9 @@ function Lightbox({ items, startIdx, onClose }: { items: PortfolioItem[]; startI
         )}
       </div>
       <button onClick={e => { e.stopPropagation(); prev() }}
-        style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.07)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', fontSize: '24px', color: 'rgba(251,249,244,0.7)', cursor: 'pointer' }}>‹</button>
+        style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(var(--theme-on-image-rgb-legacy),0.07)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', fontSize: '24px', color: 'rgba(var(--theme-on-image-rgb-legacy),0.7)', cursor: 'pointer' }}>‹</button>
       <button onClick={e => { e.stopPropagation(); next() }}
-        style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.07)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', fontSize: '24px', color: 'rgba(251,249,244,0.7)', cursor: 'pointer' }}>›</button>
+        style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(var(--theme-on-image-rgb-legacy),0.07)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', fontSize: '24px', color: 'rgba(var(--theme-on-image-rgb-legacy),0.7)', cursor: 'pointer' }}>›</button>
     </div>
   )
 }

@@ -239,7 +239,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
 
       {creating && (
         // 建卡表單也改白底：現在整區已經是沙色，半透明沙疊沙會糊成一片
-        <div style={{ background: '#ffffff', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.42)', borderRadius: '14px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '14px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'flex', gap: '6px' }}>
             {(['amount', 'count'] as const).map(k => (
               <button key={k} onClick={() => setF({ ...f, kind: k })} style={{
@@ -456,7 +456,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
             </div>
             {/* Tags */}
             <div style={{ marginBottom: '16px' }}>
-              <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.88)', fontWeight: 600, marginBottom: '8px' }}>顧客標籤</p>
+              <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-ink)', fontWeight: 600, marginBottom: '8px' }}>顧客標籤</p>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {TAGS.map(tag => {
                   const active = tags.includes(tag.label)
@@ -476,7 +476,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
-            <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.88)', fontWeight: 600, marginBottom: '8px' }}>設計師筆記</p>
+            <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-ink)', fontWeight: 600, marginBottom: '8px' }}>設計師筆記</p>
             <textarea
               value={noteText}
               onChange={e => setNoteText(e.target.value)}
@@ -517,7 +517,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
-            <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.88)', fontWeight: 600, marginBottom: '8px' }}>作品歷史</p>
+            <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-ink)', fontWeight: 600, marginBottom: '8px' }}>作品歷史</p>
             <div style={{ display: 'flex', gap: '8px', marginBottom: karte.length ? '12px' : '0' }}>
               <input
                 value={karteNote}
@@ -557,7 +557,7 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
           </div>
         )}
 
-        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.88)', fontWeight: 600, marginBottom: '12px' }}>消費紀錄</p>
+        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-ink)', fontWeight: 600, marginBottom: '12px' }}>消費紀錄</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '35vh', overflowY: 'auto' }}>
           {history.map(b => (
             <div key={b.id} style={{
@@ -688,7 +688,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
       </button>
 
       {booking.note && <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: '#4e453f', marginTop: '8px', lineHeight: 1.6 }}>{booking.note}</p>}
-      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.4)', marginTop: '8px' }}>#{booking.id}</p>
+      <p style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '8px' }}>#{booking.id}</p>
 
       {!isNoShow && !showConfirm && !showNoShowConfirm && (
         <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
@@ -1168,13 +1168,13 @@ function FirstRunChecklist({ providerId, onGoServices, onGoSchedule }: { provide
   return (
     <div data-animate style={{ margin: '16px 16px 0', padding: '18px 18px 10px', background: 'linear-gradient(135deg, rgba(var(--theme-accent-rgb-legacy),0.12), rgba(var(--theme-accent-rgb-legacy),0.03))', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.3)', borderRadius: '18px' }}>
       <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(19px * var(--fs, 1))', color: charcoal }}>歡迎使用 MooLah ✨</p>
-      <p style={{ fontSize: 'calc(11.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '2px', marginBottom: '6px', lineHeight: 1.5 }}>3 步驟開始線上接單：</p>
+      <p style={{ fontSize: 'calc(11.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '2px', marginBottom: '6px', lineHeight: 1.5 }}>3 步驟開始線上接單：</p>
       {steps.map(s => (
         <div key={s.n} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '11px 0', borderTop: '1px solid rgba(var(--theme-accent-rgb-legacy),0.14)' }}>
           <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: oak, color: cream, fontSize: 'calc(12px * var(--fs, 1))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 600 }}>{s.title}</p>
-            <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '2px', lineHeight: 1.5 }}>{s.desc}</p>
+            <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '2px', lineHeight: 1.5 }}>{s.desc}</p>
           </div>
           <button onClick={s.action} style={{ fontSize: 'calc(11.5px * var(--fs, 1))', color: oak, background: 'rgba(var(--theme-accent-rgb-legacy),0.12)', border: `1px solid ${oak}`, borderRadius: '14px', padding: '11px 15px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{s.label}</button>
         </div>
@@ -1213,7 +1213,7 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
       <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(17px * var(--fs, 1))', color: charcoal }}>{title}</p>
       {showCta && (
         <>
-          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '10px', lineHeight: 1.7 }}>
+          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '10px', lineHeight: 1.7 }}>
             把你的預約連結分享出去，<br />讓客人自己線上預約 ✨
           </p>
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '18px', flexWrap: 'wrap' }}>
@@ -1579,22 +1579,22 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 700 }}>本月對帳</p>
-          <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.42)', letterSpacing: '0.06em' }}>{today.slice(0, 7).replace('-', ' / ')}</span>
+          <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', letterSpacing: '0.06em' }}>{today.slice(0, 7).replace('-', ' / ')}</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0', alignItems: 'stretch' }}>
           <div style={{ textAlign: 'center', padding: '4px 6px' }}>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{monthBookings.length}</p>
-            <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>成交數</p>
+            <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>成交數</p>
           </div>
           <div style={{ textAlign: 'center', padding: '4px 6px', borderLeft: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)', borderRight: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: charcoal, lineHeight: 1, letterSpacing: '-0.02em' }}>{monthRevenue > 0 ? monthRevenue.toLocaleString() : '—'}</p>
-            <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>營收 NT$</p>
+            <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>營收 NT$</p>
           </div>
           <div style={{ textAlign: 'center', padding: '4px 6px' }}>
             {isTrial && !isExpired ? (
               <>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>{trialDateKnown ? trialDaysLeft : '—'}</p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>{trialDateKnown ? '試用剩餘天' : '試用中'}</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>{trialDateKnown ? '試用剩餘天' : '試用中'}</p>
               </>
             ) : (
               /* 2026-08-06 起不在後台叫價：這裡是職人的營運成績單，收費由業務個別處理 */
@@ -1602,7 +1602,7 @@ export default function AdminPage() {
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 300, color: oak, lineHeight: 1, letterSpacing: '-0.02em' }}>
                   {monthBookings.length > 0 ? Math.round(monthRevenue / monthBookings.length).toLocaleString() : '—'}
                 </p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', marginTop: '6px', letterSpacing: '0.06em' }}>平均客單 NT$</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>平均客單 NT$</p>
               </>
             )}
           </div>
@@ -1611,17 +1611,17 @@ export default function AdminPage() {
           {isExpired ? (
             <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, lineHeight: 1.55 }}>
               <span style={{ fontWeight: 600, color: '#b4533a' }}>⏰ 試用已結束</span>
-              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　後台即將暫停，正式加入（NT$699/月）即可繼續服務並獲贈免費客製立牌</span>
+              <span style={{ color: 'var(--theme-muted)' }}>　·　後台即將暫停，正式加入（NT$699/月）即可繼續服務並獲贈免費客製立牌</span>
             </p>
           ) : isTrial ? (
             <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, lineHeight: 1.55 }}>
               <span style={{ fontWeight: 600, color: oak }}>🎁 試用中{trialDateKnown ? ` · 剩 ${trialDaysLeft} 天` : ''} · 已用 {trialUsed}/{TRIAL_LIMIT} 筆</span>
-              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　正式加入 NT$699/月解鎖無限預約 + 免費客製立牌</span>
+              <span style={{ color: 'var(--theme-muted)' }}>　·　正式加入 NT$699/月解鎖無限預約 + 免費客製立牌</span>
             </p>
           ) : (
             <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, lineHeight: 1.55 }}>
               <span style={{ fontWeight: 600, color: oak }}>✓ 0% 抽佣</span>
-              <span style={{ color: 'rgba(44,40,37,0.55)' }}>　·　客人付多少全部都是你的 · 不綁約 · 解約提前 1 週通知</span>
+              <span style={{ color: 'var(--theme-muted)' }}>　·　客人付多少全部都是你的 · 不綁約 · 解約提前 1 週通知</span>
             </p>
           )}
         </div>
@@ -1632,34 +1632,34 @@ export default function AdminPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 700 }}>回購分析 · 近 90 天</p>
-          <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.52)', letterSpacing: '0.06em' }}>{past90Bookings.length} 筆預約</span>
+          <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)', letterSpacing: '0.06em' }}>{past90Bookings.length} 筆預約</span>
         </div>
         {customerKeys.length === 0 ? (
-          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.55)', textAlign: 'center', padding: '10px 0', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', textAlign: 'center', padding: '10px 0', lineHeight: 1.6 }}>
             近 90 天還沒有預約資料<br/>
-            <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.35)' }}>開始接單後這裡會有完整分析</span>
+            <span style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', opacity: 0.72 }}>開始接單後這裡會有完整分析</span>
           </p>
         ) : (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0', alignItems: 'stretch' }}>
               <div style={{ textAlign: 'center', padding: '4px 4px' }}>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: oak, lineHeight: 1 }}>{repeatRate}<span style={{ fontSize: '1rem', opacity: 0.7 }}>%</span></p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回購率</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>回購率</p>
               </div>
               <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: charcoal, lineHeight: 1 }}>{repeatCustomers.length}</p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回頭客</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>回頭客</p>
               </div>
               <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: charcoal, lineHeight: 1 }}>{newCustomers.length}</p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>新客</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>新客</p>
               </div>
               <div style={{ textAlign: 'center', padding: '4px 4px', borderLeft: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
                 <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.7rem', fontWeight: 300, color: charcoal, lineHeight: 1 }}>{avgInterval || '—'}<span style={{ fontSize: '0.9rem', opacity: 0.7, marginLeft: '2px' }}>{avgInterval ? '天' : ''}</span></p>
-                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)', marginTop: '6px', letterSpacing: '0.06em' }}>回購間隔</p>
+                <p style={{ fontSize: 'calc(9.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '6px', letterSpacing: '0.06em' }}>回購間隔</p>
               </div>
             </div>
-            <p style={{ fontSize: 'calc(10.5px * var(--fs, 1))', color: 'rgba(44,40,37,0.64)', marginTop: '12px', lineHeight: 1.55, textAlign: 'center' }}>
+            <p style={{ fontSize: 'calc(10.5px * var(--fs, 1))', color: 'var(--theme-muted)', marginTop: '12px', lineHeight: 1.55, textAlign: 'center' }}>
               {repeatRate >= 50 ? '🌟 黏著度很高，繼續維持品質！' :
                repeatRate >= 30 ? '👍 回購表現不錯，可加強回訪提醒' :
                repeatRate >= 15 ? '📈 回購率有成長空間，建議追蹤老客戶' :
@@ -1877,14 +1877,14 @@ export default function AdminPage() {
         <summary style={{ cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, color: oak, letterSpacing: '0.06em', listStyle: 'none' }}>
           📌 嵌入到 IG bio / 自己網站
         </summary>
-        <div style={{ marginTop: '12px', fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.7)', lineHeight: 1.7 }}>
+        <div style={{ marginTop: '12px', fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.7 }}>
           <p style={{ marginBottom: '10px' }}>把以下程式碼貼到你的網站，客人可直接看到最近可預約時段：</p>
           {/* 深底上用 accent-light 不用 accent：實測 accent 在 #2C2825 上八主題只有 2.50–4.45，
               換 light 後 5.22–6.45 全數過 4.5:1（2026-08-17） */}
           <pre style={{ background: '#2C2825', color: 'var(--theme-accent-light)', padding: '12px', borderRadius: '8px', fontSize: 'calc(10.5px * var(--fs, 1))', overflowX: 'auto', fontFamily: 'ui-monospace, Menlo, monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
 {`<iframe src="https://moolah.studio/embed/${providerId}" width="360" height="540" frameborder="0" style="border:0;border-radius:14px;"></iframe>`}
           </pre>
-          <p style={{ marginTop: '8px', fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.5)' }}>
+          <p style={{ marginTop: '8px', fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-muted)' }}>
             或直接分享連結：
             <a href={`/embed/${providerId}`} target="_blank" rel="noopener noreferrer"
               style={{ color: oak, marginLeft: '4px', textDecoration: 'underline', minHeight: '40px', display: 'inline-flex', alignItems: 'center', padding: '0 4px' }}>
