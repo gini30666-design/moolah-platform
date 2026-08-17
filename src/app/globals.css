@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  --theme-canvas: #fbf8f1;
+  --theme-canvas-rgb-legacy: 251,248,241;
   --theme-accent: #A68966;
   --theme-accent-rgb: 166 137 102;
   --theme-accent-rgb-legacy: 166,137,102;
@@ -8,11 +10,27 @@
   --theme-accent-light: #c4a882;
   --theme-accent-pale: #ede3d8;
   --theme-accent-dim: #D9C5B2;
-  --theme-background: #fbf9f4;
-  --theme-background-rgb-legacy: 251,249,244;
-  --theme-surface: #f5efe6;
-  --theme-surface-deep: #ede8dc;
-  --theme-border: #e8e0d8;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #f4ebdf;
+  --theme-surface-deep: #e9dccb;
+  --theme-panel: #fffdf8;
+  --theme-panel-rgb-legacy: 255,253,248;
+  --theme-panel-elevated: #ffffff;
+  --theme-field: #f7f0e7;
+  --theme-ink: #2c2825;
+  --theme-ink-rgb-legacy: 44,40,37;
+  --theme-muted: #665e56;
+  --theme-border: #dccfbe;
+  --theme-on-image: #fffaf2;
+  --theme-on-image-rgb-legacy: 255,250,242;
+  --theme-on-accent: #fffaf4;
+  --theme-header: #f2e6d7;
+  --theme-header-rgb-legacy: 242,230,215;
+  --theme-header-ink: #2c2825;
+  --theme-card-radius: 20px;
+  --theme-card-shadow: 0 18px 44px rgba(82,60,38,0.13);
+  --theme-image-filter: saturate(.88) contrast(1.02) sepia(.06);
   --theme-selected: #c4845a;
   --theme-selected-rgb: 196 132 90;
   --theme-selected-rgb-legacy: 196,132,90;
@@ -22,8 +40,8 @@
   --theme-atmosphere: none;
   --theme-atmosphere-opacity: 0;
 
-  --cream: var(--theme-background);
-  --charcoal: #2C2825;
+  --cream: var(--theme-canvas);
+  --charcoal: var(--theme-ink);
   --charcoal-deep: #1a1714;
   --oak: var(--theme-accent);
   --oak-light: var(--theme-accent-light);
@@ -47,6 +65,8 @@
 
 /* ── Provider visual themes ─────────────────────────────────────────────── */
 [data-theme="moolah-gold"] {
+  --theme-canvas: #fbf8f1;
+  --theme-canvas-rgb-legacy: 251,248,241;
   --charcoal-deep: #1a1714;
   --theme-accent: #A68966;
   --theme-accent-rgb: 166 137 102;
@@ -58,11 +78,27 @@
   --theme-accent-light: #c4a882;
   --theme-accent-pale: #ede3d8;
   --theme-accent-dim: #D9C5B2;
-  --theme-background: #fbf9f4;
-  --theme-background-rgb-legacy: 251,249,244;
-  --theme-surface: #f5efe6;
-  --theme-surface-deep: #ede8dc;
-  --theme-border: #e8e0d8;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #f4ebdf;
+  --theme-surface-deep: #e9dccb;
+  --theme-panel: #fffdf8;
+  --theme-panel-rgb-legacy: 255,253,248;
+  --theme-panel-elevated: #ffffff;
+  --theme-field: #f7f0e7;
+  --theme-ink: #2c2825;
+  --theme-ink-rgb-legacy: 44,40,37;
+  --theme-muted: #665e56;
+  --theme-border: #dccfbe;
+  --theme-on-image: #fffaf2;
+  --theme-on-image-rgb-legacy: 255,250,242;
+  --theme-on-accent: #fffaf4;
+  --theme-header: #f2e6d7;
+  --theme-header-rgb-legacy: 242,230,215;
+  --theme-header-ink: #2c2825;
+  --theme-card-radius: 20px;
+  --theme-card-shadow: 0 18px 44px rgba(82,60,38,0.13);
+  --theme-image-filter: saturate(.88) contrast(1.02) sepia(.06);
   --theme-selected: #c4845a;
   --theme-selected-rgb: 196 132 90;
   --theme-selected-rgb-legacy: 196,132,90;
@@ -74,22 +110,40 @@
 }
 
 [data-theme="bali-stone"] {
+  --theme-canvas: #171612;
+  --theme-canvas-rgb-legacy: 23,22,18;
   --charcoal-deep: #211d18;
-  --theme-accent: #8b765d;
-  --theme-accent-rgb: 139 118 93;
-  --theme-accent-rgb-legacy: 139,118,93;
+  --theme-accent: #b99a71;
+  --theme-accent-rgb: 185 154 113;
+  --theme-accent-rgb-legacy: 185,154,113;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #6f5c45;
-  --theme-accent-strong: #6f5c45;
-  --theme-accent-light: #baa991;
-  --theme-accent-pale: #e6ddd1;
-  --theme-accent-dim: #ccbeac;
-  --theme-background: #f4f0e8;
-  --theme-background-rgb-legacy: 244,240,232;
-  --theme-surface: #eae3d8;
-  --theme-surface-deep: #ded3c4;
-  --theme-border: #d6cabc;
+  --theme-accent-text: #d2b68f;
+  --theme-accent-strong: #b99a71;
+  --theme-accent-light: #d2b68f;
+  --theme-accent-pale: #493e31;
+  --theme-accent-dim: #75634c;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #211e19;
+  --theme-surface-deep: #29251f;
+  --theme-panel: #302b24;
+  --theme-panel-rgb-legacy: 48,43,36;
+  --theme-panel-elevated: #3b342b;
+  --theme-field: #39332b;
+  --theme-ink: #f4eee3;
+  --theme-ink-rgb-legacy: 244,238,227;
+  --theme-muted: #c7bcaa;
+  --theme-border: #50483b;
+  --theme-on-image: #fffaf2;
+  --theme-on-image-rgb-legacy: 255,250,242;
+  --theme-on-accent: #211a13;
+  --theme-header: #211e19;
+  --theme-header-rgb-legacy: 33,30,25;
+  --theme-header-ink: #f4eee3;
+  --theme-card-radius: 12px;
+  --theme-card-shadow: 0 20px 54px rgba(0,0,0,0.34);
+  --theme-image-filter: saturate(.72) contrast(1.13) sepia(.10);
   --theme-selected: #9b7054;
   --theme-selected-rgb: 155 112 84;
   --theme-selected-rgb-legacy: 155,112,84;
@@ -101,22 +155,40 @@
 }
 
 [data-theme="ubud-slow"] {
+  --theme-canvas: #8f9780;
+  --theme-canvas-rgb-legacy: 143,151,128;
   --charcoal-deep: #182019;
   --theme-accent: #68725a;
   --theme-accent-rgb: 104 114 90;
   --theme-accent-rgb-legacy: 104,114,90;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #4d5742;
-  --theme-accent-strong: #4d5742;
+  --theme-accent-text: #344032;
+  --theme-accent-strong: #344032;
   --theme-accent-light: #a5aa92;
   --theme-accent-pale: #dfe2d5;
   --theme-accent-dim: #c4c8b7;
-  --theme-background: #f1ede3;
-  --theme-background-rgb-legacy: 241,237,227;
-  --theme-surface: #e7e1d3;
-  --theme-surface-deep: #d9d2c1;
-  --theme-border: #d1c9b8;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #adb59d;
+  --theme-surface-deep: #75806c;
+  --theme-panel: #c6ccb7;
+  --theme-panel-rgb-legacy: 198,204,183;
+  --theme-panel-elevated: #d5dacb;
+  --theme-field: #d8dccd;
+  --theme-ink: #20261f;
+  --theme-ink-rgb-legacy: 32,38,31;
+  --theme-muted: #30382e;
+  --theme-border: #69745f;
+  --theme-on-image: #f5f1e7;
+  --theme-on-image-rgb-legacy: 245,241,231;
+  --theme-on-accent: #f7f4ea;
+  --theme-header: #3d493b;
+  --theme-header-rgb-legacy: 61,73,59;
+  --theme-header-ink: #f3efe5;
+  --theme-card-radius: 24px;
+  --theme-card-shadow: 0 22px 52px rgba(41,51,38,0.24);
+  --theme-image-filter: saturate(.78) contrast(1.04) sepia(.08) hue-rotate(8deg);
   --theme-selected: #947253;
   --theme-selected-rgb: 148 114 83;
   --theme-selected-rgb-legacy: 148,114,83;
@@ -128,22 +200,40 @@
 }
 
 [data-theme="quiet-luxury"] {
+  --theme-canvas: #ece8df;
+  --theme-canvas-rgb-legacy: 236,232,223;
   --charcoal-deep: #1d1c1a;
   --theme-accent: #8d795d;
   --theme-accent-rgb: 141 121 93;
   --theme-accent-rgb-legacy: 141,121,93;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #6f604b;
-  --theme-accent-strong: #6f604b;
+  --theme-accent-text: #625344;
+  --theme-accent-strong: #625344;
   --theme-accent-light: #b9aa94;
   --theme-accent-pale: #e9e2d8;
   --theme-accent-dim: #d2c7b7;
-  --theme-background: #f7f4ee;
-  --theme-background-rgb-legacy: 247,244,238;
-  --theme-surface: #efebe3;
-  --theme-surface-deep: #e4ded4;
-  --theme-border: #ddd5c9;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #e4ded3;
+  --theme-surface-deep: #d8d0c2;
+  --theme-panel: #f8f5ee;
+  --theme-panel-rgb-legacy: 248,245,238;
+  --theme-panel-elevated: #fffdf8;
+  --theme-field: #f1ede5;
+  --theme-ink: #262521;
+  --theme-ink-rgb-legacy: 38,37,33;
+  --theme-muted: #5f5b52;
+  --theme-border: #c8c0b4;
+  --theme-on-image: #fbf7ef;
+  --theme-on-image-rgb-legacy: 251,247,239;
+  --theme-on-accent: #ffffff;
+  --theme-header: #d8d0c2;
+  --theme-header-rgb-legacy: 216,208,194;
+  --theme-header-ink: #262521;
+  --theme-card-radius: 10px;
+  --theme-card-shadow: 0 16px 38px rgba(49,44,38,0.12);
+  --theme-image-filter: saturate(.62) contrast(1.08) sepia(.05);
   --theme-selected: #8d795d;
   --theme-selected-rgb: 141 121 93;
   --theme-selected-rgb-legacy: 141,121,93;
@@ -155,22 +245,40 @@
 }
 
 [data-theme="rainforest-jade"] {
+  --theme-canvas: #0f211a;
+  --theme-canvas-rgb-legacy: 15,33,26;
   --charcoal-deep: #11251f;
-  --theme-accent: #477064;
-  --theme-accent-rgb: 71 112 100;
-  --theme-accent-rgb-legacy: 71,112,100;
+  --theme-accent: #94b69c;
+  --theme-accent-rgb: 148 182 156;
+  --theme-accent-rgb-legacy: 148,182,156;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #31554c;
-  --theme-accent-strong: #31554c;
-  --theme-accent-light: #8fa99f;
-  --theme-accent-pale: #d8e4df;
-  --theme-accent-dim: #b9ccc4;
-  --theme-background: #edf2ee;
-  --theme-background-rgb-legacy: 237,242,238;
-  --theme-surface: #e1eae4;
-  --theme-surface-deep: #d3dfd8;
-  --theme-border: #c8d7cf;
+  --theme-accent-text: #afd0b6;
+  --theme-accent-strong: #94b69c;
+  --theme-accent-light: #b7cfbc;
+  --theme-accent-pale: #284d40;
+  --theme-accent-dim: #4f7768;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #163028;
+  --theme-surface-deep: #193a30;
+  --theme-panel: #1f4337;
+  --theme-panel-rgb-legacy: 31,67,55;
+  --theme-panel-elevated: #285344;
+  --theme-field: #254c3f;
+  --theme-ink: #eef5ed;
+  --theme-ink-rgb-legacy: 238,245,237;
+  --theme-muted: #b8cbbf;
+  --theme-border: #396655;
+  --theme-on-image: #f2f7ef;
+  --theme-on-image-rgb-legacy: 242,247,239;
+  --theme-on-accent: #10231b;
+  --theme-header: #122a22;
+  --theme-header-rgb-legacy: 18,42,34;
+  --theme-header-ink: #eef5ed;
+  --theme-card-radius: 22px;
+  --theme-card-shadow: 0 22px 56px rgba(0,12,8,0.42);
+  --theme-image-filter: saturate(.76) contrast(1.10) hue-rotate(6deg);
   --theme-selected: #527d70;
   --theme-selected-rgb: 82 125 112;
   --theme-selected-rgb-legacy: 82,125,112;
@@ -182,22 +290,40 @@
 }
 
 [data-theme="terracotta-sunset"] {
+  --theme-canvas: #c98264;
+  --theme-canvas-rgb-legacy: 201,130,100;
   --charcoal-deep: #281813;
-  --theme-accent: #b36f55;
-  --theme-accent-rgb: 179 111 85;
-  --theme-accent-rgb-legacy: 179,111,85;
+  --theme-accent: #9a4d36;
+  --theme-accent-rgb: 154 77 54;
+  --theme-accent-rgb-legacy: 154,77,54;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #8f523e;
-  --theme-accent-strong: #8f523e;
+  --theme-accent-text: #713729;
+  --theme-accent-strong: #713729;
   --theme-accent-light: #d3a088;
   --theme-accent-pale: #f0dcd0;
   --theme-accent-dim: #dfbda9;
-  --theme-background: #faf0e8;
-  --theme-background-rgb-legacy: 250,240,232;
-  --theme-surface: #f2e2d6;
-  --theme-surface-deep: #e8d2c2;
-  --theme-border: #e3cbbc;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #d59678;
+  --theme-surface-deep: #ae624b;
+  --theme-panel: #e2ab8f;
+  --theme-panel-rgb-legacy: 226,171,143;
+  --theme-panel-elevated: #edbea5;
+  --theme-field: #efc4ad;
+  --theme-ink: #2f1d18;
+  --theme-ink-rgb-legacy: 47,29,24;
+  --theme-muted: #55362d;
+  --theme-border: #9d5844;
+  --theme-on-image: #fff4e9;
+  --theme-on-image-rgb-legacy: 255,244,233;
+  --theme-on-accent: #fff7ef;
+  --theme-header: #7c3f31;
+  --theme-header-rgb-legacy: 124,63,49;
+  --theme-header-ink: #fff4e9;
+  --theme-card-radius: 26px;
+  --theme-card-shadow: 0 22px 50px rgba(77,37,26,0.25);
+  --theme-image-filter: saturate(.92) contrast(1.03) sepia(.10);
   --theme-selected: #bc6448;
   --theme-selected-rgb: 188 100 72;
   --theme-selected-rgb-legacy: 188,100,72;
@@ -209,22 +335,40 @@
 }
 
 [data-theme="indigo-tides"] {
+  --theme-canvas: #101925;
+  --theme-canvas-rgb-legacy: 16,25,37;
   --charcoal-deep: #121b26;
-  --theme-accent: #53677b;
-  --theme-accent-rgb: 83 103 123;
-  --theme-accent-rgb-legacy: 83,103,123;
+  --theme-accent: #9fb6cc;
+  --theme-accent-rgb: 159 182 204;
+  --theme-accent-rgb-legacy: 159,182,204;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #3e5165;
-  --theme-accent-strong: #3e5165;
-  --theme-accent-light: #91a4b3;
-  --theme-accent-pale: #dbe4e8;
-  --theme-accent-dim: #bdcbd2;
-  --theme-background: #edf2f3;
-  --theme-background-rgb-legacy: 237,242,243;
-  --theme-surface: #e0e9eb;
-  --theme-surface-deep: #d1dde1;
-  --theme-border: #c7d5da;
+  --theme-accent-text: #b7cadb;
+  --theme-accent-strong: #9fb6cc;
+  --theme-accent-light: #bdd0df;
+  --theme-accent-pale: #31465c;
+  --theme-accent-dim: #607b94;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #172638;
+  --theme-surface-deep: #1d2d40;
+  --theme-panel: #223347;
+  --theme-panel-rgb-legacy: 34,51,71;
+  --theme-panel-elevated: #2b4057;
+  --theme-field: #293c52;
+  --theme-ink: #eff3f4;
+  --theme-ink-rgb-legacy: 239,243,244;
+  --theme-muted: #b9c6cf;
+  --theme-border: #40566d;
+  --theme-on-image: #f6f8f8;
+  --theme-on-image-rgb-legacy: 246,248,248;
+  --theme-on-accent: #101925;
+  --theme-header: #152335;
+  --theme-header-rgb-legacy: 21,35,53;
+  --theme-header-ink: #eff3f4;
+  --theme-card-radius: 18px;
+  --theme-card-shadow: 0 24px 60px rgba(1,8,18,0.48);
+  --theme-image-filter: saturate(.66) contrast(1.12) hue-rotate(4deg);
   --theme-selected: #5d6f90;
   --theme-selected-rgb: 93 111 144;
   --theme-selected-rgb-legacy: 93,111,144;
@@ -236,22 +380,40 @@
 }
 
 [data-theme="orchid-dusk"] {
+  --theme-canvas: #947c91;
+  --theme-canvas-rgb-legacy: 148,124,145;
   --charcoal-deep: #241723;
   --theme-accent: #765f75;
   --theme-accent-rgb: 118 95 117;
   --theme-accent-rgb-legacy: 118,95,117;
   /* 小字專用（9–13px）：accent 在淺底上普遍不足 4.5:1，accent-strong 多數過關但 gold 卡在 4.47。
      這個 token 保證在該主題最亮的底（含 58% 白面板）上 ≥4.5:1。2026-08-17 */
-  --theme-accent-text: #594758;
-  --theme-accent-strong: #594758;
+  --theme-accent-text: #4d354c;
+  --theme-accent-strong: #4d354c;
   --theme-accent-light: #aa94a7;
   --theme-accent-pale: #e6dce4;
   --theme-accent-dim: #cdbdca;
-  --theme-background: #f3edf2;
-  --theme-background-rgb-legacy: 243,237,242;
-  --theme-surface: #eae1e8;
-  --theme-surface-deep: #ddd1da;
-  --theme-border: #d5c7d2;
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --theme-surface: #aa91a6;
+  --theme-surface-deep: #755f73;
+  --theme-panel: #c1a9bd;
+  --theme-panel-rgb-legacy: 193,169,189;
+  --theme-panel-elevated: #d0bbcd;
+  --theme-field: #dbc8d8;
+  --theme-ink: #1f1920;
+  --theme-ink-rgb-legacy: 31,25,32;
+  --theme-muted: #413543;
+  --theme-border: #685466;
+  --theme-on-image: #fbf3fa;
+  --theme-on-image-rgb-legacy: 251,243,250;
+  --theme-on-accent: #fff7fd;
+  --theme-header: #50394f;
+  --theme-header-rgb-legacy: 80,57,79;
+  --theme-header-ink: #fbf3fa;
+  --theme-card-radius: 28px;
+  --theme-card-shadow: 0 24px 54px rgba(58,31,56,0.25);
+  --theme-image-filter: saturate(.68) contrast(1.05) hue-rotate(-5deg);
   --theme-selected: #865d7b;
   --theme-selected-rgb: 134 93 123;
   --theme-selected-rgb-legacy: 134,93,123;
