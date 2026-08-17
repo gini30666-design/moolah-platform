@@ -11,9 +11,9 @@ const DOW_LABELS = ['日', '一', '二', '三', '四', '五', '六']
 
 const STATUS_STYLE: Record<DayStatus, { dot: string; text: string; cursor: string }> = {
   open:    { dot: 'var(--oak)',                  text: 'var(--charcoal)',           cursor: 'pointer' },
-  limited: { dot: 'rgba(166,137,102,0.55)',      text: 'var(--charcoal)',           cursor: 'pointer' },
-  full:    { dot: 'transparent',                 text: 'rgba(44,40,37,0.25)',       cursor: 'default' },
-  closed:  { dot: 'transparent',                 text: 'rgba(44,40,37,0.2)',        cursor: 'default' },
+  limited: { dot: 'rgba(var(--theme-accent-rgb-legacy),0.55)', text: 'var(--charcoal)', cursor: 'pointer' },
+  full:    { dot: 'transparent',                 text: 'rgba(var(--theme-ink-rgb-legacy),0.38)', cursor: 'default' },
+  closed:  { dot: 'transparent',                 text: 'rgba(var(--theme-ink-rgb-legacy),0.32)', cursor: 'default' },
 }
 
 function formatMonth(dateStr: string) {
@@ -41,7 +41,7 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
     <div style={{ padding: '20px 0', display: 'flex', justifyContent: 'center' }}>
       <div style={{
         width: '20px', height: '20px', borderRadius: '50%',
-        border: '1.5px solid rgba(166,137,102,0.2)',
+        border: '1.5px solid rgba(var(--theme-accent-rgb-legacy),0.2)',
         borderTop: '1.5px solid var(--oak)',
         animation: 'spin 0.9s linear infinite',
       }} />
@@ -54,9 +54,9 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
   if (bookableDays.length === 0) return (
     <section style={{ margin: '0 20px 24px' }}>
       <p style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--oak)', marginBottom: '12px' }}>可預約日期</p>
-      <div style={{ background: 'rgba(245,239,230,0.55)', border: '1px solid rgba(166,137,102,0.18)', borderRadius: '18px', padding: '32px 20px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '18px', color: 'rgba(44,40,37,0.35)', marginBottom: '8px' }}>近期已額滿</p>
-        <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.4)', lineHeight: 1.6 }}>目前未來 28 天皆已預約完畢<br />歡迎直接透過 LINE 詢問候補</p>
+      <div style={{ background: 'var(--theme-field)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', padding: '32px 20px', textAlign: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '18px', color: 'var(--theme-muted)', marginBottom: '8px' }}>近期已額滿</p>
+        <p style={{ fontSize: '11px', color: 'var(--theme-muted)', lineHeight: 1.6 }}>目前未來 28 天皆已預約完畢<br />歡迎直接透過 LINE 詢問候補</p>
         <LineLink source="availability_1" oaId={OA_CONSUMER} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '16px', padding: '10px 20px', borderRadius: '99px', background: '#06C755', color: 'white', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>
           聯絡候補
         </LineLink>
@@ -103,28 +103,28 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
           可預約日期
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: 'rgba(44,40,37,0.45)' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: 'var(--theme-muted)' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--oak)', display: 'inline-block' }} />
             有空位
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: 'rgba(44,40,37,0.45)' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(166,137,102,0.5)', display: 'inline-block' }} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: 'var(--theme-muted)' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(var(--theme-accent-rgb-legacy),0.5)', display: 'inline-block' }} />
             少量
           </span>
         </div>
       </div>
 
       <div style={{
-        background: 'rgba(245,239,230,0.55)',
-        border: '1px solid rgba(166,137,102,0.18)',
-        borderRadius: '18px',
+        background: 'var(--theme-field)',
+        border: '1px solid var(--theme-border)',
+        borderRadius: 'var(--theme-card-radius)',
         overflow: 'hidden',
         padding: '16px 14px 14px',
       }}>
         {/* Weekday headers */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '8px' }}>
           {DOW_LABELS.map(l => (
-            <div key={l} style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(44,40,37,0.3)', letterSpacing: '0.08em', padding: '0 2px 6px' }}>
+            <div key={l} style={{ textAlign: 'center', fontSize: '10px', color: 'var(--theme-muted)', letterSpacing: '0.08em', padding: '0 2px 6px', opacity: 0.78 }}>
               {l}
             </div>
           ))}
@@ -164,22 +164,22 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
                         padding: '6px 2px',
                         borderRadius: '8px',
                         cursor: isPast ? 'default' : style.cursor,
-                        background: isToday ? 'rgba(166,137,102,0.18)' : 'transparent',
+                        background: isToday ? 'rgba(var(--theme-accent-rgb-legacy),0.18)' : 'transparent',
                         opacity: isPast ? 0.3 : 1,
                         transition: 'background 0.15s',
                       }}
                       onMouseEnter={e => {
                         if (!isPast && (cell.status === 'open' || cell.status === 'limited'))
-                          (e.currentTarget as HTMLElement).style.background = 'rgba(166,137,102,0.2)'
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(var(--theme-accent-rgb-legacy),0.2)'
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.background = isToday ? 'rgba(166,137,102,0.18)' : 'transparent'
+                        (e.currentTarget as HTMLElement).style.background = isToday ? 'rgba(var(--theme-accent-rgb-legacy),0.18)' : 'transparent'
                       }}
                     >
                       <span style={{
                         fontSize: '13px',
                         fontWeight: isToday ? 600 : 400,
-                        color: isToday ? 'var(--oak)' : isPast ? 'rgba(44,40,37,0.2)' : style.text,
+                        color: isToday ? 'var(--oak)' : isPast ? 'rgba(var(--theme-ink-rgb-legacy),0.32)' : style.text,
                         lineHeight: 1,
                       }}>
                         {new Date(cell.date + 'T12:00:00').getDate()}
@@ -202,7 +202,7 @@ export function AvailabilityCalendar({ providerId, selectedServiceId }: Props) {
           )
         })}
 
-        <p style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(44,40,37,0.3)', marginTop: '8px', letterSpacing: '0.06em' }}>
+        <p style={{ textAlign: 'center', fontSize: '10px', color: 'var(--theme-muted)', marginTop: '8px', letterSpacing: '0.06em', opacity: 0.78 }}>
           點擊日期直接跳轉預約
         </p>
       </div>

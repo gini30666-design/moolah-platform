@@ -46,8 +46,20 @@ describe('providers.theme AA data path guard', () => {
     const bookingPage = readSource('../app/[providerId]/book/page.tsx')
 
     expect(bookingPage).toContain('data-layout="booking-flow"')
-    expect(bookingPage).toContain('data-booking-surface="light"')
+    expect(bookingPage).toContain('data-booking-surface="adaptive"')
     expect(bookingPage).toContain("fetch('/api/booking'")
+  })
+
+  it('keeps every booking state on semantic theme surfaces', () => {
+    const bookingPage = readSource('../app/[providerId]/book/page.tsx')
+    const calendar = readSource('../components/AvailabilityCalendar.tsx')
+
+    expect(bookingPage).not.toMatch(/const cream\s*=\s*['"]#FBF9F4['"]/)
+    expect(bookingPage).toContain("background: 'var(--theme-canvas)'")
+    expect(bookingPage).toContain("background: 'var(--theme-panel)'")
+    expect(bookingPage).toContain("color: 'var(--theme-ink)'")
+    expect(calendar).toContain("background: 'var(--theme-field)'")
+    expect(calendar).toContain("color: 'var(--theme-muted)'")
   })
 
   it('keeps the light-admin composition attached to owner authentication', () => {
