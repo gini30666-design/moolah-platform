@@ -6,6 +6,8 @@ const TARGET_FILES = [
   'src/app/[providerId]/ProviderProfileClient.tsx',
   'src/app/[providerId]/book/page.tsx',
   'src/app/[providerId]/admin/page.tsx',
+  'src/app/[providerId]/admin/ScheduleView.tsx',
+  'src/app/[providerId]/admin/PortfolioView.tsx',
 ]
 
 const MANAGED_LITERALS = [

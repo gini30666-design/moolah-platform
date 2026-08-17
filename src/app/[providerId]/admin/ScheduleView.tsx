@@ -9,12 +9,12 @@ import { authHeader } from '@/lib/clientAuth'
 type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: boolean; breakStart: string; breakEnd: string; slotStarts: string }
 
 const DAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
-const oak = '#A68966'
+const oak = 'var(--theme-accent)'
 const charcoal = '#2C2825'
-const cream = '#fbf9f4'
-const border = 'rgba(166,137,102,0.15)'
+const cream = 'var(--theme-background)'
+const border = 'rgba(var(--theme-accent-rgb-legacy),0.15)'
 const inputStyle: React.CSSProperties = {
-  background: 'rgba(166,137,102,0.06)', border: '1px solid rgba(166,137,102,0.18)',
+  background: 'rgba(var(--theme-accent-rgb-legacy),0.06)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)',
   borderRadius: '10px', padding: '0 12px', minHeight: '44px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal,
   outline: 'none', width: '84px',
 }
@@ -116,8 +116,8 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
         {schedule.map(s => (
           <div key={s.day} style={{
-            background: s.isOpen ? 'rgba(251,249,244,0.9)' : 'rgba(166,137,102,0.04)',
-            border: `1px solid ${s.isOpen ? 'rgba(166,137,102,0.2)' : 'rgba(166,137,102,0.08)'}`,
+            background: s.isOpen ? 'rgba(var(--theme-background-rgb-legacy),0.9)' : 'rgba(var(--theme-accent-rgb-legacy),0.04)',
+            border: `1px solid ${s.isOpen ? 'rgba(var(--theme-accent-rgb-legacy),0.2)' : 'rgba(var(--theme-accent-rgb-legacy),0.08)'}`,
             borderRadius: '14px', padding: '12px 16px',
             transition: 'all 0.2s',
           }}>
@@ -137,7 +137,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             >
               <span style={{
                 width: '42px', height: '24px', borderRadius: '12px', display: 'block',
-                background: s.isOpen ? oak : 'rgba(166,137,102,0.2)',
+                background: s.isOpen ? oak : 'rgba(var(--theme-accent-rgb-legacy),0.2)',
                 position: 'relative', transition: 'background 0.2s',
               }}>
                 <span style={{
@@ -164,7 +164,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             {s.isOpen && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap',
-                marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(166,137,102,0.18)',
+                marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(var(--theme-accent-rgb-legacy),0.18)',
               }}>
                 <button
                   onClick={() => toggleBreak(s.day)}
@@ -192,7 +192,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
             {s.isOpen && (
               <div style={{
                 marginTop: '10px', paddingTop: '10px',
-                borderTop: '1px dashed rgba(166,137,102,0.18)',
+                borderTop: '1px dashed rgba(var(--theme-accent-rgb-legacy),0.18)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <button
@@ -255,7 +255,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
           style={{ ...inputStyle, width: 'auto', flex: 1 }}
         />
         <button onClick={addBlockedDate} disabled={!newBlockDate} style={{
-          padding: '9px 16px', background: newBlockDate ? oak : 'rgba(166,137,102,0.2)',
+          padding: '9px 16px', background: newBlockDate ? oak : 'rgba(var(--theme-accent-rgb-legacy),0.2)',
           color: cream, border: 'none', borderRadius: '10px', fontSize: 'calc(12px * var(--fs, 1))', cursor: 'pointer',
         }}>新增</button>
       </div>

@@ -4,12 +4,12 @@ import { authHeader } from '@/lib/clientAuth'
 
 type PortfolioItem = { id: string; imageUrl: string; caption: string; order: number }
 
-const oak = '#A68966'
+const oak = 'var(--theme-accent)'
 const charcoal = '#2C2825'
-const cream = '#fbf9f4'
+const cream = 'var(--theme-background)'
 const inputStyle: React.CSSProperties = {
-  width: '100%', background: 'rgba(166,137,102,0.06)',
-  border: '1px solid rgba(166,137,102,0.18)', borderRadius: '10px',
+  width: '100%', background: 'rgba(var(--theme-accent-rgb-legacy),0.06)',
+  border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)', borderRadius: '10px',
   padding: '10px 13px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, outline: 'none',
   boxSizing: 'border-box',
 }
@@ -137,7 +137,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
         {!showAdd && (
           <button onClick={() => setShowAdd(true)} style={{
             display: 'flex', alignItems: 'center', gap: '6px',
-            fontSize: 'calc(12px * var(--fs, 1))', color: oak, background: 'rgba(166,137,102,0.1)',
+            fontSize: 'calc(12px * var(--fs, 1))', color: oak, background: 'rgba(var(--theme-accent-rgb-legacy),0.1)',
             border: 'none', borderRadius: '20px', padding: '11px 16px', minHeight: '40px', cursor: 'pointer',
           }}>
             <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px' }}>
@@ -150,14 +150,14 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
       {/* Add form */}
       {showAdd && (
-        <div style={{ background: 'rgba(251,249,244,0.9)', border: '1px solid rgba(166,137,102,0.2)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
+        <div style={{ background: 'rgba(var(--theme-background-rgb-legacy),0.9)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增作品</p>
             <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} aria-label="關閉" style={{ fontSize: 'calc(18px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer', minWidth: '40px', minHeight: '40px' }}>×</button>
           </div>
 
           {/* Mode toggle */}
-          <div style={{ display: 'flex', background: 'rgba(166,137,102,0.08)', borderRadius: '10px', padding: '3px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', background: 'rgba(var(--theme-accent-rgb-legacy),0.08)', borderRadius: '10px', padding: '3px', marginBottom: '16px' }}>
             {(['upload', 'url'] as const).map(m => (
               <button key={m} onClick={() => setAddMode(m)} style={{
                 flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))',
@@ -182,9 +182,9 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
               />
               <label htmlFor="portfolio-upload" style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                gap: '8px', border: '2px dashed rgba(166,137,102,0.3)', borderRadius: '12px',
+                gap: '8px', border: '2px dashed rgba(var(--theme-accent-rgb-legacy),0.3)', borderRadius: '12px',
                 padding: '28px 16px', cursor: uploading ? 'default' : 'pointer',
-                background: 'rgba(166,137,102,0.03)', marginBottom: '12px',
+                background: 'rgba(var(--theme-accent-rgb-legacy),0.03)', marginBottom: '12px',
               }}>
                 {uploading ? (
                   <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: oak }}>{uploadProgress}</p>
@@ -211,7 +211,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                 disabled={!urlInput.trim() || uploading}
                 style={{
                   width: '100%', padding: '12px', borderRadius: '50px', border: 'none',
-                  background: !urlInput.trim() || uploading ? 'rgba(166,137,102,0.3)' : oak,
+                  background: !urlInput.trim() || uploading ? 'rgba(var(--theme-accent-rgb-legacy),0.3)' : oak,
                   color: cream, fontSize: 'calc(13px * var(--fs, 1))', cursor: 'pointer',
                 }}
               >
