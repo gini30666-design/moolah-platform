@@ -132,7 +132,7 @@ Phase 0 僅把三個目標頁面與共用樣式中的品牌色硬編值收斂到
 - PATCH 成功只更新 `providers.theme`。
 - 未授權 401／403、provider 不存在 404、非法 key 400。
 
-不得在程式驗證完成前直接套用正式 Supabase migration。
+不得直接套用 Supabase migration。程式碼、migration／DDL 草稿與預設值可先完成；任何資料庫改動（包含 `ALTER TABLE`、新增 `theme` 欄位或資料寫入）都必須在執行前再次取得 Gini 明確核准。
 
 ## 4. 後台主題展示與選擇
 

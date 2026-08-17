@@ -19,7 +19,7 @@
 - Every production function follows RED → verify failure → GREEN → verify pass.
 - Phase 0 before/after screenshots cover three routes at exact 390 and 1440 content widths; every RGBA diff count must equal 0. Any non-zero result stops execution.
 - `providers.theme` is AA/index 26. Supabase schema, `TABLE_COLS.providers`, booking range, and provider API range change together.
-- Do not merge, push, deploy production, or apply the production Supabase migration automatically.
+- Do not merge, push, deploy production, or mutate the database automatically. Code and DDL drafts may be prepared, but every Supabase DDL or data write requires Gini's explicit approval immediately before execution.
 
 ---
 
