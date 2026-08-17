@@ -47,6 +47,7 @@
 
 /* ── Provider visual themes ─────────────────────────────────────────────── */
 [data-theme="moolah-gold"] {
+  --charcoal-deep: #1a1714;
   --theme-accent: #A68966;
   --theme-accent-rgb: 166 137 102;
   --theme-accent-rgb-legacy: 166,137,102;
@@ -70,6 +71,7 @@
 }
 
 [data-theme="bali-stone"] {
+  --charcoal-deep: #211d18;
   --theme-accent: #8b765d;
   --theme-accent-rgb: 139 118 93;
   --theme-accent-rgb-legacy: 139,118,93;
@@ -93,6 +95,7 @@
 }
 
 [data-theme="ubud-slow"] {
+  --charcoal-deep: #182019;
   --theme-accent: #68725a;
   --theme-accent-rgb: 104 114 90;
   --theme-accent-rgb-legacy: 104,114,90;
@@ -116,6 +119,7 @@
 }
 
 [data-theme="quiet-luxury"] {
+  --charcoal-deep: #1d1c1a;
   --theme-accent: #8d795d;
   --theme-accent-rgb: 141 121 93;
   --theme-accent-rgb-legacy: 141,121,93;
@@ -139,6 +143,7 @@
 }
 
 [data-theme="rainforest-jade"] {
+  --charcoal-deep: #11251f;
   --theme-accent: #477064;
   --theme-accent-rgb: 71 112 100;
   --theme-accent-rgb-legacy: 71,112,100;
@@ -162,6 +167,7 @@
 }
 
 [data-theme="terracotta-sunset"] {
+  --charcoal-deep: #281813;
   --theme-accent: #b36f55;
   --theme-accent-rgb: 179 111 85;
   --theme-accent-rgb-legacy: 179,111,85;
@@ -185,6 +191,7 @@
 }
 
 [data-theme="indigo-tides"] {
+  --charcoal-deep: #121b26;
   --theme-accent: #53677b;
   --theme-accent-rgb: 83 103 123;
   --theme-accent-rgb-legacy: 83,103,123;
@@ -208,6 +215,7 @@
 }
 
 [data-theme="orchid-dusk"] {
+  --charcoal-deep: #241723;
   --theme-accent: #765f75;
   --theme-accent-rgb: 118 95 117;
   --theme-accent-rgb-legacy: 118,95,117;

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
 import {
   DEFAULT_PROVIDER_THEME,
   normalizeProviderTheme,
@@ -30,6 +31,16 @@ describe('provider theme metadata', () => {
       expect(option.label).not.toBe('')
       expect(option.swatches).toHaveLength(3)
       expect(option.swatches.every(swatch => /^#[0-9a-f]{6}$/i.test(swatch))).toBe(true)
+    }
+  })
+
+  it('gives every visual recipe its own dark editorial tone', () => {
+    const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
+
+    for (const theme of PROVIDER_THEME_KEYS) {
+      const block = css.match(new RegExp(`\\[data-theme="${theme}"\\] \\{([\\s\\S]*?)\\n\\}`))?.[1]
+      expect(block, `${theme} CSS recipe`).toBeTruthy()
+      expect(block, `${theme} dark tone`).toContain('--charcoal-deep:')
     }
   })
 })

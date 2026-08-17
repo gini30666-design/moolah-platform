@@ -26,6 +26,15 @@ describe('providers.theme AA data path guard', () => {
     expect(adminPage).toContain("['theme', '頁面風格']")
   })
 
+  it('uses provider media in the home-page hero without replacing the existing page structure', () => {
+    const providerProfile = readSource('../app/[providerId]/ProviderProfileClient.tsx')
+
+    expect(providerProfile).toContain('data-provider-cover')
+    expect(providerProfile).toContain('provider.coverUrl')
+    expect(providerProfile).toContain('Selected Work')
+    expect(providerProfile).toContain('handleBook')
+  })
+
   it('keeps the pending DDL nullable and whitelist constrained', () => {
     const migration = readSource('../../supabase/migrations/20260817_add_provider_theme.sql')
 

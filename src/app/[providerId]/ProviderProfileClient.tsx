@@ -297,53 +297,64 @@ export default function ProviderPage() {
 
       {/* ── 1. Header band ──────────────────────────────────────────────── */}
       <div ref={headerRef} style={{
-        padding: '34px 20px 26px', position: 'relative',
+        padding: provider.coverUrl ? '34px 20px 42px' : '34px 20px 26px', position: 'relative',
+        minHeight: provider.coverUrl ? '330px' : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflow: 'hidden',
         background: 'radial-gradient(120% 78% at 50% -18%, rgba(var(--theme-accent-rgb-legacy),0.16), transparent 62%)',
         animation: 'phase-in .55s cubic-bezier(0.16,1,0.3,1)',
         willChange: 'transform, opacity',
       }}>
+        {provider.coverUrl && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img data-provider-cover src={provider.coverUrl} alt="" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(18,16,14,0.22) 0%, var(--theme-hero-overlay) 58%, rgba(18,16,14,0.86) 100%)' }} />
+          </>
+        )}
+        <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
           {canGoBack ? (
-            <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(44,40,37,0.5)' }}>
+            <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: provider.coverUrl ? 'rgba(251,249,244,0.84)' : 'rgba(44,40,37,0.5)' }}>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
                 <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span style={{ fontSize: '11px', letterSpacing: '0.06em' }}>返回</span>
             </button>
           ) : <span style={{ width: '40px' }} />}
-          <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--oak)', fontWeight: 600, textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center', padding: '0 8px' }}>MooLah</a>
+          <a href="/" style={{ fontSize: '11px', letterSpacing: '0.34em', textTransform: 'uppercase', color: provider.coverUrl ? 'rgba(251,249,244,0.92)' : 'var(--oak)', fontWeight: 600, textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center', padding: '0 8px' }}>MooLah</a>
           {isDemo
-            ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: 'var(--oak)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: provider.coverUrl ? 'rgba(251,249,244,0.92)' : 'var(--oak)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
             : location
-            ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(44,40,37,0.42)' }}>{location}</span>
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: provider.coverUrl ? 'rgba(251,249,244,0.72)' : 'rgba(44,40,37,0.42)' }}>{location}</span>
             : <span style={{ width: '40px' }} />
           }
         </div>
 
         {/* Store name — large serif */}
-        <p className="font-display" style={{ fontSize: 'clamp(2.4rem,10vw,3.1rem)', fontWeight: 300, lineHeight: 1.02, color: 'var(--charcoal)', letterSpacing: '-0.02em', marginBottom: '12px' }}>
+        <p className="font-display" style={{ fontSize: 'clamp(2.4rem,10vw,3.1rem)', fontWeight: 300, lineHeight: 1.02, color: provider.coverUrl ? '#fbf9f4' : 'var(--charcoal)', letterSpacing: '-0.02em', marginBottom: '12px', textShadow: provider.coverUrl ? '0 3px 22px rgba(0,0,0,0.34)' : undefined }}>
           {displayName}
         </p>
 
         {/* Handle + rating row — always present, IG handle preserved for future */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: headerTagline ? '16px' : 0 }}>
-          {handle && <span style={{ fontSize: '12px', color: 'rgba(44,40,37,0.52)', letterSpacing: '0.02em' }}>{handle}</span>}
+          {handle && <span style={{ fontSize: '12px', color: provider.coverUrl ? 'rgba(251,249,244,0.76)' : 'rgba(44,40,37,0.52)', letterSpacing: '0.02em' }}>{handle}</span>}
           {handle && provider.rating && <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(44,40,37,0.25)', flexShrink: 0 }} />}
           {provider.rating && (
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--oak)', fontWeight: 600 }}>
               ★ {provider.rating}
-              {provider.reviewCount && <span style={{ color: 'rgba(44,40,37,0.4)', fontWeight: 400 }}>({provider.reviewCount})</span>}
+              {provider.reviewCount && <span style={{ color: provider.coverUrl ? 'rgba(251,249,244,0.62)' : 'rgba(44,40,37,0.4)', fontWeight: 400 }}>({provider.reviewCount})</span>}
             </span>
           )}
         </div>
 
         {/* Tagline italic serif — short phrase from R column */}
         {headerTagline && (
-          <p className="font-display" style={{ fontSize: 'clamp(1.2rem,4vw,1.5rem)', fontStyle: 'italic', fontWeight: 400, color: 'var(--oak)', opacity: 0.9 }}>
+          <p className="font-display" style={{ fontSize: 'clamp(1.2rem,4vw,1.5rem)', fontStyle: 'italic', fontWeight: 400, color: provider.coverUrl ? 'rgba(251,249,244,0.88)' : 'var(--oak)', opacity: 0.9 }}>
             「{headerTagline}」
           </p>
         )}
+        </div>
       </div>
 
       {/* ── 2. Marquee strip ────────────────────────────────────────────── */}

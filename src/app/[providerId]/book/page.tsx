@@ -485,7 +485,7 @@ function CompletionScreen({ providerName, serviceName, date, time, onBack, isLin
         <div style={{ width: '36px', height: '1px', background: 'var(--oak)', margin: '16px 0', opacity: 0.5, animation: 'fadeSlideUp 0.4s ease 0.6s both' }} />
         <p style={{ fontSize: '13px', color: 'rgba(251,249,244,0.45)', letterSpacing: '0.08em', textAlign: 'center', animation: 'fadeSlideUp 0.4s ease 0.65s both' }}>{providerName} &nbsp;·&nbsp; {serviceName}</p>
       </div>
-      <div style={{ background: '#f5efe6', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 24px 40px', position: 'relative' }}>
+      <div style={{ background: 'var(--theme-surface)', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 24px 40px', position: 'relative' }}>
         <div style={{ marginTop: '-28px', width: '100%', maxWidth: '320px', background: 'white', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)', borderRadius: '18px', padding: '20px 24px', boxShadow: '0 8px 32px rgba(26,23,20,0.12)', animation: 'fadeSlideUp 0.4s ease 0.7s both', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
             <span className="font-display" style={{ fontSize: '28px', fontWeight: 300, color: 'var(--oak)' }}>{date}</span>
@@ -797,7 +797,7 @@ export default function BookPage() {
   // provider 載入完成但沒有任何服務 → 不要無限骨架，給友善訊息
   if (provider && allServices.length === 0) {
     return themed(
-      <div style={{ display: 'flex', minHeight: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '14px', padding: '32px', background: '#f5efe6', textAlign: 'center' }}>
+      <div style={{ display: 'flex', minHeight: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '14px', padding: '32px', background: 'var(--theme-surface)', textAlign: 'center' }}>
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', color: 'var(--charcoal)' }}>尚未開放線上預約</p>
         <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.55)', lineHeight: 1.7 }}>{provider.storeName || provider.name} 尚未設定服務項目，<br />請直接聯絡店家，或晚點再來看看 🌿</p>
         <a href="/discover" style={{ marginTop: '8px', padding: '11px 24px', borderRadius: '99px', background: 'var(--oak)', color: 'var(--cream)', fontSize: '13px', textDecoration: 'none' }}>探索其他職人</a>
@@ -807,7 +807,7 @@ export default function BookPage() {
 
   if (!provider || !service) {
     return themed(
-      <div className="max-w-[480px] mx-auto" style={{ background: '#f5efe6', minHeight: '100vh', overflow: 'hidden' }}>
+      <div className="max-w-[480px] mx-auto" style={{ background: 'var(--theme-surface)', minHeight: '100vh', overflow: 'hidden' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.bsk{background:linear-gradient(90deg,rgba(var(--theme-accent-rgb-legacy),0.07) 25%,rgba(var(--theme-accent-rgb-legacy),0.14) 50%,rgba(var(--theme-accent-rgb-legacy),0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:10px;}`}</style>
         <div style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="bsk" style={{ width: '48px', height: '11px' }} />

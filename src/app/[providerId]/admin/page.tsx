@@ -53,8 +53,8 @@ const todayStr = () => taipeiDate(0)
 // ─── Shared style tokens ──────────────────────────────────────────────────────
 const oak = 'var(--theme-accent)'
 const charcoal = '#2C2825'
-const cream = '#fbf9f4'
-const cardBg = 'rgba(251,249,244,0.9)'
+const cream = 'var(--theme-background)'
+const cardBg = 'rgba(var(--theme-background-rgb-legacy),0.9)'
 const border = 'rgba(var(--theme-accent-rgb-legacy),0.15)'
 const inputStyle: React.CSSProperties = {
   width: '100%', background: 'rgba(var(--theme-accent-rgb-legacy),0.06)',
@@ -935,7 +935,7 @@ function ManualBookingForm({ providerId, services, onSuccess }: {
   )
 
   return (
-    <div style={{ background: 'rgba(251,249,244,0.9)', backdropFilter: 'blur(12px)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px' }}>
+    <div style={{ background: cardBg, backdropFilter: 'blur(12px)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
         <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增私下預約</p>
         <button onClick={() => setOpen(false)} style={{ color: '#7d736b', fontSize: 'calc(18px * var(--fs, 1))', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
