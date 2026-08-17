@@ -64,6 +64,45 @@
 }
 
 /* ── Provider visual themes ─────────────────────────────────────────────── */
+/* Legacy aliases and page regions default to the existing semantic recipe.
+   Theme recipes appear after this block so a theme can deliberately art-direct
+   a region without changing the shared component contract. */
+[data-theme] {
+  --theme-background: var(--theme-canvas);
+  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
+  --cream: var(--theme-canvas);
+  --charcoal: var(--theme-ink);
+  --oak: var(--theme-accent);
+  --oak-light: var(--theme-accent-light);
+  --oak-pale: var(--theme-accent-pale);
+  --oak-dim: var(--theme-accent-dim);
+  --oak-40: rgba(var(--theme-accent-rgb-legacy),0.40);
+  --sand: var(--theme-surface);
+  --sand-deep: var(--theme-surface-deep);
+  --border: var(--theme-border);
+  --glass-bg: rgba(var(--theme-background-rgb-legacy),0.10);
+  --glass-border: rgba(var(--theme-accent-rgb-legacy),0.22);
+  --theme-home-canvas: var(--theme-canvas);
+  --theme-home-ink: var(--theme-ink);
+  --theme-home-profile: var(--theme-surface);
+  --theme-home-profile-ink: var(--theme-ink);
+  --theme-home-gallery: var(--theme-canvas);
+  --theme-home-dock: var(--theme-panel-elevated);
+  --theme-book-canvas: var(--theme-canvas);
+  --theme-book-ink: var(--theme-ink);
+  --theme-book-workbench: var(--theme-surface);
+  --theme-book-panel: var(--theme-panel);
+  --theme-book-slot-stage: var(--theme-surface);
+  --theme-book-slot-ink: var(--theme-ink);
+  --theme-book-header: var(--theme-header);
+  --theme-admin-canvas: var(--theme-canvas);
+  --theme-admin-ink: var(--theme-ink);
+  --theme-admin-header: var(--theme-header);
+  --theme-admin-workbench: var(--theme-surface);
+  --theme-admin-panel: var(--theme-panel);
+  --theme-admin-field: var(--theme-field);
+}
+
 [data-theme="moolah-gold"] {
   --theme-canvas: #fbf8f1;
   --theme-canvas-rgb-legacy: 251,248,241;
@@ -152,6 +191,25 @@
   --theme-texture-opacity: 0.035;
   --theme-atmosphere: radial-gradient(circle at 12% 8%, rgba(139,118,93,0.20), transparent 36%), radial-gradient(circle at 88% 30%, rgba(203,188,166,0.22), transparent 42%);
   --theme-atmosphere-opacity: 0.72;
+  --theme-home-canvas: #e4dccf;
+  --theme-home-ink: #2a241e;
+  --theme-home-profile: #211e19;
+  --theme-home-profile-ink: #f4eee3;
+  --theme-home-gallery: #eee8dc;
+  --theme-home-dock: #faf5eb;
+  --theme-book-canvas: #c9bdab;
+  --theme-book-ink: #2a241e;
+  --theme-book-workbench: #e9e1d4;
+  --theme-book-panel: #faf5eb;
+  --theme-book-slot-stage: #211e19;
+  --theme-book-slot-ink: #f4eee3;
+  --theme-book-header: #1d1a17;
+  --theme-admin-canvas: #d8cebd;
+  --theme-admin-ink: #2a241e;
+  --theme-admin-header: #1d1a17;
+  --theme-admin-workbench: #e9e1d4;
+  --theme-admin-panel: #f8f2e7;
+  --theme-admin-field: #fffaf0;
 }
 
 [data-theme="ubud-slow"] {
@@ -422,25 +480,6 @@
   --theme-texture-opacity: 0.026;
   --theme-atmosphere: radial-gradient(circle at 12% 7%, rgba(118,95,117,0.25), transparent 38%), radial-gradient(circle at 88% 28%, rgba(178,145,169,0.22), transparent 42%);
   --theme-atmosphere-opacity: 0.80;
-}
-
-/* Legacy component aliases must be rebound where a theme is applied.
-   Defining these only on :root freezes nested var() references to the default recipe. */
-[data-theme] {
-  --theme-background: var(--theme-canvas);
-  --theme-background-rgb-legacy: var(--theme-canvas-rgb-legacy);
-  --cream: var(--theme-canvas);
-  --charcoal: var(--theme-ink);
-  --oak: var(--theme-accent);
-  --oak-light: var(--theme-accent-light);
-  --oak-pale: var(--theme-accent-pale);
-  --oak-dim: var(--theme-accent-dim);
-  --oak-40: rgba(var(--theme-accent-rgb-legacy),0.40);
-  --sand: var(--theme-surface);
-  --sand-deep: var(--theme-surface-deep);
-  --border: var(--theme-border);
-  --glass-bg: rgba(var(--theme-background-rgb-legacy),0.10);
-  --glass-border: rgba(var(--theme-accent-rgb-legacy),0.22);
 }
 
 .provider-theme-shell {

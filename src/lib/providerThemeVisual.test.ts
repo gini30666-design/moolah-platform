@@ -28,6 +28,34 @@ const requiredTokens = [
   '--theme-image-filter',
 ] as const
 
+const pageRegionTokens = {
+  home: [
+    '--theme-home-canvas',
+    '--theme-home-ink',
+    '--theme-home-profile',
+    '--theme-home-profile-ink',
+    '--theme-home-gallery',
+    '--theme-home-dock',
+  ],
+  book: [
+    '--theme-book-canvas',
+    '--theme-book-ink',
+    '--theme-book-workbench',
+    '--theme-book-panel',
+    '--theme-book-slot-stage',
+    '--theme-book-slot-ink',
+    '--theme-book-header',
+  ],
+  admin: [
+    '--theme-admin-canvas',
+    '--theme-admin-ink',
+    '--theme-admin-header',
+    '--theme-admin-workbench',
+    '--theme-admin-panel',
+    '--theme-admin-field',
+  ],
+} as const
+
 function recipeTokens(theme: string): Record<string, string> {
   const block = css.match(new RegExp(`\\[data-theme="${theme}"\\] \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? ''
   return Object.fromEntries(
@@ -138,5 +166,60 @@ describe('provider visual recipe contract', () => {
     expect(tokens['--border']).toBe('var(--theme-border)')
     expect(tokens['--glass-bg']).toBe('rgba(var(--theme-background-rgb-legacy),0.10)')
     expect(tokens['--glass-border']).toBe('rgba(var(--theme-accent-rgb-legacy),0.22)')
+  })
+
+  it('aliases every page region to the existing semantic recipe by default', () => {
+    const tokens = scopedAliasTokens()
+    const expected = {
+      '--theme-home-canvas': 'var(--theme-canvas)',
+      '--theme-home-ink': 'var(--theme-ink)',
+      '--theme-home-profile': 'var(--theme-surface)',
+      '--theme-home-profile-ink': 'var(--theme-ink)',
+      '--theme-home-gallery': 'var(--theme-canvas)',
+      '--theme-home-dock': 'var(--theme-panel-elevated)',
+      '--theme-book-canvas': 'var(--theme-canvas)',
+      '--theme-book-ink': 'var(--theme-ink)',
+      '--theme-book-workbench': 'var(--theme-surface)',
+      '--theme-book-panel': 'var(--theme-panel)',
+      '--theme-book-slot-stage': 'var(--theme-surface)',
+      '--theme-book-slot-ink': 'var(--theme-ink)',
+      '--theme-book-header': 'var(--theme-header)',
+      '--theme-admin-canvas': 'var(--theme-canvas)',
+      '--theme-admin-ink': 'var(--theme-ink)',
+      '--theme-admin-header': 'var(--theme-header)',
+      '--theme-admin-workbench': 'var(--theme-surface)',
+      '--theme-admin-panel': 'var(--theme-panel)',
+      '--theme-admin-field': 'var(--theme-field)',
+    }
+
+    for (const token of Object.values(pageRegionTokens).flat()) {
+      expect(tokens[token], token).toBe(expected[token as keyof typeof expected])
+    }
+  })
+
+  it('gives Bali Stone distinct, readable page-region surfaces', () => {
+    const tokens = recipeTokens('bali-stone')
+
+    for (const token of Object.values(pageRegionTokens).flat()) {
+      expect(tokens[token], token).toMatch(/^#[0-9a-f]{6}$/i)
+    }
+
+    const pairs = [
+      ['--theme-home-profile-ink', '--theme-home-profile'],
+      ['--theme-book-slot-ink', '--theme-book-slot-stage'],
+      ['--theme-header-ink', '--theme-admin-header'],
+      ['--theme-home-ink', '--theme-home-gallery'],
+      ['--theme-book-ink', '--theme-book-workbench'],
+      ['--theme-book-ink', '--theme-book-panel'],
+      ['--theme-admin-ink', '--theme-admin-panel'],
+      ['--theme-admin-ink', '--theme-admin-field'],
+    ] as const
+
+    for (const [foreground, background] of pairs) {
+      expect(
+        contrast(tokens[foreground], tokens[background]),
+        `bali-stone: ${foreground} on ${background}`,
+      ).toBeGreaterThanOrEqual(4.5)
+    }
   })
 })

@@ -29,6 +29,7 @@
 ```text
 home:
   --theme-home-canvas
+  --theme-home-ink
   --theme-home-profile
   --theme-home-profile-ink
   --theme-home-gallery
@@ -36,6 +37,7 @@ home:
 
 booking:
   --theme-book-canvas
+  --theme-book-ink
   --theme-book-workbench
   --theme-book-panel
   --theme-book-slot-stage
@@ -44,6 +46,7 @@ booking:
 
 admin:
   --theme-admin-canvas
+  --theme-admin-ink
   --theme-admin-header
   --theme-admin-workbench
   --theme-admin-panel
