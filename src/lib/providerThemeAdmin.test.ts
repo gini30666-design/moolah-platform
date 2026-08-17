@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  absoluteProviderThemePreviewUrl,
   providerThemePreviewHref,
   providerThemeSaveError,
 } from './providerThemeAdmin'
@@ -11,6 +12,22 @@ describe('provider theme admin helpers', () => {
     )
     expect(providerThemePreviewHref('spa/gini', 'orchid-dusk', 'book')).toBe(
       '/spa%2Fgini/book?previewTheme=orchid-dusk',
+    )
+  })
+
+  it('turns a preview href into a same-origin absolute URL for LIFF', () => {
+    expect(absoluteProviderThemePreviewUrl(
+      '/designer/book?previewTheme=bali-stone',
+      'https://moolah.app',
+    )).toBe('https://moolah.app/designer/book?previewTheme=bali-stone')
+  })
+
+  it.each([
+    'javascript:alert(1)',
+    'https://attacker.example/designer?previewTheme=bali-stone',
+  ])('rejects unsafe preview target %s', href => {
+    expect(() => absoluteProviderThemePreviewUrl(href, 'https://moolah.app')).toThrow(
+      'Unsafe provider theme preview URL',
     )
   })
 

@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
+import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
 import {
   PROVIDER_THEME_OPTIONS,
   type ProviderThemeKey,
 } from '@/lib/providerTheme'
 import {
+  absoluteProviderThemePreviewUrl,
   providerThemePreviewHref,
   providerThemeSaveError,
 } from '@/lib/providerThemeAdmin'
@@ -40,6 +42,21 @@ export function ThemePickerPanel({
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const hasChanges = selectedTheme !== savedTheme
+
+  const openPreview = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    let inLineClient = false
+    try { inLineClient = liff.isInClient() } catch { return }
+    if (!inLineClient) return
+
+    const url = absoluteProviderThemePreviewUrl(href, window.location.origin)
+    event.preventDefault()
+    try {
+      liff.openWindow({ url, external: false })
+    } catch {
+      const opened = window.open(url, '_blank')
+      if (!opened) window.location.assign(url)
+    }
+  }
 
   const saveTheme = async () => {
     if (!hasChanges || saving) return
@@ -117,10 +134,10 @@ export function ThemePickerPanel({
       <div style={{ marginTop: '16px', padding: '14px', borderRadius: 'var(--theme-card-radius)', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', boxShadow: 'var(--theme-card-shadow)' }}>
         <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '10px' }}>以顧客視角檢查目前選擇</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-          <a href={providerThemePreviewHref(providerId, selectedTheme, 'home')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
+          <a href={providerThemePreviewHref(providerId, selectedTheme, 'home')} onClick={event => openPreview(event, providerThemePreviewHref(providerId, selectedTheme, 'home'))} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
             預覽專屬首頁
           </a>
-          <a href={providerThemePreviewHref(providerId, selectedTheme, 'book')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
+          <a href={providerThemePreviewHref(providerId, selectedTheme, 'book')} onClick={event => openPreview(event, providerThemePreviewHref(providerId, selectedTheme, 'book'))} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
             預覽預約頁
           </a>
         </div>
