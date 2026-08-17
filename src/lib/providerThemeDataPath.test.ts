@@ -35,6 +35,15 @@ describe('providers.theme AA data path guard', () => {
     expect(providerProfile).toContain('handleBook')
   })
 
+  it('carries the selected recipe through the provider-home atmosphere and surfaces', () => {
+    const providerProfile = readSource('../app/[providerId]/ProviderProfileClient.tsx')
+
+    expect(providerProfile).toContain("filter: 'var(--theme-image-filter)'")
+    expect(providerProfile).toContain("background: 'var(--theme-panel)'")
+    expect(providerProfile).toContain("color: 'var(--theme-ink)'")
+    expect(providerProfile).toContain("color: 'var(--theme-muted)'")
+  })
+
   it('keeps the provider-home composition attached to its original booking action', () => {
     const providerProfile = readSource('../app/[providerId]/ProviderProfileClient.tsx')
 
@@ -62,12 +71,28 @@ describe('providers.theme AA data path guard', () => {
     expect(calendar).toContain("color: 'var(--theme-muted)'")
   })
 
-  it('keeps the light-admin composition attached to owner authentication', () => {
+  it('keeps the adaptive admin composition attached to owner authentication', () => {
     const adminPage = readSource('../app/[providerId]/admin/page.tsx')
 
-    expect(adminPage).toContain('data-layout="provider-admin-light"')
-    expect(adminPage).toContain('data-admin-surface="light"')
+    expect(adminPage).toContain('data-layout="provider-admin"')
+    expect(adminPage).toContain('data-admin-surface="adaptive"')
     expect(adminPage).toContain('authHeader()')
+  })
+
+  it('uses semantic admin surfaces across the shell and both operational editors', () => {
+    const adminPage = readSource('../app/[providerId]/admin/page.tsx')
+    const schedule = readSource('../app/[providerId]/admin/ScheduleView.tsx')
+    const portfolio = readSource('../app/[providerId]/admin/PortfolioView.tsx')
+    const picker = readSource('../components/ThemePickerPanel.tsx')
+
+    for (const source of [adminPage, schedule, portfolio, picker]) {
+      expect(source).toContain('var(--theme-panel)')
+      expect(source).toContain('var(--theme-ink)')
+      expect(source).toContain('var(--theme-muted)')
+    }
+    expect(adminPage).toContain('var(--theme-header)')
+    expect(schedule).toContain('var(--theme-field)')
+    expect(portfolio).toContain('var(--theme-field)')
   })
 
   it('keeps the pending DDL nullable and whitelist constrained', () => {

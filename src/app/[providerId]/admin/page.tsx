@@ -52,18 +52,18 @@ const todayStr = () => taipeiDate(0)
 
 // ─── Shared style tokens ──────────────────────────────────────────────────────
 const oak = 'var(--theme-accent)'
-const charcoal = '#2C2825'
-const cream = 'var(--theme-background)'
-const cardBg = 'rgba(var(--theme-background-rgb-legacy),0.9)'
-const border = 'rgba(var(--theme-accent-rgb-legacy),0.15)'
+const charcoal = 'var(--theme-ink)'
+const cream = 'var(--theme-on-accent)'
+const cardBg = 'var(--theme-panel)'
+const border = 'var(--theme-border)'
 const inputStyle: React.CSSProperties = {
-  width: '100%', background: 'rgba(var(--theme-accent-rgb-legacy),0.06)',
-  border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)', borderRadius: '12px',
+  width: '100%', background: 'var(--theme-field)',
+  border: '1px solid var(--theme-border)', borderRadius: '12px',
   padding: '12px 14px', fontSize: 'calc(14px * var(--fs, 1))', color: charcoal,
   outline: 'none', boxSizing: 'border-box',
 }
 const labelStyle: React.CSSProperties = {
-  fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, color: 'rgba(44,40,37,0.88)',
+  fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 600, color: 'var(--theme-muted)',
   display: 'block', marginBottom: '8px',
 }
 
@@ -165,7 +165,7 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
       {/* 卡片刻意用白底＋較重的邊框：原本 rgba(var(--theme-accent-rgb-legacy),0.07) 疊在 cream 上幾乎看不出邊界，
           職人反應「這一塊是重點但沒抓到眼睛」。餘額也從 oak 改成 charcoal，對比才夠。 */}
       {!loading && cards.map(c => (
-        <div key={c.id} style={{ background: '#ffffff', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.42)', boxShadow: '0 2px 10px rgba(44,40,37,0.06)', borderRadius: '14px', padding: '14px', marginBottom: '10px', opacity: c.expired || c.status === 'closed' ? 0.6 : 1 }}>
+        <div key={c.id} style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', boxShadow: 'var(--theme-card-shadow)', borderRadius: '14px', padding: '14px', marginBottom: '10px', opacity: c.expired || c.status === 'closed' ? 0.6 : 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: 'calc(13.5px * var(--fs, 1))', fontWeight: 700, color: charcoal, wordBreak: 'break-word' }}>{c.title}</p>
@@ -652,7 +652,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
 
   return (
     <div style={{
-      background: isNoShow ? 'rgba(200,60,60,0.04)' : isNext ? 'rgba(var(--theme-accent-rgb-legacy),0.12)' : 'rgba(255,255,255,0.82)',
+      background: isNoShow ? 'rgba(200,60,60,0.04)' : isNext ? 'rgba(var(--theme-accent-rgb-legacy),0.12)' : 'var(--theme-panel)',
       border: `1px solid ${isNoShow ? 'rgba(200,60,60,0.25)' : isNext ? 'rgba(var(--theme-accent-rgb-legacy),0.5)' : 'rgba(var(--theme-accent-rgb-legacy),0.28)'}`,
       borderRadius: compact ? '12px' : '16px',
       padding: compact ? '12px 16px' : '18px 20px',
@@ -669,7 +669,7 @@ function BookingCard({ booking, onCancel, onViewCustomer, compact, isNext }: {
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', color: charcoal, fontWeight: 300 }}>
             NT$ {booking.servicePrice.toLocaleString()}
           </p>
-          {isNext && !isNoShow && <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'white', background: 'var(--theme-accent-strong)', padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位{nextCountdown ? ` · ${nextCountdown}` : ''}</span>}
+          {isNext && !isNoShow && <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: 'var(--theme-on-accent)', background: 'var(--theme-accent-strong)', padding: '2px 9px', borderRadius: '20px', letterSpacing: '0.04em' }}>下一位{nextCountdown ? ` · ${nextCountdown}` : ''}</span>}
           {isNoShow && <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: '#b03030', background: 'rgba(200,60,60,0.12)', padding: '2px 8px', borderRadius: '20px' }}>爽約</span>}
           {isManual && !isNoShow && <span style={{ fontSize: 'calc(10px * var(--fs, 1))', color: oak, background: 'rgba(var(--theme-accent-rgb-legacy),0.1)', padding: '2px 8px', borderRadius: '20px' }}>私下預約</span>}
         </div>
@@ -1449,14 +1449,14 @@ export default function AdminPage() {
   )
 
   return themed(
-    <main data-layout="provider-admin-light" data-admin-surface="light" style={{ minHeight: '100svh', background: 'var(--theme-background)', maxWidth: '480px', margin: '0 auto', boxShadow: '0 0 42px rgba(26,23,20,0.08)' }}>
+    <main data-layout="provider-admin" data-admin-surface="adaptive" style={{ minHeight: '100svh', background: 'var(--theme-canvas)', color: 'var(--theme-ink)', maxWidth: '480px', margin: '0 auto', boxShadow: 'var(--theme-card-shadow)' }}>
 
       {/* ── Header ── */}
       {/* ⚠️ 這裡刻意「不」設 overflow:hidden：功能列的下拉選單會延伸到 header 下緣以外，
           設了就會被整個裁掉、按了像沒反應（2026-08-11 實機踩到）。
           內部的噪點層與頂部金線都是 inset/absolute 貼齊，本來就不會溢出，不需要裁切。
           zIndex 讓 header 疊在後面的統計卡之上，選單才不會被蓋住。 */}
-      <div style={{ background: 'rgba(255,255,255,0.58)', padding: '42px 20px 20px', position: 'relative', zIndex: 20, borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.15)', backdropFilter: 'blur(16px)' }}>
+      <div style={{ background: 'var(--theme-header)', color: 'var(--theme-header-ink)', padding: '42px 20px 20px', position: 'relative', zIndex: 20, borderBottom: '1px solid var(--theme-border)', backdropFilter: 'blur(16px)' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`, opacity: 0.6, pointerEvents: 'none' }} />
         {/* top oak accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(to right, var(--oak), transparent)', opacity: 0.8 }} />
@@ -1473,7 +1473,7 @@ export default function AdminPage() {
               （2026-08-11 第一版就是這樣，Gini 直接找不到刷新和預覽在哪）。
               深色底上要跳出來，靠的是亮色而不是更黑 → 用橡木色填底＋深色字。 */}
           <button onClick={() => setMenuOpen(v => !v)} aria-label="功能選單" aria-expanded={menuOpen}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: menuOpen ? 'rgba(var(--theme-accent-rgb-legacy),0.16)' : 'rgba(255,255,255,0.72)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.24)', color: charcoal, minHeight: '44px', padding: '0 14px', borderRadius: '12px', cursor: 'pointer', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, letterSpacing: '0.04em', boxShadow: '0 4px 14px rgba(26,23,20,0.08)' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: menuOpen ? 'rgba(var(--theme-accent-rgb-legacy),0.22)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', color: charcoal, minHeight: '44px', padding: '0 14px', borderRadius: '12px', cursor: 'pointer', fontSize: 'calc(12.5px * var(--fs, 1))', fontWeight: 700, letterSpacing: '0.04em', boxShadow: 'var(--theme-card-shadow)' }}>
             <span style={{ fontSize: 'calc(15px * var(--fs, 1))', lineHeight: 1, marginTop: '-3px' }}>☰</span>
             選單
           </button>
@@ -1482,14 +1482,14 @@ export default function AdminPage() {
             <>
               {/* 點外面關閉：蓋一層透明遮罩比在 document 上掛 listener 單純且不會漏拆 */}
               <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: -1 }} />
-              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '186px', background: 'var(--theme-background)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.32)', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(26,23,20,0.18)' }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '186px', background: 'var(--theme-panel-elevated)', border: '1px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
                 {/* 字級：一列三段，直接看得到現在停在哪一級 */}
                 <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' }}>
-                  <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.58)', marginBottom: '8px' }}>字體大小</p>
+                  <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '8px' }}>字體大小</p>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     {['標準', '大', '特大'].map((label, i) => (
                       <button key={label} onClick={() => setFontScale(i)}
-                        style={{ flex: 1, minHeight: '38px', borderRadius: '9px', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))', background: fsIdx === i ? 'var(--theme-accent-strong)' : 'transparent', color: fsIdx === i ? 'white' : 'rgba(44,40,37,0.8)', border: `1px solid ${fsIdx === i ? 'var(--theme-accent-strong)' : 'rgba(var(--theme-accent-rgb-legacy),0.3)'}`, fontWeight: fsIdx === i ? 700 : 400 }}>
+                        style={{ flex: 1, minHeight: '38px', borderRadius: '9px', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))', background: fsIdx === i ? 'var(--theme-accent-strong)' : 'transparent', color: fsIdx === i ? 'var(--theme-on-accent)' : 'var(--theme-ink)', border: `1px solid ${fsIdx === i ? 'var(--theme-accent-strong)' : 'var(--theme-border)'}`, fontWeight: fsIdx === i ? 700 : 400 }}>
                         {label}
                       </button>
                     ))}
@@ -1510,13 +1510,13 @@ export default function AdminPage() {
             </>
           )}
         </div>
-        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--oak)', marginBottom: '10px', letterSpacing: '0.04em' }}>管理後台</p>
-        <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.8rem', fontWeight: 500, color: charcoal, lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
+        <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-header-ink)', marginBottom: '10px', letterSpacing: '0.12em', opacity: 0.76 }}>管理後台</p>
+        <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.8rem', fontWeight: 500, color: 'var(--theme-header-ink)', lineHeight: 1.1, letterSpacing: '-0.01em' }}>{providerName}</h1>
         <div style={{ width: '28px', height: '1px', background: oak, marginTop: '14px', opacity: 0.5 }} />
       </div>
 
       {/* ── Stats 2×2 ── */}
-      <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0', margin: '16px 16px 0', background: 'rgba(255,255,255,0.7)', border: `1px solid ${border}`, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 28px rgba(26,23,20,0.06)' }}>
+      <div data-animate style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0', margin: '16px 16px 0', background: 'var(--theme-panel)', border: `1px solid ${border}`, borderRadius: 'var(--theme-card-radius)', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
         {[
           { label: '今日預約', value: `${todayBookings.length}`, unit: '筆', shade: 'primary' as const },
           { label: '今日營收', value: todayRevenue === 0 ? '—' : todayRevenue.toLocaleString(), unit: todayRevenue > 0 ? 'NT$' : '', shade: 'light' as const },
@@ -1525,7 +1525,7 @@ export default function AdminPage() {
         ].map(item => {
           const isPrimary = item.shade === 'primary'
           const numClr = isPrimary ? 'var(--theme-accent-strong)' : charcoal
-          const lblClr = 'rgba(44,40,37,0.7)'
+          const lblClr = 'var(--theme-muted)'
           const ntClr = 'rgba(var(--theme-accent-rgb-legacy),0.72)'
           return (
           <div key={item.label} style={{
@@ -1607,7 +1607,7 @@ export default function AdminPage() {
             )}
           </div>
         </div>
-        <div style={{ marginTop: '14px', padding: '10px 12px', background: 'rgba(255,255,255,0.55)', borderRadius: '10px', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.16)' }}>
+        <div style={{ marginTop: '14px', padding: '10px 12px', background: 'var(--theme-panel)', borderRadius: '10px', border: '1px solid var(--theme-border)' }}>
           {isExpired ? (
             <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: charcoal, lineHeight: 1.55 }}>
               <span style={{ fontWeight: 600, color: '#b4533a' }}>⏰ 試用已結束</span>
@@ -1628,7 +1628,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── 回購率 dashboard (#24) ── */}
-      <div data-animate data-delay="70" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'rgba(255,255,255,0.68)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
+      <div data-animate data-delay="70" style={{ margin: '14px 16px 0', padding: '16px 18px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', position: 'relative', overflow: 'hidden', boxShadow: 'var(--theme-card-shadow)' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px', background: 'linear-gradient(to right, transparent, var(--oak), transparent)', opacity: 0.6 }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 700 }}>回購分析 · 近 90 天</p>
@@ -1671,7 +1671,7 @@ export default function AdminPage() {
       </>)}
 
       {/* ── Sand content panel ── */}
-      <div style={{ position: 'relative', margin: '14px 8px 0', background: 'rgba(255,255,255,0.48)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.14)', borderRadius: '18px 18px 0 0', boxShadow: '0 10px 30px rgba(26,23,20,0.05)', paddingBottom: '8px' }}>
+      <div style={{ position: 'relative', margin: '14px 8px 0', background: 'var(--theme-surface)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius) var(--theme-card-radius) 0 0', boxShadow: 'var(--theme-card-shadow)', paddingBottom: '8px' }}>
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '46px', height: '3px', borderRadius: '0 0 3px 3px', background: 'var(--oak)', opacity: 0.5 }} />
 
       {/* ── Main Nav (scrollable) ── */}
@@ -1682,7 +1682,7 @@ export default function AdminPage() {
             padding: '10px 16px 12px', fontSize: 'calc(12px * var(--fs, 1))',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
             background: 'transparent',
-            color: mainView === v ? charcoal : 'rgba(44,40,37,0.58)',
+            color: mainView === v ? charcoal : 'var(--theme-muted)',
             borderBottom: mainView === v ? `2px solid ${oak}` : '2px solid transparent',
             transition: 'all 0.18s', whiteSpace: 'nowrap',
             letterSpacing: '0.02em',
@@ -1703,7 +1703,7 @@ export default function AdminPage() {
                   fontWeight: tab === t.key ? 600 : 400, cursor: 'pointer',
                   background: tab === t.key ? oak : 'transparent',
                   border: tab === t.key ? `1px solid ${oak}` : '1px solid rgba(var(--theme-accent-rgb-legacy),0.35)',
-                  color: tab === t.key ? cream : 'rgba(44,40,37,0.8)',
+                  color: tab === t.key ? cream : 'var(--theme-ink)',
                   transition: 'all 0.18s', whiteSpace: 'nowrap',
                 }}>{t.label}</button>
               ))}
@@ -1823,8 +1823,8 @@ export default function AdminPage() {
         <section style={{ padding: '0 16px 24px' }}>
           {waitlist.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 20px', background: 'rgba(var(--theme-accent-rgb-legacy),0.04)', borderRadius: '18px', border: `1px solid ${border}` }}>
-              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', color: 'rgba(44,40,37,0.3)', marginBottom: '8px' }}>目前沒有候補</p>
-              <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.35)' }}>預約頁時段客滿時，顧客可加入候補名單</p>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '8px' }}>目前沒有候補</p>
+              <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)' }}>預約頁時段客滿時，顧客可加入候補名單</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1866,10 +1866,10 @@ export default function AdminPage() {
       </div>{/* end sand panel */}
 
       {/* ── Light footer ── */}
-      <div style={{ background: 'rgba(255,255,255,0.46)', borderTop: '1px solid rgba(var(--theme-accent-rgb-legacy),0.14)', padding: '28px 24px 34px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--theme-surface-deep)', borderTop: '1px solid var(--theme-border)', padding: '28px 24px 34px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '300px 300px', pointerEvents: 'none' }} />
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 500, color: charcoal, marginBottom: '10px', position: 'relative' }}>{providerName}</p>
-        <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.42)', position: 'relative' }}>MooLah · 合作夥伴後台</p>
+        <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', position: 'relative' }}>MooLah · 合作夥伴後台</p>
       </div>
 
       {/* ── 嵌入到 IG/網站 widget snippet (#30) ── */}

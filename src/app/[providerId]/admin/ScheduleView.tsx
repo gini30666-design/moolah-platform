@@ -10,11 +10,11 @@ type DaySchedule = { day: number; startTime: string; endTime: string; isOpen: bo
 
 const DAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
 const oak = 'var(--theme-accent)'
-const charcoal = '#2C2825'
-const cream = 'var(--theme-background)'
-const border = 'rgba(var(--theme-accent-rgb-legacy),0.15)'
+const charcoal = 'var(--theme-ink)'
+const cream = 'var(--theme-on-accent)'
+const border = 'var(--theme-border)'
 const inputStyle: React.CSSProperties = {
-  background: 'rgba(var(--theme-accent-rgb-legacy),0.06)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)',
+  background: 'var(--theme-field)', border: '1px solid var(--theme-border)',
   borderRadius: '10px', padding: '0 12px', minHeight: '44px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal,
   outline: 'none', width: '84px',
 }
@@ -104,7 +104,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: '48px 0' }}>
-      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入排班中...</p>
+      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)' }}>載入排班中...</p>
     </div>
   )
 
@@ -116,13 +116,13 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
         {schedule.map(s => (
           <div key={s.day} style={{
-            background: s.isOpen ? 'rgba(var(--theme-background-rgb-legacy),0.9)' : 'rgba(var(--theme-accent-rgb-legacy),0.04)',
-            border: `1px solid ${s.isOpen ? 'rgba(var(--theme-accent-rgb-legacy),0.2)' : 'rgba(var(--theme-accent-rgb-legacy),0.08)'}`,
+            background: s.isOpen ? 'var(--theme-panel)' : 'var(--theme-surface-deep)',
+            border: `1px solid ${border}`,
             borderRadius: '14px', padding: '12px 16px',
             transition: 'all 0.2s',
           }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: 'calc(13px * var(--fs, 1))', color: s.isOpen ? charcoal : '#7d736b', width: '36px', flexShrink: 0 }}>
+            <span style={{ fontSize: 'calc(13px * var(--fs, 1))', color: s.isOpen ? charcoal : 'var(--theme-muted)', width: '36px', flexShrink: 0 }}>
               {DAY_LABELS[s.day]}
             </span>
 
@@ -143,7 +143,7 @@ export default function ScheduleView({ providerId }: { providerId: string }) {
                 <span style={{
                   position: 'absolute', top: '3px',
                   left: s.isOpen ? '21px' : '3px',
-                  width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
+                  width: '18px', height: '18px', borderRadius: '50%', background: 'var(--theme-panel-elevated)',
                   transition: 'left 0.2s', display: 'block',
                 }} />
               </span>

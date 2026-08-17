@@ -68,10 +68,10 @@ export function ThemePickerPanel({
   return (
     <section aria-labelledby="theme-picker-title" style={{ padding: '18px 16px 40px' }}>
       <div style={{ marginBottom: '18px' }}>
-        <p id="theme-picker-title" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(25px * var(--fs, 1))', color: 'var(--charcoal)', lineHeight: 1.15 }}>
+        <p id="theme-picker-title" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(25px * var(--fs, 1))', color: 'var(--theme-ink)', lineHeight: 1.15 }}>
           頁面風格
         </p>
-        <p style={{ marginTop: '7px', fontSize: 'calc(12px * var(--fs, 1))', color: 'rgba(44,40,37,0.58)', lineHeight: 1.65 }}>
+        <p style={{ marginTop: '7px', fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)', lineHeight: 1.65 }}>
           點選即可在後台即時試色；先預覽首頁與預約頁，確認後再儲存。
         </p>
       </div>
@@ -80,6 +80,8 @@ export function ThemePickerPanel({
         {PROVIDER_THEME_OPTIONS.map(option => {
           const selected = option.key === selectedTheme
           const saved = option.key === savedTheme
+          const previewInk = option.depth === 'dark' ? '#f4eee5' : '#241f1d'
+          const previewMuted = option.depth === 'dark' ? 'rgba(244,238,229,0.72)' : 'rgba(36,31,29,0.68)'
           return (
             <button
               key={option.key}
@@ -89,9 +91,9 @@ export function ThemePickerPanel({
               style={{
                 minHeight: '142px', padding: '12px', textAlign: 'left', cursor: 'pointer',
                 borderRadius: '17px', position: 'relative', overflow: 'hidden',
-                background: option.swatches[2], color: '#2C2825',
-                border: selected ? `2px solid ${option.swatches[0]}` : '1px solid rgba(44,40,37,0.11)',
-                boxShadow: selected ? `0 10px 26px ${option.swatches[0]}2e` : '0 5px 16px rgba(44,40,37,0.05)',
+                background: option.swatches[2], color: previewInk,
+                border: selected ? `2px solid ${option.swatches[0]}` : `1px solid ${option.depth === 'dark' ? 'rgba(244,238,229,0.18)' : 'rgba(36,31,29,0.16)'}`,
+                boxShadow: selected ? `0 10px 26px ${option.swatches[0]}3d` : 'var(--theme-card-shadow)',
                 transition: 'transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease',
               }}
             >
@@ -104,7 +106,7 @@ export function ThemePickerPanel({
                 {option.label}
                 {saved && <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '99px', background: option.swatches[0], color: option.swatches[2], letterSpacing: '0.06em' }}>使用中</span>}
               </span>
-              <span style={{ display: 'block', marginTop: '5px', fontSize: 'calc(10px * var(--fs, 1))', color: 'rgba(44,40,37,0.57)', lineHeight: 1.45 }}>
+              <span style={{ display: 'block', marginTop: '5px', fontSize: 'calc(10px * var(--fs, 1))', color: previewMuted, lineHeight: 1.45 }}>
                 {THEME_NOTES[option.key]}
               </span>
             </button>
@@ -112,8 +114,8 @@ export function ThemePickerPanel({
         })}
       </div>
 
-      <div style={{ marginTop: '16px', padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.58)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)' }}>
-        <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'rgba(44,40,37,0.52)', marginBottom: '10px' }}>以顧客視角檢查目前選擇</p>
+      <div style={{ marginTop: '16px', padding: '14px', borderRadius: 'var(--theme-card-radius)', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', boxShadow: 'var(--theme-card-shadow)' }}>
+        <p style={{ fontSize: 'calc(11px * var(--fs, 1))', color: 'var(--theme-muted)', marginBottom: '10px' }}>以顧客視角檢查目前選擇</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <a href={providerThemePreviewHref(providerId, selectedTheme, 'home')} target="_blank" rel="noreferrer" style={{ minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', border: '1px solid var(--theme-accent-text)', color: 'var(--theme-accent-text)', fontSize: 'calc(12px * var(--fs, 1))', fontWeight: 700, textDecoration: 'none' }}>
             預覽專屬首頁
@@ -126,7 +128,7 @@ export function ThemePickerPanel({
           type="button"
           onClick={saveTheme}
           disabled={!hasChanges || saving}
-          style={{ width: '100%', minHeight: '48px', marginTop: '10px', border: 'none', borderRadius: '13px', cursor: hasChanges && !saving ? 'pointer' : 'default', background: hasChanges ? 'var(--theme-accent-strong)' : 'rgba(44,40,37,0.12)', color: hasChanges ? '#fffaf4' : 'rgba(44,40,37,0.42)', fontSize: 'calc(13px * var(--fs, 1))', fontWeight: 750, letterSpacing: '0.04em' }}
+          style={{ width: '100%', minHeight: '48px', marginTop: '10px', border: 'none', borderRadius: '13px', cursor: hasChanges && !saving ? 'pointer' : 'default', background: hasChanges ? 'var(--theme-accent-strong)' : 'var(--theme-surface-deep)', color: hasChanges ? 'var(--theme-on-accent)' : 'var(--theme-muted)', fontSize: 'calc(13px * var(--fs, 1))', fontWeight: 750, letterSpacing: '0.04em' }}
         >
           {saving ? '儲存中…' : hasChanges ? '儲存這個風格' : '目前使用此風格'}
         </button>

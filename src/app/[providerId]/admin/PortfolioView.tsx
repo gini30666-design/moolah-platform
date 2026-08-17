@@ -5,11 +5,11 @@ import { authHeader } from '@/lib/clientAuth'
 type PortfolioItem = { id: string; imageUrl: string; caption: string; order: number }
 
 const oak = 'var(--theme-accent)'
-const charcoal = '#2C2825'
-const cream = 'var(--theme-background)'
+const charcoal = 'var(--theme-ink)'
+const cream = 'var(--theme-on-accent)'
 const inputStyle: React.CSSProperties = {
-  width: '100%', background: 'rgba(var(--theme-accent-rgb-legacy),0.06)',
-  border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)', borderRadius: '10px',
+  width: '100%', background: 'var(--theme-field)',
+  border: '1px solid var(--theme-border)', borderRadius: '10px',
   padding: '10px 13px', fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, outline: 'none',
   boxSizing: 'border-box',
 }
@@ -124,7 +124,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: '48px 0' }}>
-      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: '#7d736b' }}>載入作品集中...</p>
+      <p style={{ fontSize: 'calc(12px * var(--fs, 1))', color: 'var(--theme-muted)' }}>載入作品集中...</p>
     </div>
   )
 
@@ -150,10 +150,10 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
 
       {/* Add form */}
       {showAdd && (
-        <div style={{ background: 'rgba(var(--theme-background-rgb-legacy),0.9)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
+        <div style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', padding: '20px', marginBottom: '16px', boxShadow: 'var(--theme-card-shadow)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <p style={{ fontSize: 'calc(14px * var(--fs, 1))', fontWeight: 600, color: charcoal }}>新增作品</p>
-            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} aria-label="關閉" style={{ fontSize: 'calc(18px * var(--fs, 1))', color: '#7d736b', background: 'none', border: 'none', cursor: 'pointer', minWidth: '40px', minHeight: '40px' }}>×</button>
+            <button onClick={() => { setShowAdd(false); setCaption(''); setUrlInput('') }} aria-label="關閉" style={{ fontSize: 'calc(18px * var(--fs, 1))', color: 'var(--theme-muted)', background: 'none', border: 'none', cursor: 'pointer', minWidth: '40px', minHeight: '40px' }}>×</button>
           </div>
 
           {/* Mode toggle */}
@@ -162,7 +162,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
               <button key={m} onClick={() => setAddMode(m)} style={{
                 flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: 'calc(12px * var(--fs, 1))',
                 background: addMode === m ? charcoal : 'transparent',
-                color: addMode === m ? cream : '#8a7e76',
+                color: addMode === m ? cream : 'var(--theme-muted)',
               }}>
                 {m === 'upload' ? '上傳圖片' : '貼上網址'}
               </button>
@@ -193,7 +193,7 @@ export default function PortfolioView({ providerId }: { providerId: string }) {
                     <svg viewBox="0 0 24 24" fill="none" stroke={oak} strokeWidth="1.5" style={{ width: '32px', height: '32px' }}>
                       <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76' }}>點擊選擇圖片（最大 4MB）</p>
+                    <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: 'var(--theme-muted)' }}>點擊選擇圖片（最大 4MB）</p>
                   </>
                 )}
               </label>

@@ -57,7 +57,7 @@ function Lightbox({ items, startIdx, onClose }: { items: PortfolioItem[]; startI
       <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '520px', padding: '0 20px' }}>
         {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.imageUrl} alt={item.caption} style={{ width: '100%', borderRadius: '18px', objectFit: 'cover', maxHeight: '72vh', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }} />
+          <img src={item.imageUrl} alt={item.caption} style={{ width: '100%', borderRadius: '18px', objectFit: 'cover', maxHeight: '72vh', boxShadow: '0 24px 60px rgba(0,0,0,0.5)', filter: 'var(--theme-image-filter)' }} />
         ) : (
           <div style={{ width: '100%', height: '62vh', borderRadius: '18px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.5)', background: `repeating-linear-gradient(135deg,${tone[0]} 0 11px,${tone[1]} 11px 22px)` }} />
         )}
@@ -96,7 +96,7 @@ function PortfolioTile({ item, ratio, radius = 14, onOpen, idx }: {
       {item.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={item.imageUrl} alt={item.caption}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: radius }} />
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: radius, filter: 'var(--theme-image-filter)' }} />
       ) : (
         <div style={{
           position: 'absolute', inset: 0, borderRadius: radius, overflow: 'hidden',
@@ -107,7 +107,7 @@ function PortfolioTile({ item, ratio, radius = 14, onOpen, idx }: {
             <span style={{
               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
               fontSize: '9.5px', letterSpacing: '0.04em', lineHeight: 1.3,
-              color: 'rgba(44,40,37,0.5)', background: 'rgba(251,249,244,0.82)',
+              color: 'var(--theme-muted)', background: 'var(--theme-panel)',
               padding: '4px 7px', margin: '8px', borderRadius: '5px',
               maxWidth: 'calc(100% - 16px)',
             }}>{item.caption}</span>
@@ -285,7 +285,7 @@ export default function ProviderPage() {
     : services.slice(0, 3).map(s => s.name)
 
   return (
-    <div data-layout="provider-home" style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--theme-background)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: '0 0 44px rgba(var(--theme-shadow-rgb),0.12)' }}>
+    <div data-layout="provider-home" style={{ maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', background: 'var(--theme-canvas)', color: 'var(--theme-ink)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif', boxShadow: 'var(--theme-card-shadow)' }}>
       <style>{`
         @keyframes marquee-op { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes phase-in   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
@@ -307,7 +307,7 @@ export default function ProviderPage() {
         {provider.coverUrl && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img data-provider-cover src={provider.coverUrl} alt="" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img data-provider-cover src={provider.coverUrl} alt="" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'var(--theme-image-filter)' }} />
             <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(18,16,14,0.22) 0%, var(--theme-hero-overlay) 58%, rgba(18,16,14,0.86) 100%)' }} />
           </>
         )}
@@ -315,7 +315,7 @@ export default function ProviderPage() {
         {/* Nav row: back · MooLah logo · location */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '26px' }}>
           {canGoBack ? (
-            <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: provider.coverUrl ? 'rgba(251,249,244,0.84)' : 'rgba(44,40,37,0.5)' }}>
+            <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 10px 10px 0', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '4px', color: provider.coverUrl ? 'rgba(var(--theme-on-image-rgb-legacy),0.84)' : 'var(--theme-muted)' }}>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: '13px', height: '13px' }}>
                 <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -326,24 +326,24 @@ export default function ProviderPage() {
           {isDemo
             ? <span style={{ fontSize: '10px', letterSpacing: '0.08em', color: provider.coverUrl ? 'rgba(251,249,244,0.92)' : 'var(--oak)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.4)', borderRadius: '99px', padding: '3px 9px', whiteSpace: 'nowrap' }}>示範帳號</span>
             : location
-            ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: provider.coverUrl ? 'rgba(251,249,244,0.72)' : 'rgba(44,40,37,0.42)' }}>{location}</span>
+            ? <span style={{ fontSize: '10px', letterSpacing: '0.14em', color: provider.coverUrl ? 'rgba(var(--theme-on-image-rgb-legacy),0.72)' : 'var(--theme-muted)' }}>{location}</span>
             : <span style={{ width: '40px' }} />
           }
         </div>
 
         {/* Store name — large serif */}
-        <p className="font-display" style={{ fontSize: 'clamp(2.4rem,10vw,3.1rem)', fontWeight: 300, lineHeight: 1.02, color: provider.coverUrl ? '#fbf9f4' : 'var(--charcoal)', letterSpacing: '-0.02em', marginBottom: '12px', textShadow: provider.coverUrl ? '0 3px 22px rgba(0,0,0,0.34)' : undefined }}>
+        <p className="font-display" style={{ fontSize: 'clamp(2.4rem,10vw,3.1rem)', fontWeight: 300, lineHeight: 1.02, color: provider.coverUrl ? 'var(--theme-on-image)' : 'var(--theme-ink)', letterSpacing: '-0.02em', marginBottom: '12px', textShadow: provider.coverUrl ? '0 3px 22px rgba(0,0,0,0.34)' : undefined }}>
           {displayName}
         </p>
 
         {/* Handle + rating row — always present, IG handle preserved for future */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: headerTagline ? '16px' : 0 }}>
-          {handle && <span style={{ fontSize: '12px', color: provider.coverUrl ? 'rgba(251,249,244,0.76)' : 'rgba(44,40,37,0.52)', letterSpacing: '0.02em' }}>{handle}</span>}
-          {handle && provider.rating && <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(44,40,37,0.25)', flexShrink: 0 }} />}
+          {handle && <span style={{ fontSize: '12px', color: provider.coverUrl ? 'rgba(var(--theme-on-image-rgb-legacy),0.76)' : 'var(--theme-muted)', letterSpacing: '0.02em' }}>{handle}</span>}
+          {handle && provider.rating && <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'var(--theme-muted)', flexShrink: 0 }} />}
           {provider.rating && (
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--oak)', fontWeight: 600 }}>
               ★ {provider.rating}
-              {provider.reviewCount && <span style={{ color: provider.coverUrl ? 'rgba(251,249,244,0.62)' : 'rgba(44,40,37,0.4)', fontWeight: 400 }}>({provider.reviewCount})</span>}
+              {provider.reviewCount && <span style={{ color: provider.coverUrl ? 'rgba(var(--theme-on-image-rgb-legacy),0.62)' : 'var(--theme-muted)', fontWeight: 400 }}>({provider.reviewCount})</span>}
             </span>
           )}
         </div>
@@ -358,15 +358,15 @@ export default function ProviderPage() {
       </div>
 
       {/* Existing availability + price + booking action, recomposed as the hero dock. */}
-      <div style={{ position: 'relative', zIndex: 4, margin: '-24px 14px 12px', padding: '13px 10px 13px 16px', display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(84px,.8fr) auto', alignItems: 'center', gap: '10px', background: 'rgba(var(--theme-background-rgb-legacy),0.96)', border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.26)', borderRadius: '14px', boxShadow: '0 12px 30px rgba(var(--theme-shadow-rgb),0.18)', backdropFilter: 'blur(14px)' }}>
+      <div style={{ position: 'relative', zIndex: 4, margin: '-24px 14px 12px', padding: '13px 10px 13px 16px', display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(84px,.8fr) auto', alignItems: 'center', gap: '10px', background: 'var(--theme-panel-elevated)', border: '1px solid var(--theme-border)', borderRadius: 'var(--theme-card-radius)', boxShadow: 'var(--theme-card-shadow)', backdropFilter: 'blur(14px)' }}>
         <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.48)', marginBottom: '4px', letterSpacing: '0.08em' }}>最快</p>
+          <p style={{ fontSize: '9px', color: 'var(--theme-muted)', marginBottom: '4px', letterSpacing: '0.08em' }}>最快</p>
           <p style={{ fontSize: '13px', color: 'var(--charcoal)', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {nextAvail ? `${nextAvail.label} ${nextAvail.time}` : '歡迎預約'}
           </p>
         </div>
         <div style={{ minWidth: 0, paddingLeft: '10px', borderLeft: '1px solid var(--theme-border)' }}>
-          <p style={{ fontSize: '9px', color: 'rgba(44,40,37,0.48)', marginBottom: '4px', letterSpacing: '0.08em' }}>價格</p>
+          <p style={{ fontSize: '9px', color: 'var(--theme-muted)', marginBottom: '4px', letterSpacing: '0.08em' }}>價格</p>
           <p className="font-display" style={{ fontSize: '15px', color: 'var(--charcoal)', whiteSpace: 'nowrap' }}>
             {fromPrice > 0 ? `NT$ ${fromPrice.toLocaleString()} 起` : '依服務項目'}
           </p>
@@ -434,11 +434,11 @@ export default function ProviderPage() {
             </div>
             <div style={{ flex: 1 }}>
               <p className="font-display" style={{ fontSize: '1.9rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.1, marginBottom: '5px' }}>{provider.name}</p>
-              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(44,40,37,0.56)' }}>{provider.role || provider.category}</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'var(--theme-muted)' }}>{provider.role || provider.category}</p>
               {provider.years && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '8px' }}>
                   <span className="font-display" style={{ fontSize: '1.3rem', color: 'var(--oak)', lineHeight: 1 }}>{provider.years}</span>
-                  <span style={{ fontSize: '10px', color: 'rgba(44,40,37,0.46)', letterSpacing: '0.08em' }}>年經驗</span>
+                  <span style={{ fontSize: '10px', color: 'var(--theme-muted)', letterSpacing: '0.08em' }}>年經驗</span>
                 </div>
               )}
             </div>
@@ -446,7 +446,7 @@ export default function ProviderPage() {
 
           {/* Bio quote — longer description from D column */}
           {bioQuote && (
-            <p className="font-display" style={{ fontSize: '1.13rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.72, color: 'rgba(44,40,37,0.82)', marginBottom: '20px' }}>
+            <p className="font-display" style={{ fontSize: '1.13rem', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.72, color: 'var(--theme-ink)', marginBottom: '20px' }}>
               「{bioQuote}」
             </p>
           )}
@@ -467,7 +467,7 @@ export default function ProviderPage() {
                 <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="var(--oak)" stroke="none" />
               </svg>
               <a href={`https://instagram.com/${handle.replace('@','')}`} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: '12px', color: 'rgba(44,40,37,0.62)', letterSpacing: '0.04em', textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>
+                style={{ fontSize: '12px', color: 'var(--theme-muted)', letterSpacing: '0.04em', textDecoration: 'none', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>
                 {handle}
               </a>
             </div>
@@ -479,10 +479,10 @@ export default function ProviderPage() {
       <div data-animate data-dir="up" style={{ padding: '28px 20px 30px', background: 'var(--cream)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
-            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(44,40,37,0.4)', marginBottom: '6px' }}>{COPY.en}</p>
+            <p style={{ fontSize: '10px', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--theme-muted)', marginBottom: '6px' }}>{COPY.en}</p>
             <p className="font-display" style={{ fontSize: '1.7rem', fontWeight: 400, color: 'var(--charcoal)' }}>{COPY.zh}</p>
             {isDemo && (
-              <p style={{ fontSize: '11px', color: 'rgba(44,40,37,0.42)', marginTop: '6px', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '11px', color: 'var(--theme-muted)', marginTop: '6px', lineHeight: 1.5 }}>
                 本頁為系統示範，作品為情境示意圖
               </p>
             )}
@@ -502,7 +502,7 @@ export default function ProviderPage() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed rgba(var(--theme-accent-rgb-legacy),0.3)', borderRadius: '14px' }}>
-            <p style={{ fontSize: '12px', color: 'rgba(44,40,37,0.4)' }}>{COPY.empty}</p>
+            <p style={{ fontSize: '12px', color: 'var(--theme-muted)' }}>{COPY.empty}</p>
           </div>
         )}
       </div>
@@ -593,7 +593,7 @@ export default function ProviderPage() {
             width: '100%', padding: '17px', borderRadius: '15px',
             border: '1px solid rgba(var(--theme-accent-rgb-legacy),0.55)', cursor: 'pointer',
             background: 'var(--theme-accent-strong)',
-            color: '#fffaf4',
+            color: 'var(--theme-on-accent)',
             fontSize: '15px', fontWeight: 600,
             boxShadow: '0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(var(--theme-accent-rgb-legacy),0.22)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -602,7 +602,7 @@ export default function ProviderPage() {
           }}>
             開始預約
             {fromPrice > 0 && (
-              <span style={{ fontSize: '12px', color: 'rgba(255,250,244,0.78)', fontWeight: 500 }}>
+              <span style={{ fontSize: '12px', color: 'var(--theme-on-accent)', fontWeight: 500, opacity: 0.78 }}>
                 NT$ {fromPrice.toLocaleString()} 起
               </span>
             )}
