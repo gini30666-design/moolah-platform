@@ -9,6 +9,7 @@
   --theme-accent-pale: #ede3d8;
   --theme-accent-dim: #D9C5B2;
   --theme-background: #fbf9f4;
+  --theme-background-rgb-legacy: 251,249,244;
   --theme-surface: #f5efe6;
   --theme-surface-deep: #ede8dc;
   --theme-border: #e8e0d8;
@@ -18,6 +19,8 @@
   --theme-shadow-rgb: 44 40 37;
   --theme-hero-overlay: rgba(26, 23, 20, 0.52);
   --theme-texture-opacity: 0.025;
+  --theme-atmosphere: none;
+  --theme-atmosphere-opacity: 0;
 
   --cream: var(--theme-background);
   --charcoal: #2C2825;
@@ -38,8 +41,222 @@
   --radius-pill: 999px;
   --ease-silk: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
-  --glass-bg: rgba(251,249,244,0.10);
+  --glass-bg: rgba(var(--theme-background-rgb-legacy),0.10);
   --glass-border: rgba(var(--theme-accent-rgb-legacy),0.22);
+}
+
+/* ── Provider visual themes ─────────────────────────────────────────────── */
+[data-theme="moolah-gold"] {
+  --theme-accent: #A68966;
+  --theme-accent-rgb: 166 137 102;
+  --theme-accent-rgb-legacy: 166,137,102;
+  --theme-accent-strong: #8a6f4f;
+  --theme-accent-light: #c4a882;
+  --theme-accent-pale: #ede3d8;
+  --theme-accent-dim: #D9C5B2;
+  --theme-background: #fbf9f4;
+  --theme-background-rgb-legacy: 251,249,244;
+  --theme-surface: #f5efe6;
+  --theme-surface-deep: #ede8dc;
+  --theme-border: #e8e0d8;
+  --theme-selected: #c4845a;
+  --theme-selected-rgb: 196 132 90;
+  --theme-selected-rgb-legacy: 196,132,90;
+  --theme-shadow-rgb: 44 40 37;
+  --theme-hero-overlay: rgba(26,23,20,0.52);
+  --theme-texture-opacity: 0.025;
+  --theme-atmosphere: none;
+  --theme-atmosphere-opacity: 0;
+}
+
+[data-theme="bali-stone"] {
+  --theme-accent: #8b765d;
+  --theme-accent-rgb: 139 118 93;
+  --theme-accent-rgb-legacy: 139,118,93;
+  --theme-accent-strong: #6f5c45;
+  --theme-accent-light: #baa991;
+  --theme-accent-pale: #e6ddd1;
+  --theme-accent-dim: #ccbeac;
+  --theme-background: #f4f0e8;
+  --theme-background-rgb-legacy: 244,240,232;
+  --theme-surface: #eae3d8;
+  --theme-surface-deep: #ded3c4;
+  --theme-border: #d6cabc;
+  --theme-selected: #9b7054;
+  --theme-selected-rgb: 155 112 84;
+  --theme-selected-rgb-legacy: 155,112,84;
+  --theme-shadow-rgb: 47 41 34;
+  --theme-hero-overlay: rgba(29,26,22,0.58);
+  --theme-texture-opacity: 0.035;
+  --theme-atmosphere: radial-gradient(circle at 12% 8%, rgba(139,118,93,0.20), transparent 36%), radial-gradient(circle at 88% 30%, rgba(203,188,166,0.22), transparent 42%);
+  --theme-atmosphere-opacity: 0.72;
+}
+
+[data-theme="ubud-slow"] {
+  --theme-accent: #68725a;
+  --theme-accent-rgb: 104 114 90;
+  --theme-accent-rgb-legacy: 104,114,90;
+  --theme-accent-strong: #4d5742;
+  --theme-accent-light: #a5aa92;
+  --theme-accent-pale: #dfe2d5;
+  --theme-accent-dim: #c4c8b7;
+  --theme-background: #f1ede3;
+  --theme-background-rgb-legacy: 241,237,227;
+  --theme-surface: #e7e1d3;
+  --theme-surface-deep: #d9d2c1;
+  --theme-border: #d1c9b8;
+  --theme-selected: #947253;
+  --theme-selected-rgb: 148 114 83;
+  --theme-selected-rgb-legacy: 148,114,83;
+  --theme-shadow-rgb: 39 44 35;
+  --theme-hero-overlay: rgba(24,30,23,0.56);
+  --theme-texture-opacity: 0.038;
+  --theme-atmosphere: radial-gradient(circle at 18% 4%, rgba(104,114,90,0.24), transparent 38%), radial-gradient(circle at 82% 26%, rgba(181,161,124,0.18), transparent 40%);
+  --theme-atmosphere-opacity: 0.76;
+}
+
+[data-theme="quiet-luxury"] {
+  --theme-accent: #8d795d;
+  --theme-accent-rgb: 141 121 93;
+  --theme-accent-rgb-legacy: 141,121,93;
+  --theme-accent-strong: #6f604b;
+  --theme-accent-light: #b9aa94;
+  --theme-accent-pale: #e9e2d8;
+  --theme-accent-dim: #d2c7b7;
+  --theme-background: #f7f4ee;
+  --theme-background-rgb-legacy: 247,244,238;
+  --theme-surface: #efebe3;
+  --theme-surface-deep: #e4ded4;
+  --theme-border: #ddd5c9;
+  --theme-selected: #8d795d;
+  --theme-selected-rgb: 141 121 93;
+  --theme-selected-rgb-legacy: 141,121,93;
+  --theme-shadow-rgb: 43 39 34;
+  --theme-hero-overlay: rgba(24,23,21,0.50);
+  --theme-texture-opacity: 0.018;
+  --theme-atmosphere: linear-gradient(118deg, rgba(255,255,255,0.58), transparent 32%), radial-gradient(circle at 78% 10%, rgba(141,121,93,0.16), transparent 38%);
+  --theme-atmosphere-opacity: 0.66;
+}
+
+[data-theme="rainforest-jade"] {
+  --theme-accent: #477064;
+  --theme-accent-rgb: 71 112 100;
+  --theme-accent-rgb-legacy: 71,112,100;
+  --theme-accent-strong: #31554c;
+  --theme-accent-light: #8fa99f;
+  --theme-accent-pale: #d8e4df;
+  --theme-accent-dim: #b9ccc4;
+  --theme-background: #edf2ee;
+  --theme-background-rgb-legacy: 237,242,238;
+  --theme-surface: #e1eae4;
+  --theme-surface-deep: #d3dfd8;
+  --theme-border: #c8d7cf;
+  --theme-selected: #527d70;
+  --theme-selected-rgb: 82 125 112;
+  --theme-selected-rgb-legacy: 82,125,112;
+  --theme-shadow-rgb: 28 44 38;
+  --theme-hero-overlay: rgba(16,31,26,0.58);
+  --theme-texture-opacity: 0.032;
+  --theme-atmosphere: radial-gradient(circle at 8% 12%, rgba(71,112,100,0.25), transparent 36%), radial-gradient(circle at 90% 32%, rgba(134,158,128,0.20), transparent 40%);
+  --theme-atmosphere-opacity: 0.80;
+}
+
+[data-theme="terracotta-sunset"] {
+  --theme-accent: #b36f55;
+  --theme-accent-rgb: 179 111 85;
+  --theme-accent-rgb-legacy: 179,111,85;
+  --theme-accent-strong: #8f523e;
+  --theme-accent-light: #d3a088;
+  --theme-accent-pale: #f0dcd0;
+  --theme-accent-dim: #dfbda9;
+  --theme-background: #faf0e8;
+  --theme-background-rgb-legacy: 250,240,232;
+  --theme-surface: #f2e2d6;
+  --theme-surface-deep: #e8d2c2;
+  --theme-border: #e3cbbc;
+  --theme-selected: #bc6448;
+  --theme-selected-rgb: 188 100 72;
+  --theme-selected-rgb-legacy: 188,100,72;
+  --theme-shadow-rgb: 61 37 30;
+  --theme-hero-overlay: rgba(42,24,20,0.54);
+  --theme-texture-opacity: 0.030;
+  --theme-atmosphere: radial-gradient(circle at 14% 4%, rgba(216,142,106,0.30), transparent 38%), radial-gradient(circle at 88% 30%, rgba(180,105,85,0.17), transparent 42%);
+  --theme-atmosphere-opacity: 0.78;
+}
+
+[data-theme="indigo-tides"] {
+  --theme-accent: #53677b;
+  --theme-accent-rgb: 83 103 123;
+  --theme-accent-rgb-legacy: 83,103,123;
+  --theme-accent-strong: #3e5165;
+  --theme-accent-light: #91a4b3;
+  --theme-accent-pale: #dbe4e8;
+  --theme-accent-dim: #bdcbd2;
+  --theme-background: #edf2f3;
+  --theme-background-rgb-legacy: 237,242,243;
+  --theme-surface: #e0e9eb;
+  --theme-surface-deep: #d1dde1;
+  --theme-border: #c7d5da;
+  --theme-selected: #5d6f90;
+  --theme-selected-rgb: 93 111 144;
+  --theme-selected-rgb-legacy: 93,111,144;
+  --theme-shadow-rgb: 28 37 46;
+  --theme-hero-overlay: rgba(18,27,38,0.58);
+  --theme-texture-opacity: 0.024;
+  --theme-atmosphere: radial-gradient(circle at 14% 8%, rgba(83,103,123,0.25), transparent 38%), radial-gradient(circle at 88% 24%, rgba(154,181,190,0.24), transparent 42%);
+  --theme-atmosphere-opacity: 0.78;
+}
+
+[data-theme="orchid-dusk"] {
+  --theme-accent: #765f75;
+  --theme-accent-rgb: 118 95 117;
+  --theme-accent-rgb-legacy: 118,95,117;
+  --theme-accent-strong: #594758;
+  --theme-accent-light: #aa94a7;
+  --theme-accent-pale: #e6dce4;
+  --theme-accent-dim: #cdbdca;
+  --theme-background: #f3edf2;
+  --theme-background-rgb-legacy: 243,237,242;
+  --theme-surface: #eae1e8;
+  --theme-surface-deep: #ddd1da;
+  --theme-border: #d5c7d2;
+  --theme-selected: #865d7b;
+  --theme-selected-rgb: 134 93 123;
+  --theme-selected-rgb-legacy: 134,93,123;
+  --theme-shadow-rgb: 43 31 43;
+  --theme-hero-overlay: rgba(31,20,31,0.58);
+  --theme-texture-opacity: 0.026;
+  --theme-atmosphere: radial-gradient(circle at 12% 7%, rgba(118,95,117,0.25), transparent 38%), radial-gradient(circle at 88% 28%, rgba(178,145,169,0.22), transparent 42%);
+  --theme-atmosphere-opacity: 0.80;
+}
+
+.provider-theme-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  background-color: var(--theme-background);
+  color: var(--charcoal);
+}
+
+.provider-theme-shell::before {
+  content: '';
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--theme-atmosphere);
+  opacity: var(--theme-atmosphere-opacity);
+  transform: translate3d(0, 0, 0) scale(1.01);
+  animation: provider-atmosphere-drift 18s var(--ease-silk) infinite alternate;
+}
+
+@keyframes provider-atmosphere-drift {
+  from { transform: translate3d(-0.6%, -0.4%, 0) scale(1.01); }
+  to { transform: translate3d(0.8%, 0.6%, 0) scale(1.035); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .provider-theme-shell::before { animation: none; }
 }
 
 * { box-sizing: border-box; }

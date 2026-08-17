@@ -32,9 +32,22 @@ export const PROVIDER_THEME_OPTIONS: readonly ProviderThemeOption[] = [
 
 const PROVIDER_THEME_SET = new Set<string>(PROVIDER_THEME_KEYS)
 
+export function isProviderThemeKey(value: unknown): value is ProviderThemeKey {
+  return typeof value === 'string' && PROVIDER_THEME_SET.has(value)
+}
+
 export function normalizeProviderTheme(value: unknown): ProviderThemeKey {
   const candidate = typeof value === 'string' ? value.trim() : ''
-  return PROVIDER_THEME_SET.has(candidate)
+  return isProviderThemeKey(candidate)
     ? (candidate as ProviderThemeKey)
     : DEFAULT_PROVIDER_THEME
+}
+
+export function resolveProviderTheme(
+  savedTheme: unknown,
+  previewTheme: unknown,
+): ProviderThemeKey {
+  const previewCandidate = typeof previewTheme === 'string' ? previewTheme.trim() : ''
+  if (isProviderThemeKey(previewCandidate)) return previewCandidate
+  return normalizeProviderTheme(savedTheme)
 }

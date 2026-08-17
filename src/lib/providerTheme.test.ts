@@ -4,6 +4,7 @@ import {
   normalizeProviderTheme,
   PROVIDER_THEME_KEYS,
   PROVIDER_THEME_OPTIONS,
+  resolveProviderTheme,
 } from './providerTheme'
 
 describe('normalizeProviderTheme', () => {
@@ -29,5 +30,20 @@ describe('provider theme metadata', () => {
       expect(option.swatches).toHaveLength(3)
       expect(option.swatches.every(swatch => /^#[0-9a-f]{6}$/i.test(swatch))).toBe(true)
     }
+  })
+})
+
+describe('resolveProviderTheme', () => {
+  it('lets an allowed preview override the saved theme', () => {
+    expect(resolveProviderTheme('ubud-slow', 'indigo-tides')).toBe('indigo-tides')
+  })
+
+  it('keeps the saved theme when preview is invalid', () => {
+    expect(resolveProviderTheme('ubud-slow', 'bad')).toBe('ubud-slow')
+    expect(resolveProviderTheme('orchid-dusk', '\" style=\"color:red')).toBe('orchid-dusk')
+  })
+
+  it('falls back to the default when neither value is allowed', () => {
+    expect(resolveProviderTheme(null, null)).toBe(DEFAULT_PROVIDER_THEME)
   })
 })
