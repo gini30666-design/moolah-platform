@@ -8,9 +8,11 @@ import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
 import { ga } from '@/lib/gtag'
 import { NO_SHOW_THRESHOLD } from '@/lib/plan'
+import { ProviderThemeShell } from '@/components/ProviderThemeShell'
+import type { ProviderThemeKey } from '@/lib/providerTheme'
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; imageUrl?: string }
-type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' | 'scene' }
+type Provider = { id: string; name: string; category: string; rating?: string; reviewCount?: string; address?: string; storeName?: string; isDemo?: boolean; portfolioMode?: 'works' | 'space' | 'scene'; theme?: ProviderThemeKey }
 type SlotStatus = 'available' | 'booked' | 'hot'
 type Slot = { time: string; status: SlotStatus }
 type DayStatus = 'open' | 'limited' | 'full' | 'closed'
@@ -589,6 +591,7 @@ export default function BookPage() {
   const router = useRouter()
   const serviceId = searchParams.get('service') ?? ''
   const initialDate = searchParams.get('date') ?? ''
+  const previewTheme = searchParams.get('previewTheme')
   const timeRef = useRef<HTMLDivElement>(null)
 
   const [provider, setProvider] = useState<Provider | null>(null)
@@ -757,22 +760,27 @@ export default function BookPage() {
   const isSpaceMode = (provider?.portfolioMode ?? 'works') !== 'works'
   // 「設計師」是美髮語彙；採耳/按摩/除毛/潛水一律改用品牌通用詞「職人」
   const providerTerm = isSpaceMode ? '職人' : '設計師'
+  const themed = (content: React.ReactNode) => (
+    <ProviderThemeShell theme={provider?.theme} previewTheme={previewTheme} style={{ minHeight: '100svh' }}>
+      {content}
+    </ProviderThemeShell>
+  )
 
   // ⚠️ 示範帳號刻意放行：/pro 的「自己先看看」要讓職人在電腦上就能體驗完整流程。
   if (liffReady && !lineUserId && provider && !provider.isDemo) {
-    return <LineRequiredScreen providerId={providerId} providerName={provider.storeName || provider.name} />
+    return themed(<LineRequiredScreen providerId={providerId} providerName={provider.storeName || provider.name} />)
   }
 
   if (done && provider && service && isDemoDone) {
-    return <DemoCompletionScreen
+    return themed(<DemoCompletionScreen
       providerName={provider.storeName || provider.name}
       serviceName={service.name}
       date={date} time={time}
-    />
+    />)
   }
 
   if (done && provider && service) {
-    return <CompletionScreen
+    return themed(<CompletionScreen
       providerName={provider.storeName || provider.name}
       serviceName={service.name}
       date={date} time={time}
@@ -783,12 +791,12 @@ export default function BookPage() {
       servicePrice={service.price}
       providerAddress={provider.address ?? ''}
       providerTerm={providerTerm}
-    />
+    />)
   }
 
   // provider 載入完成但沒有任何服務 → 不要無限骨架，給友善訊息
   if (provider && allServices.length === 0) {
-    return (
+    return themed(
       <div style={{ display: 'flex', minHeight: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '14px', padding: '32px', background: '#f5efe6', textAlign: 'center' }}>
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '22px', color: 'var(--charcoal)' }}>尚未開放線上預約</p>
         <p style={{ fontSize: '13px', color: 'rgba(44,40,37,0.55)', lineHeight: 1.7 }}>{provider.storeName || provider.name} 尚未設定服務項目，<br />請直接聯絡店家，或晚點再來看看 🌿</p>
@@ -798,7 +806,7 @@ export default function BookPage() {
   }
 
   if (!provider || !service) {
-    return (
+    return themed(
       <div className="max-w-[480px] mx-auto" style={{ background: '#f5efe6', minHeight: '100vh', overflow: 'hidden' }}>
         <style>{`@keyframes shimmer{0%{background-position:-480px 0}100%{background-position:480px 0}}.bsk{background:linear-gradient(90deg,rgba(var(--theme-accent-rgb-legacy),0.07) 25%,rgba(var(--theme-accent-rgb-legacy),0.14) 50%,rgba(var(--theme-accent-rgb-legacy),0.07) 75%);background-size:960px 100%;animation:shimmer 1.4s infinite linear;border-radius:10px;}`}</style>
         <div style={{ background: 'var(--charcoal-deep)', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.2)', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -979,7 +987,7 @@ export default function BookPage() {
     )
   }
 
-  return (
+  return themed(
     <div className="max-w-[480px] mx-auto" style={{ background: 'var(--cream)', minHeight: '100vh', fontFamily: 'var(--font-plus-jakarta), var(--font-dm-sans), sans-serif' }}>
       {needAddFriend && (
         <button

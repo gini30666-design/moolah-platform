@@ -14,6 +14,16 @@ describe('providers.theme AA data path guard', () => {
     expect(providerRoute).toContain('theme: providerThemeFromRow(r)')
   })
 
+  it('uses the shared theme shell on the provider home, booking, and admin pages', () => {
+    const providerPage = readSource('../app/[providerId]/page.tsx')
+    const bookingPage = readSource('../app/[providerId]/book/page.tsx')
+    const adminPage = readSource('../app/[providerId]/admin/page.tsx')
+
+    expect(providerPage).toContain('<ProviderThemeShell')
+    expect(bookingPage).toContain('<ProviderThemeShell')
+    expect(adminPage).toContain('<ProviderThemeShell')
+  })
+
   it('keeps the pending DDL nullable and whitelist constrained', () => {
     const migration = readSource('../../supabase/migrations/20260817_add_provider_theme.sql')
 

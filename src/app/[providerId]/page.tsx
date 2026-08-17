@@ -1,12 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProviderPublic } from '@/lib/providerData'
+import { ProviderThemeShell } from '@/components/ProviderThemeShell'
 import ProviderProfileClient from './ProviderProfileClient'
 
 // 網站基底網址抽成 env → 之後買網域只要設 NEXT_PUBLIC_BASE_URL，無痛搬遷
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://moolah-platform.vercel.app'
 
 type Params = { params: Promise<{ providerId: string }> }
+type PageParams = Params & {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { providerId } = await params
@@ -36,8 +40,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-export default async function ProviderPage({ params }: Params) {
+export default async function ProviderPage({ params, searchParams }: PageParams) {
   const { providerId } = await params
+  const query = await searchParams
+  const previewTheme = Array.isArray(query.previewTheme) ? query.previewTheme[0] : query.previewTheme
   const data = await getProviderPublic(providerId)
   if (!data) notFound()
 
@@ -76,9 +82,9 @@ export default async function ProviderPage({ params }: Params) {
   }
 
   return (
-    <>
+    <ProviderThemeShell theme={p.theme} previewTheme={previewTheme} style={{ minHeight: '100svh' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ProviderProfileClient />
-    </>
+    </ProviderThemeShell>
   )
 }

@@ -3,13 +3,19 @@ import { useEffect, useState, useCallback } from 'react'
 import CopyableUrl from '@/components/CopyableUrl'
 import { taipeiDate } from '@/lib/slots'
 import { copyText } from '@/lib/clipboard'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
 import MoolahLoader from '@/components/MoolahLoader'
 import ScheduleView from './ScheduleView'
 import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 import PortfolioView from './PortfolioView'
+import { ProviderThemeShell } from '@/components/ProviderThemeShell'
+import {
+  DEFAULT_PROVIDER_THEME,
+  normalizeProviderTheme,
+  type ProviderThemeKey,
+} from '@/lib/providerTheme'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Booking = {
@@ -1226,6 +1232,8 @@ function EmptyBookings({ tab, providerId }: { tab: BookingTab; providerId: strin
 
 export default function AdminPage() {
   const { providerId } = useParams<{ providerId: string }>()
+  const searchParams = useSearchParams()
+  const previewTheme = searchParams.get('previewTheme')
   const [bookings, setBookings] = useState<Booking[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
@@ -1238,6 +1246,7 @@ export default function AdminPage() {
   const [providerName, setProviderName] = useState('')
   const [plan, setPlan] = useState('')               // trial | active | expired | ''(舊資料=正式)
   const [trialEndsAt, setTrialEndsAt] = useState('')
+  const [providerTheme, setProviderTheme] = useState<ProviderThemeKey>(DEFAULT_PROVIDER_THEME)
   const [customerSheet, setCustomerSheet] = useState<Booking | null>(null)
   const [addingService, setAddingService] = useState(false)
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
@@ -1311,6 +1320,7 @@ export default function AdminPage() {
         setProviderName(data.provider?.name ?? '')
         setPlan(data.provider?.plan ?? '')
         setTrialEndsAt(data.provider?.trialEndsAt ?? '')
+        setProviderTheme(normalizeProviderTheme(data.provider?.theme))
         setServices(data.services ?? [])
 
         const access = await accessRes.json()
@@ -1400,12 +1410,17 @@ export default function AdminPage() {
       return tab === 'past' ? -cmp : cmp
     })
   const nextBookingId = (tab === 'upcoming' || tab === 'today') ? filteredBookings[0]?.id : undefined
+  const themed = (content: React.ReactNode) => (
+    <ProviderThemeShell theme={providerTheme} previewTheme={previewTheme} style={{ minHeight: '100svh' }}>
+      {content}
+    </ProviderThemeShell>
+  )
 
   // ── Loading ──
-  if (loading) return <MoolahLoader label="載入後台中…" />
+  if (loading) return themed(<MoolahLoader label="載入後台中…" />)
 
   // ── Load error (網路/初始化失敗，可重試) ──
-  if (loadError) return (
+  if (loadError) return themed(
     <div style={{ display: 'flex', height: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '32px', background: cream, textAlign: 'center' }}>
       <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'calc(20px * var(--fs, 1))', color: charcoal }}>後台載入失敗</p>
       <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: '#8a7e76', lineHeight: 1.6 }}>請確認網路連線後再試一次</p>
@@ -1416,7 +1431,7 @@ export default function AdminPage() {
   )
 
   // ── Unauthorized ──
-  if (authorized === false) return (
+  if (authorized === false) return themed(
     <div style={{ display: 'flex', height: '100svh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '32px', background: cream, textAlign: 'center' }}>
       <div style={{ width: '56px', height: '56px', background: 'rgba(var(--theme-accent-rgb-legacy),0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <svg viewBox="0 0 24 24" fill="none" stroke={oak} strokeWidth={1.5} style={{ width: '24px', height: '24px' }}>
@@ -1430,7 +1445,7 @@ export default function AdminPage() {
     </div>
   )
 
-  return (
+  return themed(
     <main style={{ minHeight: '100svh', background: cream, maxWidth: '480px', margin: '0 auto' }}>
 
       {/* ── Header ── */}
