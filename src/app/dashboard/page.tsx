@@ -5,13 +5,30 @@ import liff from '@line/liff'
 import MoolahLoader from '@/components/MoolahLoader'
 import OpenInLine from '@/components/OpenInLine'
 
-type State = 'loading' | 'need_line' | 'not_found' | 'error'
+type State = 'loading' | 'need_line' | 'not_found' | 'pick' | 'error'
+
+type Membership = {
+  providerId: string
+  name: string
+  category: string
+  role: 'owner' | 'manager' | 'staff'
+}
+
+const ROLE_LABEL: Record<Membership['role'], string> = {
+  owner: '店主',
+  manager: '管理',
+  staff: '協助接單',
+}
+
+// 多個後台時記住上次選的，常駐客服不用每次挑
+const LAST_KEY = 'moolah_last_provider'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [state, setState] = useState<State>('loading')
   const [name, setName] = useState('')
   const [needLinePath, setNeedLinePath] = useState('/dashboard')
+  const [memberships, setMemberships] = useState<Membership[]>([])
 
   useEffect(() => {
     // Read destination from two sources:
@@ -50,6 +67,8 @@ export default function DashboardPage() {
 
         const res = await fetch(`/api/dashboard/me?userId=${profile.userId}`)
         const data = await res.json()
+        const list: Membership[] = Array.isArray(data.memberships) ? data.memberships : []
+        setMemberships(list)
 
         const dest = destination
           ? (destination.startsWith('/') ? destination : `/${destination}`)
@@ -66,15 +85,36 @@ export default function DashboardPage() {
         //    保留 Day 32 的隱藏功能「設計師掃立牌＝實體快速登入」：
         //    掃自己的立牌（to 指向自己）仍然進後台，那才是這功能的真實情境；
         //    掃別人的立牌則照常進對方頁面，不再莫名其妙彈到自己後台。
-        const goingToOwnPage = data.found && destOwner === data.providerId
+        //    ⬆️ 多帳號後這條規則不變，只是「自己」＝ 我有權限的任何一家。
+        const goingToOwnPage = list.some(m => m.providerId === destOwner)
 
         if (dest && !goingToOwnPage) {
           router.replace(dest)
-        } else if (data.found) {
-          router.replace(`/${data.providerId}/admin`)
-        } else {
-          setState('not_found')
+          return
         }
+        if (list.length === 0) {
+          setState('not_found')
+          return
+        }
+        // 指定了自己的某一家（掃自己的立牌）→ 直接進那一家
+        if (goingToOwnPage) {
+          router.replace(`/${destOwner}/admin`)
+          return
+        }
+        if (list.length === 1) {
+          router.replace(`/${list[0].providerId}/admin`)
+          return
+        }
+        // 多家：優先回上次選的，沒有才顯示選擇畫面。
+        // `?pick=1` 強制顯示 —— 後台的「切換後台」就是導回這裡，
+        // 沒有這個逃生口的話，記住上次選擇會讓人永遠切不回另一家。
+        const forcePick = params.get('pick') === '1'
+        const last = typeof window !== 'undefined' ? window.localStorage.getItem(LAST_KEY) : null
+        if (!forcePick && last && list.some(m => m.providerId === last)) {
+          router.replace(`/${last}/admin`)
+          return
+        }
+        setState('pick')
       })
       .catch(() => setState('error'))
   }, [router])
@@ -91,6 +131,48 @@ export default function DashboardPage() {
     return (
       <div className="flex h-screen items-center justify-center flex-col gap-3 px-6 text-center">
         <p className="text-sm text-gray-500">連線異常，請重新整理頁面</p>
+      </div>
+    )
+  }
+
+  // pick：這個 LINE 帳號能進多個後台（店主自己有多家，或協作客服服務多家）
+  if (state === 'pick') {
+    return (
+      <div className="min-h-screen bg-[#1a1714] text-[#fbf9f4] px-6 py-14 flex flex-col justify-center">
+        <p className="text-[10px] tracking-[0.24em] uppercase text-[#a68966] text-center mb-3">Select Account</p>
+        <p className="text-center mb-1" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.55rem', fontWeight: 300 }}>
+          要進哪一個後台？
+        </p>
+        <p className="text-center text-[12px] text-[#fbf9f4]/40 mb-7 leading-relaxed">
+          {name ? `嗨，${name}　` : ''}你目前可以管理 {memberships.length} 個帳號
+        </p>
+
+        <div className="flex flex-col gap-2.5">
+          {memberships.map(m => (
+            <button
+              key={m.providerId}
+              onClick={() => {
+                try { window.localStorage.setItem(LAST_KEY, m.providerId) } catch { /* 私密瀏覽模式會擋，忽略 */ }
+                router.replace(`/${m.providerId}/admin`)
+              }}
+              className="w-full text-left rounded-2xl px-5 py-4 flex items-center justify-between gap-3"
+              style={{ minHeight: '64px', background: 'rgba(251,249,244,0.04)', border: '1px solid rgba(166,137,102,0.22)' }}
+            >
+              <span className="min-w-0">
+                <span className="block text-[15px] font-semibold truncate">{m.name}</span>
+                <span className="block text-[11.5px] text-[#fbf9f4]/40 mt-0.5 truncate">{m.category}</span>
+              </span>
+              <span className="shrink-0 text-[10.5px] rounded-full px-2.5 py-1"
+                style={{ background: 'rgba(166,137,102,0.14)', border: '1px solid rgba(166,137,102,0.3)', color: '#c9ab84' }}>
+                {ROLE_LABEL[m.role] ?? '協助接單'}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <p className="text-center text-[11px] text-[#fbf9f4]/25 mt-6 leading-relaxed">
+          之後會直接進上次選的那一個<br />要換的話在後台選單按「切換後台」
+        </p>
       </div>
     )
   }

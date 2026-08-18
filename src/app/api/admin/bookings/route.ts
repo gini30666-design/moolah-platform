@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const providerId = searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ error: 'Missing providerId' }, { status: 400 })
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const [bookingRows, serviceRows] = await Promise.all([

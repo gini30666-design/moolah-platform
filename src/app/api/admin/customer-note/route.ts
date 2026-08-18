@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sb } from '@/lib/supabase'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 import { customerKey, normalizePhone } from '@/lib/customerIdentity'
 
 // customer_notes: (provider_id, customer_line_user_id) 複合主鍵；tags 為 jsonb
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const customerLineUserId = searchParams.get('customerLineUserId')
   if (!providerId || !customerLineUserId) return NextResponse.json({ note: '', tags: [] })
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { data } = await sb.from('customer_notes')
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   // 部分更新：未提供的欄位沿用既有值

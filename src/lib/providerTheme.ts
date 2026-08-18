@@ -34,6 +34,18 @@ export const PROVIDER_THEME_OPTIONS: readonly ProviderThemeOption[] = [
   { key: 'orchid-dusk', label: '蘭霧夜宴', swatches: ['#4d354c', '#c1a9bd', '#947c91'], depth: 'mid' },
 ] as const
 
+/**
+ * 後台「頁面風格」切換的總開關（2026-08-18 Gini 指示關閉）。
+ *
+ * 目前八個主題裡只有 bali-stone 真的做完並驗過；其餘七個尚未逐頁實作，
+ * 職人選下去會拿到半成品版面。在其餘主題完成並經核准之前，
+ * **後台不提供切換**——分頁隱藏，API 也一併 fail-closed（只擋 UI 不擋 API 等於沒擋）。
+ *
+ * 刻意保留的：`?previewTheme=` 預覽（我們自己審新主題要用）、
+ * 既有主題資料與整套 token 系統。要重新開放就把這個常數改成 true。
+ */
+export const PROVIDER_THEME_PICKER_ENABLED = false
+
 const PROVIDER_THEME_SET = new Set<string>(PROVIDER_THEME_KEYS)
 
 export function isProviderThemeKey(value: unknown): value is ProviderThemeKey {

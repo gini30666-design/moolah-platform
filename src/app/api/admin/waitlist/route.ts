@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData } from '@/lib/sheets'
 import { sb } from '@/lib/supabase'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const providerId = new URL(req.url).searchParams.get('providerId')
   if (!providerId) return NextResponse.json({ entries: [] })
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const rows = await getSheetData('waitlist!A2:J')
@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest) {
   if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   // 從候補資料反查 providerId，確認呼叫者是該店擁有者
-  const auth = await verifyOwner(req, rows[idx][1])
+  const auth = await verifyAccess(req, rows[idx][1], 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   await sb.from('waitlist').update({ status }).eq('id', entryId)

@@ -3,7 +3,7 @@ import { updateBookingStatus, getSheetData } from '@/lib/sheets'
 import { sb } from '@/lib/supabase'
 import { pushMessage, pushFlexMessage, cancelNoticeFlex, liffUrl } from '@/lib/line'
 import { autoBlacklistIfThresholdReached } from '@/lib/blacklist'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json()
@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest) {
   const allBookings = await getSheetData('bookings!A2:M')
   const target = allBookings.find(r => r[0] === bookingId)
   if (!target) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
-  const auth = await verifyOwner(req, target[1])
+  const auth = await verifyAccess(req, target[1], 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const success = await updateBookingStatus(bookingId, status)

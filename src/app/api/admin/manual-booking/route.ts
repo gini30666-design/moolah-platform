@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSheetData, appendRow } from '@/lib/sheets'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 import { isSlotBookable } from '@/lib/slots'
 
 function generateId() {
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   // ── 時段重驗（2026-08-16 補）──────────────────────────────────

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sb } from '@/lib/supabase'
-import { verifyOwner } from '@/lib/auth'
+import { verifyAccess } from '@/lib/auth'
 
 // 客戶作品歷史（Karte）：每位客人 × 每次服務的照片 + 備註（染髮配方、指甲款式…）
 // table: customer_history (id, provider_id, customer_line_user_id, image_url, note, service_name, created_at)
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const customerLineUserId = searchParams.get('customerLineUserId')
   if (!providerId || !customerLineUserId) return NextResponse.json({ entries: [] })
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { data, error } = await sb.from('customer_history')
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '請至少提供照片或備註' }, { status: 400 })
   }
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { data, error } = await sb.from('customer_history').insert({
@@ -63,7 +63,7 @@ export async function DELETE(req: NextRequest) {
   const { providerId, id } = await req.json()
   if (!providerId || id === undefined) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
 
-  const auth = await verifyOwner(req, providerId)
+  const auth = await verifyAccess(req, providerId, 'staff')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const { data, error } = await sb.from('customer_history')

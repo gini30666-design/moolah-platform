@@ -10,10 +10,12 @@ import MoolahLoader from '@/components/MoolahLoader'
 import ScheduleView from './ScheduleView'
 import { TRIAL_BOOKING_LIMIT } from '@/lib/plan'
 import PortfolioView from './PortfolioView'
+import MembersView from './MembersView'
 import { ProviderThemeShell } from '@/components/ProviderThemeShell'
 import { ThemePickerPanel } from '@/components/ThemePickerPanel'
 import {
   DEFAULT_PROVIDER_THEME,
+  PROVIDER_THEME_PICKER_ENABLED,
   normalizeProviderTheme,
   type ProviderThemeKey,
 } from '@/lib/providerTheme'
@@ -36,7 +38,7 @@ type Booking = {
 }
 type Service = { id: string; name: string; price: number; duration: number; description: string }
 type WaitlistEntry = { id: string; date: string; time: string; customerName: string; customerLineUserId: string; customerPhone: string; addedAt: string }
-type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio' | 'theme' | 'waitlist'
+type MainView = 'bookings' | 'services' | 'schedule' | 'portfolio' | 'theme' | 'waitlist' | 'members'
 type BookingTab = 'timeline' | 'today' | 'upcoming' | 'past'
 
 const TAGS = [
@@ -1239,6 +1241,12 @@ export default function AdminPage() {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState<boolean | null>(null)
+  // 我在這個後台的角色。owner/manager 可以改店的設定，staff 只能接單。
+  // ⚠️ 純粹用來決定畫面顯示什麼 —— 真正的授權在每支 API 的 verifyAccess。
+  const [myRole, setMyRole] = useState<'owner' | 'manager' | 'staff'>('owner')
+  // 這個 LINE 帳號可以進幾個後台（>1 才顯示「切換後台」）
+  const [accountCount, setAccountCount] = useState(1)
+  const canManageStore = myRole === 'owner' || myRole === 'manager'
   const [loadError, setLoadError] = useState(false)  // 區分「載入失敗(可重試)」與「無權限」
   const [showAnalytics, setShowAnalytics] = useState(false)  // 數據/對帳預設收合，讓操作內容上提
   const [refreshing, setRefreshing] = useState(false)
@@ -1327,11 +1335,21 @@ export default function AdminPage() {
         setServices(data.services ?? [])
 
         const access = await accessRes.json()
-        if (access.status === 'owner') {
+        // 'member' ＝ 協作夥伴（provider_members）。owner 與 member 都能進後台，
+        // 差別在 role：staff 看不到會動到店本身設定的分頁（服務／排班／作品集／協作夥伴）。
+        if (access.status === 'owner' || access.status === 'member') {
           setAuthorized(true)
+          setMyRole(access.role === 'owner' || access.role === 'manager' ? access.role : 'staff')
           const [bookingsData, waitlistData] = await Promise.all([bookingsRes.json(), waitlistRes.json()])
           setBookings(bookingsData.bookings ?? [])
           setWaitlist(waitlistData.entries ?? [])
+          // 有幾個後台可進 → 決定要不要顯示「切換後台」。失敗就當只有一個，不影響主流程。
+          try {
+            const profile = await liff.getProfile()
+            const meRes = await fetch(`/api/dashboard/me?userId=${profile.userId}`)
+            const me = await meRes.json()
+            setAccountCount(Array.isArray(me.memberships) ? me.memberships.length : 1)
+          } catch { /* 忽略：切換入口不是關鍵路徑 */ }
         } else if (access.status === 'unclaimed') {
           // 尚未認領 — 一律導去合約認領流程（/claim），不在此自動認領
           window.location.href = `/claim/${providerId}`
@@ -1503,9 +1521,18 @@ export default function AdminPage() {
                 </button>
 
                 <button onClick={() => { setMenuOpen(false); const url = `${window.location.origin}/${providerId}`; try { liff.openWindow({ url, external: false }) } catch { window.open(url, '_blank') } }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minHeight: '48px', padding: '0 16px', background: 'transparent', border: 'none', color: charcoal, fontSize: 'calc(13.5px * var(--fs, 1))', cursor: 'pointer', textAlign: 'left' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minHeight: '48px', padding: '0 16px', background: 'transparent', border: 'none', borderBottom: accountCount > 1 ? '1px solid rgba(var(--theme-accent-rgb-legacy),0.18)' : 'none', color: charcoal, fontSize: 'calc(13.5px * var(--fs, 1))', cursor: 'pointer', textAlign: 'left' }}>
                   <span style={{ color: 'var(--oak)' }}>👁</span> 預覽預約頁
                 </button>
+
+                {/* 這個 LINE 帳號能進多個後台才顯示（店主自己有多家，或協作客服服務多家）。
+                    ?pick=1 會強制跳出選擇畫面，繞過「記住上次選擇」。 */}
+                {accountCount > 1 && (
+                  <button onClick={() => { setMenuOpen(false); window.location.href = '/dashboard?pick=1' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minHeight: '48px', padding: '0 16px', background: 'transparent', border: 'none', color: charcoal, fontSize: 'calc(13.5px * var(--fs, 1))', cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ color: 'var(--oak)' }}>⇄</span> 切換後台（{accountCount}）
+                  </button>
+                )}
               </div>
             </>
           )}
@@ -1677,7 +1704,21 @@ export default function AdminPage() {
       {/* ── Main Nav (scrollable) ── */}
       <div data-animate data-delay="100" data-theme-region="admin-tabs" style={{ margin: '16px 16px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid rgba(var(--theme-accent-rgb-legacy),0.15)', paddingBottom: '0', minWidth: 'max-content' }}>
-        {([['bookings', '預約管理'], ['services', '服務管理'], ['schedule', '排班設定'], ['portfolio', '作品集'], ['theme', '頁面風格'], ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`]] as [MainView, string][]).map(([v, label]) => (
+        {([
+          ['bookings', '預約管理'],
+          // 服務／排班／作品集／協作夥伴 ＝ 會動到「店本身」→ staff 看不到
+          //（藏起來只是體貼，真正的擋在各支 API 的 verifyAccess）
+          ...(canManageStore ? ([
+            ['services', '服務管理'],
+            ['schedule', '排班設定'],
+            ['portfolio', '作品集'],
+          ] as [MainView, string][]) : []),
+          // 頁面風格：八個主題只有 bali-stone 做完，其餘完成前不開放（見 PROVIDER_THEME_PICKER_ENABLED）
+          ...(canManageStore && PROVIDER_THEME_PICKER_ENABLED ? [['theme', '頁面風格'] as [MainView, string]] : []),
+          ['waitlist', `候補${waitlist.length > 0 ? ` ${waitlist.length}` : ''}`],
+          // 只有店主本人能拉人／踢人（manager 不行，避免權限自我擴散）
+          ...(myRole === 'owner' ? [['members', '協作夥伴'] as [MainView, string]] : []),
+        ] as [MainView, string][]).map(([v, label]) => (
           <button key={v} onClick={() => { setMainView(v); if (v === 'waitlist') fetchWaitlist() }} style={{
             padding: '10px 16px 12px', fontSize: 'calc(12px * var(--fs, 1))',
             fontWeight: mainView === v ? 600 : 400, border: 'none', cursor: 'pointer',
@@ -1760,7 +1801,7 @@ export default function AdminPage() {
       )}
 
       {/* ════════════════ SERVICES VIEW ════════════════ */}
-      {mainView === 'services' && (
+      {canManageStore && mainView === 'services' && (
         <div style={{ padding: '16px 16px 40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <p style={{ fontSize: 'calc(13px * var(--fs, 1))', color: charcoal, fontWeight: 700 }}>
@@ -1802,13 +1843,13 @@ export default function AdminPage() {
       )}
 
       {/* ════════════════ SCHEDULE VIEW ════════════════ */}
-      {mainView === 'schedule' && <ScheduleView providerId={providerId} />}
+      {canManageStore && mainView === 'schedule' && <ScheduleView providerId={providerId} />}
 
       {/* ════════════════ PORTFOLIO VIEW ════════════════ */}
-      {mainView === 'portfolio' && <PortfolioView providerId={providerId} />}
+      {canManageStore && mainView === 'portfolio' && <PortfolioView providerId={providerId} />}
 
       {/* ════════════════ THEME VIEW ════════════════ */}
-      {mainView === 'theme' && (
+      {canManageStore && PROVIDER_THEME_PICKER_ENABLED && mainView === 'theme' && (
         <ThemePickerPanel
           providerId={providerId}
           selectedTheme={draftTheme}
@@ -1819,6 +1860,9 @@ export default function AdminPage() {
       )}
 
       {/* ════════════════ WAITLIST VIEW ════════════════ */}
+      {/* ════════════════ MEMBERS VIEW ════════════════ */}
+      {myRole === 'owner' && mainView === 'members' && <MembersView providerId={providerId} />}
+
       {mainView === 'waitlist' && (
         <section style={{ padding: '0 16px 24px' }}>
           {waitlist.length === 0 ? (

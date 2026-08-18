@@ -10,7 +10,13 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/auth', () => ({ verifyOwner: mocks.verifyOwner }))
 vi.mock('@/lib/supabase', () => ({ sb: { from: mocks.from } }))
-vi.mock('@/lib/providerTheme', async () => import('../../../../lib/providerTheme'))
+// 主題切換目前被總開關關閉（PROVIDER_THEME_PICKER_ENABLED=false）。
+// 下面這組測試驗的是「開放之後」的行為，所以這裡把開關打開；
+// 「關閉時必須擋下」另外有一組獨立測試（見 route.disabled.test.ts）。
+vi.mock('@/lib/providerTheme', async () => ({
+  ...(await import('../../../../lib/providerTheme')),
+  PROVIDER_THEME_PICKER_ENABLED: true,
+}))
 
 import { PATCH } from './route'
 
