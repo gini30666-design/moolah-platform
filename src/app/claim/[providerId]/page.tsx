@@ -321,7 +321,14 @@ export default function ClaimPage() {
               </div>
             )}
 
-            <button onClick={() => router.push('/dashboard')} style={{ width: '100%', padding: '16px', borderRadius: '14px', border: 'none', background: oak, color: cream, fontSize: '15px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.04em' }}>
+            {/* 🔴 直接進「這個 providerId」的後台，不要繞 /dashboard。
+                繞 dashboard 有兩個實際踩過的坑：
+                ① 這頁是經 liff.line.me?to=/claim/xxx 進來的，回到 dashboard 會重新解析
+                   destination 而彈回 /claim/xxx —— 使用者看到的就是「按了又回認領頁」打轉。
+                ② dashboard 靠 /api/dashboard/me 反查，一個 LINE 綁多個職人時只會回第一筆，
+                   剛認領完的這位不一定是它回的那位。
+                認領頁本來就知道 providerId，直接送過去最短也最準。 */}
+            <button onClick={() => router.push(`/${providerId}/admin`)} style={{ width: '100%', padding: '16px', borderRadius: '14px', border: 'none', background: oak, color: cream, fontSize: '15px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.04em' }}>
               進入後台管理
             </button>
             <a href={`/contract/${providerId}`} target="_blank" rel="noopener noreferrer"
