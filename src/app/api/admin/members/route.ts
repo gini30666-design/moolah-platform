@@ -4,15 +4,30 @@ import { verifyAccess } from '@/lib/auth'
 import { sb } from '@/lib/supabase'
 import { normalizeMemberRole } from '@/lib/access'
 
-// 協作夥伴管理 —— 一律 owner 級（manager 不能自己再拉人進來，避免權限自我擴散）
-const NEED = 'owner' as const
-
+/**
+ * 協作夥伴管理 —— **只有店主本人**（role === 'owner'）。
+ *
+ * 🔴 為什麼不能只用 verifyAccess(…, 'owner')：
+ *    那個 need 等級 manager 也滿足，於是 manager 能發出 role='manager' 的邀請
+ *    再拉更多 manager 進來 —— 權限自我擴散，店主無法收斂。
+ *    所以在 need 之外再明確比對 role === 'owner'。
+ *    （後台分頁也只對 owner 顯示，但藏 UI 不等於擋 API。）
+ */
 const INVITE_TTL_DAYS = 7
+
+async function requireOwner(req: NextRequest, providerId: string | null | undefined) {
+  const auth = await verifyAccess(req, providerId, 'owner')
+  if (!auth.ok) return auth
+  if (auth.role !== 'owner') {
+    return { ok: false as const, status: 403, error: 'owner_only' }
+  }
+  return auth
+}
 
 /** GET /api/admin/members?providerId=X → 成員名單 ＋ 未使用的邀請碼 */
 export async function GET(req: NextRequest) {
   const providerId = req.nextUrl.searchParams.get('providerId')
-  const auth = await verifyAccess(req, providerId, NEED)
+  const auth = await requireOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const [members, invites] = await Promise.all([
@@ -56,7 +71,7 @@ export async function POST(req: NextRequest) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }) }
 
   const providerId = typeof body.providerId === 'string' ? body.providerId.trim() : ''
-  const auth = await verifyAccess(req, providerId, NEED)
+  const auth = await requireOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   // 🔴 邀請碼必須是猜不到的亂數。
@@ -86,7 +101,7 @@ export async function DELETE(req: NextRequest) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }) }
 
   const providerId = typeof body.providerId === 'string' ? body.providerId.trim() : ''
-  const auth = await verifyAccess(req, providerId, NEED)
+  const auth = await requireOwner(req, providerId)
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const lineUserId = typeof body.lineUserId === 'string' ? body.lineUserId.trim() : ''

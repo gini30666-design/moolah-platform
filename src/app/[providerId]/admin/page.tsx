@@ -279,8 +279,10 @@ function CreditsPanel({ providerId, customerLineUserId, customerPhone, customerN
 }
 
 // ─── Customer History Sheet ───────────────────────────────────────────────────
-function CustomerSheet({ booking, allBookings, onClose, providerId }: {
+function CustomerSheet({ booking, allBookings, onClose, providerId, canManageStore }: {
   booking: Booking; allBookings: Booking[]; onClose: () => void; providerId: string
+  /** 儲值卡涉及金錢，只有 owner/manager 能操作（API 也是 owner 級，這裡藏起來避免按了才吃 403） */
+  canManageStore: boolean
 }) {
   const isManual = booking.customerLineUserId === 'MANUAL'
   const history = (isManual
@@ -508,14 +510,15 @@ function CustomerSheet({ booking, allBookings, onClose, providerId }: {
           </div>
         )}
 
-        {/* 儲值卡／次卡 — 手動建單的客人也要能用（老客人最常儲值），靠電話識別即可 */}
-        <CreditsPanel
+        {/* 儲值卡／次卡 — 手動建單的客人也要能用（老客人最常儲值），靠電話識別即可。
+            ⚠️ staff（協助接單）看不到：/api/admin/credits 是 owner 級，顯示了也只會吃 403。 */}
+        {canManageStore && <CreditsPanel
           providerId={providerId}
           customerLineUserId={booking.customerLineUserId}
           customerPhone={booking.customerPhone ?? ''}
           customerName={booking.customerName}
           serviceName={booking.serviceName}
-        />
+        />}
 
         {!isManual && (
           <div style={{ marginBottom: '18px' }}>
@@ -1584,8 +1587,9 @@ export default function AdminPage() {
         })}
       </div>
 
-      {/* 首次使用引導（還沒設定服務 = 新設計師）*/}
-      {services.length === 0 && (
+      {/* 首次使用引導（還沒設定服務 = 新設計師）
+          ⚠️ 只給能改設定的人看：staff 點了會被導去自己看不到的分頁（畫面空白） */}
+      {services.length === 0 && canManageStore && (
         <FirstRunChecklist
           providerId={providerId}
           onGoServices={() => setMainView('services')}
@@ -1940,7 +1944,7 @@ export default function AdminPage() {
 
       {/* ── Customer History Sheet ── */}
       {customerSheet && (
-        <CustomerSheet booking={customerSheet} allBookings={bookings} onClose={() => setCustomerSheet(null)} providerId={providerId} />
+        <CustomerSheet booking={customerSheet} allBookings={bookings} onClose={() => setCustomerSheet(null)} providerId={providerId} canManageStore={canManageStore} />
       )}
     </main>
   )
