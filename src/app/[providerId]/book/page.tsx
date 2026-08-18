@@ -874,7 +874,10 @@ export default function BookPage() {
     )
 
     const periods: [string, (s: Slot) => boolean][] = [
-      ['上午', s => Number(s.time.slice(0, 2)) < 12],
+      // 深夜營業的職人會有 00:00–05:30 的時段（跨夜＝掛在隔天）。
+      // 那些放進「上午」會被讀成「隔天早上」，所以獨立成「凌晨」。
+      ['凌晨', s => Number(s.time.slice(0, 2)) < 6],
+      ['上午', s => { const h = Number(s.time.slice(0, 2)); return h >= 6 && h < 12 }],
       ['下午', s => { const h = Number(s.time.slice(0, 2)); return h >= 12 && h < 18 }],
       ['晚上', s => Number(s.time.slice(0, 2)) >= 18],
     ]
