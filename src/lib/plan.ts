@@ -8,6 +8,29 @@
 export const TRIAL_DAYS = 14
 
 /**
+ * 試用期何時起算 —— 2026-08-20 Gini 決定：**從第一筆真實預約那天起算**，不是認領那天。
+ *
+ * 為什麼改：認領到「真的開始接單」中間常常隔好幾天，甚至一直沒開始。
+ * Zuzu 8/10 認領、8/24 到期、期間 0 筆預約 —— 14 天全燒在「還沒開始用」上。
+ * 試用的意義是讓職人驗證這東西有沒有用，那就該從他真的用起來的那一刻算。
+ *
+ * 資料表達：`plan='trial'` 但 `trial_start_at` 為 null ＝ **試用尚未開始**（不會過期）。
+ * ⚠️ 筆數上限 TRIAL_BOOKING_LIMIT 不受影響，仍然從第一筆就開始累計。
+ */
+export function trialWindowFrom(startIso: string): { startAt: string; endsAt: string } {
+  const start = new Date(startIso)
+  return {
+    startAt: start.toISOString(),
+    endsAt: new Date(start.getTime() + TRIAL_DAYS * 86400_000).toISOString(),
+  }
+}
+
+/** 試用是否已經開始計時（plan='trial' 且已有起算日）。 */
+export function trialHasStarted(plan: unknown, trialStartAt: unknown): boolean {
+  return String(plan ?? '').trim() === 'trial' && !!String(trialStartAt ?? '').trim()
+}
+
+/**
  * 試用期間可接受的預約筆數上限（含已完成，不含已取消）。
  * 超過就擋下客人下單 —— 所以這是「會直接影響真實客人」的數字，調整前想清楚。
  * 20 → 30（2026-08-06，Gini 決定）：20 筆對一天可排 14 格的職人只需平均 1.5 筆/天

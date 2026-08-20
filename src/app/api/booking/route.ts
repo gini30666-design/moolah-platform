@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { TRIAL_BOOKING_LIMIT, TRIAL_WARN_AT } from '@/lib/plan'
+import { TRIAL_BOOKING_LIMIT, TRIAL_WARN_AT, trialWindowFrom } from '@/lib/plan'
 import { isSameCustomer } from '@/lib/customerIdentity'
 import { getSheetData, appendRow } from '@/lib/sheets'
 import { isSlotBookable } from '@/lib/slots'
 import { pushFlexMessage, pushMessage, consumerBookingFlex, providerBookingFlex } from '@/lib/line'
 import { rateLimit, clientIp } from '@/lib/rateLimit'
 import { getAuthUserId } from '@/lib/auth'
+import { sb } from '@/lib/supabase'
 
 function generateId() {
   return `BK${Date.now()}`
@@ -49,6 +50,8 @@ export async function POST(req: NextRequest) {
   // 方案限制：trial=14 天 + 筆數上限（見 lib/plan）；expired=已暫停。active / 舊資料(空)=不限。
   // V(21)=plan、X(23)=trialEndsAt。對客人一律回中性訊息，不暴露試用機制。
   const plan = (providerRow[21] ?? '').toString().trim().toLowerCase()
+  // W(22)=trialStartAt。空值 ＝ **試用尚未開始計時**（2026-08-20 起：第一筆預約才起算）→ 不會過期。
+  const trialStartAt = (providerRow[22] ?? '').toString().trim()
   let trialUsedBefore = -1   // -1 = 非試用中，不需預警
   if (plan === 'trial' || plan === 'expired') {
     const trialEndsAt = providerRow[23]
@@ -185,6 +188,27 @@ export async function POST(req: NextRequest) {
     consumerNotified = notified
   } catch (e) {
     console.error('[booking] notification error (booking still saved):', e)
+  }
+
+  // 🔑 試用期起算：第一筆真實預約進來才開始計時（2026-08-20 Gini 決定，見 lib/plan.ts）。
+  //    認領到「真的開始接單」中間常常隔好幾天，那段不該算進 14 天。
+  //    ⚠️ 放在預約已成功寫入之後：起算日必須對應一筆真的存在的預約。
+  //    失敗不影響客人（預約已經成立），只記 log。
+  if (plan === 'trial' && !trialStartAt) {
+    try {
+      const win = trialWindowFrom(new Date().toISOString())
+      const { error } = await sb.from('providers')
+        .update({ trial_start_at: win.startAt, trial_ends_at: win.endsAt })
+        .eq('id', providerId)
+        .is('trial_start_at', null)     // 併發時只有第一筆寫得進去
+      if (error) console.error('[booking] 試用起算寫入失敗:', error.message)
+      else if (process.env.OPS_LINE_USER_ID) {
+        await pushMessage(process.env.OPS_LINE_USER_ID,
+          `🚀 試用正式開始\n\n${storeName}（${providerId}）收到第一筆真實預約，14 天試用從今天起算。\n到期日：${win.endsAt.slice(0, 10)}\n\n這是把他做成案例的最好時機。`)
+      }
+    } catch (e) {
+      console.error('[booking] 試用起算例外:', e)
+    }
   }
 
   // 試用用量預警：只在「跨過門檻的那一筆」推播，不是每筆都吵。

@@ -27,24 +27,26 @@ export async function POST(req: NextRequest) {
   // 連帶讓試用的筆數上限復活、客人被靜默擋下（2026-08-06 交付前抓到）。
   const nowIso = new Date().toISOString()
   const preset = (provider.plan ?? '').trim()
-  const fourteenDays = () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
+  // 🔑 2026-08-20 Gini 決定：**試用期改為「第一筆真實預約」起算**，認領不再起算。
+  //
+  //    為什麼：認領到「真的開始接單」中間往往隔好幾天甚至沒開始 ——
+  //    Zuzu 就是 8/10 認領、8/24 到期、期間 0 筆預約，14 天全燒在「還沒開始用」上。
+  //    試用期的意義是「讓他驗證這東西有沒有用」，那就該從他真的用起來的那一刻算。
+  //
+  //    實作：認領時 plan='trial' 但 trial_start_at / trial_ends_at 留 null，
+  //    由 `startTrialIfFirstBooking()`（lib/plan.ts）在第一筆預約寫入後補上。
+  //    ⚠️ 筆數上限（TRIAL_BOOKING_LIMIT）不受影響，仍然從第一筆就開始算。
   let plan: string
-  let trialStartAt: string | null
-  let trialEndsAt: string | null
+  const trialStartAt: string | null = null
+  const trialEndsAt: string | null = null
 
   if (preset === 'active') {
-    // OB 已設為正式 → 認領不動方案
-    plan = 'active'; trialStartAt = null; trialEndsAt = null
+    plan = 'active'          // OB 已設為正式 → 認領不動方案
   } else if (preset === 'trial') {
-    // OB 設為試用 → 方案保留，但試用期從「認領當下」重新起算（他真正開始用是現在，
-    // 不該把上線到認領之間的空窗算進去）
-    plan = 'trial'; trialStartAt = nowIso; trialEndsAt = fourteenDays()
+    plan = 'trial'           // 試用期等第一筆預約才起算
   } else {
-    // 沒有預設方案（舊資料 / 自助認領）→ 沿用原本規則
     plan = direct ? 'active' : 'trial'
-    trialStartAt = direct ? null : nowIso
-    trialEndsAt = direct ? null : fourteenDays()
   }
 
   const { error: updErr } = await sb.from('providers').update({
