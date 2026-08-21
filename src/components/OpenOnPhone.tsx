@@ -47,8 +47,9 @@ export default function OpenOnPhone({
         : <div style={{ width: '200px', height: '200px', borderRadius: '14px', background: 'rgba(251,249,244,0.06)' }} />}
 
       <div style={{ width: '100%', maxWidth: '360px', marginTop: '24px' }}>
-        {/* 掃不了就複製網址傳到手機（LINE webview 常常沒有剪貼簿 API，CopyableUrl 有三層退路） */}
-        <CopyableUrl url={url} />
+        {/* 掃不了就把網址傳到手機。⚠️ CopyableUrl 預設的說明是「複製失敗」的口吻，
+            這裡是主動提供網址、不是失敗善後，所以要換掉 label。 */}
+        <CopyableUrl url={url} tone="muted" label="或把這個網址傳到手機打開：" />
       </div>
 
       <p style={{ fontSize: '11px', color: 'rgba(251,249,244,0.3)', marginTop: '22px', lineHeight: 1.8 }}>

@@ -9,12 +9,22 @@
 // （2026-08-08 複查時發現自己上一輪的 fallback 是假的）
 import { useRef } from 'react'
 
-export default function CopyableUrl({ url }: { url: string }) {
+export default function CopyableUrl({
+  url,
+  label = '自動複製失敗了，請點下方網址全選後手動複製：',
+  tone = 'error',
+}: {
+  url: string
+  /** 說明文字。單獨當「可選取網址欄」用時要換掉 —— 預設那句是複製失敗後的口吻。 */
+  label?: string
+  /** 'error' = 紅字（複製失敗）；'muted' = 一般說明 */
+  tone?: 'error' | 'muted'
+}) {
   const ref = useRef<HTMLInputElement>(null)
   return (
     <div style={{ marginTop: '10px' }}>
-      <p style={{ fontSize: '11px', color: '#b45c5c', marginBottom: '6px' }}>
-        自動複製失敗了，請點下方網址全選後手動複製：
+      <p style={{ fontSize: '11px', color: tone === 'error' ? '#b45c5c' : 'rgba(251,249,244,0.42)', marginBottom: '6px' }}>
+        {label}
       </p>
       <input
         ref={ref}
