@@ -8,6 +8,8 @@ import liff from '@line/liff'
 import { authHeader } from '@/lib/clientAuth'
 import { ga } from '@/lib/gtag'
 import { NO_SHOW_THRESHOLD } from '@/lib/plan'
+import { isMobileDevice } from '@/lib/device'
+import OpenOnPhone from '@/components/OpenOnPhone'
 import { ProviderThemeShell } from '@/components/ProviderThemeShell'
 import type { ProviderThemeKey } from '@/lib/providerTheme'
 
@@ -333,6 +335,21 @@ function LineRequiredScreen({ providerId, providerName }: { providerId: string; 
   const liffHref = liffId
     ? `https://liff.line.me/${liffId}?to=${encodeURIComponent(`/${providerId}/book`)}`
     : `/${providerId}`
+
+  // 🔴 2026-08-21：桌機按「用 LINE 開啟預約」會無限迴圈
+  //    （liff.line.me 桌機喚不起 App → 被送回 /dashboard → 又叫他在 LINE 開啟 → ♾️）。
+  //    桌機改顯示 QR，讓他用手機接續。⚠️ 用 state，避免 SSR hydration mismatch。
+  const [desktop, setDesktop] = useState(false)
+  useEffect(() => { setDesktop(!isMobileDevice()) }, [])
+  if (desktop) {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://moolah.studio'
+    return <OpenOnPhone
+      url={`${origin}/${providerId}`}
+      title="請用手機開啟"
+      hint={`預約需要在手機的 LINE 裡完成，${providerName}才收得到你的預約、也才能提醒你。\n用手機掃下面的 QR 就可以繼續。`}
+    />
+  }
+
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--theme-canvas)', color: 'var(--theme-ink)', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', padding: '32px 22px' }}>

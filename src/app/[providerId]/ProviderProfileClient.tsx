@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import MoolahLoader from '@/components/MoolahLoader'
+import { isMobileDevice, isInLineApp } from '@/lib/device'
 
 type Provider = {
   id: string; name: string; category: string; description: string
@@ -245,9 +246,11 @@ export default function ProviderPage() {
     // 若不在 LINE 內建瀏覽器，直接走 LIFF，不要先進 book 頁才被擋——少一次跳轉。
     // ⚠️ 必須是「使用者點擊」觸發才喚得起 App；頁面載入時自動跳轉無效（Day 32 的教訓）。
     // 示範帳號例外：/pro 的「自己先看看」要能在電腦上跑完整流程。
-    const inLineApp = typeof navigator !== 'undefined' && /Line\//i.test(navigator.userAgent)
+    // 🔴 2026-08-21：只有「手機」才導 liff.line.me。
+    //    桌機導過去喚不起 App，LINE 會把人送回 /dashboard 又顯示「請在 LINE 裡開啟」→ 無限迴圈。
+    //    桌機一律走站內 book 頁，由 LineRequiredScreen 顯示 QR 讓他用手機接續。
     const liffId = process.env.NEXT_PUBLIC_LIFF_ID
-    if (!inLineApp && !isDemo && liffId) {
+    if (!isInLineApp() && !isDemo && liffId && isMobileDevice()) {
       window.location.href = `https://liff.line.me/${liffId}?to=${encodeURIComponent(path)}`
       return
     }

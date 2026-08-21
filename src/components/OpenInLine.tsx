@@ -1,4 +1,7 @@
 'use client'
+import { useEffect, useState } from 'react'
+import { isMobileDevice } from '@/lib/device'
+import OpenOnPhone from './OpenOnPhone'
 
 /**
  * 「請在 LINE 裡開啟」畫面 — 防止外部瀏覽器的 liff.login() 無限跳轉。
@@ -30,6 +33,18 @@ export default function OpenInLine({
   title?: string
   hint?: string
 }) {
+  // 🔴 2026-08-21：桌機不能給下面那顆按鈕 —— liff.line.me 在桌機喚不起 App，
+  //    會被送回 /dashboard 又叫他「在 LINE 中開啟」，形成無限迴圈（實測重現）。
+  //    桌機改給 QR 讓他用手機接續。
+  //    ⚠️ 用 state 而非直接判斷：SSR 時沒有 navigator，直接判斷會造成 hydration mismatch。
+  const [desktop, setDesktop] = useState(false)
+  useEffect(() => { setDesktop(!isMobileDevice()) }, [])
+
+  if (desktop) {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://moolah.studio'
+    return <OpenOnPhone url={`${origin}${path.startsWith('/') ? path : `/${path}`}`} />
+  }
+
   return (
     <div style={{
       minHeight: '100vh', background: '#1a1714', color: '#fbf9f4',
