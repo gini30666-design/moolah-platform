@@ -9,6 +9,7 @@ import { authHeader } from '@/lib/clientAuth'
 import { ga } from '@/lib/gtag'
 import { NO_SHOW_THRESHOLD } from '@/lib/plan'
 import { isMobileDevice } from '@/lib/device'
+import { openLiff, liffHttpsUrl } from '@/lib/liffOpen'
 import OpenOnPhone from '@/components/OpenOnPhone'
 import { ProviderThemeShell } from '@/components/ProviderThemeShell'
 import type { ProviderThemeKey } from '@/lib/providerTheme'
@@ -332,15 +333,24 @@ function InlineCalendar({ providerId, value, onChange }: {
 function LineRequiredScreen({ providerId, providerName }: { providerId: string; providerName: string }) {
   const oak = 'var(--theme-accent)'
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID
-  const liffHref = liffId
-    ? `https://liff.line.me/${liffId}?to=${encodeURIComponent(`/${providerId}/book`)}`
-    : `/${providerId}`
+  const bookPath = `/${providerId}/book`
+  // href 保留 https 版：沒有 JS 時仍可點，也讓長按「複製連結」拿得到正常網址
+  const liffHref = liffId ? liffHttpsUrl(bookPath) : `/${providerId}`
 
   // 🔴 2026-08-21：桌機按「用 LINE 開啟預約」會無限迴圈
   //    （liff.line.me 桌機喚不起 App → 被送回 /dashboard → 又叫他在 LINE 開啟 → ♾️）。
   //    桌機改顯示 QR，讓他用手機接續。⚠️ 用 state，避免 SSR hydration mismatch。
   const [desktop, setDesktop] = useState(false)
-  useEffect(() => { setDesktop(!isMobileDevice()) }, [])
+  useEffect(() => {
+    const mobile = isMobileDevice()
+    setDesktop(!mobile)
+    // 🔴 手機走到這頁 = 已經是死路（沒有 LINE 身分就不能預約）→ 自動喚起一次。
+    //    openLiff 先用 App scheme，那不是 universal link，載入時觸發也有效
+    //    （Day 32「自動跳轉喚不起 App」講的是 universal link，不適用 scheme）。
+    //    喚不起來就留在原地，下面的按鈕仍可手動再試一次。
+    if (mobile && liffId) openLiff(bookPath)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   if (desktop) {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://moolah.studio'
     return <OpenOnPhone
@@ -367,7 +377,9 @@ function LineRequiredScreen({ providerId, providerName }: { providerId: string; 
             用瀏覽器預約收不到這些通知，所以我們改用 LINE。
           </span>
         </p>
-        <a href={liffHref} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+        <a href={liffHref}
+          onClick={e => { if (liffId) { e.preventDefault(); openLiff(bookPath) } }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
           background: '#06C755', color: '#fff', padding: '17px 24px', borderRadius: '13px',
           fontSize: '16px', fontWeight: 700, textDecoration: 'none', marginBottom: '12px' }}>
           用 LINE 開啟預約

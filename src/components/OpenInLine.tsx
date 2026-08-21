@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { isMobileDevice } from '@/lib/device'
 import OpenOnPhone from './OpenOnPhone'
+import { openLiff, liffHttpsUrl } from '@/lib/liffOpen'
 
 /**
  * 「請在 LINE 裡開啟」畫面 — 防止外部瀏覽器的 liff.login() 無限跳轉。
@@ -19,8 +20,7 @@ import OpenOnPhone from './OpenOnPhone'
  * ⚠️ 用了這個元件的頁面，呼叫 liff.login() 前一定要先檢查 liff.isInClient()。
  */
 export function liffOpenUrl(path: string): string {
-  const id = process.env.NEXT_PUBLIC_LIFF_ID
-  return `https://liff.line.me/${id}?to=${encodeURIComponent(path)}`
+  return liffHttpsUrl(path)
 }
 
 export default function OpenInLine({
@@ -63,6 +63,7 @@ export default function OpenInLine({
 
       <a
         href={liffOpenUrl(path)}
+        onClick={e => { e.preventDefault(); openLiff(path) }}
         style={{
           display: 'inline-block', padding: '14px 34px', borderRadius: '12px',
           background: '#06C755', color: '#fff', fontSize: '15px', fontWeight: 600,

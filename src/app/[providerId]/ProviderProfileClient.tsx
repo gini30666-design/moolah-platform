@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import MoolahLoader from '@/components/MoolahLoader'
 import { isMobileDevice, isInLineApp } from '@/lib/device'
+import { openLiff } from '@/lib/liffOpen'
 
 type Provider = {
   id: string; name: string; category: string; description: string
@@ -249,9 +250,10 @@ export default function ProviderPage() {
     // 🔴 2026-08-21：只有「手機」才導 liff.line.me。
     //    桌機導過去喚不起 App，LINE 會把人送回 /dashboard 又顯示「請在 LINE 裡開啟」→ 無限迴圈。
     //    桌機一律走站內 book 頁，由 LineRequiredScreen 顯示 QR 讓他用手機接續。
-    const liffId = process.env.NEXT_PUBLIC_LIFF_ID
-    if (!isInLineApp() && !isDemo && liffId && isMobileDevice()) {
-      window.location.href = `https://liff.line.me/${liffId}?to=${encodeURIComponent(path)}`
+    // 🔴 用 openLiff（App scheme 優先）而不是直接設 https://liff.line.me —— 見 lib/liffOpen.ts。
+    //    直接設 universal link 在 iOS / in-app browser 常常只會開網頁版，跳不進 App。
+    if (!isInLineApp() && !isDemo && isMobileDevice()) {
+      openLiff(path)
       return
     }
     router.push(path)
