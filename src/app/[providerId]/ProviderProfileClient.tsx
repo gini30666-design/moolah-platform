@@ -432,8 +432,12 @@ export default function ProviderPage() {
                 <img src={provider.avatarUrl} alt={provider.name}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'ui-monospace,monospace', fontSize: '8px', letterSpacing: '0.06em', color: 'rgba(var(--theme-accent-rgb-legacy),0.7)', textAlign: 'center', lineHeight: 1.4 }}>
-                  設計師<br />照片
+                /* 沒有頭像時用「姓名首字」圓標，不要寫「設計師照片」——
+                   ① 那是佔位文字，看起來像缺東西
+                   ② 我們早就不只服務設計師（按摩／採耳／潛水／熱蠟都有），寫死品類必然對某些人不成立
+                   （2026-08-21 秀瑩交付前抓到） */
+                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Cormorant Garamond", serif', fontSize: '34px', fontWeight: 300, color: 'var(--theme-accent-strong)', lineHeight: 1 }}>
+                  {(provider.storeName || provider.name || '').trim().charAt(0)}
                 </span>
               )}
             </div>
